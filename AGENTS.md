@@ -32,6 +32,9 @@ Padel match score tracker web application.
 - **Files**: snake_case/kebab-case | **Code**: camelCase
 - **Units**: rpx (prefer), px (only for fixed sizing)
 - **Github Project**: `PadelBuddy Web` (https://github.com/users/trystan2k/projects/5)
+- **Task Tracking**: Create GitHub Issues first, then add issues to project (no draft project items)
+- **Issue IDs**: Use GitHub issue number as task ID reference (e.g., `#12`)
+- **Dependencies**: Use `Depends On` with issue links (e.g., `#1`, `#3`)
 
 ## Skills (load when needed)
 
@@ -54,4 +57,3 @@ Padel match score tracker web application.
 - Fall back to native opencode tools only when Serena MCP is unavailable
 
 ## Project
-

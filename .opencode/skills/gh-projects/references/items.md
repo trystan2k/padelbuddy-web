@@ -9,6 +9,8 @@ Projects can contain:
 - **Pull Requests** - Added via URL
 - **Draft Issues** - Created directly in project
 
+Repository default: issue-first tracking. Create issues and add them to the project; avoid draft items unless explicitly requested.
+
 ## Adding Items
 
 ### Add Issue or PR
@@ -40,6 +42,7 @@ gh project item-create PROJECT_NUM --owner OWNER --title "Title" --body "Descrip
 ```
 
 Draft items exist only within the project (not linked to any issue).
+Use this only when draft items are explicitly requested.
 
 ## Listing Items
 
@@ -79,7 +82,7 @@ gh project item-list 1 --owner "@me" --format json | jq -r '.items[].id'
 
 # Filter by status
 gh project item-list 1 --owner "@me" --format json | \
-  jq '.items[] | select(.status == "Todo")'
+  jq '.items[] | select(.status == "Ready")'
 
 # Get items with specific label (requires API query for labels)
 gh project item-list 1 --owner "@me" --format json | \
@@ -201,7 +204,7 @@ gh issue list --repo owner/repo --label "project-x" --json url -q '.[].url' | \
 ```bash
 # Get item IDs and update each
 gh project item-list PROJECT_NUM --owner OWNER --format json | \
-  jq -r '.items[] | select(.status == "Todo") | .id' | \
+  jq -r '.items[] | select(.status == "Ready") | .id' | \
   while read id; do
     gh project item-edit --id "$id" \
       --project-id PROJECT_ID \

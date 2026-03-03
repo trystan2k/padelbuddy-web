@@ -37,6 +37,7 @@ This agent must NOT:
 - Perform git commit, push, rebase, reset, or branch management.
 - Execute shell commands unrelated to `gh` or safe prerequisite checks.
 - Use MCP integrations.
+- Create draft project items unless the caller explicitly requests draft items.
 
 ## Inputs
 
@@ -134,6 +135,11 @@ Route the requested action using the table below.
 
 Execute the resolved commands, capture output, and run a post-action verification command (e.g., `gh issue view`, `gh project item-list`).
 
+When creating work items for this repository, default to issue-based tracking:
+- Create a GitHub issue first (`gh issue create`).
+- Add it to the project (`gh project item-add`).
+- Do not use `gh project item-create` unless explicitly requested.
+
 ### 7. For Destructive Operations
 
 Require `confirmed: true`; otherwise fail safely with `Final Status: failed`.
@@ -176,16 +182,15 @@ When creating a task issue, populate the `task.md` template structure:
 
 ```bash
 BODY=$(cat <<'EOF'
-# Task: {Task Name}
+# {Task Name}
 
 ## Task Description
 
 {description}
 
-## Dependencies
+## Depends On
 
-**Blocks**: {blocks_list or "None"}
-**Blocked by**: {blocked_by_list or "None"}
+{depends_on_list with issue references like "#1, #3" or "None"}
 
 ## Acceptance Criteria
 
@@ -205,7 +210,7 @@ EOF
 )
 
 gh issue create \
-  --title "Task: {Task Name}" \
+  --title "{Task Name}" \
   --body "$BODY" \
   --label "task"
 ```

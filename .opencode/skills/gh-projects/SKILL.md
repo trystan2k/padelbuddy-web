@@ -14,6 +14,16 @@ metadata:
 
 GitHub Projects (v2) management via `gh project` commands. Requires the `project` scope which can be added with `gh auth refresh -s project`.
 
+## Repository Policy Override
+
+Enforce issue-based tracking:
+
+- Create GitHub issues first.
+- Add issues to the project board with `gh project item-add`.
+- Do not create draft project items with `gh project item-create` unless explicitly requested.
+- Do not prefix issue titles with custom task IDs (e.g., no `PBW-001` in titles).
+- Track dependencies in a `Depends On` section using GitHub issue references (e.g., `#1`, `#3`).
+
 ## Prerequisites
 
 Verify authentication includes project scope:
@@ -90,6 +100,8 @@ gh project item-add PROJECT_NUM --owner OWNER --url https://github.com/OWNER/REP
 ```bash
 gh project item-create PROJECT_NUM --owner OWNER --title "Draft item" --body "Description"
 ```
+
+Use this only when a draft item is explicitly requested. Default workflow is issue-first.
 
 ### List Items
 

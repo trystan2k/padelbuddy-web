@@ -1,21 +1,20 @@
 ---
 name: Task
 about: Create a task for the project
-title: "Task: {Task Name}"
+title: "{Task Name}"
 labels: task
 assignees: ''
 ---
 
-# Task: {Task Name}
+# {Task Name}
 
 ## Task Description
 
 {Task summary from PRD}
 
-## Dependencies
+## Depends On
 
-**Blocks**: {List of issues this task blocks}
-**Blocked by**: {List of issues blocking this task}
+{List prerequisite issues as links, e.g. #1, #3, or `None`}
 
 ## Acceptance Criteria
 
