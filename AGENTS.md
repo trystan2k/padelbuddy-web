@@ -20,6 +20,10 @@ Padel match score tracker web application.
 - Prefer simple solutions over complex ones.
 - Don't change any code without explaining the reasoning.
 
+## Tasks
+
+Whatever task you are told to implement, check the @priority.md file first, to identify if it has a dependency with other tasks. If it does, do not continue and ask for clarification.
+
 ## QA
 
 `npm run complete-check`
