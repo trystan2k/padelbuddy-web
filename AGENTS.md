@@ -28,6 +28,10 @@ Whatever task you are told to implement, check the @priority.md file first, to i
 
 `npm run complete-check`
 
+## Github
+
+This project uses GitHub tools, like GitHub Issues, GitHub Projects, and GitHub Actions. It is also has Copilot review enabled, so whenever a pull request is created, it have Copilot review requested.s
+
 ## Conventions
 
 - **Branch**: `feature/PBW-[id]-[title]`

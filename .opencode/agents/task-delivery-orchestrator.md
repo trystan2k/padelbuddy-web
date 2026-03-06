@@ -195,6 +195,7 @@ Follow these steps in order.
       - To push commits, with user approval
       - To create a pull request (PR) or merge request (MR) with the committed changes, with user approval, with a comprehensive and accurate implementation description
     - **IMPORTANT**: When calling git-specialist, do NOT restrict files - let it discover and commit all task-related files
+    - **IMPORTANT**: If defined/mentioned in AGENTS.md that the repository has Copilot as reviewer enabled, ask git-specialist to request Copilot review for the pull request using GH CLIs.
     - **Stop timer** and record Commit/Push phase time.
 
 12. Completion Notification
