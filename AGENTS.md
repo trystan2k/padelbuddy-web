@@ -22,7 +22,7 @@ Padel match score tracker web application.
 
 ## Tasks
 
-Whatever task you are told to implement, check the @priority.md file first, to identify if it has a dependency with other tasks. If it does, do not continue and ask for clarification.
+Whatever task you are told to implement, check the @priority.md file first, to identify if it has a dependency with other tasks. If it does, check in the Github Project (ask `git-specialist` to check that, passing the dependencies issues #1) to see if the dependency is already implemented. If not, ask for clarification.
 
 ## QA
 
