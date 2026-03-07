@@ -166,17 +166,14 @@ Follow these steps in order.
      - Accumulate time for each iteration under the respective phase (Implementation, QA, or Code Review).
    - Repeat until QA passes and review outcome is acceptable.
 
-8. Issue Status Update - Completion
-   - Ask `project-manager-specialist` to move completed issue or sub-issues to `Done` only after implementation, QA, and review are fully done.
-
-9. Development Logging
+8. Development Logging
     - **Start timer** for Development Logging phase.
     - Ask `development-log-specialist` to create and store the development log using `basic-memory` skill format.
     - Provide planning, implementation, testing, QA, and review context.
     - Use the current project configuration in basic-memory to store the log.
     - **Stop timer** and record Development Logging phase time.
 
-10. Mandatory User Approval Before Commit
+9. Mandatory User Approval Before Commit
     - **CRITICAL**: Discover ALL task-related files before presenting to user:
       - Run `git status --porcelain` to find all modified and untracked files
     - Present the user with:
@@ -187,7 +184,7 @@ Follow these steps in order.
     - Do not proceed to commit without explicit approval.
     - If user requests changes, apply them via specialists and request approval again.
 
-11. Commit/Push Cycle
+10. Commit/Push Cycle
     - **Start timer** for Commit/Push phase.
     - Ask `git-specialist`:
       - To refresh working tree state before commit to detect manual user edits, with user approval
@@ -197,6 +194,9 @@ Follow these steps in order.
     - **IMPORTANT**: When calling git-specialist, do NOT restrict files - let it discover and commit all task-related files
     - **IMPORTANT**: If defined/mentioned in AGENTS.md that the repository has Copilot as reviewer enabled, ask git-specialist to request Copilot review for the pull request using GH CLIs.
     - **Stop timer** and record Commit/Push phase time.
+
+11. Issue Status Update - Completion
+    - Ask `project-manager-specialist` to move completed issue or sub-issues to `Review`.
 
 12. Completion Notification
     - Calculate total time by summing all phase times.

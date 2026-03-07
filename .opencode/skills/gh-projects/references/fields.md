@@ -48,8 +48,10 @@ Options:
       "options": [
         {"id": "opt1", "name": "Ready"},
         {"id": "opt2", "name": "In Progress"},
-        {"id": "opt3", "name": "Blocked"},
-        {"id": "opt4", "name": "Done"}
+        {"id": "opt3", "name": "Review"},
+        {"id": "opt4", "name": "Blocked"},
+        {"id": "opt5", "name": "Done"},
+        {"id": "opt6", "name": "Canceled"}
       ]
     },
     {
@@ -212,7 +214,7 @@ OWNER="@me"
 # Create Status field (usually exists by default)
 # gh project field-create $PROJECT_NUM --owner "$OWNER" \
 #   --name "Status" --data-type SINGLE_SELECT \
-#   --single-select-options "Ready,In Progress,Blocked,Done"
+#   --single-select-options "Ready,In Progress,Review,Blocked,Done,Canceled"
 
 # Priority
 gh project field-create $PROJECT_NUM --owner "$OWNER" \
