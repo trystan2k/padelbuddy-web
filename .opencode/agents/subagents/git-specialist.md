@@ -105,7 +105,7 @@ Safety rules:
 
 GitHub (`gh`) typical commands:
 
-- Create PR: `gh pr create --title "$TITLE" --body "$BODY" --base "$BASE" --head "$BRANCH"` (see "PR Creation with gh CLI — REQUIRED Pattern" section for full pattern)
+- Create PR: `gh pr create --title "$TITLE" --body "$BODY" --base "$BASE" --head "$BRANCH" --reviewer @copilot` (see "PR Creation with gh CLI — REQUIRED Pattern" section for full pattern)
 - View PR: `gh pr view <number|url|branch>`
 - Review comments: `gh pr view <number|url|branch> --comments`
 - Add review/comment: `gh pr review <number> --comment -b <body>`
@@ -300,7 +300,7 @@ If the project has Copilot as reviewer enabled, request Copilot review for the p
 
 ```bash
 set -e
-OUTPUT=$(gh pr create --title "$TITLE" --body "$BODY" --base "$BASE" --head "$BRANCH" --add-reviewer @copilot 2>&1) || { echo "GH_CREATE_FAILED: $OUTPUT"; exit 3; }
+OUTPUT=$(gh pr create --title "$TITLE" --body "$BODY" --base "$BASE" --head "$BRANCH" --reviewer @copilot 2>&1) || { echo "GH_CREATE_FAILED: $OUTPUT"; exit 3; }
 echo "GH_CREATE_OUTPUT:
 $OUTPUT"
 ```
