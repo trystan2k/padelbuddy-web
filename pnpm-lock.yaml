@@ -9,41 +9,41 @@ importers:
   .:
     dependencies:
       '@tanstack/react-router':
-        specifier: 1.166.2
+        specifier: ~1.166.2
         version: 1.166.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@tanstack/react-start':
-        specifier: 1.166.2
+        specifier: ~1.166.2
         version: 1.166.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vite@7.3.1(@types/node@25.3.5)(tsx@4.21.0))
       '@tanstack/router-plugin':
-        specifier: ^1.166.2
+        specifier: ~1.166.2
         version: 1.166.2(@tanstack/react-router@1.166.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(vite@7.3.1(@types/node@25.3.5)(tsx@4.21.0))
       react:
-        specifier: ^19.2.4
+        specifier: ~19.2.4
         version: 19.2.4
       react-dom:
-        specifier: ^19.2.4
+        specifier: ~19.2.4
         version: 19.2.4(react@19.2.4)
     devDependencies:
       '@types/node':
-        specifier: ^25.3.5
+        specifier: ~25.3.5
         version: 25.3.5
       '@types/react':
-        specifier: ^19.2.14
+        specifier: ~19.2.14
         version: 19.2.14
       '@types/react-dom':
-        specifier: ^19.2.3
+        specifier: ~19.2.3
         version: 19.2.3(@types/react@19.2.14)
       '@vitejs/plugin-react':
-        specifier: ^5.1.4
+        specifier: ~5.1.4
         version: 5.1.4(vite@7.3.1(@types/node@25.3.5)(tsx@4.21.0))
       typescript:
-        specifier: ^5.9.3
+        specifier: ~5.9.3
         version: 5.9.3
       vite:
-        specifier: ^7.3.1
+        specifier: ~7.3.1
         version: 7.3.1(@types/node@25.3.5)(tsx@4.21.0)
       vite-tsconfig-paths:
-        specifier: ^6.1.1
+        specifier: ~6.1.1
         version: 6.1.1(typescript@5.9.3)(vite@7.3.1(@types/node@25.3.5)(tsx@4.21.0))
 
 packages:
