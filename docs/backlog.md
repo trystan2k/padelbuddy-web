@@ -54,8 +54,8 @@
 | 50 | PBW-050 | Configure baseline security headers with moderate CSP | PBW-049 |
 | 53 | PBW-051 | Configure Conventional Commits and commitlint scope optional recommended | PBW-001 |
 | 60 | PBW-052 | Configure semantic versioning and automated changelog for feat fix perf refactor | PBW-051 |
-| 61 | PBW-053 | Create GitHub Project task template with full required fields | |
-| 62 | PBW-054 | Configure project status flow Todo In Progress Blocked Done and blocked reason | PBW-053 |
+| 61 | PBW-053 | Create GitHub Project task template with full required fields | PBW-052 |
+| 62 | PBW-054 | Configure project status flow Todo In Progress Review Blocked Done and blocked reason | PBW-053 |
 | 54 | PBW-055 | Document branch naming and PR linkage policy with project item IDs | PBW-053 |
 | 57 | PBW-056 | Execute milestone manual hardware full regression and record by task owner | PBW-015\|PBW-042 |
 | 49 | PBW-057 | Run release readiness checklist and first production dry run | PBW-041\|PBW-043\|PBW-049\|PBW-050\|PBW-052\|PBW-056 |

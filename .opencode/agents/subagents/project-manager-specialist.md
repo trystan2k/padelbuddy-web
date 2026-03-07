@@ -25,7 +25,7 @@ This agent:
 - Creates issues using the appropriate issue template (`task.md` for tasks, `subtask.md` for sub-issues).
 - Queries issues and sub-issues by number or filter.
 - Adds issues to the project board and sets their status field.
-- Moves issues through the project column workflow: `Ready → In Progress → Blocked → Done`.
+- Moves issues through the project column workflow: `Ready → In Progress → Review → Blocked → Done`.
 - Moves issues to `Canceled` status when requested.
 - Breaks down an issue into sub-issues (only when complexity warrants it) using the `subtask.md` template and links them via the GitHub sub-issues API.
 - Returns a structured execution report.
@@ -125,7 +125,7 @@ gh project field-list PROJECT_NUM --owner OWNER --format json
 Extract:
 - `PROJECT_ID` — node ID of the project.
 - `STATUS_FIELD_ID` — node ID of the Status field.
-- `OPTION_ID` — node ID of the target status option (match by name case-insensitively against `Ready`, `In Progress`, `Blocked`, `Done`, `Canceled`).
+- `OPTION_ID` — node ID of the target status option (match by name case-insensitively against `Ready`, `In Progress`, `Review`, `Blocked`, `Done`, `Canceled`).
 
 ### 5. Route Action
 
@@ -162,6 +162,7 @@ Return the full report without asking user questions.
 | `list-issues` | `gh issue list` with filters |
 | `add-issue-to-project` | `gh project item-add` then set Status to `Ready` |
 | `move-to-in-progress` | Resolve item ID → `gh project item-edit` with `In Progress` option |
+| `move-to-review` | Resolve item ID → `gh project item-edit` with `Review` option |
 | `move-to-blocked` | Resolve item ID → `gh project item-edit` with `Blocked` option |
 | `move-to-canceled` | Resolve item ID → `gh project item-edit` with `Canceled` option |
 | `move-to-done` | Resolve item ID → `gh project item-edit` with `Done` option + `gh issue close` |
@@ -288,7 +289,7 @@ gh api \
 Standard project column progression:
 
 ```
-Ready → In Progress → Done
+Ready → In Progress → Review → Done
                 ↓ 
             Blocked
                 ↓
@@ -299,6 +300,7 @@ It can also be moved to `Canceled` status at any time.
 ```
 Ready → Canceled
 Ready → In Progress → Canceled
+Ready → In Progress → Review → Canceled
 Ready → In Progress → Blocked → Canceled
 ```
 

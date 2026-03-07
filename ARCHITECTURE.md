@@ -13,7 +13,7 @@ The Padel Buddy Web is built as a highly interactive, client-heavy Single Page A
 ├── tests/
 │   ├── e2e/                # Playwright E2E tests
 │   └── unit/               # Vitest unit tests (Scoring logic)
-├── app/
+├── src/
 │   ├── components/         # Reusable UI (Base UI components)
 │   │   ├── ScoreBoard.tsx
 │   │   └── ScoreBoard.module.css # Locally scoped CSS
@@ -89,7 +89,7 @@ The entire visual score block for a team is rendered as a `<BaseUI.Button>` (or 
 
 ### 6.1 Unit Testing (Vitest)
 
-The pure logic inside `app/core/scoring.ts` is tested exhaustively using Vitest.
+The pure logic inside `src/core/scoring.ts` is tested exhaustively using Vitest.
 
 * **Tests cover:** Point progression, Deuce logic, Golden point logic, Game and Set resolution, and the mathematical Serve swapping during tiebreaks.
 * UI elements are *not* unit-tested; tests focus purely on the state machine predicting the correct next state.

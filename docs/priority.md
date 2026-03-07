@@ -24,7 +24,7 @@ Each wave must be fully complete before starting the next.
 | #36 | Configure PWA manifest icons and installability requirements | #1 |
 | #53 | Configure Conventional Commits and commitlint scope optional recommended | #1 |
 | #54 | Document branch naming and PR linkage policy with project item IDs | #61 |
-| #62 | Configure project status flow Todo In Progress Blocked Done and blocked reason | #61 |
+| #62 | Configure project status flow Todo In Progress Review Blocked Done and blocked reason | #61 |
 
 ---
 

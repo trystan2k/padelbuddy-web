@@ -171,3 +171,7 @@ function SearchInput({ query, onQueryChange }) {
 5. **Need to synchronize with external system?** Use Effect with cleanup
 6. **Need non-reactive code in Effect?** Use useEffectEvent
 7. **Need mutable value that doesn't trigger render?** Use ref
+
+## Specific tasks
+
+* **React type imports (no namespace globals)** [references/type-import-conventions.md](references/type-import-conventions.md)

@@ -1,0 +1,51 @@
+{
+  "name": "padelbuddy-web",
+  "version": "0.0.1",
+  "description": "A mobile-first, client-only Padel score tracker optimized for courtside use with Bluetooth remote and touch controls.",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.30.3",
+  "imports": {
+    "#/*": "./src/*"
+  },
+  "engines": {
+    "node": "24.14.0"
+  },
+  "scripts": {
+    "dev": "vite dev --port 4000",
+    "build": "vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "complete-check": "pnpm run typecheck && pnpm run build"
+  },
+  "keywords": [
+    "padel",
+    "score",
+    "tracker",
+    "mobile",
+    "web",
+    "sports",
+    "tennis"
+  ],
+  "dependencies": {
+    "@tanstack/react-router": "~1.166.2",
+    "@tanstack/react-start": "~1.166.2",
+    "@tanstack/router-plugin": "~1.166.2",
+    "react": "~19.2.4",
+    "react-dom": "~19.2.4"
+  },
+  "devDependencies": {
+    "@types/node": "~24.12.0",
+    "@types/react": "~19.2.14",
+    "@types/react-dom": "~19.2.3",
+    "@vitejs/plugin-react": "~5.1.4",
+    "typescript": "~5.9.3",
+    "vite": "~7.3.1",
+    "vite-tsconfig-paths": "~6.1.1"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  }
+}
