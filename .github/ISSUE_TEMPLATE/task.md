@@ -8,25 +8,54 @@ assignees: ''
 
 # {Task Name}
 
-## Task Description
+## Overview
+
+### Context
+
+<!-- Required field -->
+{Background/business context explaining why this task is needed}
+
+### Task Description
 
 {Task summary from PRD}
 
-## Depends On
+## Planning
 
+### Depends On
+
+<!-- Required field -->
 {List prerequisite issues as links, e.g. #1, #3, or `None`}
 
-## Acceptance Criteria
+### Risk
 
+<!-- Required field -->
+**Level**: {Low|Medium|High}
+
+**Explanation**: {Optional: why this risk level and mitigation strategy}
+
+## Requirements
+
+### Acceptance Criteria
+
+<!-- Required field -->
 - [ ] {Task-level requirement 1}
 - [ ] {Task-level requirement 2}
 
-## Definition of Done
+## Quality Assurance
+
+### Test Plan
+
+<!-- Required field -->
+{Testing approach: manual steps, automated tests, edge cases to verify}
+
+### Definition of Done
 
 - [ ] All subtasks delivered
 - [ ] QA Control Gate passed
 - [ ] User review approved
 
-## Labels
+## Metadata
+
+### Labels
 
 `task`, `{priority-level}`
