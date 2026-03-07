@@ -1,0 +1,20 @@
+## Task Analysis
+- Main objective: Define a single shared TypeScript domain contract for match lifecycle state and dispatched actions under `src/core/match`, keeping the scope limited to the typing foundation needed by downstream scoring, persistence, and setup tasks.
+- Identified dependencies: `docs/priority.md` shows issue `#2` depends only on `#1`, and `#1` is already complete; `tsconfig.json` already enforces strict compiler settings; the current repo pattern places pure domain code in `src/core`, with `src/core/match/types.ts` and `src/core/match/index.ts` as the natural home for this work.
+- System impact: Affects only shared domain type definitions and exports that future match logic will consume; this issue should not add reducer logic, scoring behavior, storage integration, or UI changes.
+
+## Chosen Approach
+- Proposed solution: Keep all canonical match-state, action, and supporting domain primitives in one focused module at `src/core/match/types.ts`, then re-export them from `src/core/match/index.ts` so future features consume a single stable import surface.
+- Justification for simplicity: This matches the existing `src/core` organization, makes strict typing easy to verify, and avoids overengineering; rejected alternatives are splitting the types into many files before there are real consumers and introducing runtime schema/validation layers before a concrete requirement exists.
+- Components to be modified/created: `src/core/match/types.ts` as the source of truth, `src/core/match/index.ts` as the barrel export, and only any immediately necessary import sites if stricter typing exposes gaps during verification.
+
+## Implementation Steps
+1. Reconfirm scope before editing: verify `docs/priority.md` still places `#2` after `#1`, lock the issue to shared domain types only, and use the existing `src/core/match` folder instead of creating parallel type locations.
+2. Audit and normalize the domain contract in `src/core/match/types.ts`: ensure reusable literal constants and derived union types cover team IDs, locales, match formats, game modes, deciding-set behavior, live phases, scoreboard structures, setup/active/completed match state variants, and all shared match actions as discriminated unions.
+3. Keep the public API minimal and reusable: export the canonical types from `src/core/match/index.ts`, remove duplication or ad-hoc aliases if discovered, and keep naming aligned with current repo conventions. Risk mitigation: if tightening a type causes unrelated downstream breakage, prefer the narrowest backward-compatible refinement needed for this issue rather than redesigning future APIs.
+4. Validate strict TypeScript at the task boundary: run `pnpm typecheck` once the shared contracts are settled, fix only typing issues caused by the new domain types, and avoid touching unrelated features. Rollback/mitigation: if a stricter change unexpectedly breaks scaffolding or placeholder code, revert to the last compiling contract and tighten types incrementally.
+5. Run the repository QA gate and final diff review: execute `pnpm run complete-check`, confirm the export surface remains clean, and verify the resulting diff is limited to domain-type files plus any truly necessary consumer adjustments.
+
+## Validation
+- Success criteria: Shared exported domain types for `MatchState` and `MatchAction` exist under `src/core/match`, supporting nested config, preferences, scoreboard, and action payload structures, and strict TypeScript passes under the repository's current compiler settings.
+- Checkpoints: Pre-implementation: dependency check against `docs/priority.md` and scope lock to type/export files only; During implementation: `src/core/match/types.ts` contains discriminated unions for state and action variants, `src/core/match/index.ts` exposes the shared API, and no scoring/persistence/UI logic is added; Post-implementation: `pnpm typecheck` passes for acceptance criterion 1, `pnpm run complete-check` passes or any unrelated blocker is documented, and a diff audit confirms acceptance criterion 2 is satisfied without spillover into unrelated modules.
