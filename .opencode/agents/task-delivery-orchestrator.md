@@ -202,6 +202,18 @@ Follow these steps in order.
     - Calculate total time by summing all phase times.
     - Return completion notification with time tracking summary table in required format.
 
+13. Copilot review
+    - If copilot review was requested, check, after a few minutes, if Copilot has added a review comment.
+    - Normally there is a session link in the PR with the Copilot status, check that session (if needed, do interval checks) to ensure it was completed.
+    - If copilot have added a review comment, review those comments and analyze if they need to be addressed or not. If yes, provide the user with a plan to address them and wait approval.
+    - If user approves the plan, use `implementation-specialist` to implement the changes (do the complete flow, implement, review, QA, etc)
+    - If copilot did not add any review comment, move to next step.
+
+14. Finalize
+    - If copilot review was not requested or if copilot did not add any review comment or copilot review was already addressed and approved or user approve to continue without copilot review, move to next step.
+    - Ask `git-specialist` to merge the pull request or merge request, with user approval.
+    - Ask `project-manager-specialist` to move completed issue or sub-issues to `Done`.
+
 ## Tool Usage Rules
 
 Allowed tools:
