@@ -1,4 +1,4 @@
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
+import { createRootRoute, HeadContent, Scripts } from '@tanstack/react-router'
 import type { ReactNode } from 'react'
 import { NotFound } from '#/components/not_found'
 import appCss from '../styles.css?url'
@@ -7,25 +7,25 @@ export const Route = createRootRoute({
   head: () => ({
     meta: [
       {
-        charSet: 'utf-8',
+        charSet: 'utf-8'
       },
       {
         name: 'viewport',
-        content: 'width=device-width, initial-scale=1',
+        content: 'width=device-width, initial-scale=1'
       },
       {
-        title: 'Padel Buddy Web',
-      },
+        title: 'Padel Buddy Web'
+      }
     ],
     links: [
       {
         rel: 'stylesheet',
-        href: appCss,
-      },
-    ],
+        href: appCss
+      }
+    ]
   }),
   notFoundComponent: NotFound,
-  shellComponent: RootDocument,
+  shellComponent: RootDocument
 })
 
 function RootDocument({ children }: { children: ReactNode }) {

@@ -16,7 +16,13 @@
     "build": "vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
-    "complete-check": "pnpm run typecheck && pnpm run build"
+    "complete-check": "pnpm typecheck && pnpm lint:fix && pnpm format && pnpm test && pnpm build",
+    "prepare": "husky",
+    "lint": "biome lint --error-on-warnings .",
+    "lint:fix": "biome lint --error-on-warnings --write .",
+    "format": "biome format --error-on-warnings --write .",
+    "format:check": "biome format --error-on-warnings .",
+    "test": "echo 'Placeholder for tests'"
   },
   "keywords": [
     "padel",
@@ -35,10 +41,15 @@
     "react-dom": "~19.2.4"
   },
   "devDependencies": {
+    "@biomejs/biome": "~2.4.6",
+    "@commitlint/cli": "~20.4.3",
+    "@commitlint/config-conventional": "~20.4.3",
     "@types/node": "~24.12.0",
     "@types/react": "~19.2.14",
     "@types/react-dom": "~19.2.3",
     "@vitejs/plugin-react": "~5.1.4",
+    "husky": "~9.1.7",
+    "lint-staged": "~16.3.2",
     "typescript": "~5.9.3",
     "vite": "~7.3.1",
     "vite-tsconfig-paths": "~6.1.1"
