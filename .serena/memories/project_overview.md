@@ -10,7 +10,7 @@ Padel match score tracker web application — a client-only SPA built with TanSt
 - Vite 7 + `@vitejs/plugin-react` + `vite-tsconfig-paths`
 - TypeScript 5.9+ (strict mode)
 - CSS Modules + CSS Variables for styling
-- pnpm 10.27.0 as package manager
+- pnpm 10.30.3 as package manager (`packageManager` in `package.json`)
 - Node 24.14.0 (pinned in `package.json engines` + `mise.toml`)
 - Biome (linter/formatter — planned)
 - Playwright (E2E tests — planned)
@@ -28,5 +28,6 @@ Padel match score tracker web application — a client-only SPA built with TanSt
 
 ## Important Notes
 - ARCHITECTURE.md specifies `app/` directory, but implementation uses `src/`
-- `complete-check` script is currently a no-op placeholder
+- `complete-check` runs `pnpm run typecheck && pnpm run build`
+- `mise.toml` pins only Node (`24.14.0`); pnpm version is pinned via `packageManager` in `package.json`
 - Path aliases: `#/*` → `./src/*` (both package.json imports and tsconfig), `@/*` → `./src/*` (tsconfig only)

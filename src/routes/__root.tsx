@@ -1,4 +1,5 @@
 import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
+import type { ReactNode } from 'react'
 import { NotFound } from '#/components/not_found'
 import appCss from '../styles.css?url'
 
@@ -27,7 +28,7 @@ export const Route = createRootRoute({
   shellComponent: RootDocument,
 })
 
-function RootDocument({ children }: { children: React.ReactNode }) {
+function RootDocument({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       {/* Browser extensions can mutate <html> before hydration. */}
