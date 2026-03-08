@@ -23,7 +23,7 @@ This agent:
 - Resolves the Linear Team and Project reference from `AGENTS.md` (Conventions/Constraints section) before every operation; if absent, fails explicitly and asks the caller to provide the reference.
 - Creates Linear issues using the appropriate issue template structure (`task.md` for tasks, `subtask.md` for sub-issues) as the description.
 - Queries issues and sub-issues by identifier or filter.
-- Updates issue status through the workflow: `Todo/Ready → In Progress → Review → Blocked → Done`.
+- Updates issue status through the workflow: `Ready → In Progress → Review → Blocked → Done`.
 - Moves issues to `Canceled` status when requested.
 - Breaks down an issue into sub-issues (only when complexity warrants it) and links them via the Linear parent-child relationship.
 - Returns a structured execution report.
@@ -252,7 +252,7 @@ Steps:
 Standard workflow:
 
 ```
-Todo/Ready → In Progress → Review → Done
+Ready → In Progress → Review → Done
                   ↓ 
               Blocked
                   ↓

@@ -20,7 +20,7 @@ If any required parameter is missing, ask for it once.
 
 ### Step 1 — Load Linear skill
 
-Load the `linear` skill to ensure correct CLI usage.
+Load the `linear` skill to ensure correct CLI usage. Also use the task template when defining the issue body.
 
 ### Step 2 — Resolve team and project identifiers
 
