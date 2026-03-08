@@ -50,7 +50,7 @@ linearis issues create "<title>" \
 - Use the resolved project name for `--project`
 - Only include `--parent-ticket` if `--parent-id` was provided
 - Escape special characters in title and description for shell safety
-- Priority defaults to 1 (urgent) unless specified otherwise
+- Priority defaults to 3 (medium) unless specified otherwise
 
 ### Step 4 — Execute and capture result
 
