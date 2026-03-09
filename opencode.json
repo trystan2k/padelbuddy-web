@@ -4,6 +4,11 @@
   "model": "openai/gpt-5.4",
   "small_model": "github-copilot/gpt-5-mini",
   "mcp": {
+    "mcp_engram": {
+      "command": ["engram", "mcp", "--tools=agent"],
+      "enabled": true,
+      "type": "local"
+    },
     "mcp_serena": {
       "enabled": true,
       "type": "local",
