@@ -1,12 +1,12 @@
-# GitHub Project Operations Specification
+# Linear Project Operations Specification
 
 Version: 2.0
 Status: Normative
 
 ## 1) Tracking Model
 
-- Task-only board model on GitHub Project
-- Work is tracked as GitHub Issues linked to the project board
+- Task-only board model on Linear Project
+- Work is tracked as Linear issues linked to the project board
 - Draft project items are not allowed
 
 ## 2) Required Task Template
@@ -16,7 +16,7 @@ Every task item MUST include:
 - Scope and boundaries
 - Acceptance criteria
 - Test plan
-- Depends On (GitHub issue references like `#1`, `#3`)
+- Depends On (Linear issue references like `PBW-1`, `PBW-3`)
 - Rollout notes
 - Rollback notes
 - T-shirt estimate
@@ -41,10 +41,10 @@ Rules:
 
 ## 4) PR and Task Linkage
 
-- PRs SHOULD reference one or more project task issues
-- Issues are created first, then added to the project board
-- Issue titles MUST NOT include custom task IDs (no `PBW-001` title prefix)
-- Branch naming MUST be `feature/PBW-[id]-[title]` where `[id]` is the GitHub issue number
+- PRs SHOULD reference one or more Linear task issues
+- Issues are created first, then added to the Linear project board
+- Issue titles SHOULD use normal task titles; the Linear identifier already provides the task ID
+- Branch naming MUST be `feature/[linear-issue-id]-[title]` using the full Linear issue identifier, for example `feature/PBW-123-score-engine`
 
 ## 5) Review Policy
 

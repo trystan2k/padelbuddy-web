@@ -68,7 +68,7 @@ Backlog rules:
 
 - Use plain task titles (no custom ID prefix in titles).
 - Dependencies must use GitHub issue references format in task templates: `Depends On: #<issue>`.
-- Branch convention in docs and output: `feature/PBW-[id]-[title]` where `[id]` is the GitHub issue number.
+- Branch convention in docs and output: `feature/[issue-id]-[title]` where `[issue-id]` is the full issue identifier (e.g., `PBW-030`).
 - Include estimate, risk, acceptance criteria, and dependencies.
 
 Return the backlog as:

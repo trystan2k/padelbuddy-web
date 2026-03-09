@@ -19,7 +19,8 @@
 - DO NOT add comments unless explicitly asked
 
 ## Git Conventions
-- **Branch naming**: `feature/PBW-[id]-[title]` (id is Linear issue number)
+
+- **Branch naming**: `feature/[linear-issue-id]-[title]` (linear-issue-id is full Linear issue identifier)
 - **Commit format**: `[type]: [description]`
   - Types: feat, fix, docs, style, refactor, test, chore
 

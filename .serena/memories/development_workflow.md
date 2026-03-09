@@ -3,7 +3,7 @@
 ## 1. Task Intake
 1. Check Linear for task dependencies
 2. If dependencies exist, verify they're implemented
-3. Create feature branch: `feature/PBW-[id]-[title]`
+3. Create feature branch: `feature/[linear-issue-id]-[title]`
 
 ## 2. Implementation
 1. Follow code conventions (see `code_style_conventions.md`)

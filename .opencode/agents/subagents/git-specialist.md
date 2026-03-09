@@ -328,7 +328,7 @@ fi
 ```bash
 set -e
 TITLE="feat: add QA controls with Husky, Biome, and Commitlint"
-BRANCH="feature/PAD-030-qa-controls-husky-biome-commitlint"
+BRANCH="feature/PBW-030-qa-controls-husky-biome-commitlint"
 BASE="main"
 # Use heredoc for exact body
 BODY=$(cat <<'EOF'

@@ -19,7 +19,7 @@ Status: Operational
 For owner-flagged feature milestones, additionally:
 - Full manual hardware regression complete
 - At least one known-good presenter validated
-- Task owner records validation result in the linked GitHub issue
+- Task owner records validation result in the linked Linear issue
 
 ## 3) Rollback Policy
 

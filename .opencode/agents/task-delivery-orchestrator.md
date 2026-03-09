@@ -113,7 +113,7 @@ Follow these steps in order.
        - If uncommitted changes exist, stash them before branch creation.
        - Create a new feature branch directly from `origin/main`:
         - Use the issue title obtained from Step 1.1 to construct the branch name.
-           - Use the pattern defined in the AGENTS.md file (e.g., `feature/PAD-[id]-[title-slug]`).
+           - Use the pattern defined in the AGENTS.md file (e.g., `feature/[issue-id]-[title-slug]`).
            - One feature branch per task ID.
            - All subtasks of that task use the same branch.
            - If no pattern is found, pause and ask user for naming guidance.

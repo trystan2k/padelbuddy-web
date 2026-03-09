@@ -12,9 +12,9 @@ Status: Normative
 ## 2) Branching and PR Model
 
 - Development model: feature branches + pull requests
-- Branch naming: `feature/PBW-[id]-[title]` where `id` is the GitHub issue number
-- PR MUST link one or more relevant project task issues
-- Project workflow MUST create issues first and then add them to the project board
+- Branch naming: `feature/[linear-issue-id]-[title]` using the full Linear issue identifier, for example `feature/PBW-123-score-engine`
+- PR MUST link one or more relevant Linear task issues
+- Project workflow MUST create Linear issues first and then add them to the project board
 
 Main branch policy:
 - Owner direct push is allowed

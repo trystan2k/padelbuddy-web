@@ -101,7 +101,7 @@ v1 is release-ready only when all are true:
 - Environments: public preview per PR + production
 - Production deploy: automatic on `main` via GitHub Actions to Cloudflare Pages static output
 - Branch model: feature branches + PRs
-- Branch naming: `feature/PBW-[id]-[title]` where `[id]` is the GitHub issue number
+- Branch naming: `feature/[linear-issue-id]-[title]` using the full Linear issue identifier, for example `feature/PBW-123-score-engine`
 - Versioning: Semantic Versioning
 - Changelog: automated from commit history
 

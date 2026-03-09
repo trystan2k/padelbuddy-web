@@ -34,7 +34,7 @@ This project uses Linear for issue tracking and project management. GitHub is us
 
 ## Conventions
 
-- **Branch**: `feature/PBW-[id]-[title]`
+- **Branch**: `feature/[linear-issue-id]-[title]` using the full Linear issue identifier, for example `feature/PBW-123-score-engine`
 - **Commit**: `[type]: [description]` (feat/fix/docs/style/refactor/test/chore)
 - **Indent**: 2 spaces
 - **Files**: snake_case/kebab-case | **Code**: camelCase
