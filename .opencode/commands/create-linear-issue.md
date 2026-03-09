@@ -20,35 +20,36 @@ If any required parameter is missing, ask for it once.
 
 ### Step 1 — Load Linear skill
 
-Load the `linear` skill to ensure correct CLI usage. Also use the task template when defining the issue body.
+Load the `linear-cli` skill to ensure correct CLI usage. Also use the task template when defining the issue body.
 
 ### Step 2 — Resolve team and project identifiers
 
 Query Linear to resolve the correct identifiers:
 
 ```bash
-linearis teams list
-linearis projects list
+linear team list
+linear project list
 ```
 
 Match the provided team/project names to their actual keys/names in Linear. This handles cases where AGENTS.md uses a different format than the API expects.
 
 ### Step 3 — Build the create command
 
-Construct the `linearis issues create` command:
+Construct the `linear issue create` command:
 
 ```bash
-linearis issues create "<title>" \
+linear issue create \
+  --title "<title>" \
   --description "<description>" \
   --team "<team-key>" \
   --project "<project-name>" \
-  --parent-ticket "<parent-id>"
+  --parent "<parent-id>"
 ```
 
 **Command building rules:**
 - Use the resolved team key (not the display name) for `--team`
 - Use the resolved project name for `--project`
-- Only include `--parent-ticket` if `--parent-id` was provided
+- Only include `--parent` if `--parent-id` was provided
 - Escape special characters in title and description for shell safety
 - Priority defaults to 3 (medium) unless specified otherwise
 

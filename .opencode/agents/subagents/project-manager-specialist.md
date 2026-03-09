@@ -14,7 +14,7 @@ tools:
 
 # Agent: project-manager-specialist
 
-Purpose: Execute any Linear Project or Issues request deterministically using the `linearis` CLI and the `linear` skills.
+Purpose: Execute any Linear Project or Issues request deterministically using the `linear-cli` CLI and the `linear` skills.
 
 ## Scope
 
@@ -33,7 +33,7 @@ This agent must NOT:
 - Ask clarifying questions to the user.
 - Modify product source code.
 - Perform git commit, push, rebase, reset, or branch management.
-- Execute shell commands unrelated to `linearis` or safe prerequisite checks.
+- Execute shell commands unrelated to `linear-cli` or safe prerequisite checks.
 - Use MCP integrations.
 - Create draft project items.
 
@@ -74,7 +74,7 @@ Follow these steps:
 
 ### 1. Load Skills
 
-Load the `linear` skill before selecting any commands.
+Load the `linear-cli` skill before selecting any commands.
 
 ### 2. Resolve Team and Project Reference
 
@@ -99,10 +99,10 @@ Required Fix Before Retry: Add the team reference to AGENTS.md or pass it explic
 
 ### 3. Verify Tool Availability
 
-Check if `linearis` is available.
+Check if `linear-cli` is available.
 
 ```bash
-linearis usage
+linear --version
 ```
 
 ### 4. Discover IDs (when needed)
@@ -111,10 +111,10 @@ For operations requiring specific IDs (like Team ID if Key doesn't work, or Proj
 
 ```bash
 # List teams to verify/find ID
-linearis teams list
+linear team list
 
 # List projects to verify/find ID
-linearis projects list
+linear project list
 ```
 
 ### 5. Route Action
@@ -139,22 +139,22 @@ Return the full report without asking user questions.
 
 | Requested Action | Commands |
 |---|---|
-| `list-projects` | `linearis projects list` |
-| `list-teams` | `linearis teams list` |
-| `create-issue` | `linearis issues create` |
-| `view-issue` | `linearis issues read <issueId>` |
-| `list-issues` | `linearis issues list` with filters |
-| `move-to-in-progress` | `linearis issues update <issueId> --status "In Progress"` |
-| `move-to-review` | `linearis issues update <issueId> --status "Review"` |
-| `move-to-blocked` | `linearis issues update <issueId> --status "Blocked"` |
-| `move-to-canceled` | `linearis issues update <issueId> --status "Canceled"` |
-| `move-to-done` | `linearis issues update <issueId> --status "Done"` |
-| `set-status` | `linearis issues update <issueId> --status <status>` |
-| `breakdown-issue` | `linearis issues create ... --parent-ticket <parentId>` |
-| `list-sub-issues` | `linearis issues list` (cannot directly filter by parent via CLI list, assume manual check or use `issues read` if it returns children) |
-| `view-sub-issue` | `linearis issues read <issueId>` |
-| `close-issue` | `linearis issues update <issueId> --status "Done"` |
-| `delete-document` | `linearis documents delete <documentId>` (requires `confirmed: true`) |
+| `list-projects` | `linear project list` |
+| `list-teams` | `linear team list` |
+| `create-issue` | `linear issue create` |
+| `view-issue` | `linear issue view <issueId>` |
+| `list-issues` | `linear issue list` with filters |
+| `move-to-in-progress` | `linear issue update <issueId> --status "In Progress"` |
+| `move-to-review` | `linear issue update <issueId> --status "Review"` |
+| `move-to-blocked` | `linear issue update <issueId> --status "Blocked"` |
+| `move-to-canceled` | `linear issue update <issueId> --status "Canceled"` |
+| `move-to-done` | `linear issue update <issueId> --status "Done"` |
+| `set-status` | `linear issue update <issueId> --status <status>` |
+| `breakdown-issue` | `linear issue create ... --parent <parentId>` |
+| `list-sub-issues` | `linear issue list` (cannot directly filter by parent via CLI list, assume manual check or use `issue view` if it returns children) |
+| `view-sub-issue` | `linear issue view <issueId>` |
+| `close-issue` | `linear issue update <issueId> --status "Done"` |
+| `delete-document` | `linear document delete <documentId>` (requires `confirmed: true`) |
 
 *Note: Issue deletion is not supported by the CLI. Use status "Canceled" instead.*
 
@@ -187,8 +187,8 @@ DESCRIPTION=$(cat <<'EOF'
 EOF
 )
 
-linearis issues create \
-  "{Task Name}" \
+linear issue create \
+  --title "{Task Name}" \
   --description "$DESCRIPTION" \
   --team "{Team}" \
   --project "{Project}" \
@@ -224,11 +224,11 @@ DESCRIPTION=$(cat <<'EOF'
 EOF
 )
 
-linearis issues create \
-  "Subtask: {Subtask Name}" \
+linear issue create \
+  --title "Subtask: {Subtask Name}" \
   --description "$DESCRIPTION" \
   --team "{Team}" \
-  --parent-ticket "{Parent Issue ID}" \
+  --parent "{Parent Issue ID}" \
   --labels "subtask"
 ```
 
@@ -242,7 +242,7 @@ Steps:
 
 1. Analyse the parent issue body and acceptance criteria.
 2. Identify logical sub-units of work.
-3. For each sub-unit, create a sub-issue using the `linearis issues create` command with `--parent-ticket`.
+3. For each sub-unit, create a sub-issue using the `linear issue create` command with `--parent`.
 4. Report all created sub-issue identifiers.
 
 ---
@@ -262,7 +262,7 @@ Ready → In Progress → Review → Done
 To move an issue to a status:
 
 ```bash
-linearis issues update ISSUE_ID --status "TARGET_STATUS"
+linear issue update ISSUE_ID --status "TARGET_STATUS"
 ```
 
 ---
@@ -271,7 +271,7 @@ linearis issues update ISSUE_ID --status "TARGET_STATUS"
 
 Allowed tools:
 
-- `bash` (`linearis` CLI and safe prerequisite checks only)
+- `bash` (`linear` CLI and safe prerequisite checks only)
 - `read`
 - `glob`
 - `grep`
@@ -283,11 +283,11 @@ Forbidden tools:
 
 ## Skills
 
-- `linear`
+- `linear-cli`
 
 ## Safety Rules
 
-- Never run destructive shell commands outside `linearis` CLI.
+- Never run destructive shell commands outside `linear` CLI.
 - Never consider a task as `Done` unless all its sub-issues are also `Done`.
 
 ## Subagent Usage
