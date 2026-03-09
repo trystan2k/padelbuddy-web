@@ -1,0 +1,241 @@
+.page {
+  min-height: 100vh;
+  padding: clamp(1rem, 0.6rem + 2vw, 2rem);
+}
+
+.shell {
+  width: min(72rem, 100%);
+  margin: 0 auto;
+  display: grid;
+  gap: 1.25rem;
+}
+
+.hero,
+.panel {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 1.75rem;
+  background:
+    linear-gradient(145deg, rgb(255 255 255 / 0.88), rgb(245 240 232 / 0.78)),
+    var(--color-surface-elevated);
+  box-shadow: var(--shadow-panel);
+  backdrop-filter: blur(16px);
+}
+
+.hero {
+  padding: clamp(1.5rem, 1.1rem + 2vw, 3rem);
+  display: grid;
+  gap: 1.5rem;
+}
+
+.hero::after,
+.panel::after {
+  content: "";
+  position: absolute;
+  inset: auto auto -3rem -3rem;
+  width: 11rem;
+  aspect-ratio: 1;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgb(231 109 78 / 0.22), transparent 68%);
+  pointer-events: none;
+}
+
+.heroCopy {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.eyebrow,
+.sectionLabel,
+.dialogEyebrow {
+  margin: 0;
+  font-size: 0.8rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-accent-strong);
+}
+
+.title,
+.sectionTitle,
+.dialogTitle,
+.cardTitle {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  color: var(--color-ink-strong);
+}
+
+.title {
+  max-width: 10ch;
+  font-size: clamp(2.8rem, 2rem + 4vw, 5rem);
+  line-height: 0.94;
+}
+
+.lead,
+.sectionText,
+.cardText,
+.dialogDescription {
+  margin: 0;
+  max-width: 42rem;
+  color: var(--color-ink-muted);
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+.heroFooter {
+  display: grid;
+  gap: 1rem;
+  align-items: start;
+}
+
+.statusPills {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+}
+
+.statusPill {
+  min-height: 3rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.65rem 1rem;
+  border: 1px solid var(--color-border-soft);
+  border-radius: 999px;
+  background: rgb(247 243 236 / 0.82);
+  color: var(--color-ink-strong);
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+.primaryButton,
+.secondaryButton {
+  min-height: 3rem;
+  padding: 0.8rem 1.2rem;
+  border-radius: 999px;
+  border: 0;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    background-color 160ms ease,
+    color 160ms ease;
+}
+
+.primaryButton {
+  justify-self: start;
+  background: linear-gradient(
+    135deg,
+    var(--color-accent-strong),
+    var(--color-accent)
+  );
+  color: var(--color-surface);
+  box-shadow: 0 1rem 2.5rem rgb(181 72 46 / 0.24);
+}
+
+.primaryButton:hover,
+.secondaryButton:hover {
+  transform: translateY(-1px);
+}
+
+.secondaryButton {
+  background: var(--color-surface);
+  color: var(--color-ink-strong);
+  border: 1px solid var(--color-border-soft);
+}
+
+.panel {
+  padding: clamp(1.25rem, 1rem + 1.5vw, 2rem);
+  display: grid;
+  gap: 1.25rem;
+}
+
+.panelHeader {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.sectionTitle {
+  font-size: clamp(1.9rem, 1.5rem + 1.5vw, 2.6rem);
+}
+
+.foundationGrid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 1rem;
+}
+
+.foundationCard {
+  padding: 1.1rem;
+  border: 1px solid var(--color-border-soft);
+  border-radius: 1.25rem;
+  background: linear-gradient(
+    180deg,
+    rgb(255 255 255 / 0.82),
+    rgb(243 238 229 / 0.88)
+  );
+  display: grid;
+  gap: 0.5rem;
+}
+
+.cardTitle {
+  font-size: 1.25rem;
+  line-height: 1.05;
+}
+
+.dialogBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: rgb(25 29 24 / 0.52);
+  backdrop-filter: blur(8px);
+}
+
+.dialogPopup {
+  position: fixed;
+  inset: auto 1rem 1rem;
+  z-index: 50;
+  display: grid;
+  gap: 0.85rem;
+  padding: 1.25rem;
+  border-radius: 1.5rem;
+  border: 1px solid var(--color-border-strong);
+  background: linear-gradient(180deg, rgb(255 252 248), rgb(243 236 226));
+  box-shadow: 0 1.5rem 4rem rgb(25 29 24 / 0.2);
+}
+
+.dialogTitle {
+  font-size: 1.6rem;
+}
+
+@media (min-width: 48rem) {
+  .shell {
+    gap: 1.5rem;
+  }
+
+  .heroFooter {
+    grid-template-columns: 1fr auto;
+    gap: 1.5rem;
+    align-items: end;
+  }
+
+  .foundationGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .dialogPopup {
+    inset: 50% auto auto 50%;
+    width: min(30rem, calc(100vw - 2rem));
+    transform: translate(-50%, -50%);
+    padding: 1.5rem;
+  }
+}

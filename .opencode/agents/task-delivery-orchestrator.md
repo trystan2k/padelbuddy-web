@@ -137,8 +137,10 @@ Follow these steps in order.
    - **Stop timer** and record Planning phase time.
 
 3. Status Update - Start
-   - Ask `project-manager-specialist` to move current issue or sub-issue to `In Progress` on the project board.
+   - Ask `project-manager-specialist` to move the parent issue to `In Progress` on the project board before any implementation starts.
+   - Explicitly verify the parent issue state after the move and do not start implementation until the verification confirms `In Progress`.
    - Before each new sub-issue, ask `project-manager-specialist` to move the new sub-issue to `In Progress`.
+   - Explicitly verify each sub-issue state after the move and do not start work on that sub-issue until the verification confirms `In Progress`.
 
 4. Implementation
    - **Start timer** for Implementation phase.
@@ -196,7 +198,9 @@ Follow these steps in order.
     - **Stop timer** and record Commit/Push phase time.
 
 11. Issue Status Update - Completion
-    - Ask `project-manager-specialist` to move completed issue or sub-issues to `Review`.
+    - As soon as a sub-issue finishes implementation, passes QA, and has an acceptable review outcome, ask `project-manager-specialist` to move that sub-issue to `Review` before presenting commit approval.
+    - As soon as the parent issue's implementation scope is complete and all delivered sub-issues are in `Review`, ask `project-manager-specialist` to move the parent issue to `Review` before presenting commit approval.
+    - Do not leave any completed task or sub-issue in `In Progress` once it is ready for commit/review.
 
 12. Completion Notification
     - Calculate total time by summing all phase times.

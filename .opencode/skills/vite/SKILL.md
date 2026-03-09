@@ -40,6 +40,7 @@ Vite is a next-generation frontend build tool with fast dev server (native ESM +
 |-------|-------------|-----------|
 | Environment API | Vite 6+ multi-environment support, custom runtimes | [environment-api](references/environment-api.md) |
 | Rolldown Migration | Vite 8 changes: Rolldown bundler, Oxc transformer, config migration | [rolldown-migration](references/rolldown-migration.md) |
+| TypeScript Alias Path | Prefer vite-tsconfig-paths over duplicating TypeScript path aliases in Vite config | [tsconfig-path-aliases](references/tsconfig-path-aliases.md) |
 
 ## Quick Reference
 

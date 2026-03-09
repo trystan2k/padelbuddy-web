@@ -21,25 +21,20 @@ pnpm dev
 Automated tests use Vitest and stay aligned with the app's Vite and TanStack Start configuration through `vitest.config.ts`.
 
 - `vitest.config.ts` merges the main `vite.config.ts` and defines separate `unit` and `browser` projects.
-- The `unit` project runs module tests in the Node environment.
-- The `browser` project runs browser-mode component tests through the Playwright provider in headless Chromium.
-- Shared setup lives in `test/setup`, and shared helpers such as `render-component.tsx` live in `test/utils`.
-- `package.json` currently provides `pnpm test` for the full suite with coverage and `pnpm test:watch` for local watch runs; project-specific and explicit coverage runs use direct Vitest commands.
-
-If this is the first browser-mode run on your machine, install Chromium once:
-
-```bash
-pnpm exec playwright install chromium
-```
+- The `unit` project runs the current smoke-test baseline in the Node environment.
+- The `browser` project is scaffolded for future Playwright-backed component tests but remains disabled until browser-mode provider dependencies are added intentionally.
+- Shared setup lives in `test/setup`.
+- `package.json` provides `pnpm test` for the current suite and `pnpm test:watch` for local watch runs; project-specific and explicit coverage runs use direct Vitest commands.
 
 Run tests locally with:
 
 ```bash
 pnpm test
 pnpm vitest run --project unit
-pnpm vitest run --project browser
-pnpm vitest run --project unit --project browser --coverage
+pnpm vitest run --project unit --coverage
 ```
+
+Enable browser-mode tests later, once the provider dependencies are in place, before using `pnpm vitest run --project browser`.
 
 For the full local verification flow used in this repo:
 
