@@ -32,12 +32,5 @@
     "vite.config.ts",
     "vitest.config.ts"
   ],
-  "exclude": [
-    "dist",
-    "dist-ssr",
-    "coverage",
-    "node_modules",
-    ".tanstack",
-    ".vinxi"
-  ]
+  "exclude": ["dist", "dist-ssr", "coverage", "node_modules", ".tanstack", ".vinxi"]
 }

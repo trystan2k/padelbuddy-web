@@ -1,4 +1,4 @@
-# AGENTS.md – Padel Buddy Web 
+# AGENTS.md – Padel Buddy Web
 
 ## Agent
 

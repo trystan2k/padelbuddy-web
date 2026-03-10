@@ -31,7 +31,7 @@
 
 .hero::after,
 .panel::after {
-  content: "";
+  content: '';
   position: absolute;
   inset: auto auto -3rem -3rem;
   width: 11rem;
@@ -131,11 +131,7 @@
 
 .primaryButton {
   justify-self: start;
-  background: linear-gradient(
-    135deg,
-    var(--color-accent-strong),
-    var(--color-accent)
-  );
+  background: linear-gradient(135deg, var(--color-accent-strong), var(--color-accent));
   color: var(--color-surface);
   box-shadow: 0 1rem 2.5rem rgb(181 72 46 / 0.24);
 }
@@ -178,11 +174,7 @@
   padding: 1.1rem;
   border: 1px solid var(--color-border-soft);
   border-radius: 1.25rem;
-  background: linear-gradient(
-    180deg,
-    rgb(255 255 255 / 0.82),
-    rgb(243 238 229 / 0.88)
-  );
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.82), rgb(243 238 229 / 0.88));
   display: grid;
   gap: 0.5rem;
 }

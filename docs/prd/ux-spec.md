@@ -12,6 +12,7 @@ Status: Normative
 ## 2) Setup Screen Requirements
 
 Setup MUST include:
+
 - Team names
 - Match format (1/3/5)
 - Initial server
@@ -35,16 +36,19 @@ Setup MUST include:
 Input behavior is unified across all methods.
 
 Remote + keyboard aliases:
+
 - Team 1 score: `ArrowLeft` / `PageUp`
 - Team 2 score: `ArrowRight` / `PageDown`
 - Undo: `Backspace` / `Escape` (and supported presenter aliases)
 
 Touch:
+
 - Tap Team 1 score area -> +1 Team 1 point
 - Tap Team 2 score area -> +1 Team 2 point
 - Tap Undo -> undo last scoring action
 
 Debounce:
+
 - Fixed 300ms debounce across scoring inputs.
 
 ## 5) Audio and Speech
@@ -76,6 +80,7 @@ Debounce:
 ## 8) Accessibility Baseline
 
 Core flows MUST implement:
+
 - Semantic controls and labels
 - Visible keyboard focus states
 - Sufficient contrast for core UI states

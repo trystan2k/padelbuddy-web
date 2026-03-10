@@ -1,11 +1,6 @@
 import '@/styles.css'
 
-import {
-  createRootRoute,
-  HeadContent,
-  Outlet,
-  Scripts
-} from '@tanstack/react-router'
+import { createRootRoute, HeadContent, Outlet, Scripts } from '@tanstack/react-router'
 
 import { NotFoundPage } from '@/components/NotFoundPage/NotFoundPage'
 
@@ -24,8 +19,7 @@ export const Route = createRootRoute({
       },
       {
         name: 'description',
-        content:
-          'Client-only TanStack Start foundation for the Padel Buddy score tracker.'
+        content: 'Client-only TanStack Start foundation for the Padel Buddy score tracker.'
       }
     ]
   }),
@@ -35,7 +29,7 @@ export const Route = createRootRoute({
 
 function RootDocument() {
   return (
-    <html lang='en'>
+    <html lang="en">
       <head>
         <HeadContent />
       </head>

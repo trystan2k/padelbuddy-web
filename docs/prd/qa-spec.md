@@ -44,6 +44,7 @@ Status: Normative
 ## 6) Docs-Only PR Exception
 
 If PR changes only `docs/**` and markdown meta files:
+
 - Required checks reduce to docs/lint validation
 - Unit and E2E checks are not required for merge
 
@@ -54,6 +55,7 @@ Detection is path-based automation.
 Milestones are flagged manually by owner.
 
 At each flagged feature milestone, task owner MUST perform:
+
 - Full manual regression for presenter remote flows
 - Validation on at least one known-good presenter device
 - PWA install validation on target mobile device

@@ -1,33 +1,30 @@
 {
   "name": "padelbuddy-web",
   "version": "0.0.1",
-  "description": "A mobile-first, client-only Padel score tracker optimized for courtside use with Bluetooth remote and touch controls.",
   "private": true,
+  "description": "A mobile-first, client-only Padel score tracker optimized for courtside use with Bluetooth remote and touch controls.",
+  "keywords": [
+    "mobile",
+    "padel",
+    "score",
+    "sports",
+    "tennis",
+    "tracker",
+    "web"
+  ],
   "type": "module",
-  "packageManager": "pnpm@10.30.3",
-  "engines": {
-    "node": "^24.14.0",
-    "pnpm": "^10.30.3"
-  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "lint": "biome check .",
-    "lint:fix": "biome check --write .",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
+    "format": "oxfmt .",
+    "format:check": "oxfmt --check .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "complete-check": "pnpm typecheck && pnpm lint:fix && pnpm test && pnpm build"
+    "complete-check": "pnpm typecheck && pnpm lint:fix && pnpm format && pnpm test && pnpm build"
   },
-  "keywords": [
-    "padel",
-    "score",
-    "tracker",
-    "mobile",
-    "web",
-    "sports",
-    "tennis"
-  ],
   "dependencies": {
     "@base-ui/react": "~1.2.0",
     "@tanstack/react-router": "~1.166.3",
@@ -36,15 +33,22 @@
     "react-dom": "~19.2.4"
   },
   "devDependencies": {
-    "@biomejs/biome": "~2.4.6",
     "@types/node": "~24.12.0",
     "@types/react": "~19.2.14",
     "@types/react-dom": "~19.2.3",
     "@vitejs/plugin-react": "~5.1.4",
+    "oxfmt": "~0.37.0",
+    "oxlint": "~1.52.0",
+    "oxlint-tsgolint": "~0.16.0",
     "typescript": "~5.9.3",
     "vite": "~7.3.1",
     "vite-plugin-killer-instincts": "~1.0.0",
     "vite-tsconfig-paths": "~6.1.1",
     "vitest": "~4.0.18"
-  }
+  },
+  "engines": {
+    "node": "^24.14.0",
+    "pnpm": "^10.32.0"
+  },
+  "packageManager": "pnpm@10.32.0"
 }

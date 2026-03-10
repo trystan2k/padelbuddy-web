@@ -18,10 +18,7 @@ export default mergeConfig(
             name: 'unit',
             environment: 'node',
             include: ['test/**/*.test.ts', 'test/**/*.test.tsx'],
-            exclude: [
-              'test/**/*.browser.test.ts',
-              'test/**/*.browser.test.tsx'
-            ],
+            exclude: ['test/**/*.browser.test.ts', 'test/**/*.browser.test.tsx'],
             setupFiles: ['./test/setup/shared.ts']
           }
         },
@@ -29,10 +26,7 @@ export default mergeConfig(
           extends: true,
           test: {
             name: 'browser',
-            include: [
-              'test/**/*.browser.test.ts',
-              'test/**/*.browser.test.tsx'
-            ],
+            include: ['test/**/*.browser.test.ts', 'test/**/*.browser.test.tsx'],
             setupFiles: ['./test/setup/browser.ts'],
             browser: {
               enabled: false,

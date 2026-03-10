@@ -1,7 +1,7 @@
 :root {
   color-scheme: light;
-  --font-body: "Avenir Next", "Segoe UI", sans-serif;
-  --font-display: "Iowan Old Style", "Palatino Linotype", serif;
+  --font-body: 'Avenir Next', 'Segoe UI', sans-serif;
+  --font-display: 'Iowan Old Style', 'Palatino Linotype', serif;
   --color-ink: #243028;
   --color-ink-strong: #182119;
   --color-ink-muted: #516056;
@@ -36,7 +36,7 @@ body {
 }
 
 body::before {
-  content: "";
+  content: '';
   position: fixed;
   inset: 0;
   pointer-events: none;

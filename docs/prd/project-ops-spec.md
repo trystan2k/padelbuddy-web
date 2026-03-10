@@ -12,6 +12,7 @@ Status: Normative
 ## 2) Required Task Template
 
 Every task item MUST include:
+
 - Problem/context
 - Scope and boundaries
 - Acceptance criteria
@@ -34,6 +35,7 @@ Required statuses:
 - Canceled
 
 Rules:
+
 - Status updates are manual
 - Blocked status MUST include blocker reason
 - Review status means the PR is ready for review

@@ -7,6 +7,7 @@ Status: Draft for implementation planning
 ## 1) Product Summary
 
 Padel Buddy Web is a mobile-first, client-only web app for live padel score tracking with dual input methods:
+
 - Bluetooth HID presenter remote
 - Touch/click controls
 
@@ -15,6 +16,7 @@ The product is optimized for courtside use, supports voice announcements, full m
 ## 2) Release Scope (v1)
 
 v1 includes the full product scope in this PRD (not phased MVP), including:
+
 - Setup, live scoring, undo, persistence, winner flow, endless mode
 - PWA installability and app-shell offline operation
 - i18n UI (English, Portuguese, Spanish)
@@ -62,6 +64,7 @@ v1 includes the full product scope in this PRD (not phased MVP), including:
 - FR-08 Resume flow MUST prompt on startup when recoverable active state exists (Resume emphasized).
 
 Detailed functional contracts are defined in:
+
 - `docs/prd/scoring-spec.md`
 - `docs/prd/ux-spec.md`
 
@@ -78,6 +81,7 @@ Detailed functional contracts are defined in:
 - NFR-09 Logging in production MUST be errors-only.
 
 Detailed NFR/testability contracts are defined in:
+
 - `docs/prd/qa-spec.md`
 - `docs/prd/devops-spec.md`
 
@@ -90,6 +94,7 @@ Detailed NFR/testability contracts are defined in:
 ## 9) Acceptance Gates
 
 v1 is release-ready only when all are true:
+
 - AG-01 All required CI checks pass
 - AG-02 Unit coverage is >=80% for both lines and branches
 - AG-03 Required E2E critical-path suite passes on mobile profiles in Chromium + WebKit
@@ -106,6 +111,7 @@ v1 is release-ready only when all are true:
 - Changelog: automated from commit history
 
 Authoritative process specs:
+
 - `docs/prd/devops-spec.md`
 - `docs/prd/project-ops-spec.md`
 - `docs/prd/release-incident-runbook.md`

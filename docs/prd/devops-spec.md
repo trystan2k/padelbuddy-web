@@ -17,6 +17,7 @@ Status: Normative
 - Project workflow MUST create Linear issues first and then add them to the project board
 
 Main branch policy:
+
 - Owner direct push is allowed
 - Standard path remains PR flow with checks
 
@@ -31,14 +32,17 @@ Main branch policy:
 ## 4) Required CI Policy
 
 Code PR required checks:
+
 - Lint
 - Unit tests (coverage gate)
 - E2E critical suite (mobile profiles, Chromium + WebKit)
 
 CI behavior:
+
 - Cancel outdated in-progress runs for same PR on new commits
 
 Docs-only exception:
+
 - Path-based detection for `docs/**` + markdown meta files
 - Run docs/lint checks only
 

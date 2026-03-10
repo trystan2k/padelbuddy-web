@@ -17,6 +17,7 @@ Status: Operational
 - No unresolved blocking defects in linked tasks
 
 For owner-flagged feature milestones, additionally:
+
 - Full manual hardware regression complete
 - At least one known-good presenter validated
 - Task owner records validation result in the linked Linear issue

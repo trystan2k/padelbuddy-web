@@ -1,6 +1,6 @@
 ---
 name: lint-staged
-description: "Use when configuring lint-staged to run linters only on git-staged files as part of a pre-commit hook. Covers .lintstagedrc.json setup, file glob patterns, tool integration (Biome, ESLint, Prettier), and performance tuning."
+description: "Use when configuring lint-staged to run linters only on git-staged files as part of a pre-commit hook. Covers .lintstagedrc.json setup, file glob patterns, tool integration (Oxlint, Oxfmt, Biome, ESLint, Prettier), and performance tuning."
 license: MIT
 compatibility: OpenCode
 metadata:
@@ -16,7 +16,7 @@ metadata:
 
 ## Mission
 
-Configure [lint-staged](https://github.com/lint-staged/lint-staged) to run linters and formatters **only on git-staged files**, making pre-commit hooks fast and focused regardless of project size. Integrate cleanly with Husky, Biome, ESLint, and Prettier.
+Configure [lint-staged](https://github.com/lint-staged/lint-staged) to run linters and formatters **only on git-staged files**, making pre-commit hooks fast and focused regardless of project size. Integrate cleanly with Husky, Oxlint, Oxfmt, Biome, ESLint, and Prettier.
 
 ---
 
@@ -27,7 +27,7 @@ Activate this skill for any of the following:
 - Adding lint-staged to a project's pre-commit workflow
 - Writing or tuning `.lintstagedrc.json` (or equivalent config)
 - Debugging lint-staged not running or running on wrong files
-- Configuring lint-staged with Biome, ESLint, or Prettier
+- Configuring lint-staged with Oxlint, Oxfmt, Biome, ESLint, or Prettier, according to project needs
 - Handling edge cases: JSON files, generated files, monorepos
 - Tuning performance (concurrent tasks, shell commands)
 
@@ -107,7 +107,23 @@ Commands run **sequentially** by default. Use `concurrent: true` (JS config only
 
 ## Integration Recipes
 
-### With Biome (recommended)
+### With Oxlint
+
+```json
+{
+  "*.{js,jsx,ts,tsx,mjs,cjs}": "oxlint --fix"
+}
+```
+
+### With Oxfmt
+
+```json
+{
+  "*": "oxfmt --no-error-on-unmatched-pattern"
+}
+```
+
+### With Biome
 
 ```json
 {
@@ -175,6 +191,8 @@ That's it. lint-staged reads its config, finds staged files matching each glob, 
 
 | Flag | Purpose |
 |------|---------|
+| `--fix` (Oxlint) | Auto-fix lint issues |
+| `--no-error-on-unmatched-pattern` (Oxfmt) | Don't error if no files match Oxfmt's include patterns |
 | `--no-errors-on-unmatched` (Biome) | Don't error if no files match Biome's include patterns |
 | `--files-ignore-unknown=true` (Biome) | Don't error on unknown file types |
 | `--fix` (ESLint) | Auto-fix lint issues |
@@ -248,7 +266,9 @@ lint-staged re-stages modified files automatically. If this is not happening:
 - [ ] Config file created (`.lintstagedrc.json` recommended)
 - [ ] Glob patterns match the file types in the project
 - [ ] Commands include auto-fix flags (`--write`, `--fix`)
-- [ ] Biome commands include `--no-errors-on-unmatched --files-ignore-unknown=true`
+- [ ] Biome commands include `--no-errors-on-unmatched --files-ignore-unknown=true` (if project uses Biome)
+- [ ] Oxfmt command includes `--no-error-on-unmatched-pattern` (if project uses Oxfmt)
+- [ ] Oxlint command includes `--fix` (if project uses Oxlint)
 - [ ] Husky `pre-commit` hook contains `npx lint-staged`
 - [ ] Tested manually: `npx lint-staged` runs without error on a staged file
 - [ ] Tested end-to-end: `git commit` triggers the hook and auto-fixes are re-staged

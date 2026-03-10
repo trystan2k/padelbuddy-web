@@ -10,14 +10,14 @@ Status: Normative
 
 ## 2) Setup Options
 
-| Option | Values | Default | Locking |
-| --- | --- | --- | --- |
-| Match format | Best of 1/3/5 | Best of 3 | Locked after match start |
-| Game mode | Advantage / Golden Point | Advantage | Locked after match start |
-| Initial server | Team 1 / Team 2 | Team 1 | Locked after match start |
-| Deciding-set super tiebreak | On / Off | Off | Locked after match start |
-| Best-of-1 deciding behavior (conditional) | Full set / Super tiebreak decider | Full set | Inline setup field; locked after start |
-| Side-switch prompts | On / Off | Off | May remain toggleable in match |
+| Option                                    | Values                            | Default   | Locking                                |
+| ----------------------------------------- | --------------------------------- | --------- | -------------------------------------- |
+| Match format                              | Best of 1/3/5                     | Best of 3 | Locked after match start               |
+| Game mode                                 | Advantage / Golden Point          | Advantage | Locked after match start               |
+| Initial server                            | Team 1 / Team 2                   | Team 1    | Locked after match start               |
+| Deciding-set super tiebreak               | On / Off                          | Off       | Locked after match start               |
+| Best-of-1 deciding behavior (conditional) | Full set / Super tiebreak decider | Full set  | Inline setup field; locked after start |
+| Side-switch prompts                       | On / Off                          | Off       | May remain toggleable in match         |
 
 ## 3) Core Scoring Rules
 
@@ -46,6 +46,7 @@ Status: Normative
 ## 6) Side-Switch Guidance (Optional)
 
 If enabled:
+
 - SS-01 Prompt side switch after odd total games in each set.
 - SS-02 During tiebreaks, prompt every 6 points.
 - SS-03 Prompts are subtle non-blocking banners (never blocking scoring actions).
