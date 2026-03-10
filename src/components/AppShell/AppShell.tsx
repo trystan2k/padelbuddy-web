@@ -1,29 +1,29 @@
-import { Dialog } from "@base-ui/react/dialog"
+import { Dialog } from '@base-ui/react/dialog'
 
-import styles from "./AppShell.module.css"
+import styles from './AppShell.module.css'
 
 const foundationItems = [
   {
-    title: "TanStack Start shell",
+    title: 'TanStack Start shell',
     detail:
-      "Route generation and the client-only bootstrap are already carrying the app frame.",
+      'Route generation and the client-only bootstrap are already carrying the app frame.'
   },
   {
-    title: "Shared design tokens",
+    title: 'Shared design tokens',
     detail:
-      "Global variables now define the spacing, color, typography, and focus baseline for future UI work.",
+      'Global variables now define the spacing, color, typography, and focus baseline for future UI work.'
   },
   {
-    title: "Scoped component styling",
+    title: 'Scoped component styling',
     detail:
-      "CSS Modules keep shell presentation isolated while the app grows into new screens and controls.",
-  },
+      'CSS Modules keep shell presentation isolated while the app grows into new screens and controls.'
+  }
 ] as const
 
 const statusPills = [
-  "Client-only",
-  "Mobile-ready",
-  "Accessible baseline",
+  'Client-only',
+  'Mobile-ready',
+  'Accessible baseline'
 ] as const
 
 export function AppShell() {
@@ -42,7 +42,7 @@ export function AppShell() {
           </div>
 
           <div className={styles.heroFooter}>
-            <ul className={styles.statusPills} aria-label="Foundation status">
+            <ul className={styles.statusPills} aria-label='Foundation status'>
               {statusPills.map((pill) => (
                 <li className={styles.statusPill} key={pill}>
                   {pill}
@@ -75,10 +75,10 @@ export function AppShell() {
           </div>
         </header>
 
-        <section className={styles.panel} aria-labelledby="foundation-heading">
+        <section className={styles.panel} aria-labelledby='foundation-heading'>
           <div className={styles.panelHeader}>
             <p className={styles.sectionLabel}>Styling foundation</p>
-            <h2 className={styles.sectionTitle} id="foundation-heading">
+            <h2 className={styles.sectionTitle} id='foundation-heading'>
               Bootstrap status
             </h2>
             <p className={styles.sectionText}>

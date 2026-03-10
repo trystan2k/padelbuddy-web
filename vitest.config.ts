@@ -1,47 +1,47 @@
-import { mergeConfig } from "vite"
-import { defineConfig } from "vitest/config"
+import { mergeConfig } from 'vite'
+import { defineConfig } from 'vitest/config'
 
-import viteConfig from "./vite.config"
+import viteConfig from './vite.config'
 
 export default mergeConfig(
   viteConfig,
   defineConfig({
     test: {
       coverage: {
-        provider: "v8",
-        reporter: ["text", "html"],
+        provider: 'v8',
+        reporter: ['text', 'html']
       },
       projects: [
         {
           extends: true,
           test: {
-            name: "unit",
-            environment: "node",
-            include: ["test/**/*.test.ts", "test/**/*.test.tsx"],
+            name: 'unit',
+            environment: 'node',
+            include: ['test/**/*.test.ts', 'test/**/*.test.tsx'],
             exclude: [
-              "test/**/*.browser.test.ts",
-              "test/**/*.browser.test.tsx",
+              'test/**/*.browser.test.ts',
+              'test/**/*.browser.test.tsx'
             ],
-            setupFiles: ["./test/setup/shared.ts"],
-          },
+            setupFiles: ['./test/setup/shared.ts']
+          }
         },
         {
           extends: true,
           test: {
-            name: "browser",
+            name: 'browser',
             include: [
-              "test/**/*.browser.test.ts",
-              "test/**/*.browser.test.tsx",
+              'test/**/*.browser.test.ts',
+              'test/**/*.browser.test.tsx'
             ],
-            setupFiles: ["./test/setup/browser.ts"],
+            setupFiles: ['./test/setup/browser.ts'],
             browser: {
               enabled: false,
               headless: true,
-              instances: [{ browser: "chromium" }],
-            },
-          },
-        },
-      ],
-    },
-  }),
+              instances: [{ browser: 'chromium' }]
+            }
+          }
+        }
+      ]
+    }
+  })
 )

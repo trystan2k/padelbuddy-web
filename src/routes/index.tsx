@@ -1,9 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router"
+import { createFileRoute } from '@tanstack/react-router'
 
-import { AppShell } from "@/components/AppShell"
+import { AppShell } from '@/components/AppShell/AppShell'
 
-export const Route = createFileRoute("/")({
-  component: HomeRoute,
+export const Route = createFileRoute('/')({
+  component: HomeRoute
 })
 
 function HomeRoute() {

@@ -1,4 +1,4 @@
-export const matchFormats = ["best-of-3", "best-of-5"] as const
+export const matchFormats = ['best-of-3', 'best-of-5'] as const
 
 export type MatchFormat = (typeof matchFormats)[number]
 

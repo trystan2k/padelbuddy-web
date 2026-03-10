@@ -1,41 +1,41 @@
-import "@/styles.css"
+import '@/styles.css'
 
 import {
   createRootRoute,
   HeadContent,
   Outlet,
-  Scripts,
-} from "@tanstack/react-router"
+  Scripts
+} from '@tanstack/react-router'
 
-import { NotFoundPage } from "@/components/NotFoundPage"
+import { NotFoundPage } from '@/components/NotFoundPage/NotFoundPage'
 
 export const Route = createRootRoute({
   head: () => ({
     meta: [
       {
-        charSet: "utf-8",
+        charSet: 'utf-8'
       },
       {
-        name: "viewport",
-        content: "width=device-width, initial-scale=1",
+        name: 'viewport',
+        content: 'width=device-width, initial-scale=1'
       },
       {
-        title: "Padel Buddy",
+        title: 'Padel Buddy'
       },
       {
-        name: "description",
+        name: 'description',
         content:
-          "Client-only TanStack Start foundation for the Padel Buddy score tracker.",
-      },
-    ],
+          'Client-only TanStack Start foundation for the Padel Buddy score tracker.'
+      }
+    ]
   }),
   component: RootDocument,
-  notFoundComponent: NotFoundPage,
+  notFoundComponent: NotFoundPage
 })
 
 function RootDocument() {
   return (
-    <html lang="en">
+    <html lang='en'>
       <head>
         <HeadContent />
       </head>

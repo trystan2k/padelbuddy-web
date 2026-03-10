@@ -14,7 +14,8 @@
       "!.opencode",
       "!.tanstack",
       "!.vinxi",
-      "!src/routeTree.gen.ts",
+      "!**/*.gen.ts",
+      "!**/*.gen.tsx",
       "!node_modules"
     ]
   },
@@ -32,9 +33,10 @@
   },
   "javascript": {
     "formatter": {
-      "quoteStyle": "double",
-      "jsxQuoteStyle": "double",
-      "semicolons": "asNeeded"
+      "quoteStyle": "single",
+      "trailingCommas": "none",
+      "semicolons": "asNeeded",
+      "jsxQuoteStyle": "single"
     }
   },
   "json": {
