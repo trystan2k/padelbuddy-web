@@ -1,3 +1,5 @@
+import { Link } from '@tanstack/react-router'
+
 import styles from './NotFoundPage.module.css'
 
 export function NotFoundPage() {
@@ -12,9 +14,9 @@ export function NotFoundPage() {
           The app foundation is running, but this page does not exist in the
           current route tree.
         </p>
-        <a className={styles.link} href='/'>
+        <Link className={styles.link} to='/'>
           Go back to the home screen
-        </a>
+        </Link>
       </section>
     </main>
   )
