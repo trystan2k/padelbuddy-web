@@ -8,7 +8,8 @@ pnpm run complete-check
 ```
 
 This should include:
-- Linting (Biome)
+- Linting (Oxlint)
+- Formatting (Oxfmt)
 - Type checking (TypeScript)
 - All tests passing (Vitest unit + browser)
 

@@ -154,7 +154,7 @@ The application state responds identically whether an action is triggered by the
 | **UI Components** | Base UI | Unstyled, fully accessible headless React components for rapid, custom-designed UI elements. |
 | **Styling** | CSS Modules | Locally scoped CSS, preventing class name collisions and providing a clean separation of concerns. |
 | **State Management** | React `useReducer` | Handles the complex synchronous padel state logic and deep Undo history stack natively. |
-| **Tooling & Linting** | Biome | Ultra-fast combined linter and formatter, replacing Prettier/ESLint. |
+| **Tooling & Linting** | Oxlint + Oxfmt | Ultra-fast combined linter and formatter built in Rust, replacing Prettier/ESLint. |
 | **Testing** | Vitest & Playwright | Vitest for isolated scoring engine logic; Playwright for E2E browser testing. |
 | **Git Workflow** | Husky, Lint-staged, Commitlint | Enforces clean, conventional commits and ensures code is formatted/linted before committing. |
 | **CI/CD & Hosting** | Cloudflare Pages & GitHub Actions | GitHub Actions handles testing and release; Cloudflare Pages serves the static SPA instantly from the global edge. |

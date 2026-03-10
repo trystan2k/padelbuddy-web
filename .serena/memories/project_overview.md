@@ -21,7 +21,8 @@ Padel Buddy Web is a mobile-first, client-only web app for live padel score trac
 - **Styling**: CSS Modules
 - **Build**: Vite
 - **Testing**: Vitest (unit + browser projects via Playwright)
-- **Linting/Formatting**: Biome
+- **Linting**: Oxlint
+- **Formatting**: Oxfmt
 - **Git Hooks**: Husky + lint-staged
 - **CI/CD**: GitHub Actions
 - **Deployment**: Cloudflare Pages (static output)

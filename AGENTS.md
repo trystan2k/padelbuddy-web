@@ -54,7 +54,8 @@ This project uses Linear for issue tracking and project management. GitHub is us
 - `vite` - Vite features
 - `vitest` - Vitest features
 - `playwright` - Playwright features
-- `biome` - Linting/formatting
+- `oxlint` - Linting
+- `oxfmt` - Formatting
 - `husky` / `lint-staged` - Git hooks
 - `git` - Git features
 - `gh-cli` - GitHub operations

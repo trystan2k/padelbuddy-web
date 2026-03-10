@@ -47,7 +47,8 @@ Automated testing is centered on **Vitest** with two explicit projects:
 │   │   ├── browser.ts             # Future browser-mode setup entrypoint
 │   │   └── shared.ts              # Shared Vitest cleanup/reset hooks
 │   └── utils/                     # Reserved for future shared test helpers
-├── biome.json                     # Linting and formatting
+├── .oxlintrc.json                  # Linting
+├── .oxfmtrc.json                  # Formatting
 ├── package.json                   # Scripts and dependencies
 ├── vite.config.ts                 # App build/runtime config
 └── vitest.config.ts               # Vitest projects and coverage config

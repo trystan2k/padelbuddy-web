@@ -42,7 +42,8 @@ Load these skills when needed:
 - `vite` - Vite features
 - `vitest` - Vitest testing
 - `playwright` - E2E testing
-- `biome` - Linting/formatting
+- `oxlint` - Linting
+- `oxfmt` - Formatting
 - `husky` / `lint-staged` - Git hooks
 - `git` - Git operations
 - `gh-cli` - GitHub CLI
