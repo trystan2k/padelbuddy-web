@@ -26,7 +26,7 @@ Whatever task you are told to implement, Linear project issue first, to identify
 
 ## QA
 
-`npm run complete-check`
+`pnpm complete-check`
 
 ## Project Management
 

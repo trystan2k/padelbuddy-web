@@ -1,0 +1,50 @@
+{
+  "name": "padelbuddy-web",
+  "version": "0.0.1",
+  "description": "A mobile-first, client-only Padel score tracker optimized for courtside use with Bluetooth remote and touch controls.",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.30.3",
+  "engines": {
+    "node": "^24.14.0",
+    "pnpm": "^10.30.3"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "complete-check": "pnpm typecheck && pnpm lint:fix && pnpm test && pnpm build"
+  },
+  "keywords": [
+    "padel",
+    "score",
+    "tracker",
+    "mobile",
+    "web",
+    "sports",
+    "tennis"
+  ],
+  "dependencies": {
+    "@base-ui/react": "~1.2.0",
+    "@tanstack/react-router": "~1.166.3",
+    "@tanstack/react-start": "~1.166.3",
+    "react": "~19.2.4",
+    "react-dom": "~19.2.4"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "~2.4.6",
+    "@types/node": "~24.12.0",
+    "@types/react": "~19.2.14",
+    "@types/react-dom": "~19.2.3",
+    "@vitejs/plugin-react": "~5.1.4",
+    "typescript": "~5.9.3",
+    "vite": "~7.3.1",
+    "vite-plugin-killer-instincts": "~1.0.0",
+    "vite-tsconfig-paths": "~6.1.1",
+    "vitest": "~4.0.18"
+  }
+}

@@ -24,6 +24,8 @@ This agent:
 - Creates Linear issues using the appropriate issue template structure (`task.md` for tasks, `subtask.md` for sub-issues) as the description.
 - Queries issues and sub-issues by identifier or filter.
 - Updates issue status through the workflow: `Ready → In Progress → Review → Blocked → Done`.
+- When asked to move an issue to a new status, verifies the resulting state after the update and reports both the previous and current state.
+- Treats completed implementation work that is awaiting commit/review as `Review`, not `In Progress`, and corrects status drift when explicitly asked to verify state.
 - Moves issues to `Canceled` status when requested.
 - Breaks down an issue into sub-issues (only when complexity warrants it) and links them via the Linear parent-child relationship.
 - Returns a structured execution report.
