@@ -28,9 +28,7 @@ Automated tests use Vitest and stay aligned with the app's Vite and TanStack Sta
 Run tests locally with:
 
 ```bash
-pnpm test:unit
-pnpm test:browser
-pnpm test:coverage
+pnpm test
 ```
 
 If Playwright browser binaries are missing, install Chromium once with:
@@ -43,9 +41,9 @@ pnpm exec playwright install chromium
 
 ## Local Quality Checks
 
-- `pnpm lint` runs `oxlint --deny-warnings` plus Stylelint for `src/**/*.module.css`, and `pnpm lint:fix` applies Oxlint fixes plus Stylelint fixes for CSS Modules.
+- `pnpm lint` runs `oxlint --deny-warnings` plus Stylelint for `src/**/*.css`, and `pnpm lint:fix` applies Oxlint fixes plus Stylelint fixes for CSS Modules.
 - `pnpm format` applies Oxfmt, and `pnpm format:check` verifies formatting without changing files.
-- Husky installs a `pre-commit` hook through `pnpm install`, and `lint-staged` reads `.lintstagedrc.mjs` to run staged JS/TS lint fixes, staged CSS Module Stylelint fixes, then a final Oxfmt pass in sequence.
+- Husky installs a `pre-commit`, `pre-push` and `commit-msg` hooks through `pnpm install`, and `lint-staged` reads `.lintstagedrc.json` to run staged JS/TS lint fixes, staged CSS Module Stylelint fixes, then a final Oxfmt pass in sequence.
 
 For the full local verification flow used in this repo:
 
@@ -53,7 +51,7 @@ For the full local verification flow used in this repo:
 pnpm run complete-check
 ```
 
-`pnpm run complete-check` is the repo's non-mutating verification flow, so it validates the project without rewriting files before the test and build steps.
+`pnpm run complete-check` runs the repo's full verification flow, including linting, formatting, tests, and build; it may rewrite files when applying fixes before the test and build steps.
 
 ## Production Build
 

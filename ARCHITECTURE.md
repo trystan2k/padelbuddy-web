@@ -53,8 +53,8 @@ Automated testing is centered on **Vitest** with two explicit projects:
 │   │   └── shared.ts              # Shared Vitest cleanup/reset hooks
 │   ├── routes/                    # Route-level smoke tests for the bootstrap shell
 │   └── router.test.tsx            # Router factory smoke test
-├── .lintstagedrc.mjs              # Staged-file local quality tasks
-├── .oxlintrc.json                  # Linting
+├── .lintstagedrc.json            # Staged-file local quality tasks
+├── .oxlintrc.json                 # Linting
 ├── .oxfmtrc.json                  # Formatting
 ├── .stylelintrc.json              # CSS Module linting rules
 ├── package.json                   # Scripts and dependencies
@@ -114,6 +114,6 @@ The local developer workflow is:
 6. Use `pnpm run complete-check` for the repo's non-mutating local verification flow.
 7. If the browser suite reports missing Playwright binaries, run `pnpm exec playwright install chromium` once and retry.
 
-Pre-commit hooks are installed through Husky, and `lint-staged` reads `.lintstagedrc.mjs` to keep staged-file checks limited to Oxlint, CSS Module Stylelint, and a final Oxfmt pass.
+Pre-commit hooks are installed through Husky, and `lint-staged` reads `.lintstagedrc.json` to keep staged-file checks limited to Oxlint, CSS Module Stylelint, and a final Oxfmt pass.
 
 This document reflects the repository's current structure and should evolve as more match logic, routes, and automated suites are added.
