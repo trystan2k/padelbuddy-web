@@ -13,7 +13,7 @@
   border: 1px solid var(--color-border-strong);
   border-radius: 1.75rem;
   background:
-    linear-gradient(145deg, rgb(255 255 255 / 0.9), rgb(245 240 232 / 0.8)),
+    linear-gradient(145deg, rgb(255 255 255 / 90%), rgb(245 240 232 / 80%)),
     var(--color-surface-elevated);
   box-shadow: var(--shadow-panel);
   text-align: center;
@@ -53,7 +53,7 @@
   padding: 0.8rem 1.2rem;
   border-radius: 999px;
   background: linear-gradient(135deg, var(--color-accent-strong), var(--color-accent));
-  box-shadow: 0 1rem 2.5rem rgb(181 72 46 / 0.24);
+  box-shadow: 0 1rem 2.5rem rgb(181 72 46 / 24%);
   color: var(--color-surface);
   font-weight: 600;
   text-decoration: none;

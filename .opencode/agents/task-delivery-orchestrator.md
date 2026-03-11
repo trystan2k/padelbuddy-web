@@ -198,8 +198,8 @@ Follow these steps in order.
     - **Stop timer** and record Commit/Push phase time.
 
 11. Issue Status Update - Completion
-    - As soon as a sub-issue finishes implementation, passes QA, and has an acceptable review outcome, ask `project-manager-specialist` to move that sub-issue to `Review` before presenting commit approval.
-    - As soon as the parent issue's implementation scope is complete and all delivered sub-issues are in `Review`, ask `project-manager-specialist` to move the parent issue to `Review` before presenting commit approval.
+    - As soon as a sub-issue finishes implementation, passes QA, and has an acceptable review outcome, ask `project-manager-specialist` to move that sub-issue to `In Review` before presenting commit approval.
+    - As soon as the parent issue's implementation scope is complete and all delivered sub-issues are in `In Review`, ask `project-manager-specialist` to move the parent issue to `In Review` before presenting commit approval.
     - Do not leave any completed task or sub-issue in `In Progress` once it is ready for commit/review.
 
 12. Completion Notification

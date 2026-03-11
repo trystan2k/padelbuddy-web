@@ -17,7 +17,7 @@
   border: 1px solid var(--color-border-strong);
   border-radius: 1.75rem;
   background:
-    linear-gradient(145deg, rgb(255 255 255 / 0.88), rgb(245 240 232 / 0.78)),
+    linear-gradient(145deg, rgb(255 255 255 / 88%), rgb(245 240 232 / 78%)),
     var(--color-surface-elevated);
   box-shadow: var(--shadow-panel);
   backdrop-filter: blur(16px);
@@ -37,7 +37,7 @@
   width: 11rem;
   aspect-ratio: 1;
   border-radius: 999px;
-  background: radial-gradient(circle, rgb(231 109 78 / 0.22), transparent 68%);
+  background: radial-gradient(circle, rgb(231 109 78 / 22%), transparent 68%);
   pointer-events: none;
 }
 
@@ -107,7 +107,7 @@
   padding: 0.65rem 1rem;
   border: 1px solid var(--color-border-soft);
   border-radius: 999px;
-  background: rgb(247 243 236 / 0.82);
+  background: rgb(247 243 236 / 82%);
   color: var(--color-ink-strong);
   font-size: 0.95rem;
   line-height: 1;
@@ -133,7 +133,7 @@
   justify-self: start;
   background: linear-gradient(135deg, var(--color-accent-strong), var(--color-accent));
   color: var(--color-surface);
-  box-shadow: 0 1rem 2.5rem rgb(181 72 46 / 0.24);
+  box-shadow: 0 1rem 2.5rem rgb(181 72 46 / 24%);
 }
 
 .primaryButton:hover,
@@ -174,7 +174,7 @@
   padding: 1.1rem;
   border: 1px solid var(--color-border-soft);
   border-radius: 1.25rem;
-  background: linear-gradient(180deg, rgb(255 255 255 / 0.82), rgb(243 238 229 / 0.88));
+  background: linear-gradient(180deg, rgb(255 255 255 / 82%), rgb(243 238 229 / 88%));
   display: grid;
   gap: 0.5rem;
 }
@@ -188,7 +188,7 @@
   position: fixed;
   inset: 0;
   z-index: 40;
-  background: rgb(25 29 24 / 0.52);
+  background: rgb(25 29 24 / 52%);
   backdrop-filter: blur(8px);
 }
 
@@ -202,14 +202,14 @@
   border-radius: 1.5rem;
   border: 1px solid var(--color-border-strong);
   background: linear-gradient(180deg, rgb(255 252 248), rgb(243 236 226));
-  box-shadow: 0 1.5rem 4rem rgb(25 29 24 / 0.2);
+  box-shadow: 0 1.5rem 4rem rgb(25 29 24 / 20%);
 }
 
 .dialogTitle {
   font-size: 1.6rem;
 }
 
-@media (min-width: 48rem) {
+@media (width >= 48rem) {
   .shell {
     gap: 1.5rem;
   }

@@ -29,7 +29,7 @@ Required statuses:
 
 - Ready
 - In Progress
-- Review
+- In Review
 - Blocked
 - Done
 - Canceled
@@ -38,7 +38,7 @@ Rules:
 
 - Status updates are manual
 - Blocked status MUST include blocker reason
-- Review status means the PR is ready for review
+- In Review status means the PR is ready for review
 - Done means merged to `main`
 
 ## 4) PR and Task Linkage
