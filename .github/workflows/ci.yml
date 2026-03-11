@@ -35,7 +35,7 @@ jobs:
         id: changed
         uses: tj-actions/changed-files@v46
         with:
-          safe_output: false
+          safe_output: true
           separator: "\n"
 
       - name: Classify change scope

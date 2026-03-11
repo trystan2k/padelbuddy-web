@@ -25,7 +25,7 @@ Main branch policy:
 
 - Conventional Commits required
 - Scope is optional, but recommended
-- Release-trigger commit types: `feat`, `fix`, `deps`, and breaking changes such as `refactor!`
+- Release-trigger commit types: `feat`, `fix`, `chore(deps)`, and breaking changes such as `refactor!`
 - Semantic versioning required
 - Automated changelog generation required
 

@@ -61,7 +61,7 @@ pnpm run complete-check
 - Docs-only changes are limited to `docs/**`, root `*.md`, and markdown files under `.github/`; they take the reduced path and run `pnpm format:check` instead of the full verification sequence.
 - `Release Please` opens and updates the release PR, bumps `package.json`, maintains `CHANGELOG.md`, and publishes the GitHub release after the release PR is merged.
 - Release Please uses the dedicated `RELEASE_PLEASE_TOKEN` secret so the release PR and published release can trigger downstream GitHub workflows.
-- Releasable non-breaking commit types follow Release Please's Node strategy: `feat`, `fix`, and `deps`; breaking changes such as `refactor!` still trigger a major release.
+- Releasable non-breaking commit types follow Release Please's Node strategy: `feat`, `fix`, and `chore(deps)`; breaking changes such as `refactor!` still trigger a major release.
 - `Preview Release PR` deploys only the Release Please branch (`release-please--branches--main`) to a stable Cloudflare Pages preview alias.
 - `Deploy Production` runs only when a GitHub release is published and deploys the static `dist/client` Pages artifact, never the SSR bundle.
 - CI and deploy workflows upload or deploy `dist/client` directly as the Cloudflare Pages payload.

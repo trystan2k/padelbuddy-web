@@ -15,7 +15,7 @@ This repository uses `Release Please` plus GitHub Actions to automate versioning
 
 Release Please follows the Node release strategy configured for this repo.
 
-- Non-breaking releasable commit types: `feat`, `fix`, `deps`
+- Non-breaking releasable commit types: `feat`, `fix`, `chore(deps)`
 - Breaking changes still trigger major releases, for example `feat!:` or `refactor!:`
 - Non-releasable changes such as docs-only or chore-only commits do not create a release by themselves
 
