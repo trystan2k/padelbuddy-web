@@ -1,13 +1,15 @@
 # Release and Incident Runbook
 
-Version: 2.0
+Version: 2.1
 Status: Operational
 
 ## 1) Release Trigger
 
 - Release cadence: on-demand
-- Production deploy is automatic when required checks are green and changes reach `main`
-- Deployment target in v1: `*.pages.dev` only
+- Release Please opens and updates the release PR from `main`
+- The Release Please release PR is the only branch that receives a preview deployment
+- Production deploy is automatic only when Release Please publishes the GitHub release after merge
+- Deployment target in v1: Cloudflare Pages `*.pages.dev`
 
 ## 2) Pre-Release Checklist (per deploy train)
 

@@ -1,6 +1,6 @@
 # DevOps and CI/CD Specification
 
-Version: 2.0
+Version: 2.1
 Status: Normative
 
 ## 1) Toolchain
@@ -25,7 +25,7 @@ Main branch policy:
 
 - Conventional Commits required
 - Scope is optional, but recommended
-- Release-trigger commit types: `feat`, `fix`, `perf`, `refactor`
+- Release-trigger commit types: `feat`, `fix`, `deps`, and breaking changes such as `refactor!`
 - Semantic versioning required
 - Automated changelog generation required
 
@@ -33,26 +33,30 @@ Main branch policy:
 
 Code PR required checks:
 
+- Typecheck
 - Lint
-- Unit tests (coverage gate)
-- E2E critical suite (mobile profiles, Chromium + WebKit)
+- Format check
+- Tests (Vitest unit + browser + coverage gate)
+- Build
 
 CI behavior:
 
 - Cancel outdated in-progress runs for same PR on new commits
+- Full verification order: `pnpm typecheck` -> `pnpm lint` -> `pnpm format:check` -> `pnpm test` -> `pnpm build`
 
 Docs-only exception:
 
 - Path-based detection for `docs/**` + markdown meta files
-- Run docs/lint checks only
+- Workflow or config changes under `.github/**` force the full verification path
+- Run reduced docs checks only when every changed file stays inside the docs-only path set
 
 ## 5) Deployment Model
 
 - Environments: preview + production
-- Preview deployments: public, one per PR branch
-- Production deploy: automatic on merge to `main`
-- Deployment mechanism: GitHub Actions deploy to Cloudflare Pages
-- Build model: static Pages output (client-only runtime)
+- Preview deployments: public, only for the Release Please release PR, refreshed on release PR updates
+- Production deploy: automatic only when a GitHub release is published from the merged Release Please PR
+- Deployment mechanism: GitHub Actions on GitHub-hosted runners deploy to Cloudflare Pages
+- Build model: static Pages output prepared from `dist/`; `dist/server` is never deployed
 
 ## 6) PWA and Update Policy
 
@@ -66,6 +70,7 @@ Docs-only exception:
 - Baseline security headers are required for static hosting
 - CSP posture: moderate baseline
 - Minimal secrets policy for v1 (deploy/runtime essentials only)
+- Required GitHub Actions secrets: `RELEASE_PLEASE_TOKEN`, `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_PAGES_PROJECT_NAME`
 
 ## 8) Observability and Logging
 

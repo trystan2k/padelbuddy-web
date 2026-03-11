@@ -5,7 +5,7 @@ TanStack Start client-only scaffold for a mobile-first padel score tracker.
 ## Requirements
 
 - Node `24.14.0`
-- pnpm
+- pnpm `10.32.0`
 
 Node version source of truth is `package.json` `engines.node` and is compatible with `mise`.
 
@@ -53,8 +53,31 @@ pnpm run complete-check
 
 `pnpm run complete-check` runs the repo's full verification flow, including linting, formatting, tests, and build; it may rewrite files when applying fixes before the test and build steps.
 
+`pnpm run complete-check` is intentionally local-only. GitHub Actions uses non-mutating checks in this order: `pnpm typecheck`, `pnpm lint`, `pnpm format:check`, `pnpm test`, and `pnpm build`.
+
+## CI/CD and Releases
+
+- `CI` runs on pull requests and `main` pushes, cancels superseded runs, and keeps the full verification order as `typecheck` -> `lint` -> `format:check` -> `test` -> `build`.
+- Docs-only changes are limited to `docs/**`, root `*.md`, and markdown files under `.github/`; they take the reduced path and run `pnpm format:check` instead of the full verification sequence.
+- `Release Please` opens and updates the release PR, bumps `package.json`, maintains `CHANGELOG.md`, and publishes the GitHub release after the release PR is merged.
+- Release Please uses the dedicated `RELEASE_PLEASE_TOKEN` secret so the release PR and published release can trigger downstream GitHub workflows.
+- Releasable non-breaking commit types follow Release Please's Node strategy: `feat`, `fix`, and `deps`; breaking changes such as `refactor!` still trigger a major release.
+- `Preview Release PR` deploys only the Release Please branch (`release-please--branches--main`) to a stable Cloudflare Pages preview alias.
+- `Deploy Production` runs only when a GitHub release is published and deploys the prepared static Pages artifact, never the SSR bundle.
+- The reusable local GitHub Action at `.github/actions/prepare-pages-artifact` prepares `dist/pages` from `dist/` during CI and deploy workflows.
+
+## GitHub Actions Secrets
+
+- `RELEASE_PLEASE_TOKEN` - personal access token used by Release Please so release PR and release events can trigger downstream workflows
+
+- `CLOUDFLARE_API_TOKEN`
+- `CLOUDFLARE_ACCOUNT_ID`
+- `CLOUDFLARE_PAGES_PROJECT_NAME`
+
 ## Production Build
 
 ```bash
 pnpm build
 ```
+
+The reusable GitHub Action at `.github/actions/prepare-pages-artifact` creates `dist/pages` from the static files in `dist/` during CI and deployment workflows so Cloudflare Pages receives only the deployable asset set and never `dist/server`.
