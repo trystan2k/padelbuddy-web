@@ -18,6 +18,7 @@
     "node_modules/**",
     "src/routeTree.gen.ts",
     "**/*.gen.ts",
-    "**/*.gen.tsx"
+    "**/*.gen.tsx",
+    "CHANGELOG.md"
   ]
 }
