@@ -4,6 +4,8 @@
 
 Padel Buddy Web is currently a client-only **TanStack Start** application built on **Vite** and **React 19**. The app uses TanStack Start file-based routes for the shell, **Base UI** for accessible primitives, and TypeScript domain modules under `src/core` for shared match-related types and constants.
 
+Delivery automation is handled by **GitHub Actions**, **Release Please**, and **Cloudflare Pages**. Pull requests and `main` pushes flow through explicit CI checks, the Release Please release PR is the only branch that receives a preview deployment, and production deploys are gated by published GitHub releases.
+
 Automated testing is centered on **Vitest** with two explicit projects:
 
 - `unit` for the current Node-based smoke-test baseline.
@@ -21,7 +23,11 @@ Automated testing is centered on **Vitest** with two explicit projects:
 
 ```text
 ├── .github/
-│   └── workflows/                 # CI workflow definitions
+│   └── workflows/
+│       ├── ci.yml                 # PR/main verification with docs-only routing
+│       ├── release.yml            # Release Please automation
+│       ├── preview-release-pr.yml # Release PR-only Cloudflare Pages preview deploy
+│       └── deploy-production.yml  # Release-gated production deploy
 ├── .husky/                        # Git hooks
 │   └── pre-commit                 # Runs staged-file quality checks through lint-staged
 ├── docs/                          # Planning and project documentation
@@ -57,7 +63,10 @@ Automated testing is centered on **Vitest** with two explicit projects:
 ├── .oxlintrc.json                 # Linting
 ├── .oxfmtrc.json                  # Formatting
 ├── .stylelintrc.json              # CSS Module linting rules
+├── CHANGELOG.md                   # Release Please-managed changelog
 ├── package.json                   # Scripts and dependencies
+├── release-please-config.json     # Release Please package/release settings
+├── release-please-manifest.json   # Release Please version state
 ├── vite.config.ts                 # App build/runtime config
 └── vitest.config.ts               # Vitest projects and coverage config
 ```
@@ -102,16 +111,23 @@ Automated testing is centered on **Vitest** with two explicit projects:
 
 The suite currently covers the bootstrap shell with lightweight smoke coverage across the app shell, not-found route, router setup, and match-domain exports.
 
-## 5. Developer Workflow
+## 5. Automation Architecture
+
+- `.github/workflows/ci.yml` is the authoritative verification workflow. It classifies changes first, runs the reduced docs-only path only for `docs/**`, root markdown, and `.github/**/*.md`, and otherwise runs `pnpm typecheck` -> `pnpm lint` -> `pnpm format:check` -> `pnpm test` -> `pnpm build` in order.
+- `.github/workflows/release.yml` runs Release Please on `main` so semantic versioning, changelog generation, and the release PR stay aligned with Conventional Commits.
+- `.github/workflows/preview-release-pr.yml` rebuilds and deploys only the Release Please PR to a stable preview alias on Cloudflare Pages using `dist/client`.
+- `.github/workflows/deploy-production.yml` rebuilds the published release tag and deploys the `dist/client` artifact to the production Pages branch.
+
+## 6. Developer Workflow
 
 The local developer workflow is:
 
 1. Install dependencies with `pnpm install`.
 2. Start the app with `pnpm dev`.
-3. Run the explicit `unit`, `browser`, and `coverage` Vitest scripts as needed; `pnpm test` runs the combined suite and `pnpm test:watch` stays focused on local iteration.
+3. Run `pnpm test` for the combined Vitest unit + browser suite, or `pnpm test:watch` for local iteration.
 4. Run `pnpm lint` for `oxlint --deny-warnings` plus CSS Module Stylelint checks, or `pnpm lint:fix` to apply the Oxlint and CSS Module Stylelint fixes.
 5. Use `pnpm format` to apply Oxfmt or `pnpm format:check` for a non-mutating formatting check.
-6. Use `pnpm run complete-check` for the repo's local verification flow; note that this command may modify files (it runs `lint:fix` and `format`).
+6. Use `pnpm run complete-check` for the repo's local verification flow; note that this command may modify files (it runs `lint:fix` and `format`) and is not used by CI.
 7. If the browser suite reports missing Playwright binaries, run `pnpm exec playwright install chromium` once and retry.
 
 Pre-commit hooks are installed through Husky, and `lint-staged` reads `.lintstagedrc.json` to keep staged-file checks limited to Oxlint, CSS Module Stylelint, and a final Oxfmt pass.

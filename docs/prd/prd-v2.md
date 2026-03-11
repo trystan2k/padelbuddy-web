@@ -103,8 +103,8 @@ v1 is release-ready only when all are true:
 
 ## 10) Delivery and Operations
 
-- Environments: public preview per PR + production
-- Production deploy: automatic on `main` via GitHub Actions to Cloudflare Pages static output
+- Environments: Release Please PR preview + production
+- Production deploy: automatic when a published release is created from the merged Release Please PR
 - Branch model: feature branches + PRs
 - Branch naming: `feature/[linear-issue-id]-[title]` using the full Linear issue identifier, for example `feature/PBW-123-score-engine`
 - Versioning: Semantic Versioning
