@@ -111,7 +111,7 @@ The local developer workflow is:
 3. Run the explicit `unit`, `browser`, and `coverage` Vitest scripts as needed; `pnpm test` runs the combined suite and `pnpm test:watch` stays focused on local iteration.
 4. Run `pnpm lint` for `oxlint --deny-warnings` plus CSS Module Stylelint checks, or `pnpm lint:fix` to apply the Oxlint and CSS Module Stylelint fixes.
 5. Use `pnpm format` to apply Oxfmt or `pnpm format:check` for a non-mutating formatting check.
-6. Use `pnpm run complete-check` for the repo's non-mutating local verification flow.
+6. Use `pnpm run complete-check` for the repo's local verification flow; note that this command may modify files (it runs `lint:fix` and `format`).
 7. If the browser suite reports missing Playwright binaries, run `pnpm exec playwright install chromium` once and retry.
 
 Pre-commit hooks are installed through Husky, and `lint-staged` reads `.lintstagedrc.json` to keep staged-file checks limited to Oxlint, CSS Module Stylelint, and a final Oxfmt pass.

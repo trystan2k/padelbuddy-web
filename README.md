@@ -23,7 +23,7 @@ Automated tests use Vitest and stay aligned with the app's Vite and TanStack Sta
 - `vitest.config.ts` merges the main `vite.config.ts` and keeps separate `unit` and `browser` projects.
 - Browser component smoke tests render with `vitest-browser-react` inside the browser project instead of a shared browser mounting helper.
 - Shared setup still lives in `test/setup`, while unit/server-side markup assertions stay lightweight and non-browser-only.
-- Coverage keeps the PBW-9 quality gate at global `80%` minimums.
+- Coverage enforces the PBW-9 quality gate with per-file `80%` minimums (via `thresholds.perFile: true`).
 
 Run tests locally with:
 
