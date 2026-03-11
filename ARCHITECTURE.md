@@ -7,14 +7,14 @@ Padel Buddy Web is currently a client-only **TanStack Start** application built 
 Automated testing is centered on **Vitest** with two explicit projects:
 
 - `unit` for the current Node-based smoke-test baseline.
-- `browser` as a disabled scaffold for future real-browser component tests backed by Playwright.
+- `browser` for real-browser component smoke tests backed by Playwright.
 
 ## 2. Directory Structure
 
 ### 2.1 File Naming Conventions
 
 - React component files use `PascalCase` (for example, `AppShell.tsx`).
-- Component test files mirror the component name in `PascalCase` and keep the test suffix (for example, `AppShell.test.tsx`).
+- Component test files mirror the component name in `PascalCase` and keep the test suffix (for example, `AppShell.browser.test.tsx`).
 - General TypeScript modules that are not React components use `kebab-case` (for example, `render-component.tsx`, `match-state.ts`).
 - Component-scoped CSS Modules use the same `PascalCase` basename as the component they style (for example, `AppShell.module.css`).
 - Global or shared stylesheet files use `kebab-case` unless they intentionally match a colocated component.
@@ -23,6 +23,7 @@ Automated testing is centered on **Vitest** with two explicit projects:
 ├── .github/
 │   └── workflows/                 # CI workflow definitions
 ├── .husky/                        # Git hooks
+│   └── pre-commit                 # Runs staged-file quality checks through lint-staged
 ├── docs/                          # Planning and project documentation
 ├── src/
 │   ├── components/
@@ -40,15 +41,22 @@ Automated testing is centered on **Vitest** with two explicit projects:
 │   └── styles.css                 # Global app styles
 ├── test/
 │   ├── components/
-│   │   └── AppShell.test.tsx      # Foundation smoke test
+│   │   ├── AppShell/
+│   │   │   └── AppShell.browser.test.tsx     # Browser smoke test for the foundation shell
+│   │   └── NotFoundPage/
+│   │       └── NotFoundPage.browser.test.tsx # Browser smoke test for the not-found screen
 │   ├── core/
-│   │   └── match/                 # Reserved for future domain tests
+│   │   └── match/
+│   │       └── match.test.ts      # Match-domain smoke coverage
 │   ├── setup/
-│   │   ├── browser.ts             # Future browser-mode setup entrypoint
+│   │   ├── browser.ts             # Browser-mode setup entrypoint
 │   │   └── shared.ts              # Shared Vitest cleanup/reset hooks
-│   └── utils/                     # Reserved for future shared test helpers
-├── .oxlintrc.json                  # Linting
+│   ├── routes/                    # Route-level smoke tests for the bootstrap shell
+│   └── router.test.tsx            # Router factory smoke test
+├── .lintstagedrc.json            # Staged-file local quality tasks
+├── .oxlintrc.json                 # Linting
 ├── .oxfmtrc.json                  # Formatting
+├── .stylelintrc.json              # CSS Module linting rules
 ├── package.json                   # Scripts and dependencies
 ├── vite.config.ts                 # App build/runtime config
 └── vitest.config.ts               # Vitest projects and coverage config
@@ -79,20 +87,20 @@ Automated testing is centered on **Vitest** with two explicit projects:
 `vitest.config.ts` merges the main `vite.config.ts` so tests inherit the same plugin stack and path alias behavior as the app.
 
 - The `unit` project runs in the Node environment and targets `test/**/*.test.ts` and `test/**/*.test.tsx` while excluding browser-mode files.
-- The `browser` project targets `test/**/*.browser.test.ts` and `test/**/*.browser.test.tsx`, but stays disabled until the browser provider dependencies are intentionally added.
+- The `browser` project targets `test/**/*.browser.test.ts` and `test/**/*.browser.test.tsx` and runs in headless Chromium through Playwright.
 - Coverage uses Vitest's V8 provider with text and HTML reporters.
+- Coverage keeps the PBW-9 `80%` quality gate in place across maintained `src/**/*.ts` and `src/**/*.tsx` files.
 
 ### 4.2 Browser-Mode Tests
 
-- `test/setup/shared.ts` restores mocks and unstubs globals and env vars after each test.
-- `test/setup/browser.ts` currently extends the shared setup and serves as the reserved entrypoint for future browser-mode configuration.
-- Browser-mode tests are intentionally not active in the bootstrap baseline yet, which keeps `pnpm test` reliable without requiring Playwright provider setup during this sub-issue.
+- `test/setup/shared.ts` restores mocks, unstubs globals and env vars, and clears the document body between tests.
+- `test/setup/browser.ts` extends the shared setup for browser-mode suites.
+- Browser component smoke tests render directly with `vitest-browser-react`, so the old shared browser mounting helper is no longer part of the test utilities.
+- Unit/server-side markup assertions stay lightweight and non-browser-only.
 
 ### 4.3 Current Test Coverage Scope
 
-The suite currently covers the UI bootstrap path with a single smoke test:
-
-- `test/components/AppShell.test.tsx` renders the foundation shell to static markup and verifies the core bootstrap content is present.
+The suite currently covers the bootstrap shell with lightweight smoke coverage across the app shell, not-found route, router setup, and match-domain exports.
 
 ## 5. Developer Workflow
 
@@ -100,9 +108,12 @@ The local developer workflow is:
 
 1. Install dependencies with `pnpm install`.
 2. Start the app with `pnpm dev`.
-3. Run the automated smoke-test baseline with `pnpm test`, use `pnpm test:watch` during local iteration, or target the unit project directly with `pnpm vitest run --project unit`.
-4. Run explicit coverage with `pnpm vitest run --project unit --coverage` when needed.
-5. Use `pnpm run complete-check` for the repo's broader local verification command.
-6. Enable browser-mode tests later, after adding the required provider dependencies, before running the `browser` project.
+3. Run the explicit `unit`, `browser`, and `coverage` Vitest scripts as needed; `pnpm test` runs the combined suite and `pnpm test:watch` stays focused on local iteration.
+4. Run `pnpm lint` for `oxlint --deny-warnings` plus CSS Module Stylelint checks, or `pnpm lint:fix` to apply the Oxlint and CSS Module Stylelint fixes.
+5. Use `pnpm format` to apply Oxfmt or `pnpm format:check` for a non-mutating formatting check.
+6. Use `pnpm run complete-check` for the repo's local verification flow; note that this command may modify files (it runs `lint:fix` and `format`).
+7. If the browser suite reports missing Playwright binaries, run `pnpm exec playwright install chromium` once and retry.
+
+Pre-commit hooks are installed through Husky, and `lint-staged` reads `.lintstagedrc.json` to keep staged-file checks limited to Oxlint, CSS Module Stylelint, and a final Oxfmt pass.
 
 This document reflects the repository's current structure and should evolve as more match logic, routes, and automated suites are added.

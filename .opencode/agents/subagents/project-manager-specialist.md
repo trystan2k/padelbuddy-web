@@ -23,9 +23,9 @@ This agent:
 - Resolves the Linear Team and Project reference from `AGENTS.md` (Conventions/Constraints section) before every operation; if absent, fails explicitly and asks the caller to provide the reference.
 - Creates Linear issues using the appropriate issue template structure (`task.md` for tasks, `subtask.md` for sub-issues) as the description.
 - Queries issues and sub-issues by identifier or filter.
-- Updates issue status through the workflow: `Ready → In Progress → Review → Blocked → Done`.
+- Updates issue status through the workflow: `Ready → In Progress → In Review → Blocked → Done`.
 - When asked to move an issue to a new status, verifies the resulting state after the update and reports both the previous and current state.
-- Treats completed implementation work that is awaiting commit/review as `Review`, not `In Progress`, and corrects status drift when explicitly asked to verify state.
+- Treats completed implementation work that is awaiting commit/review as `In Review`, not `In Progress`, and corrects status drift when explicitly asked to verify state.
 - Moves issues to `Canceled` status when requested.
 - Breaks down an issue into sub-issues (only when complexity warrants it) and links them via the Linear parent-child relationship.
 - Returns a structured execution report.
@@ -147,7 +147,7 @@ Return the full report without asking user questions.
 | `view-issue` | `linear issue view <issueId>` |
 | `list-issues` | `linear issue list` with filters |
 | `move-to-in-progress` | `linear issue update <issueId> --status "In Progress"` |
-| `move-to-review` | `linear issue update <issueId> --status "Review"` |
+| `move-to-in-review` | `linear issue update <issueId> --status "In Review"` |
 | `move-to-blocked` | `linear issue update <issueId> --status "Blocked"` |
 | `move-to-canceled` | `linear issue update <issueId> --status "Canceled"` |
 | `move-to-done` | `linear issue update <issueId> --status "Done"` |
@@ -254,7 +254,7 @@ Steps:
 Standard workflow:
 
 ```
-Ready → In Progress → Review → Done
+Ready → In Progress → In Review → Done
                   ↓ 
               Blocked
                   ↓

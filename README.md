@@ -20,27 +20,38 @@ pnpm dev
 
 Automated tests use Vitest and stay aligned with the app's Vite and TanStack Start configuration through `vitest.config.ts`.
 
-- `vitest.config.ts` merges the main `vite.config.ts` and defines separate `unit` and `browser` projects.
-- The `unit` project runs the current smoke-test baseline in the Node environment.
-- The `browser` project is scaffolded for future Playwright-backed component tests but remains disabled until browser-mode provider dependencies are added intentionally.
-- Shared setup lives in `test/setup`.
-- `package.json` provides `pnpm test` for the current suite and `pnpm test:watch` for local watch runs; project-specific and explicit coverage runs use direct Vitest commands.
+- `vitest.config.ts` merges the main `vite.config.ts` and keeps separate `unit` and `browser` projects.
+- Browser component smoke tests render with `vitest-browser-react` inside the browser project instead of a shared browser mounting helper.
+- Shared setup still lives in `test/setup`, while unit/server-side markup assertions stay lightweight and non-browser-only.
+- Coverage enforces the PBW-9 quality gate with per-file `80%` minimums (via `thresholds.perFile: true`).
 
 Run tests locally with:
 
 ```bash
 pnpm test
-pnpm vitest run --project unit
-pnpm vitest run --project unit --coverage
 ```
 
-Enable browser-mode tests later, once the provider dependencies are in place, before using `pnpm vitest run --project browser`.
+If Playwright browser binaries are missing, install Chromium once with:
+
+```bash
+pnpm exec playwright install chromium
+```
+
+`pnpm test` runs the combined local suite, while `pnpm test:watch` stays focused on day-to-day iteration.
+
+## Local Quality Checks
+
+- `pnpm lint` runs `oxlint --deny-warnings` plus Stylelint for `src/**/*.css`, and `pnpm lint:fix` applies Oxlint fixes plus Stylelint fixes for CSS Modules.
+- `pnpm format` applies Oxfmt, and `pnpm format:check` verifies formatting without changing files.
+- Husky installs a `pre-commit`, `pre-push` and `commit-msg` hooks through `pnpm install`, and `lint-staged` reads `.lintstagedrc.json` to run staged JS/TS lint fixes, staged CSS Module Stylelint fixes, then a final Oxfmt pass in sequence.
 
 For the full local verification flow used in this repo:
 
 ```bash
 pnpm run complete-check
 ```
+
+`pnpm run complete-check` runs the repo's full verification flow, including linting, formatting, tests, and build; it may rewrite files when applying fixes before the test and build steps.
 
 ## Production Build
 

@@ -1,10 +1,10 @@
 import { tanstackStart } from '@tanstack/react-start/plugin/vite'
 import react from '@vitejs/plugin-react'
-import { defineConfig } from 'vite'
+import { defineConfig, type UserConfig } from 'vite'
 import killerInstincts from 'vite-plugin-killer-instincts'
 import tsconfigPaths from 'vite-tsconfig-paths'
 
-export default defineConfig({
+export const appViteConfig = {
   server: {
     port: 4000,
     strictPort: true
@@ -30,4 +30,6 @@ export default defineConfig({
     tsconfigPaths(),
     killerInstincts({ autoKill: true })
   ]
-})
+} satisfies UserConfig
+
+export default defineConfig(appViteConfig)

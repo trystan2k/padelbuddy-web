@@ -16,13 +16,18 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "lint": "oxlint",
-    "lint:fix": "oxlint --fix",
+    "prepare": "husky",
+    "lint": "pnpm lint:oxlint && pnpm lint:stylelint",
+    "lint:oxlint": "oxlint --deny-warnings",
+    "lint:stylelint": "stylelint \"src/**/*.css\" --allow-empty-input",
+    "lint:fix": "pnpm lint:fix:oxlint && pnpm lint:fix:stylelint",
+    "lint:fix:oxlint": "oxlint --fix --deny-warnings",
+    "lint:fix:stylelint": "stylelint \"src/**/*.css\" --allow-empty-input --fix",
     "format": "oxfmt .",
     "format:check": "oxfmt --check .",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run",
-    "test:watch": "vitest",
+    "test:watch": "vitest run --coverage --watch",
+    "test": "vitest run --coverage",
     "complete-check": "pnpm typecheck && pnpm lint:fix && pnpm format && pnpm test && pnpm build"
   },
   "dependencies": {
@@ -33,18 +38,28 @@
     "react-dom": "~19.2.4"
   },
   "devDependencies": {
+    "@commitlint/cli": "~20.4.3",
+    "@commitlint/config-conventional": "~20.4.3",
     "@types/node": "~24.12.0",
     "@types/react": "~19.2.14",
     "@types/react-dom": "~19.2.3",
     "@vitejs/plugin-react": "~5.1.4",
+    "@vitest/browser-playwright": "~4.0.18",
+    "@vitest/coverage-v8": "~4.0.18",
+    "husky": "~9.1.7",
+    "lint-staged": "~16.3.3",
     "oxfmt": "~0.37.0",
     "oxlint": "~1.52.0",
     "oxlint-tsgolint": "~0.16.0",
+    "playwright": "~1.58.2",
+    "stylelint": "~16.25.0",
+    "stylelint-config-standard": "~39.0.1",
     "typescript": "~5.9.3",
     "vite": "~7.3.1",
     "vite-plugin-killer-instincts": "~1.0.0",
     "vite-tsconfig-paths": "~6.1.1",
-    "vitest": "~4.0.18"
+    "vitest": "~4.0.18",
+    "vitest-browser-react": "~2.0.5"
   },
   "engines": {
     "node": "^24.14.0",
