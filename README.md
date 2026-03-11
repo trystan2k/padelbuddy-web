@@ -63,8 +63,8 @@ pnpm run complete-check
 - Release Please uses the dedicated `RELEASE_PLEASE_TOKEN` secret so the release PR and published release can trigger downstream GitHub workflows.
 - Releasable non-breaking commit types follow Release Please's Node strategy: `feat`, `fix`, and `deps`; breaking changes such as `refactor!` still trigger a major release.
 - `Preview Release PR` deploys only the Release Please branch (`release-please--branches--main`) to a stable Cloudflare Pages preview alias.
-- `Deploy Production` runs only when a GitHub release is published and deploys the prepared static Pages artifact, never the SSR bundle.
-- The reusable local GitHub Action at `.github/actions/prepare-pages-artifact` prepares `dist/pages` from `dist/` during CI and deploy workflows.
+- `Deploy Production` runs only when a GitHub release is published and deploys the static `dist/client` Pages artifact, never the SSR bundle.
+- CI and deploy workflows upload or deploy `dist/client` directly as the Cloudflare Pages payload.
 
 ## GitHub Actions Secrets
 
@@ -80,4 +80,4 @@ pnpm run complete-check
 pnpm build
 ```
 
-The reusable GitHub Action at `.github/actions/prepare-pages-artifact` creates `dist/pages` from the static files in `dist/` during CI and deployment workflows so Cloudflare Pages receives only the deployable asset set and never `dist/server`.
+Cloudflare Pages workflows use `dist/client` directly as the deployable static artifact produced by `pnpm build`.

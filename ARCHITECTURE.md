@@ -23,9 +23,6 @@ Automated testing is centered on **Vitest** with two explicit projects:
 
 ```text
 ├── .github/
-│   ├── actions/
-│   │   └── prepare-pages-artifact/
-│   │       └── action.yml          # Reusable action that prepares dist/pages from dist/
 │   └── workflows/
 │       ├── ci.yml                 # PR/main verification with docs-only routing
 │       ├── release.yml            # Release Please automation
@@ -117,10 +114,9 @@ The suite currently covers the bootstrap shell with lightweight smoke coverage a
 ## 5. Automation Architecture
 
 - `.github/workflows/ci.yml` is the authoritative verification workflow. It classifies changes first, runs the reduced docs-only path only for `docs/**`, root markdown, and `.github/**/*.md`, and otherwise runs `pnpm typecheck` -> `pnpm lint` -> `pnpm format:check` -> `pnpm test` -> `pnpm build` in order.
-- `.github/actions/prepare-pages-artifact/action.yml` prepares `dist/pages` from the deployable static files in `dist/`, excluding `dist/server`, `dist/client`, and any previous prepared output.
 - `.github/workflows/release.yml` runs Release Please on `main` so semantic versioning, changelog generation, and the release PR stay aligned with Conventional Commits.
-- `.github/workflows/preview-release-pr.yml` rebuilds and deploys only the Release Please PR to a stable preview alias on Cloudflare Pages.
-- `.github/workflows/deploy-production.yml` rebuilds the published release tag and deploys the prepared `dist/pages` artifact to the production Pages branch.
+- `.github/workflows/preview-release-pr.yml` rebuilds and deploys only the Release Please PR to a stable preview alias on Cloudflare Pages using `dist/client`.
+- `.github/workflows/deploy-production.yml` rebuilds the published release tag and deploys the `dist/client` artifact to the production Pages branch.
 
 ## 6. Developer Workflow
 

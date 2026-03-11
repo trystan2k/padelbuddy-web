@@ -59,7 +59,7 @@ It only runs for the Release Please branch:
 - branch name: `release-please--branches--main`
 - event: release PR opened, reopened, or synchronized
 
-It performs the full verification path again, prepares a clean Pages artifact, and deploys a stable preview to Cloudflare Pages.
+It performs the full verification path again and deploys `dist/client` as a stable preview to Cloudflare Pages.
 
 Important:
 
@@ -78,22 +78,19 @@ The workflow:
 - checks out the released tag
 - re-runs the verification pipeline
 - builds the app
-- prepares a clean Pages artifact
-- deploys to the production Cloudflare Pages branch alias
+- deploys `dist/client` to the production Cloudflare Pages branch alias
 
 Production is not deployed on every push to `main`.
 
-## Pages Artifact Preparation
+## Pages Artifact
 
-This repo deploys a prepared static Pages artifact instead of publishing the entire `dist/` folder.
+This repo deploys `dist/client` directly to Cloudflare Pages.
 
 Why:
 
-- `pnpm build` produces deployable static output plus additional build output such as `dist/server`
-- Cloudflare Pages should receive only the static deployment payload
-- the reusable local GitHub Action at `.github/actions/prepare-pages-artifact/action.yml` creates `dist/pages` from the deployable entries in `dist/`
-
-That action is used by CI and deploy workflows so the logic is defined once and reused consistently.
+- `pnpm build` produces the Pages-ready SPA output in `dist/client`
+- `dist/server` is not part of the static Pages deployment payload
+- using `dist/client` directly keeps the workflows simpler and avoids extra packaging logic
 
 ## Required Secrets
 
@@ -121,6 +118,6 @@ Typical process:
 - If no release PR appears after merging work to `main`, verify the merged commits use releasable Conventional Commit types.
 - If the release PR appears but no preview is deployed, verify the PR branch is `release-please--branches--main` and confirm required secrets are set.
 - If the GitHub release is published but production does not deploy, inspect `.github/workflows/deploy-production.yml` and confirm the release targets `main`.
-- If deployment fails during artifact packaging, inspect `.github/actions/prepare-pages-artifact/action.yml` and confirm `pnpm build` still emits the expected `dist/` structure.
+- If deployment fails, confirm `pnpm build` still emits the expected `dist/client` output and that the Pages workflows still deploy that directory.
 
 For incident handling and rollback policy, see `docs/prd/release-incident-runbook.md`.

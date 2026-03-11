@@ -63,9 +63,6 @@ jobs:
       - name: Build application
         run: pnpm build
 
-      - name: Prepare Pages artifact
-        uses: ./.github/actions/prepare-pages-artifact
-
       - name: Deploy production to Cloudflare Pages
         id: deploy
         uses: cloudflare/wrangler-action@v3
@@ -73,7 +70,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: >-
-            pages deploy dist/pages
+            pages deploy dist/client
             --project-name=${{ secrets.CLOUDFLARE_PAGES_PROJECT_NAME }}
             --branch=${{ env.PRODUCTION_BRANCH }}
 

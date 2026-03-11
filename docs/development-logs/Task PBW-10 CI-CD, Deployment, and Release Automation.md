@@ -25,13 +25,12 @@ permalink: development-logs/task-pbw-10-ci-cd-deployment-and-release-automation
   - Release Please automated releases and release PR creation.
   - Preview deployment triggered only on the Release Please release PR.
   - Production deployment triggered only on published releases.
-- Added Cloudflare Pages static artifact preparation using the reusable local GitHub Action at `.github/actions/prepare-pages-artifact/action.yml`.
+- Configured Cloudflare Pages workflows to deploy the built `dist/client` artifact directly.
 - Added release files and updated repository documentation to reflect the approved CI/CD and deployment model.
 - Applied follow-up review fixes: use `RELEASE_PLEASE_TOKEN` for Release Please auth, robust docs-only detection using newline-safe changed-files handling, and safer environment-based shell interpolation in workflow summaries.
 
 ## Files Changed
 
-- `.github/actions/prepare-pages-artifact/action.yml`
 - `.github/workflows/ci.yml`
 - `.github/workflows/release.yml`
 - `.github/workflows/preview-release-pr.yml`
@@ -54,7 +53,7 @@ permalink: development-logs/task-pbw-10-ci-cd-deployment-and-release-automation
 - Deploy production only on published releases.
 - Keep docs-only detection newline-safe to avoid misclassification when filenames contain spaces.
 - Use environment variables in shell summary steps instead of direct GitHub expression interpolation.
-- Centralize Pages artifact preparation in a reusable local GitHub Action instead of a package script or duplicated inline workflow logic.
+- Use `dist/client` directly as the Cloudflare Pages artifact instead of maintaining extra packaging logic.
 
 ## Validation Performed
 
@@ -63,12 +62,12 @@ permalink: development-logs/task-pbw-10-ci-cd-deployment-and-release-automation
 - `pnpm format:check`: pass - formatting checks passed after the development log was corrected.
 - `pnpm test`: pass - Vitest unit and browser suites passed.
 - `pnpm build`: pass - production build succeeded and generated deployable output.
-- Pages artifact preparation: pass - the reusable local GitHub Action logic prepared `dist/pages` without including `dist/server` or `dist/client`.
+- Pages artifact path: pass - workflows now use `dist/client` directly as the Cloudflare Pages payload.
 - Docs-only detection checks: pass - newline-safe shell verification confirmed docs-only and mixed-change classification behavior.
 
 ## Risks and Follow-ups
 
 - Ensure `RELEASE_PLEASE_TOKEN` is configured in repository secrets and rotated appropriately.
 - Monitor initial releases for Release Please behavior, including changelog formatting and release PR labels.
-- If Pages packaging changes, update `.github/actions/prepare-pages-artifact/action.yml` and monitor artifact diffs for unexpected size changes.
+- If the app stops behaving like a static SPA, revisit whether `dist/client` remains the correct Cloudflare Pages deployment target.
 - Consider adding more granular cache steps if CI time becomes problematic.

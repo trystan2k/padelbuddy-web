@@ -142,9 +142,6 @@ jobs:
       - name: Build application
         run: pnpm build
 
-      - name: Prepare Pages artifact
-        uses: ./.github/actions/prepare-pages-artifact
-
       - name: Upload coverage artifact
         if: always() && !cancelled()
         uses: actions/upload-artifact@v4
@@ -158,7 +155,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: pages-${{ github.sha }}
-          path: dist/pages/
+          path: dist/client/
           retention-days: 7
 
   ci:
