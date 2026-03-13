@@ -37,8 +37,13 @@ Automated testing is centered on **Vitest** with two explicit projects:
 │   │   └── AppShell.module.css    # Scoped styles for the foundation shell
 │   ├── core/
 │   │   └── match/
-│   │       ├── index.ts           # Match domain re-export surface
-│   │       └── types.ts           # Match constants and TypeScript interfaces
+│   │       ├── derived-state.ts    # Derived match metadata selectors
+│   │       ├── engine.ts           # Pure scoring reducer and state transitions
+│   │       ├── helpers.ts          # Shared match-domain score helpers
+│   │       ├── index.ts            # Match domain re-export surface
+│   │       ├── replay.ts           # Replay projection, undo, and continue helpers
+│   │       ├── types.ts            # Match constants and TypeScript interfaces
+│   │       └── validation.ts       # Match setup validation and normalization
 │   ├── routes/
 │   │   ├── __root.tsx             # Document shell and global stylesheet link
 │   │   └── index.tsx              # Home route using the foundation shell
@@ -53,7 +58,13 @@ Automated testing is centered on **Vitest** with two explicit projects:
 │   │       └── NotFoundPage.browser.test.tsx # Browser smoke test for the not-found screen
 │   ├── core/
 │   │   └── match/
-│   │       └── match.test.ts      # Match-domain smoke coverage
+│   │       ├── match.test.ts              # Match-domain public export smoke coverage
+│   │       ├── replay-determinism.test.ts # Replay, undo, and deterministic projection tests
+│   │       ├── scoring-core.test.ts       # Normal scoring, set rollover, and completion rules
+│   │       ├── serve-derived-state.test.ts # Serve rotation and derived-state coverage
+│   │       ├── setup-validation.test.ts   # Match setup validation coverage
+│   │       ├── test-helpers.ts            # Shared unit-test helpers for match suites
+│   │       └── tiebreak-rules.test.ts     # Standard and super-tiebreak scenarios
 │   ├── setup/
 │   │   ├── browser.ts             # Browser-mode setup entrypoint
 │   │   └── shared.ts              # Shared Vitest cleanup/reset hooks
@@ -86,7 +97,10 @@ Automated testing is centered on **Vitest** with two explicit projects:
 
 ### 3.3 Match Domain
 
-- `src/core/match/types.ts` holds domain constants, discriminated unions, and shared interfaces for match setup, lifecycle actions, scoring state, and preferences.
+- `src/core/match/validation.ts` normalizes and validates setup into the canonical match configuration used by the domain.
+- `src/core/match/engine.ts` applies pure scoring actions to canonical match state, including normal games, tiebreaks, super tiebreaks, set rollover, and match boundaries.
+- `src/core/match/derived-state.ts` derives serving, winner, side-switch, and score-display metadata strictly from setup plus canonical state.
+- `src/core/match/replay.ts` projects full state from ordered score actions and exposes undo and continue-playing helpers.
 - `src/core/match/index.ts` is the public re-export entry for that domain module.
 
 ## 4. Testing Architecture
@@ -109,7 +123,7 @@ Automated testing is centered on **Vitest** with two explicit projects:
 
 ### 4.3 Current Test Coverage Scope
 
-The suite currently covers the bootstrap shell with lightweight smoke coverage across the app shell, not-found route, router setup, and match-domain exports.
+The suite currently covers the bootstrap shell plus scenario-driven match-domain coverage for setup validation, scoring transitions, tiebreak rules, serve rotation, replay determinism, undo, and continue-playing behavior.
 
 ## 5. Automation Architecture
 
