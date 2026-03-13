@@ -119,14 +119,22 @@ function parseMatchSetup(input: unknown): MatchSetup {
     sides: setup.sides
   }
 
-  if (setup.format === 'best-of-1' && typeof setup.bestOfOneDecidingBehavior === 'string') {
-    return createMatchSetup({
-      ...setupInput,
-      bestOfOneDecidingBehavior: setup.bestOfOneDecidingBehavior
-    })
+  const normalizedSetup =
+    setup.format === 'best-of-1' && typeof setup.bestOfOneDecidingBehavior === 'string'
+      ? createMatchSetup({
+          ...setupInput,
+          bestOfOneDecidingBehavior: setup.bestOfOneDecidingBehavior
+        })
+      : createMatchSetup(setupInput)
+
+  if (setup.setCap === null) {
+    return {
+      ...normalizedSetup,
+      setCap: null
+    }
   }
 
-  return createMatchSetup(setupInput)
+  return normalizedSetup
 }
 
 function parseMatchActions(input: unknown): MatchAction[] {
