@@ -112,30 +112,23 @@ function validateMatchSide(
   }
 
   const issues: MatchSetupValidationIssue[] = []
-  const id = value.id
-  const playerNames = value.playerNames
+  const id = isMatchTeamId(value.id) ? value.id : null
+  const playerNames = isPlayerNames(value.playerNames) ? value.playerNames : null
 
-  if (!isMatchTeamId(id)) {
+  if (id === null) {
     issues.push(createIssue(`${sideField}.id`, 'Side identifiers must be team-1 and team-2.'))
   }
 
-  if (!isPlayerNames(playerNames)) {
+  if (playerNames === null) {
     issues.push(
       createIssue(`${sideField}.playerNames`, 'Side playerNames must be an array of strings.')
     )
   }
 
-  if (issues.length > 0) {
+  if (id === null || playerNames === null) {
     return {
       side: null,
       issues
-    }
-  }
-
-  if (!isMatchTeamId(id) || !isPlayerNames(playerNames)) {
-    return {
-      side: null,
-      issues: [createIssue(sideField, 'Side validation could not be completed.')]
     }
   }
 
