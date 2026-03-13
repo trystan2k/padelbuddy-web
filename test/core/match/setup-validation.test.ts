@@ -62,6 +62,22 @@ describe('match setup validation', () => {
     expect(setup.decidingSetMode).toBe('standard')
   })
 
+  test('computes deciding-set mode explicitly for best-of-1 and multi-set formats', () => {
+    const bestOfOneSetup = createMatchSetup({
+      ...baseInput,
+      format: 'best-of-1',
+      decidingSetSuperTiebreak: true,
+      bestOfOneDecidingBehavior: 'super-tiebreak'
+    })
+    const bestOfThreeSetup = createMatchSetup({
+      ...baseInput,
+      decidingSetSuperTiebreak: true
+    })
+
+    expect(bestOfOneSetup.decidingSetMode).toBe('super-tiebreak')
+    expect(bestOfThreeSetup.decidingSetMode).toBe('super-tiebreak')
+  })
+
   test('normalizes sides into the canonical team order', () => {
     const setup = createMatchSetup({
       ...baseInput,
@@ -140,7 +156,7 @@ describe('match setup validation', () => {
     })
   })
 
-  test('rejects malformed side entries without throwing', () => {
+  test('reports object-shape issues for malformed side entries without throwing', () => {
     const result = validateMatchSetup(
       JSON.parse(
         JSON.stringify({
@@ -152,8 +168,39 @@ describe('match setup validation', () => {
 
     expect(result.success).toBe(false)
     expect(result.success ? [] : result.issues).toContainEqual(
+      expect.objectContaining({ field: 'sides[0]', message: 'Each side must be an object.' })
+    )
+    expect(result.success ? [] : result.issues).toContainEqual(
+      expect.objectContaining({ field: 'sides[1]', message: 'Each side must be an object.' })
+    )
+  })
+
+  test('reports the specific malformed side field when ids are valid', () => {
+    const result = validateMatchSetup(
+      JSON.parse(
+        JSON.stringify({
+          ...baseInput,
+          sides: [
+            {
+              id: 'team-1',
+              playerNames: 'Ana'
+            },
+            baseInput.sides[1]
+          ]
+        })
+      )
+    )
+
+    expect(result.success).toBe(false)
+    expect(result.success ? [] : result.issues).toContainEqual(
       expect.objectContaining({
-        field: 'sides',
+        field: 'sides[0].playerNames',
+        message: 'Side playerNames must be an array of strings.'
+      })
+    )
+    expect(result.success ? [] : result.issues).not.toContainEqual(
+      expect.objectContaining({
+        field: 'sides[0].id',
         message: 'Side identifiers must be team-1 and team-2.'
       })
     )

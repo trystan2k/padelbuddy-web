@@ -4,10 +4,10 @@ import {
   gameModes,
   matchFormats,
   matchTeamIds,
-  setModes,
   type BestOfOneDecidingBehavior,
   type MatchFormat,
   type MatchGameMode,
+  type MatchSetMode,
   type MatchSetup,
   type MatchSetupValidationIssue,
   type MatchSetupValidationResult,
@@ -73,6 +73,10 @@ function isMatchTeamId(value: unknown): value is MatchTeamId {
   return typeof value === 'string' && matchTeamIds.some((candidate) => candidate === value)
 }
 
+function isPlayerNames(value: unknown): value is string[] {
+  return Array.isArray(value) && value.every((playerName) => typeof playerName === 'string')
+}
+
 function isBestOfOneDecidingBehavior(value: unknown): value is BestOfOneDecidingBehavior {
   return (
     typeof value === 'string' && bestOfOneDecidingBehaviors.some((candidate) => candidate === value)
@@ -91,16 +95,57 @@ const officialSetsToWinByFormat = {
   'best-of-5': 3
 } as const
 
-function isMatchSide(value: unknown): value is MatchSide {
+function validateMatchSide(
+  value: unknown,
+  index: number
+): {
+  side: MatchSide | null
+  issues: MatchSetupValidationIssue[]
+} {
+  const sideField = `sides[${index}]`
+
   if (!isRecord(value)) {
-    return false
+    return {
+      side: null,
+      issues: [createIssue(sideField, 'Each side must be an object.')]
+    }
   }
 
-  return (
-    isMatchTeamId(value.id) &&
-    Array.isArray(value.playerNames) &&
-    value.playerNames.every((playerName) => typeof playerName === 'string')
-  )
+  const issues: MatchSetupValidationIssue[] = []
+  const id = value.id
+  const playerNames = value.playerNames
+
+  if (!isMatchTeamId(id)) {
+    issues.push(createIssue(`${sideField}.id`, 'Side identifiers must be team-1 and team-2.'))
+  }
+
+  if (!isPlayerNames(playerNames)) {
+    issues.push(
+      createIssue(`${sideField}.playerNames`, 'Side playerNames must be an array of strings.')
+    )
+  }
+
+  if (issues.length > 0) {
+    return {
+      side: null,
+      issues
+    }
+  }
+
+  if (!isMatchTeamId(id) || !isPlayerNames(playerNames)) {
+    return {
+      side: null,
+      issues: [createIssue(sideField, 'Side validation could not be completed.')]
+    }
+  }
+
+  return {
+    side: {
+      id,
+      playerNames
+    },
+    issues
+  }
 }
 
 function normalizeSides(sides: unknown): {
@@ -120,9 +165,15 @@ function normalizeSides(sides: unknown): {
 
   const sideMap = new Map<MatchTeamId, MatchSide>()
 
-  for (const side of sides) {
-    if (!isMatchSide(side)) {
-      issues.push(createIssue('sides', 'Side identifiers must be team-1 and team-2.'))
+  for (const [index, sideEntry] of sides.entries()) {
+    const { side, issues: sideIssues } = validateMatchSide(sideEntry, index)
+
+    if (sideIssues.length > 0) {
+      issues.push(...sideIssues)
+      continue
+    }
+
+    if (!side) {
       continue
     }
 
@@ -286,14 +337,14 @@ export function validateMatchSetup(input: unknown): MatchSetupValidationResult {
       ? (bestOfOneDecidingBehavior ?? defaultBestOfOneDecidingBehavior)
       : defaultBestOfOneDecidingBehavior
 
-  const decidingSetMode =
+  const decidingSetMode: MatchSetMode =
     format === 'best-of-1'
       ? normalizedBestOfOneDecidingBehavior === 'super-tiebreak'
-        ? setModes[1]
-        : setModes[0]
+        ? 'super-tiebreak'
+        : 'standard'
       : decidingSetSuperTiebreak
-        ? setModes[1]
-        : setModes[0]
+        ? 'super-tiebreak'
+        : 'standard'
 
   return {
     success: true,
