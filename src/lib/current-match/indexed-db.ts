@@ -33,8 +33,10 @@ export interface CurrentMatchLoadResetRequiredResult {
   status: 'reset-required'
   reason: 'schema-version'
   storedSchemaVersion: number
-  // `loadCurrentMatch()` has already cleared the incompatible persisted record before returning.
 }
+
+// `loadCurrentMatch()` returns this only after clearing the incompatible persisted record and
+// queueing the one-time reset notice, so callers should treat it as an informational result.
 
 export type CurrentMatchLoadResult =
   | CurrentMatchLoadEmptyResult
