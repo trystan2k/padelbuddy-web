@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest'
 
-import { projectMatch } from '@/core/match'
+import { continueMatch, projectMatch } from '@/core/match'
 import {
   createCurrentMatchRecord,
   currentMatchSchemaVersion,
@@ -52,6 +52,23 @@ describe('current match persistence helpers', () => {
       record
     })
     expect(replayCurrentMatchRecord(record)).toEqual(projectMatch(setup, actions))
+  })
+
+  test('preserves setCap null when an endless continued match is persisted and restored', () => {
+    const setup = createTestSetup({
+      format: 'best-of-1'
+    })
+    const actions = Array.from({ length: 6 }, () => winQuickGame('team-1')).flat()
+    const continuedSetup = continueMatch(setup, projectMatch(setup, actions).state)
+    const record = createCurrentMatchRecord({
+      setup: continuedSetup,
+      actions
+    })
+    const decodedRecord = parseCurrentMatchRecord(record)
+
+    expect(record.setup.setCap).toBeNull()
+    expect(decodedRecord.setup.setCap).toBeNull()
+    expect(replayCurrentMatchRecord(decodedRecord).setup.setCap).toBeNull()
   })
 
   test('classifies incompatible schema versions as reset-required', () => {
