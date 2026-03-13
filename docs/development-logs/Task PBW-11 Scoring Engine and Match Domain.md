@@ -21,8 +21,8 @@ permalink: development-logs/task-pbw-11-scoring-engine-and-match-domain
 ## Implementation Summary
 
 - Expanded src/core/match into a pure replay-driven scoring domain with:
-  - validated setup/types
-  - a scoring reducer for deterministic state transitions
+  - runtime-validated setup/types
+  - a scoring reducer for deterministic state transitions from typed score actions
   - derived-state selectors (serve/side-switch prompts and other derived properties)
   - replay and undo helpers
   - continue-playing support that uncaps the set limit while preserving existing score/history and rules

@@ -44,7 +44,7 @@ function createGameStateForSetMode(mode: MatchSetMode): MatchGameState {
 }
 
 export function getSetMode(setup: MatchSetup, setIndex: number): MatchSetMode {
-  if (setup.setCap !== null && setIndex === setup.setCap) {
+  if (setIndex === setup.officialMaxSets) {
     return setup.decidingSetMode
   }
 

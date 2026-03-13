@@ -97,7 +97,7 @@ Automated testing is centered on **Vitest** with two explicit projects:
 
 ### 3.3 Match Domain
 
-- `src/core/match/validation.ts` normalizes and validates setup into the canonical match configuration used by the domain.
+- `src/core/match/validation.ts` normalizes and validates setup input into the canonical match configuration used by the domain; score actions remain typed domain inputs rather than a separate runtime-validation layer.
 - `src/core/match/engine.ts` applies pure scoring actions to canonical match state, including normal games, tiebreaks, super tiebreaks, set rollover, and match boundaries.
 - `src/core/match/derived-state.ts` derives serving, winner, side-switch, and score-display metadata strictly from setup plus canonical state.
 - `src/core/match/replay.ts` projects full state from ordered score actions and exposes undo and continue-playing helpers.

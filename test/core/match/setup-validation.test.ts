@@ -81,6 +81,47 @@ describe('match setup validation', () => {
     expect(missingSideResult.success).toBe(false)
   })
 
+  test('returns validation issues instead of throwing for null or primitive inputs', () => {
+    expect(validateMatchSetup(null)).toEqual({
+      success: false,
+      issues: [
+        {
+          field: 'setup',
+          message: 'Match setup must be an object.'
+        }
+      ]
+    })
+    expect(validateMatchSetup('not-an-object')).toEqual({
+      success: false,
+      issues: [
+        {
+          field: 'setup',
+          message: 'Match setup must be an object.'
+        }
+      ]
+    })
+    expect(() => createMatchSetup(null)).toThrowError('Match setup must be an object.')
+  })
+
+  test('rejects malformed side entries without throwing', () => {
+    const result = validateMatchSetup(
+      JSON.parse(
+        JSON.stringify({
+          ...baseInput,
+          sides: [null, 'team-2']
+        })
+      )
+    )
+
+    expect(result.success).toBe(false)
+    expect(result.success ? [] : result.issues).toContainEqual(
+      expect.objectContaining({
+        field: 'sides',
+        message: 'Side identifiers must be team-1 and team-2.'
+      })
+    )
+  })
+
   test('rejects non-boolean primitive values for boolean setup fields', () => {
     const result = validateMatchSetup(
       JSON.parse(

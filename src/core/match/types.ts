@@ -110,10 +110,25 @@ export interface MatchSideSwitchState {
   reason: 'odd-games' | 'tiebreak-interval' | null
 }
 
-export interface MatchScoreDisplay {
-  kind: 'standard' | 'tiebreak' | null
-  points: TeamScore<string> | TeamScore<number> | null
+export interface StandardMatchScoreDisplay {
+  kind: 'standard'
+  points: TeamScore<string>
 }
+
+export interface TiebreakMatchScoreDisplay {
+  kind: 'tiebreak'
+  points: TeamScore<number>
+}
+
+export interface EmptyMatchScoreDisplay {
+  kind: null
+  points: null
+}
+
+export type MatchScoreDisplay =
+  | StandardMatchScoreDisplay
+  | TiebreakMatchScoreDisplay
+  | EmptyMatchScoreDisplay
 
 export interface MatchDerivedState {
   status: 'in-progress' | 'completed'

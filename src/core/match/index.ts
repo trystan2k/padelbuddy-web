@@ -20,9 +20,12 @@ export type {
   MatchState,
   MatchTeamId,
   MatchWinner,
+  EmptyMatchScoreDisplay,
   ScorePointAction,
   StandardGameState,
+  StandardMatchScoreDisplay,
   TeamScore,
+  TiebreakMatchScoreDisplay,
   TiebreakGameState
 } from './types'
 export {
