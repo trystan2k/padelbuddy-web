@@ -44,13 +44,21 @@ function describeValue(value: unknown): string {
     return 'undefined'
   }
 
-  const serializedValue = JSON.stringify(value)
+  try {
+    const serializedValue = JSON.stringify(value)
 
-  return serializedValue ?? 'unserializable value'
+    return serializedValue ?? 'unserializable value'
+  } catch {
+    if (Array.isArray(value)) {
+      return '[unserializable array]'
+    }
+
+    return '[unserializable object]'
+  }
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
 }
 
 function isMatchFormat(value: unknown): value is MatchFormat {
@@ -309,7 +317,12 @@ export function createMatchSetup(input: unknown): MatchSetup {
   const result = validateMatchSetup(input)
 
   if (!result.success) {
-    throw new Error(result.issues.map((issue) => issue.message).join(' '))
+    throw new Error(
+      [
+        'Invalid match setup:',
+        ...result.issues.map((issue) => `- ${issue.field}: ${issue.message}`)
+      ].join('\n')
+    )
   }
 
   return result.data

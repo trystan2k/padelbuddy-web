@@ -103,6 +103,43 @@ describe('match setup validation', () => {
     expect(() => createMatchSetup(null)).toThrowError('Match setup must be an object.')
   })
 
+  test('routes arrays through the top-level object-shape validation path', () => {
+    expect(validateMatchSetup([])).toEqual({
+      success: false,
+      issues: [
+        {
+          field: 'setup',
+          message: 'Match setup must be an object.'
+        }
+      ]
+    })
+  })
+
+  test('describes BigInt and circular invalid values without throwing', () => {
+    const circularValue: { self?: unknown } = {}
+    circularValue.self = circularValue
+
+    const bigIntResult = validateMatchSetup({
+      ...baseInput,
+      format: { value: BigInt(9) }
+    })
+    const circularResult = validateMatchSetup({
+      ...baseInput,
+      format: circularValue
+    })
+
+    expect(bigIntResult.success).toBe(false)
+    expect(bigIntResult.success ? [] : bigIntResult.issues).toContainEqual({
+      field: 'format',
+      message: 'Unsupported match format: [unserializable object]'
+    })
+    expect(circularResult.success).toBe(false)
+    expect(circularResult.success ? [] : circularResult.issues).toContainEqual({
+      field: 'format',
+      message: 'Unsupported match format: [unserializable object]'
+    })
+  })
+
   test('rejects malformed side entries without throwing', () => {
     const result = validateMatchSetup(
       JSON.parse(
@@ -228,7 +265,7 @@ describe('match setup validation', () => {
       })
     )
     expect(() => createMatchSetup(invalidInput)).toThrowError(
-      'Duplicate side id team-1 is not allowed.'
+      'Invalid match setup:\n- sides: Duplicate side id team-1 is not allowed.'
     )
   })
 })
