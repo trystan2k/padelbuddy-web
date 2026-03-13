@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/trystan2k/padelbuddy-web/compare/padelbuddy-web-v0.1.0...padelbuddy-web-v0.2.0) (2026-03-13)
+
+
+### Features
+
+* add scoring engine and match domain core with tests and design plan ([#6](https://github.com/trystan2k/padelbuddy-web/issues/6)) ([3c4628b](https://github.com/trystan2k/padelbuddy-web/commit/3c4628b71787fc25689d522ebf24cd094ab005f0))
+
 ## [0.1.0](https://github.com/trystan2k/padelbuddy-web/compare/padelbuddy-web-v0.0.1...padelbuddy-web-v0.1.0) (2026-03-11)
 
 
