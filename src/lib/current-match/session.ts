@@ -38,58 +38,75 @@ export function createCurrentMatchSession(
     actions: options.actions
   })
   const persistence = options.persistence ?? currentMatchPersistence
+  let pendingMutation = Promise.resolve()
 
   return {
     getSnapshot: () => snapshot,
-    scorePoint: async (teamId) => {
-      const nextActions = [
-        ...snapshot.actions,
-        {
-          type: 'score-point',
-          teamId
-        }
-      ] satisfies MatchAction[]
-      const nextSnapshot = createCurrentMatchSessionSnapshot({
-        setup: snapshot.setup,
-        actions: nextActions
-      })
-
-      // The domain reducer ignores score inputs once they stop changing canonical state, so this
-      // guard prevents persisting no-op actions that replay would never count.
-      if (nextSnapshot.projection.state.actionCount === snapshot.projection.state.actionCount) {
-        return snapshot
-      }
-
-      return commitSnapshot(nextSnapshot)
-    },
-    undoScoreAction: async () => {
-      const nextActions = undoLastScoringAction(snapshot.actions)
-
-      if (nextActions.length === snapshot.actions.length) {
-        return snapshot
-      }
-
-      return commitSnapshot(
-        createCurrentMatchSessionSnapshot({
+    scorePoint: (teamId) =>
+      enqueueMutation(async () => {
+        const nextActions = [
+          ...snapshot.actions,
+          {
+            type: 'score-point',
+            teamId
+          }
+        ] satisfies MatchAction[]
+        const nextSnapshot = createCurrentMatchSessionSnapshot({
           setup: snapshot.setup,
           actions: nextActions
         })
-      )
-    },
-    continuePlaying: async () => {
-      const nextSetup = continueMatch(snapshot.setup, snapshot.projection.state)
 
-      if (nextSetup === snapshot.setup) {
-        return snapshot
-      }
+        // The domain reducer ignores score inputs once they stop changing canonical state, so this
+        // guard prevents persisting no-op actions that replay would never count.
+        if (nextSnapshot.projection.state.actionCount === snapshot.projection.state.actionCount) {
+          return snapshot
+        }
 
-      return commitSnapshot(
-        createCurrentMatchSessionSnapshot({
-          setup: nextSetup,
-          actions: snapshot.actions
-        })
-      )
-    }
+        return commitSnapshot(nextSnapshot)
+      }),
+    undoScoreAction: () =>
+      enqueueMutation(async () => {
+        const nextActions = undoLastScoringAction(snapshot.actions)
+
+        if (nextActions.length === snapshot.actions.length) {
+          return snapshot
+        }
+
+        return commitSnapshot(
+          createCurrentMatchSessionSnapshot({
+            setup: snapshot.setup,
+            actions: nextActions
+          })
+        )
+      }),
+    continuePlaying: () =>
+      enqueueMutation(async () => {
+        const nextSetup = continueMatch(snapshot.setup, snapshot.projection.state)
+
+        if (nextSetup === snapshot.setup) {
+          return snapshot
+        }
+
+        return commitSnapshot(
+          createCurrentMatchSessionSnapshot({
+            setup: nextSetup,
+            actions: snapshot.actions
+          })
+        )
+      })
+  }
+
+  function enqueueMutation(
+    mutation: () => Promise<CurrentMatchSessionSnapshot>
+  ): Promise<CurrentMatchSessionSnapshot> {
+    const nextMutation = pendingMutation.then(() => mutation())
+
+    pendingMutation = nextMutation.then(
+      () => undefined,
+      () => undefined
+    )
+
+    return nextMutation
   }
 
   async function commitSnapshot(

@@ -58,7 +58,9 @@ export function CurrentMatchStartupGate({ children, persistence }: CurrentMatchS
     status: 'loading'
   })
   const [isClearing, setIsClearing] = useState(false)
+  const [clearErrorMessage, setClearErrorMessage] = useState<string | null>(null)
   const resumeButtonRef = useRef<HTMLButtonElement | null>(null)
+  const resumeDialogRef = useRef<HTMLElement | null>(null)
 
   useEffect(() => {
     let cancelled = false
@@ -82,30 +84,83 @@ export function CurrentMatchStartupGate({ children, persistence }: CurrentMatchS
     }
   }, [startupState])
 
+  useEffect(() => {
+    if (startupState.status !== 'resume-required') {
+      return
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== 'Tab') {
+        return
+      }
+
+      const dialog = resumeDialogRef.current
+
+      if (!dialog) {
+        return
+      }
+
+      const focusableElements = getDialogFocusableElements(dialog)
+
+      if (focusableElements.length === 0) {
+        event.preventDefault()
+
+        return
+      }
+
+      const activeElement =
+        document.activeElement instanceof HTMLElement ? document.activeElement : null
+      const currentIndex = activeElement ? focusableElements.indexOf(activeElement) : -1
+
+      event.preventDefault()
+
+      if (event.shiftKey) {
+        const previousIndex = currentIndex <= 0 ? focusableElements.length - 1 : currentIndex - 1
+
+        focusableElements[previousIndex]?.focus()
+
+        return
+      }
+
+      const nextIndex =
+        currentIndex === -1 || currentIndex === focusableElements.length - 1 ? 0 : currentIndex + 1
+
+      focusableElements[nextIndex]?.focus()
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [startupState.status])
+
   const dismissNotice = useCallback(() => {
     setStartupState((currentState) => dismissCurrentMatchStartupNotice(currentState))
   }, [])
 
   const clearSavedMatch = useCallback(async () => {
     setIsClearing(true)
+    setClearErrorMessage(null)
 
     try {
       await (persistence?.clearCurrentMatch() ?? clearCurrentMatch())
       setStartupState((currentState) => clearCurrentMatchStartup(currentState))
+    } catch (error) {
+      setClearErrorMessage(
+        error instanceof Error ? error.message : 'Unable to clear the saved match right now.'
+      )
     } finally {
       setIsClearing(false)
     }
   }, [persistence])
 
   const resumeSavedMatch = useCallback(() => {
+    setClearErrorMessage(null)
     setStartupState((currentState) => resumeCurrentMatchStartup(currentState))
   }, [])
 
-  const handleResetAndContinue = useCallback(() => {
-    void clearSavedMatch()
-  }, [clearSavedMatch])
-
-  const handleDiscardSavedMatch = useCallback(() => {
+  const handleClearSavedMatch = useCallback(() => {
     void clearSavedMatch()
   }, [clearSavedMatch])
 
@@ -134,10 +189,15 @@ export function CurrentMatchStartupGate({ children, persistence }: CurrentMatchS
             into the app shell.
           </p>
           <p className={styles.detail}>{startupState.message}</p>
+          {clearErrorMessage ? (
+            <p className={styles.detail} role="alert">
+              {clearErrorMessage}
+            </p>
+          ) : null}
           <button
             className={styles.primaryButton}
             disabled={isClearing}
-            onClick={handleResetAndContinue}
+            onClick={handleClearSavedMatch}
             type="button"
           >
             Reset and continue
@@ -172,6 +232,7 @@ export function CurrentMatchStartupGate({ children, persistence }: CurrentMatchS
             aria-labelledby="resume-match-heading"
             aria-modal="true"
             className={styles.promptCard}
+            ref={resumeDialogRef}
             role="dialog"
           >
             <p className={styles.eyebrow}>Saved match found</p>
@@ -182,6 +243,11 @@ export function CurrentMatchStartupGate({ children, persistence }: CurrentMatchS
               Padel Buddy restored an in-progress current match. Resume keeps the action log and
               restores the live score state through replay.
             </p>
+            {clearErrorMessage ? (
+              <p className={styles.detail} role="alert">
+                {clearErrorMessage}
+              </p>
+            ) : null}
             <div className={styles.promptActions}>
               <button
                 className={styles.primaryButton}
@@ -196,7 +262,7 @@ export function CurrentMatchStartupGate({ children, persistence }: CurrentMatchS
               <button
                 className={styles.secondaryButton}
                 disabled={isClearing}
-                onClick={handleDiscardSavedMatch}
+                onClick={handleClearSavedMatch}
                 type="button"
               >
                 Discard saved match
@@ -206,5 +272,13 @@ export function CurrentMatchStartupGate({ children, persistence }: CurrentMatchS
         </div>
       ) : null}
     </>
+  )
+}
+
+function getDialogFocusableElements(dialog: HTMLElement): HTMLElement[] {
+  return Array.from(
+    dialog.querySelectorAll<HTMLElement>(
+      'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    )
   )
 }

@@ -65,6 +65,15 @@ describe('CurrentMatchStartupGate browser', () => {
     await expect.element(resumeButton).toHaveFocus()
     await expect.element(screen.getByRole('button', { name: 'Discard saved match' })).toBeVisible()
 
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab', bubbles: true }))
+    expect(document.activeElement).toHaveTextContent('Discard saved match')
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab', bubbles: true }))
+    expect(document.activeElement).toHaveTextContent('Resume saved match')
+    document.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'Tab', shiftKey: true, bubbles: true })
+    )
+    expect(document.activeElement).toHaveTextContent('Discard saved match')
+
     await resumeButton.click()
 
     expect(document.body.textContent).not.toContain('Resume saved match?')
@@ -244,6 +253,65 @@ describe('CurrentMatchStartupGate browser', () => {
       .toBeVisible()
     expect(document.body.textContent).not.toContain('Resume saved match?')
   })
+
+  test('keeps the resume dialog open and shows an error when discarding fails', async () => {
+    const setup = createTestSetup()
+
+    const screen = await render(
+      <CurrentMatchStartupGate
+        persistence={createPersistenceStub({
+          loadCurrentMatch: async () => ({
+            status: 'ok',
+            record: {
+              schemaVersion: currentMatchSchemaVersion,
+              setup,
+              actions: scorePoints('team-1')
+            }
+          }),
+          clearCurrentMatch: async () => {
+            throw new Error('Failed to clear saved match.')
+          }
+        })}
+      >
+        <AppShell />
+      </CurrentMatchStartupGate>
+    )
+
+    await screen.getByRole('button', { name: 'Discard saved match' }).click()
+
+    await expect.element(screen.getByRole('dialog', { name: 'Resume saved match?' })).toBeVisible()
+    await expect
+      .element(screen.getByRole('alert'))
+      .toHaveTextContent('Failed to clear saved match.')
+  })
+
+  test('keeps the recovery screen visible and shows an error when reset fails', async () => {
+    const screen = await render(
+      <CurrentMatchStartupGate
+        persistence={createPersistenceStub({
+          loadCurrentMatch: async () => ({
+            status: 'corrupt',
+            notice: null,
+            message: 'Current match payload is corrupt.'
+          }),
+          clearCurrentMatch: async () => {
+            throw new Error('Failed to clear saved match.')
+          }
+        })}
+      >
+        <AppShell />
+      </CurrentMatchStartupGate>
+    )
+
+    await screen.getByRole('button', { name: 'Reset and continue' }).click()
+
+    await expect
+      .element(screen.getByRole('heading', { level: 1, name: 'Saved match needs recovery' }))
+      .toBeVisible()
+    await expect
+      .element(screen.getByRole('alert'))
+      .toHaveTextContent('Failed to clear saved match.')
+  })
 })
 
 async function writeRawRecord(input: { databaseName: string; value: unknown }): Promise<void> {
@@ -313,4 +381,17 @@ function waitForTransaction(transaction: IDBTransaction): Promise<void> {
       reject(transaction.error ?? new Error('IndexedDB transaction was aborted.'))
     })
   })
+}
+
+function createPersistenceStub(overrides: {
+  loadCurrentMatch: CurrentMatchPersistence['loadCurrentMatch']
+  clearCurrentMatch: CurrentMatchPersistence['clearCurrentMatch']
+}): CurrentMatchPersistence {
+  return {
+    saveCurrentMatch: async () => {
+      throw new Error('saveCurrentMatch should not be called in this test.')
+    },
+    loadCurrentMatch: overrides.loadCurrentMatch,
+    clearCurrentMatch: overrides.clearCurrentMatch
+  }
 }

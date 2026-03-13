@@ -186,6 +186,69 @@ describe('current match session', () => {
       }
     })
   })
+
+  test('serializes overlapping score mutations across async persistence writes', async () => {
+    const setup = createTestSetup()
+    const firstSave = createDeferred<void>()
+    const secondSave = createDeferred<void>()
+    const saveCurrentMatchMock = vi
+      .fn<CurrentMatchPersistence['saveCurrentMatch']>()
+      .mockImplementationOnce(async () => {
+        await firstSave.promise
+
+        return {
+          schemaVersion: currentMatchSchemaVersion,
+          setup,
+          actions: scorePoints('team-1')
+        }
+      })
+      .mockImplementationOnce(async () => {
+        await secondSave.promise
+
+        return {
+          schemaVersion: currentMatchSchemaVersion,
+          setup,
+          actions: scorePoints('team-1', 'team-2')
+        }
+      })
+    const session = createCurrentMatchSession({
+      setup,
+      actions: [],
+      persistence: {
+        saveCurrentMatch: saveCurrentMatchMock,
+        loadCurrentMatch: vi.fn(),
+        clearCurrentMatch: vi.fn(async () => undefined)
+      }
+    })
+
+    const firstMutation = session.scorePoint('team-1')
+    const secondMutation = session.scorePoint('team-2')
+
+    await Promise.resolve()
+
+    expect(saveCurrentMatchMock).toHaveBeenCalledTimes(1)
+    expect(saveCurrentMatchMock).toHaveBeenNthCalledWith(1, {
+      setup,
+      actions: scorePoints('team-1')
+    })
+
+    firstSave.resolve()
+    await firstMutation
+    await Promise.resolve()
+
+    expect(saveCurrentMatchMock).toHaveBeenCalledTimes(2)
+    expect(saveCurrentMatchMock).toHaveBeenNthCalledWith(2, {
+      setup,
+      actions: scorePoints('team-1', 'team-2')
+    })
+
+    secondSave.resolve()
+
+    await expect(secondMutation).resolves.toMatchObject({
+      actions: scorePoints('team-1', 'team-2')
+    })
+    expect(session.getSnapshot().projection.state.actionCount).toBe(2)
+  })
 })
 
 function createPersistenceStub(): {
@@ -205,5 +268,17 @@ function createPersistenceStub(): {
       clearCurrentMatch: vi.fn(async () => undefined)
     },
     saveCurrentMatchMock
+  }
+}
+
+function createDeferred<T>() {
+  let resolve!: (value: T | PromiseLike<T>) => void
+  const promise = new Promise<T>((resolvePromise) => {
+    resolve = resolvePromise
+  })
+
+  return {
+    promise,
+    resolve
   }
 }
