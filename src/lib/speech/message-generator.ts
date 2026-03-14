@@ -92,7 +92,7 @@ function formatVerboseScore(
   // Include serving information if available
   if (servingTeam) {
     const serverName = servingTeam === 'team-1' ? team1Name : team2Name
-    return `${word1} ${word2.toLowerCase()}, ${t('score.announcements.serving')} ${serverName}`
+    return `${word1} ${word2}, ${t('score.announcements.serving')} ${serverName}`
   }
 
   return `${word1} ${word2}`

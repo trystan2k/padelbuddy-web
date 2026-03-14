@@ -67,21 +67,23 @@ describe('root route', () => {
     expect(Route.options.notFoundComponent).toBeTypeOf('function')
   })
 
-  test('renders loading state before i18n initialization', () => {
+  test('renders full document immediately when i18n is already initialized', () => {
     const RootDocument = Route.options.component
 
     if (!RootDocument) {
       throw new Error('Expected the root route to expose component')
     }
 
-    // Initial render shows loading state without Outlet
+    // When i18n is already initialized (as it is in beforeAll),
+    // the component renders the full document immediately without loading flash
     const initialMarkup = renderToStaticMarkup(<RootDocument />)
     expect(initialMarkup).toContain('<html lang="en">')
-    expect(initialMarkup).not.toContain('route outlet')
+    // The Outlet should be rendered immediately since i18n is already initialized
+    expect(initialMarkup).toContain('route outlet')
     expect(initialMarkup).toContain('scripts')
 
-    // Note: Testing async state transition (i18nReady -> true) requires
-    // browser tests with React Testing Library's act() and waitFor().
+    // Note: Testing async state transition requires browser tests with
+    // React Testing Library's act() and waitFor().
     // The async behavior is covered in E2E tests.
   })
 })

@@ -48,6 +48,7 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
   const initializedRef = useRef(false)
   const destroyedRef = useRef(false)
   const abortControllerRef = useRef<AbortController | null>(null)
+  const languageUnsubscribeRef = useRef<(() => void) | null>(null)
 
   const onErrorRef = useRef(config.onError)
   const onVoiceChangeRef = useRef(config.onVoiceChange)
@@ -55,7 +56,7 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
   useEffect(() => {
     onErrorRef.current = config.onError
     onVoiceChangeRef.current = config.onVoiceChange
-  })
+  }, [config.onError, config.onVoiceChange])
 
   // Initialize from storage and load voices
   useEffect(() => {
@@ -121,11 +122,11 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
     const { signal } = abortController
 
     async function updateVoice() {
-      if (typeof speechSynthesis === 'undefined' || signal.aborted) return
+      if (typeof speechSynthesis === 'undefined' || signal.aborted || destroyedRef.current) return
 
       try {
         const voices = await getAvailableVoices(signal)
-        if (signal.aborted) return
+        if (signal.aborted || destroyedRef.current) return
         const currentLocale = getSafeLocale(i18n.language)
         const selectedVoice = selectVoice(currentLocale, voices)
         setVoice(selectedVoice)
@@ -142,9 +143,16 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
     }
 
     i18n.on('languageChanged', handleLanguageChanged)
+
+    // Store unsubscribe function for destroy() to use
+    languageUnsubscribeRef.current = () => {
+      i18n.off('languageChanged', handleLanguageChanged)
+    }
+
     return () => {
       abortController.abort()
-      i18n.off('languageChanged', handleLanguageChanged)
+      languageUnsubscribeRef.current?.()
+      languageUnsubscribeRef.current = null
     }
   }, [])
 
@@ -277,6 +285,8 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
       destroyedRef.current = true
       cancel()
       abortControllerRef.current?.abort()
+      languageUnsubscribeRef.current?.()
+      languageUnsubscribeRef.current = null
     }
   }
 }

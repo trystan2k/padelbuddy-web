@@ -32,10 +32,17 @@ export const Route = createRootRoute({
 })
 
 function RootDocument() {
-  const [i18nReady, setI18nReady] = useState(false)
-  const [currentLang, setCurrentLang] = useState('en')
+  const [i18nReady, setI18nReady] = useState(() => i18n.isInitialized)
+  const [currentLang, setCurrentLang] = useState(
+    () => i18n.resolvedLanguage ?? i18n.language ?? 'en'
+  )
 
   useEffect(() => {
+    // If already initialized, no need to initialize again
+    if (i18n.isInitialized) {
+      return
+    }
+
     let cancelled = false
 
     void initializeI18n()

@@ -255,7 +255,7 @@ describe('message-generator', () => {
         servingTeam: 'team-1',
         verbosity: 'verbose'
       })
-      expect(message).toBe('Forty fifteen, Serving Team A')
+      expect(message).toBe('Forty Fifteen, Serving Team A')
     })
 
     it('returns verbose score with serving info when servingTeam is team-2', () => {
@@ -268,7 +268,7 @@ describe('message-generator', () => {
         servingTeam: 'team-2',
         verbosity: 'verbose'
       })
-      expect(message).toBe('Love forty, Serving Team B')
+      expect(message).toBe('Love Forty, Serving Team B')
     })
 
     it('uses default team names when not provided', () => {
@@ -279,7 +279,7 @@ describe('message-generator', () => {
         servingTeam: 'team-1',
         verbosity: 'verbose'
       })
-      expect(message).toBe('Fifteen love, Serving Team 1')
+      expect(message).toBe('Fifteen Love, Serving Team 1')
     })
 
     it('handles advantage score in verbose mode', () => {
