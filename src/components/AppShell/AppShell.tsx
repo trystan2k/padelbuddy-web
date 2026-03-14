@@ -6,26 +6,20 @@ import styles from './AppShell.module.css'
 export function AppShell() {
   const { t } = useTranslation()
 
-  const foundationItems = [
-    {
-      title: t('appShell.foundationItems.tanstackShell.title'),
-      detail: t('appShell.foundationItems.tanstackShell.detail')
-    },
-    {
-      title: t('appShell.foundationItems.designTokens.title'),
-      detail: t('appShell.foundationItems.designTokens.detail')
-    },
-    {
-      title: t('appShell.foundationItems.scopedStyling.title'),
-      detail: t('appShell.foundationItems.scopedStyling.detail')
-    }
-  ] as const
+  // Stable IDs for foundation items to avoid using translated strings as React keys
+  const foundationItemIds = ['tanstackShell', 'designTokens', 'scopedStyling'] as const
+  const foundationItems = foundationItemIds.map((id) => ({
+    id,
+    title: t(`appShell.foundationItems.${id}.title`),
+    detail: t(`appShell.foundationItems.${id}.detail`)
+  }))
 
-  const statusPills = [
-    t('appShell.statusPills.clientOnly'),
-    t('appShell.statusPills.mobileReady'),
-    t('appShell.statusPills.accessibleBaseline')
-  ] as const
+  // Stable IDs for status pills to avoid using translated strings as React keys
+  const statusPillIds = ['clientOnly', 'mobileReady', 'accessibleBaseline'] as const
+  const statusPills = statusPillIds.map((id) => ({
+    id,
+    label: t(`appShell.statusPills.${id}`)
+  }))
   return (
     <main className={styles.page}>
       <div className={styles.shell}>
@@ -39,8 +33,8 @@ export function AppShell() {
           <div className={styles.heroFooter}>
             <ul className={styles.statusPills} aria-label="Foundation status">
               {statusPills.map((pill) => (
-                <li className={styles.statusPill} key={pill}>
-                  {pill}
+                <li className={styles.statusPill} key={pill.id}>
+                  {pill.label}
                 </li>
               ))}
             </ul>
@@ -79,7 +73,7 @@ export function AppShell() {
 
           <ul className={styles.foundationGrid}>
             {foundationItems.map((item) => (
-              <li className={styles.foundationCard} key={item.title}>
+              <li className={styles.foundationCard} key={item.id}>
                 <h3 className={styles.cardTitle}>{item.title}</h3>
                 <p className={styles.cardText}>{item.detail}</p>
               </li>

@@ -46,6 +46,8 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
   const utteranceQueueRef = useRef<SpeechSynthesisUtterance[]>([])
   const isSpeakingRef = useRef(false)
   const initializedRef = useRef(false)
+  const destroyedRef = useRef(false)
+  const abortControllerRef = useRef<AbortController | null>(null)
 
   const onErrorRef = useRef(config.onError)
   const onVoiceChangeRef = useRef(config.onVoiceChange)
@@ -58,6 +60,7 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
   // Initialize from storage and load voices
   useEffect(() => {
     const abortController = new AbortController()
+    abortControllerRef.current = abortController
     const { signal } = abortController
 
     async function initialize() {
@@ -159,7 +162,7 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
 
   const speak = useCallback(
     (text: string, options?: SpeechOptions) => {
-      if (muted || !voice || !text) {
+      if (destroyedRef.current || muted || !voice || !text) {
         return
       }
 
@@ -271,7 +274,9 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
     announce,
     destroy: () => {
       // Cancel any ongoing speech and prevent further speaking
+      destroyedRef.current = true
       cancel()
+      abortControllerRef.current?.abort()
     }
   }
 }

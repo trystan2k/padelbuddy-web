@@ -6,6 +6,8 @@ import { useEffect, useState } from 'react'
 import { NotFoundPage } from '@/components/NotFoundPage/NotFoundPage'
 import { i18n, initializeI18n } from '@/lib/i18n'
 
+import styles from './RootDocument.module.css'
+
 export const Route = createRootRoute({
   head: () => ({
     meta: [
@@ -74,28 +76,8 @@ function RootDocument() {
           <HeadContent />
         </head>
         <body>
-          <div
-            // oxlint-disable-next-line jsx-no-new-object-as-prop
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              height: '100vh',
-              fontFamily: 'system-ui, sans-serif'
-            }}
-          >
-            <div
-              // oxlint-disable-next-line jsx-no-new-object-as-prop
-              style={{
-                width: '24px',
-                height: '24px',
-                border: '3px solid #e5e7eb',
-                borderTop: '3px solid #3b82f6',
-                borderRadius: '50%',
-                animation: 'spin 1s linear infinite'
-              }}
-            />
-            <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+          <div className={styles.loadingContainer}>
+            <div className={styles.spinner} />
           </div>
           <Scripts />
         </body>
