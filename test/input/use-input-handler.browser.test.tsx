@@ -431,7 +431,7 @@ describe('use-input-handler browser', () => {
   })
 
   describe('keyboard event edge cases', () => {
-    test('ignores keyboard events when target is not an HTMLElement', async () => {
+    test('processes keyboard events when target is not an HTMLElement (null)', async () => {
       const onScore = vi.fn()
       const options = createOptions(session)
       const callbacks = { onScore }
@@ -446,7 +446,7 @@ describe('use-input-handler browser', () => {
       await vi.waitFor(() => expect(onScore).toHaveBeenCalledWith('team-1'))
     })
 
-    test('processes keyboard events when target is an input element', async () => {
+    test('ignores keyboard events when target is an input element', async () => {
       const onScore = vi.fn()
       const options = createOptions(session)
       const callbacks = { onScore }
@@ -472,7 +472,7 @@ describe('use-input-handler browser', () => {
       }
     })
 
-    test('processes keyboard events when target is a textarea element', async () => {
+    test('ignores keyboard events when target is a textarea element', async () => {
       const onScore = vi.fn()
       const options = createOptions(session)
       const callbacks = { onScore }
@@ -498,7 +498,7 @@ describe('use-input-handler browser', () => {
       }
     })
 
-    test('processes keyboard events when target is contentEditable', async () => {
+    test('ignores keyboard events when target is contentEditable', async () => {
       const onScore = vi.fn()
       const options = createOptions(session)
       const callbacks = { onScore }

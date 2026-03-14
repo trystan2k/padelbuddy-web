@@ -222,13 +222,13 @@ describe('debounce', () => {
       expect(debounce.isReady()).toBe(false)
     })
 
-    test('reset during debounce allows immediate re-trigger', () => {
+    test('cleanup clears timer', () => {
       debounce = createDebounce({ delay: 300 })
 
       debounce.trigger()
       expect(debounce.isReady()).toBe(false)
 
-      // Cleanup resets everything
+      // Cleanup clears the timer
       debounce.cleanup()
       expect(debounce.isReady()).toBe(true)
     })

@@ -59,7 +59,7 @@ describe('wake-lock browser', () => {
     })
     vi.restoreAllMocks()
   })
-  describe('request and release', () => {
+  describe('request and release (not supported)', () => {
     test('does not request when API is not supported', async () => {
       const savedWakeLock = navigator.wakeLock
       Object.defineProperty(navigator, 'wakeLock', {
@@ -69,8 +69,7 @@ describe('wake-lock browser', () => {
       })
 
       try {
-        // We need to ensure the check for 'wakeLock' in navigator returns false
-        // Since we've set it to undefined, 'wakeLock' in navigator should be false
+        // Setting wakeLock to undefined means the API check will fail
         const screen = await render(<WakeLockTestComponent />)
 
         // Try to request - should not throw but should not actually request
@@ -110,7 +109,7 @@ describe('wake-lock browser', () => {
     })
   })
 
-  describe('request and release', () => {
+  describe('request and release (supported)', () => {
     test('requests wake lock successfully', async () => {
       const mockSentinel = {
         addEventListener: vi.fn(),
