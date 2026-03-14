@@ -47,19 +47,30 @@ export function getAvailableVoices(signal?: AbortSignal): Promise<SpeechSynthesi
       return
     }
 
-    // Voices might not be loaded yet - use addEventListener for proper cleanup
-    // and to support multiple concurrent callers
-    const handleVoicesChanged = () => {
+    let settled = false
+
+    const cleanup = () => {
+      if (settled) return
+      settled = true
+      clearTimeout(timeout)
       speechSynthesis.removeEventListener('voiceschanged', handleVoicesChanged)
       signal?.removeEventListener('abort', handleAbort)
+    }
+
+    const handleVoicesChanged = () => {
+      cleanup()
       resolve(speechSynthesis.getVoices())
     }
 
     const handleAbort = () => {
-      speechSynthesis.removeEventListener('voiceschanged', handleVoicesChanged)
-      signal?.removeEventListener('abort', handleAbort)
+      cleanup()
       reject(new Error('Operation aborted'))
     }
+
+    const timeout = setTimeout(() => {
+      cleanup()
+      resolve([])
+    }, 3000)
 
     speechSynthesis.addEventListener('voiceschanged', handleVoicesChanged)
     signal?.addEventListener('abort', handleAbort)

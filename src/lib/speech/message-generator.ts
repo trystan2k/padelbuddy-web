@@ -29,10 +29,9 @@ function generatePointScoreMessage(data: SpeechEventData): string | null {
   const { team1Score, team2Score, team1Name, team2Name, servingTeam, isTiebreak, verbosity } = data
 
   if (verbosity === 'minimal') {
-    return null // No point-by-point in minimal mode
+    return null
   }
 
-  // Issue 6: Guard against undefined/null scores
   if (
     team1Score === undefined ||
     team1Score === null ||

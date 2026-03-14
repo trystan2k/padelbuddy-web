@@ -45,7 +45,6 @@ function RootDocument() {
       })
       .catch((error) => {
         if (cancelled) return
-        // Log the error but still render the app with fallback language
         console.error('Failed to initialize i18n:', error)
         setI18nReady(true)
         setCurrentLang('en')
@@ -56,7 +55,6 @@ function RootDocument() {
     }
   }, [])
 
-  // Subscribe to language changes to keep <html lang> in sync
   useEffect(() => {
     const handleLanguageChanged = (lng: string) => {
       setCurrentLang(lng || 'en')
@@ -76,6 +74,29 @@ function RootDocument() {
           <HeadContent />
         </head>
         <body>
+          <div
+            // oxlint-disable-next-line jsx-no-new-object-as-prop
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: '100vh',
+              fontFamily: 'system-ui, sans-serif'
+            }}
+          >
+            <div
+              // oxlint-disable-next-line jsx-no-new-object-as-prop
+              style={{
+                width: '24px',
+                height: '24px',
+                border: '3px solid #e5e7eb',
+                borderTop: '3px solid #3b82f6',
+                borderRadius: '50%',
+                animation: 'spin 1s linear infinite'
+              }}
+            />
+            <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+          </div>
           <Scripts />
         </body>
       </html>

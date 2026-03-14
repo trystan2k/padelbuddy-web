@@ -1,11 +1,4 @@
-import { defaultLocale, supportedLocales, type SupportedLocale } from './types'
-
-/**
- * Type guard to check if a string is a valid supported locale.
- */
-function isValidSupportedLocale(lang: string): lang is SupportedLocale {
-  return (supportedLocales as readonly string[]).includes(lang)
-}
+import { defaultLocale, isSupportedLocale, type SupportedLocale } from './types'
 
 /**
  * Detects the browser's preferred language and maps it to a supported locale.
@@ -16,14 +9,14 @@ export function detectBrowserLocale(): SupportedLocale | null {
     return null
   }
 
-  const browserLang = navigator.language // e.g., 'en-US', 'pt-BR', 'es-ES'
+  const browserLang = navigator.language
   const primaryLang = browserLang.split('-')[0]?.toLowerCase()
 
   if (!primaryLang) {
     return null
   }
 
-  if (isValidSupportedLocale(primaryLang)) {
+  if (isSupportedLocale(primaryLang)) {
     return primaryLang
   }
 

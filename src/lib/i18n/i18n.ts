@@ -3,7 +3,7 @@ import { initReactI18next } from 'react-i18next'
 import HttpBackend from 'i18next-http-backend'
 import type { InitOptions } from 'i18next'
 
-import { defaultLocale, supportedLocales, type SupportedLocale } from './types'
+import { defaultLocale, isSupportedLocale, supportedLocales, type SupportedLocale } from './types'
 import { detectBrowserLocale, resolveInitialLocale } from './locale-detector'
 import { loadLocalePreference, saveLocalePreference } from './locale-storage'
 
@@ -16,9 +16,6 @@ let initializationPromise: Promise<void> | null = null
 export function resetI18nInitialization(): void {
   initializationPromise = null
 }
-
-// Cast to readonly string array for type-safe includes check
-const supportedLocaleValues: readonly string[] = supportedLocales
 
 export interface InitializeI18nOptions {
   /**
@@ -43,44 +40,49 @@ export async function initializeI18n(options: InitializeI18nOptions = {}): Promi
   }
 
   initializationPromise = (async () => {
-    // Try to load stored preference, but don't fail if IndexedDB is unavailable
-    let storedPreference = null
     try {
-      storedPreference = await loadLocalePreference()
-    } catch {
-      // IndexedDB not available (e.g., in test environment), use null
-    }
-    const browserLocale = detectBrowserLocale()
-    const initialLocale = resolveInitialLocale(storedPreference, browserLocale)
-
-    const baseConfig: InitOptions = {
-      lng: initialLocale,
-      fallbackLng: defaultLocale,
-      supportedLngs: [...supportedLocales],
-      interpolation: {
-        escapeValue: false // React already escapes values
-      },
-      react: {
-        useSuspense: false
+      // Try to load stored preference, but don't fail if IndexedDB is unavailable
+      let storedPreference = null
+      try {
+        storedPreference = await loadLocalePreference()
+      } catch {
+        // IndexedDB not available (e.g., in test environment), use null
       }
-    }
+      const browserLocale = detectBrowserLocale()
+      const initialLocale = resolveInitialLocale(storedPreference, browserLocale)
 
-    if (options.skipBackend) {
-      // No backend - tests should add resources manually
-      await i18n.use(initReactI18next).init({
-        ...baseConfig,
-        resources: {}
-      })
-    } else {
-      await i18n
-        .use(HttpBackend)
-        .use(initReactI18next)
-        .init({
+      const baseConfig: InitOptions = {
+        lng: initialLocale,
+        fallbackLng: defaultLocale,
+        supportedLngs: [...supportedLocales],
+        interpolation: {
+          escapeValue: false // React already escapes values
+        },
+        react: {
+          useSuspense: false
+        }
+      }
+
+      if (options.skipBackend) {
+        // No backend - tests should add resources manually
+        await i18n.use(initReactI18next).init({
           ...baseConfig,
-          backend: {
-            loadPath: '/locales/{{lng}}.json'
-          }
+          resources: {}
         })
+      } else {
+        await i18n
+          .use(HttpBackend)
+          .use(initReactI18next)
+          .init({
+            ...baseConfig,
+            backend: {
+              loadPath: '/locales/{{lng}}.json'
+            }
+          })
+      }
+    } catch (error) {
+      initializationPromise = null
+      throw error
     }
   })()
 
@@ -101,19 +103,12 @@ export async function changeLocale(locale: SupportedLocale): Promise<void> {
 }
 
 /**
- * Type guard to check if a language string is a valid supported locale.
- */
-function isValidLocale(lang: string | undefined): lang is SupportedLocale {
-  return typeof lang === 'string' && supportedLocaleValues.includes(lang)
-}
-
-/**
  * Gets the current locale.
  */
 export function getCurrentLocale(): SupportedLocale {
   const currentLang = i18n.language
 
-  if (isValidLocale(currentLang)) {
+  if (isSupportedLocale(currentLang)) {
     return currentLang
   }
 

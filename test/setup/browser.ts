@@ -111,6 +111,7 @@ beforeAll(async () => {
               Ad: 'Advantage'
             },
             announcements: {
+              all: 'all',
               game: 'Game',
               set: 'Set',
               match: 'Match',

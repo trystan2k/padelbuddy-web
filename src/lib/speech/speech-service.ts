@@ -47,6 +47,14 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
   const isSpeakingRef = useRef(false)
   const initializedRef = useRef(false)
 
+  const onErrorRef = useRef(config.onError)
+  const onVoiceChangeRef = useRef(config.onVoiceChange)
+
+  useEffect(() => {
+    onErrorRef.current = config.onError
+    onVoiceChangeRef.current = config.onVoiceChange
+  })
+
   // Initialize from storage and load voices
   useEffect(() => {
     const abortController = new AbortController()
@@ -56,7 +64,6 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
       if (initializedRef.current) return
       initializedRef.current = true
 
-      // Issue 3: Wrap loadSpeechPreferences in try/catch to handle IndexedDB unavailability
       try {
         const prefs = await loadSpeechPreferences()
 
@@ -67,9 +74,8 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
           setVerbosityState(prefs.verbosity)
         }
       } catch (error) {
-        // IndexedDB unavailable - continue with defaults
         if (!signal.aborted) {
-          config.onError?.(
+          onErrorRef.current?.(
             error instanceof Error ? error : new Error('Failed to load speech preferences')
           )
         }
@@ -77,23 +83,21 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
 
       if (typeof speechSynthesis === 'undefined') {
         setMutedState(true)
-        config.onError?.(new Error('Speech synthesis is not supported'))
+        onErrorRef.current?.(new Error('Speech synthesis is not supported'))
         return
       }
 
       try {
-        // Issue 5: Pass AbortSignal for proper cleanup on unmount
         const voices = await getAvailableVoices(signal)
         const currentLocale = getSafeLocale(i18n.language)
         const selectedVoice = selectVoice(currentLocale, voices)
 
         if (!signal.aborted) {
           setVoice(selectedVoice)
-          config.onVoiceChange?.(selectedVoice)
+          onVoiceChangeRef.current?.(selectedVoice)
 
-          // Log warning if no suitable voice found
           if (!selectedVoice) {
-            config.onError?.(new Error('No suitable voice found'))
+            onErrorRef.current?.(new Error('No suitable voice found'))
           }
         }
       } catch {
@@ -106,7 +110,7 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
     return () => {
       abortController.abort()
     }
-  }, [config])
+  }, [])
 
   // Update voice when locale changes
   useEffect(() => {
@@ -117,13 +121,12 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
       if (typeof speechSynthesis === 'undefined' || signal.aborted) return
 
       try {
-        // Issue 5: Pass AbortSignal for proper cleanup on unmount
         const voices = await getAvailableVoices(signal)
         if (signal.aborted) return
         const currentLocale = getSafeLocale(i18n.language)
         const selectedVoice = selectVoice(currentLocale, voices)
         setVoice(selectedVoice)
-        config.onVoiceChange?.(selectedVoice)
+        onVoiceChangeRef.current?.(selectedVoice)
       } catch {
         // Operation was aborted or failed - ignore
       }
@@ -131,7 +134,6 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
 
     void updateVoice()
 
-    // Extract handler to named const so i18n.off receives the same reference
     const handleLanguageChanged = () => {
       void updateVoice()
     }
@@ -141,7 +143,7 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
       abortController.abort()
       i18n.off('languageChanged', handleLanguageChanged)
     }
-  }, [config])
+  }, [])
 
   const processQueue = useCallback(() => {
     if (isSpeakingRef.current || utteranceQueueRef.current.length === 0) {
@@ -184,7 +186,7 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
 
       utterance.addEventListener('error', (event) => {
         isSpeakingRef.current = false
-        config.onError?.(new Error(`Speech error: ${event.error}`))
+        onErrorRef.current?.(new Error(`Speech error: ${event.error}`))
         processQueue()
       })
 
@@ -194,7 +196,7 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
         processQueue()
       }
     },
-    [muted, voice, config, processQueue]
+    [muted, voice, processQueue]
   )
 
   const cancel = useCallback(() => {
@@ -214,7 +216,7 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
         verbosity,
         updatedAt: new Date().toISOString()
       }).catch((error) => {
-        config.onError?.(
+        onErrorRef.current?.(
           error instanceof Error ? error : new Error('Failed to save speech preferences')
         )
       })
@@ -223,7 +225,7 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
         cancel()
       }
     },
-    [verbosity, cancel, config]
+    [verbosity, cancel]
   )
 
   // Issue 4: Handle saveSpeechPreferences rejections
@@ -235,12 +237,12 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
         verbosity: level,
         updatedAt: new Date().toISOString()
       }).catch((error) => {
-        config.onError?.(
+        onErrorRef.current?.(
           error instanceof Error ? error : new Error('Failed to save speech preferences')
         )
       })
     },
-    [muted, config]
+    [muted]
   )
 
   const announce = useCallback(

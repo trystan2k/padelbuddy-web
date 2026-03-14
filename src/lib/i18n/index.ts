@@ -3,7 +3,6 @@ export {
   getCurrentLocale,
   i18n,
   initializeI18n,
-  resetI18nInitialization,
   type InitializeI18nOptions
 } from './i18n'
 export { detectBrowserLocale, resolveInitialLocale } from './locale-detector'

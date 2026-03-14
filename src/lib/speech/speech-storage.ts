@@ -1,4 +1,4 @@
-import { type SpeechPreferences } from './types'
+import { type SpeechPreferences, verbosityLevels } from './types'
 
 const defaultDatabaseName = 'padel-buddy-web'
 const defaultDatabaseVersion = 3
@@ -44,7 +44,15 @@ export function createSpeechStorage(options: SpeechStorageOptions = {}): SpeechS
 
       await waitForTransaction(transaction)
 
-      return storedPrefs ?? null
+      if (!storedPrefs) {
+        return null
+      }
+
+      if (!verbosityLevels.includes(storedPrefs.verbosity)) {
+        return null
+      }
+
+      return storedPrefs
     })
   }
 

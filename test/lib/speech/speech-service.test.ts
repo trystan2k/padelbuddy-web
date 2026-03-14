@@ -98,9 +98,14 @@ describe('createSpeechService', () => {
       const onVoiceChange = vi.fn()
       createSpeechService({ onVoiceChange })
 
-      // Wait for async initialization
       await vi.waitFor(() => {
         expect(onVoiceChange).toHaveBeenCalled()
+        expect(onVoiceChange).toHaveBeenCalledWith(
+          expect.objectContaining({
+            lang: 'en-US',
+            name: 'English'
+          })
+        )
       })
     })
   })
