@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.4.0](https://github.com/trystan2k/padelbuddy-web/compare/v0.3.0...v0.4.0) (2026-03-14)
+
+
+### Features
+
+* add current-match persistence, undo, and recovery ([a33b377](https://github.com/trystan2k/padelbuddy-web/commit/a33b377887b827b336c2647eef5f61242876373d))
+* add input handling with keyboard aliases, debounce, and wake lock ([#11](https://github.com/trystan2k/padelbuddy-web/issues/11)) ([c7b222a](https://github.com/trystan2k/padelbuddy-web/commit/c7b222a2e146725c17bc3a19817fffece0635a1b))
+
+
+### Bug Fixes
+
+* address copilot review feedback ([272a259](https://github.com/trystan2k/padelbuddy-web/commit/272a2591bd1af2d2a89fdf0ac03aa98b1c98aaca))
+* preserve endless match set cap on restore ([99cf19a](https://github.com/trystan2k/padelbuddy-web/commit/99cf19a9f5b3421762f1f7fe39b68222fe605a88))
+
 ## [0.3.0](https://github.com/trystan2k/padelbuddy-web/compare/v0.2.0...v0.3.0) (2026-03-13)
 
 
