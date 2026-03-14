@@ -4,9 +4,9 @@ import { useCallback, useEffect, useRef } from 'react'
 
 import type { MatchTeamId } from '@/core/match'
 import type { CurrentMatchSession } from '@/lib/current-match/session'
-import { getActionFromKey, type KeyboardAction } from './keyboard-aliases'
 import { createDebounce, type DebounceController } from './debounce'
-import { useWakeLock, type UseWakeLockReturn } from './wake-lock'
+import { getActionFromKey, type KeyboardAction } from './keyboard-aliases'
+import { type UseWakeLockReturn, useWakeLock } from './wake-lock'
 
 export interface UseInputHandlerOptions {
   session: CurrentMatchSession
@@ -24,7 +24,7 @@ export interface UseInputHandlerReturn {
   scorePoint: (teamId: MatchTeamId) => Promise<void>
   undo: () => Promise<void>
   handlers: {
-    onKeyDown: (event: KeyboardEvent) => void
+    onKeyDown: (event: KeyboardEvent | React.KeyboardEvent) => void
     onTeam1Score: () => void
     onTeam2Score: () => void
     onUndo: () => void
@@ -110,7 +110,7 @@ export function useInputHandler(
   )
 
   const onKeyDown = useCallback(
-    (event: KeyboardEvent) => {
+    (event: KeyboardEvent | React.KeyboardEvent) => {
       if (!enabled) {
         return
       }

@@ -1,8 +1,9 @@
+/* eslint-disable react-perf/jsx-no-new-object-as-prop, react-perf/jsx-no-new-function-as-prop */
+import { useEffect } from 'react'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import { render } from 'vitest-browser-react'
-import { useEffect } from 'react'
 
-import { useWakeLock, type UseWakeLockReturn } from '@/lib/input'
+import { type UseWakeLockReturn, useWakeLock } from '@/lib/input'
 
 // Test component to render the hook output
 function WakeLockTestComponent({
@@ -23,11 +24,9 @@ function WakeLockTestComponent({
       <span data-testid="isSupported">{state.isSupported.toString()}</span>
       <span data-testid="isActive">{state.isActive.toString()}</span>
       <span data-testid="error">{state.error?.message ?? 'null'}</span>
-      {/* eslint-disable-next-line react-perf/jsx-no-new-object-as-prop, react-perf/jsx-no-new-function-as-prop */}
       <button data-testid="request" type="button" onClick={() => state.request()}>
         Request
       </button>
-      {/* eslint-disable-next-line react-perf/jsx-no-new-object-as-prop, react-perf/jsx-no-new-function-as-prop */}
       <button data-testid="release" type="button" onClick={() => state.release()}>
         Release
       </button>
@@ -37,12 +36,12 @@ function WakeLockTestComponent({
 
 describe('wake-lock browser', () => {
   let originalWakeLock: typeof navigator.wakeLock
-  let originalVisibilityState: string
+  let originalVisibilityStateDescriptor: PropertyDescriptor | undefined
 
   beforeEach(() => {
     // Capture original values before each test
     originalWakeLock = navigator.wakeLock
-    originalVisibilityState = document.visibilityState
+    originalVisibilityStateDescriptor = Object.getOwnPropertyDescriptor(document, 'visibilityState')
   })
 
   afterEach(() => {
@@ -52,11 +51,24 @@ describe('wake-lock browser', () => {
       writable: true,
       configurable: true
     })
-    Object.defineProperty(document, 'visibilityState', {
-      value: originalVisibilityState,
-      writable: true,
-      configurable: true
-    })
+
+    // Restore the original property descriptor
+    if (originalVisibilityStateDescriptor) {
+      Object.defineProperty(document, 'visibilityState', originalVisibilityStateDescriptor)
+    } else {
+      // If it wasn't an own property originally, try to restore the prototype chain
+      // by defining it with the default descriptor
+      try {
+        delete (document as { visibilityState?: unknown }).visibilityState
+      } catch {
+        // If delete fails (e.g., non-configurable), restore with undefined
+        Object.defineProperty(document, 'visibilityState', {
+          value: undefined,
+          writable: true,
+          configurable: true
+        })
+      }
+    }
     vi.restoreAllMocks()
   })
   describe('request and release (not supported)', () => {
@@ -300,7 +312,6 @@ describe('wake-lock browser', () => {
         configurable: true
       })
 
-      // eslint-disable-next-line react-perf/jsx-no-new-object-as-prop, react-perf/jsx-no-new-function-as-prop, unicorn/consistent-function-scoping
       await render(<WakeLockTestComponent onStateChange={() => {}} options={{ onError }} />)
 
       // Wait for the request to complete
