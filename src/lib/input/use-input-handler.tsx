@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef } from 'react'
 import type { MatchTeamId } from '@/core/match'
 import type { CurrentMatchSession } from '@/lib/current-match/session'
 import { getActionFromKey, type KeyboardAction } from './keyboard-aliases'
-import { createDebounce } from './debounce'
+import { createDebounce, type DebounceController } from './debounce'
 import { useWakeLock, type UseWakeLockReturn } from './wake-lock'
 
 export interface UseInputHandlerOptions {
@@ -38,17 +38,19 @@ export function useInputHandler(
 ): UseInputHandlerReturn {
   const { session, enabled = true, useWakeLock: useWakeLockEnabled = false } = options
 
-  const debounceRef = useRef(createDebounce({ delay: 300 }))
+  const debounceRef = useRef<DebounceController | null>(null)
   const callbacksRef = useRef<UseInputHandlerCallbacks | undefined>(callbacks)
   const sessionRef = useRef(session)
 
+  // Keep refs up to date
   callbacksRef.current = callbacks
   sessionRef.current = session
 
+  // Create debounce lazily on mount
   useEffect(() => {
-    const debounce = debounceRef.current
+    debounceRef.current = createDebounce({ delay: 300 })
     return () => {
-      debounce.cleanup()
+      debounceRef.current?.cleanup()
     }
   }, [])
 
