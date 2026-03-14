@@ -87,7 +87,7 @@ function formatVerboseScore(
 
   // Handle "all" scores (e.g., "15 all")
   if (score1 === score2) {
-    return `${word1} all`
+    return `${word1} ${t('score.announcements.all')}`
   }
 
   // Include serving information if available
@@ -103,7 +103,11 @@ function generateGameWonMessage(data: SpeechEventData): string {
   const { winningTeam, team1Name, team2Name, verbosity } = data
   const t = i18n.t.bind(i18n)
 
-  // Issue 7: Handle missing winnerName gracefully
+  // Guard on winningTeam being present/valid before selecting a team name
+  if (!winningTeam || (winningTeam !== 'team-1' && winningTeam !== 'team-2')) {
+    return t('score.announcements.game')
+  }
+
   const winnerName = winningTeam === 'team-1' ? team1Name : team2Name
 
   if (verbosity === 'minimal' || !winnerName) {
@@ -117,7 +121,11 @@ function generateSetWonMessage(data: SpeechEventData): string {
   const { winningTeam, team1Name, team2Name, verbosity } = data
   const t = i18n.t.bind(i18n)
 
-  // Issue 7: Handle missing winnerName gracefully
+  // Guard on winningTeam being present/valid before selecting a team name
+  if (!winningTeam || (winningTeam !== 'team-1' && winningTeam !== 'team-2')) {
+    return t('score.announcements.set')
+  }
+
   const winnerName = winningTeam === 'team-1' ? team1Name : team2Name
 
   if (verbosity === 'minimal' || !winnerName) {
@@ -131,7 +139,11 @@ function generateMatchWonMessage(data: SpeechEventData): string {
   const { winningTeam, team1Name, team2Name, verbosity } = data
   const t = i18n.t.bind(i18n)
 
-  // Issue 7: Handle missing winnerName gracefully
+  // Guard on winningTeam being present/valid before selecting a team name
+  if (!winningTeam || (winningTeam !== 'team-1' && winningTeam !== 'team-2')) {
+    return t('score.announcements.match')
+  }
+
   const winnerName = winningTeam === 'team-1' ? team1Name : team2Name
 
   if (verbosity === 'minimal' || !winnerName) {

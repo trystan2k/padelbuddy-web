@@ -81,7 +81,7 @@ Outputs:
 | Planning | execution-planner-specialist | X min Y sec |
 | Implementation | implementation-specialist | X min Y sec |
 | QA | qa-gate-specialist | X min Y sec |
-| Code Review | code-review-specialist | X min Y sec |
+| Code and Architecture Review | code-review-specialist and architecture-review-specialist | X min Y sec |
 | Development Logging | development-log-specialist | X min Y sec |
 | Commit/Push | git-specialist | X min Y sec |
 | PR Creation | git-specialist | X min Y sec |
@@ -153,11 +153,12 @@ Follow these steps in order.
    - Ask `qa-gate-specialist` to run all defined QA checks.
    - **Stop timer** and record QA phase time.
 
-6. Code Review
-   - **Start timer** for Code Review phase.
+6. Code and Architecture Review
+   - **Start timer** for Code and Architecture Review phase.
    - Ask `code-review-specialist` to perform full review of implemented changes.
-   - Always pass the plan file path (from step 3) to `code-review-specialist` for all reviews.
-   - **Stop timer** and record Code Review phase time.
+   - Ask `architecture-review-specialist` to perform full review of implemented changes.
+   - Always pass the plan file path (from step 3) to `code-review-specialist` and `architecture-review-specialist` for all reviews.
+   - **Stop timer** and record Code and Architecture Review phase time.
 
 7. Fix and Re-verify Loop
    - If QA fails or review recommends action:

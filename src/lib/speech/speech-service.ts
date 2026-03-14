@@ -268,7 +268,8 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
     isSupported: () => typeof speechSynthesis !== 'undefined',
     announce,
     destroy: () => {
-      // No-op for hook version - cleanup handled by useEffect
+      // Cancel any ongoing speech and prevent further speaking
+      cancel()
     }
   }
 }

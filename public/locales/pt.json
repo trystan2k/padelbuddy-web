@@ -88,7 +88,8 @@
       "game": "Jogo",
       "set": "Set",
       "match": "Partida",
-      "serving": "Sacando"
+      "serving": "Sacando",
+      "all": "iguais"
     }
   }
 }

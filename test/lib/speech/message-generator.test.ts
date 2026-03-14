@@ -18,7 +18,8 @@ const testTranslations = {
       game: 'Game',
       set: 'Set',
       match: 'Match',
-      serving: 'Serving'
+      serving: 'Serving',
+      all: 'all'
     }
   }
 }

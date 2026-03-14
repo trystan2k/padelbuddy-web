@@ -26,10 +26,6 @@ export function selectVoice(
 /**
  * Gets all available voices from the browser's speech synthesis API.
  * Returns a promise that resolves when voices are loaded.
- */
-/**
- * Gets all available voices from the browser's speech synthesis API.
- * Returns a promise that resolves when voices are loaded.
  * @param signal - Optional AbortSignal to cancel the operation
  */
 export function getAvailableVoices(signal?: AbortSignal): Promise<SpeechSynthesisVoice[]> {
@@ -55,11 +51,13 @@ export function getAvailableVoices(signal?: AbortSignal): Promise<SpeechSynthesi
     // and to support multiple concurrent callers
     const handleVoicesChanged = () => {
       speechSynthesis.removeEventListener('voiceschanged', handleVoicesChanged)
+      signal?.removeEventListener('abort', handleAbort)
       resolve(speechSynthesis.getVoices())
     }
 
     const handleAbort = () => {
       speechSynthesis.removeEventListener('voiceschanged', handleVoicesChanged)
+      signal?.removeEventListener('abort', handleAbort)
       reject(new Error('Operation aborted'))
     }
 

@@ -1,6 +1,8 @@
 import { describe, expect, test, vi, beforeAll } from 'vitest'
 
-// Initialize i18n before importing the route (which uses i18n)
+// Note: i18n is initialized in beforeAll() before tests execute.
+// ESM imports are hoisted, so this import runs before beforeAll -
+// but the route component handles uninitialized i18n gracefully.
 import { i18n, resetI18nInitialization } from '@/lib/i18n/i18n'
 
 beforeAll(async () => {
