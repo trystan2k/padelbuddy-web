@@ -161,12 +161,12 @@ Follow these steps in order.
    - **Stop timer** and record Code and Architecture Review phase time.
 
 7. Fix and Re-verify Loop
-   - If QA fails or review recommends action:
+   - If QA fails or review recommends action (even the optional ones):
      - Delegate fixes to the correct specialist (`implementation-specialist` or `testing-automation-specialist`).
      - Always pass the plan file path (from step 3) when delegating to `implementation-specialist`.
      - Re-run `qa-gate-specialist`.
-     - Always pass the plan file path (from step 3) when re-running `code-review-specialist`.
-     - Accumulate time for each iteration under the respective phase (Implementation, QA, or Code Review).
+     - Always pass the plan file path (from step 3) when re-running `code-review-specialist` and `architecture-review-specialist` for all reviews.
+     - Accumulate time for each iteration under the respective phase (Implementation, QA, or Code and Architecture Review).
    - Repeat until QA passes and review outcome is acceptable.
 
 8. Development Logging
