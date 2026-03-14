@@ -26,6 +26,12 @@ export function useWakeLock(options: UseWakeLockOptions = {}): UseWakeLockReturn
 
   const wakeLockRef = useRef<WakeLockSentinel | null>(null)
   const isMountedRef = useRef(true)
+  const enabledRef = useRef(enabled)
+
+  // Keep the ref in sync with the latest enabled value
+  useEffect(() => {
+    enabledRef.current = enabled
+  }, [enabled])
 
   const requestWakeLock = useCallback(async () => {
     if (!isSupportedValue) {
@@ -39,6 +45,13 @@ export function useWakeLock(options: UseWakeLockOptions = {}): UseWakeLockReturn
 
     try {
       const wakeLock = await navigator.wakeLock.request('screen')
+
+      // Re-check enabled after the await to handle race condition
+      if (!enabledRef.current) {
+        await wakeLock.release()
+        return
+      }
+
       wakeLockRef.current = wakeLock
 
       const handleRelease = () => {

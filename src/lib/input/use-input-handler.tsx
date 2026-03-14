@@ -113,6 +113,11 @@ export function useInputHandler(
         return
       }
 
+      // Don't handle keys when modifier keys are pressed to avoid breaking browser shortcuts
+      if (event.ctrlKey || event.metaKey || event.altKey) {
+        return
+      }
+
       const target = event.target
       if (
         target instanceof HTMLElement &&
