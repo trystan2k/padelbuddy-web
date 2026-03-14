@@ -1,4 +1,4 @@
-import { describe, expect, test, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import { render } from 'vitest-browser-react'
 import { useEffect } from 'react'
 
@@ -36,9 +36,32 @@ function WakeLockTestComponent({
 }
 
 describe('wake-lock browser', () => {
+  let originalWakeLock: typeof navigator.wakeLock
+  let originalVisibilityState: string
+
+  beforeEach(() => {
+    // Capture original values before each test
+    originalWakeLock = navigator.wakeLock
+    originalVisibilityState = document.visibilityState
+  })
+
+  afterEach(() => {
+    // Restore original values after each test to prevent cross-test leakage
+    Object.defineProperty(navigator, 'wakeLock', {
+      value: originalWakeLock,
+      writable: true,
+      configurable: true
+    })
+    Object.defineProperty(document, 'visibilityState', {
+      value: originalVisibilityState,
+      writable: true,
+      configurable: true
+    })
+    vi.restoreAllMocks()
+  })
   describe('request and release', () => {
     test('does not request when API is not supported', async () => {
-      const originalWakeLock = navigator.wakeLock
+      const savedWakeLock = navigator.wakeLock
       Object.defineProperty(navigator, 'wakeLock', {
         value: undefined,
         writable: true,
@@ -57,7 +80,7 @@ describe('wake-lock browser', () => {
         await expect.element(screen.getByTestId('isActive')).toHaveTextContent('false')
       } finally {
         Object.defineProperty(navigator, 'wakeLock', {
-          value: originalWakeLock,
+          value: savedWakeLock,
           writable: true,
           configurable: true
         })
@@ -246,19 +269,24 @@ describe('wake-lock browser', () => {
         configurable: true
       })
 
-      const screen = await render(<WakeLockTestComponent />)
+      const onError = vi.fn()
+      // eslint-disable-next-line react-perf/jsx-no-new-object-as-prop
+      const wakeLockOptions = { onError }
+      const screen = await render(<WakeLockTestComponent options={wakeLockOptions} />)
 
       // Request wake lock
       await screen.getByTestId('request').click()
       await expect.element(screen.getByTestId('isActive')).toHaveTextContent('true')
 
-      // Release - should handle error gracefully
-      // The error is caught but isActive becomes false after release is called
-      // Even if release throws, we try to clean up the ref
+      // Release - should handle error gracefully and call onError callback
       await screen.getByTestId('release').click()
 
       // The release function should have been called
       expect(releaseFn).toHaveBeenCalled()
+      // onError callback should be called with the error
+      await vi.waitFor(() => {
+        expect(onError).toHaveBeenCalledWith(expect.any(Error))
+      })
     })
 
     test('handles request error and calls onError callback', async () => {

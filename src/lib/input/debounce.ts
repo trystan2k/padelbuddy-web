@@ -1,3 +1,7 @@
+/**
+ * Creates a debounce controller for rate-limiting function calls.
+ * Default delay is 300ms but can be configured via options.
+ */
 export interface DebounceController {
   isReady: () => boolean
   trigger: () => void
@@ -6,6 +10,7 @@ export interface DebounceController {
 }
 
 export interface CreateDebounceOptions {
+  /** Delay in milliseconds. Default is 300ms. */
   delay?: number
 }
 

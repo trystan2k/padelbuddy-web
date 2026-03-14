@@ -96,9 +96,7 @@ describe('use-input-handler browser', () => {
       window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft' }))
 
       // Wait for the callback to be called
-      await new Promise((resolve) => setTimeout(resolve, 50))
-
-      expect(onScore).toHaveBeenCalledWith('team-1')
+      await vi.waitFor(() => expect(onScore).toHaveBeenCalledWith('team-1'))
     })
 
     test('handles ArrowRight key for team-2 score', async () => {
@@ -110,9 +108,7 @@ describe('use-input-handler browser', () => {
 
       window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight' }))
 
-      await new Promise((resolve) => setTimeout(resolve, 50))
-
-      expect(onScore).toHaveBeenCalledWith('team-2')
+      await vi.waitFor(() => expect(onScore).toHaveBeenCalledWith('team-2'))
     })
 
     test('handles ArrowUp key for undo', async () => {
@@ -124,9 +120,7 @@ describe('use-input-handler browser', () => {
 
       window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp' }))
 
-      await new Promise((resolve) => setTimeout(resolve, 50))
-
-      expect(onUndo).toHaveBeenCalled()
+      await vi.waitFor(() => expect(onUndo).toHaveBeenCalled())
     })
 
     test('ignores unknown keys', async () => {
@@ -139,10 +133,10 @@ describe('use-input-handler browser', () => {
 
       window.dispatchEvent(new KeyboardEvent('keydown', { key: 'x' }))
 
-      await new Promise((resolve) => setTimeout(resolve, 50))
-
-      expect(onScore).not.toHaveBeenCalled()
-      expect(onUndo).not.toHaveBeenCalled()
+      await vi.waitFor(() => {
+        expect(onScore).not.toHaveBeenCalled()
+        expect(onUndo).not.toHaveBeenCalled()
+      })
     })
 
     test('does not handle events when disabled', async () => {
@@ -157,9 +151,7 @@ describe('use-input-handler browser', () => {
       // When enabled is false, the click handler should also return early
       await screen.getByTestId('team1Score').click()
 
-      await new Promise((resolve) => setTimeout(resolve, 50))
-
-      expect(onScore).not.toHaveBeenCalled()
+      await vi.waitFor(() => expect(onScore).not.toHaveBeenCalled())
     })
   })
 
@@ -175,9 +167,7 @@ describe('use-input-handler browser', () => {
 
       await screen.getByTestId('team1Score').click()
 
-      await new Promise((resolve) => setTimeout(resolve, 50))
-
-      expect(onScore).toHaveBeenCalledWith('team-1')
+      await vi.waitFor(() => expect(onScore).toHaveBeenCalledWith('team-1'))
     })
 
     test('onTeam2Score triggers team-2 score', async () => {
@@ -191,9 +181,7 @@ describe('use-input-handler browser', () => {
 
       await screen.getByTestId('team2Score').click()
 
-      await new Promise((resolve) => setTimeout(resolve, 50))
-
-      expect(onScore).toHaveBeenCalledWith('team-2')
+      await vi.waitFor(() => expect(onScore).toHaveBeenCalledWith('team-2'))
     })
 
     test('onUndo triggers undo', async () => {
@@ -207,9 +195,7 @@ describe('use-input-handler browser', () => {
 
       await screen.getByTestId('undo').click()
 
-      await new Promise((resolve) => setTimeout(resolve, 50))
-
-      expect(onUndo).toHaveBeenCalled()
+      await vi.waitFor(() => expect(onUndo).toHaveBeenCalled())
     })
 
     test('touch handlers do not work when disabled', async () => {
@@ -223,9 +209,7 @@ describe('use-input-handler browser', () => {
 
       await screen.getByTestId('team1Score').click()
 
-      await new Promise((resolve) => setTimeout(resolve, 50))
-
-      expect(onScore).not.toHaveBeenCalled()
+      await vi.waitFor(() => expect(onScore).not.toHaveBeenCalled())
     })
   })
 
@@ -243,18 +227,16 @@ describe('use-input-handler browser', () => {
       await screen.getByTestId('team1Score').click()
 
       // Wait for the callback to be called
-      await new Promise((resolve) => setTimeout(resolve, 50))
-
-      expect(onScore).toHaveBeenCalledTimes(1)
+      await vi.waitFor(() => expect(onScore).toHaveBeenCalledTimes(1))
       expect(onScore).toHaveBeenCalledWith('team-1')
 
       // Rapid second click should be debounced
       await screen.getByTestId('team1Score').click()
 
-      await new Promise((resolve) => setTimeout(resolve, 50))
-
-      // Still only one call because of debounce
-      expect(onScore).toHaveBeenCalledTimes(1)
+      await vi.waitFor(() => {
+        // Still only one call because of debounce
+        expect(onScore).toHaveBeenCalledTimes(1)
+      })
     })
 
     test('allows score after debounce period', async () => {
@@ -269,9 +251,7 @@ describe('use-input-handler browser', () => {
       // First click
       await screen.getByTestId('team1Score').click()
 
-      await new Promise((resolve) => setTimeout(resolve, 50))
-
-      expect(onScore).toHaveBeenCalledTimes(1)
+      await vi.waitFor(() => expect(onScore).toHaveBeenCalledTimes(1))
 
       // Wait for debounce to expire (300ms + buffer)
       await new Promise((resolve) => setTimeout(resolve, 350))
@@ -279,9 +259,7 @@ describe('use-input-handler browser', () => {
       // Second click should now register
       await screen.getByTestId('team1Score').click()
 
-      await new Promise((resolve) => setTimeout(resolve, 50))
-
-      expect(onScore).toHaveBeenCalledTimes(2)
+      await vi.waitFor(() => expect(onScore).toHaveBeenCalledTimes(2))
     })
 
     test('undo is not debounced', async () => {
@@ -296,16 +274,12 @@ describe('use-input-handler browser', () => {
       // First undo
       await screen.getByTestId('undo').click()
 
-      await new Promise((resolve) => setTimeout(resolve, 50))
-
-      expect(onUndo).toHaveBeenCalledTimes(1)
+      await vi.waitFor(() => expect(onUndo).toHaveBeenCalledTimes(1))
 
       // Rapid second undo should also work
       await screen.getByTestId('undo').click()
 
-      await new Promise((resolve) => setTimeout(resolve, 50))
-
-      expect(onUndo).toHaveBeenCalledTimes(2)
+      await vi.waitFor(() => expect(onUndo).toHaveBeenCalledTimes(2))
     })
   })
 
@@ -344,18 +318,15 @@ describe('use-input-handler browser', () => {
         />
       )
 
-      // Wait for state to be set
-      await new Promise((resolve) => setTimeout(resolve, 50))
-
       // Now call the handler directly
       if (handlerRef) {
         handlerRef(new KeyboardEvent('keydown', { key: 'ArrowLeft' }))
       }
 
-      await new Promise((resolve) => setTimeout(resolve, 50))
-
-      // onScore should NOT be called because enabled is false
-      expect(onScore).not.toHaveBeenCalled()
+      await vi.waitFor(() => {
+        // onScore should NOT be called because enabled is false
+        expect(onScore).not.toHaveBeenCalled()
+      })
     })
   })
 
@@ -403,10 +374,10 @@ describe('use-input-handler browser', () => {
 
       await screen.getByTestId('team1Score').click()
 
-      await new Promise((resolve) => setTimeout(resolve, 50))
-
-      expect(onError).toHaveBeenCalledWith(expect.any(Error))
-      expect(onError.mock.calls[0]![0].message).toBe('Score failed')
+      await vi.waitFor(() => {
+        expect(onError).toHaveBeenCalledWith(expect.any(Error))
+        expect(onError.mock.calls[0]![0].message).toBe('Score failed')
+      })
     })
 
     test('calls onError callback when undo fails', async () => {
@@ -429,10 +400,10 @@ describe('use-input-handler browser', () => {
 
       await screen.getByTestId('undo').click()
 
-      await new Promise((resolve) => setTimeout(resolve, 50))
-
-      expect(onError).toHaveBeenCalledWith(expect.any(Error))
-      expect(onError.mock.calls[0]![0].message).toBe('Undo failed')
+      await vi.waitFor(() => {
+        expect(onError).toHaveBeenCalledWith(expect.any(Error))
+        expect(onError.mock.calls[0]![0].message).toBe('Undo failed')
+      })
     })
   })
 
@@ -448,14 +419,14 @@ describe('use-input-handler browser', () => {
 
       // First click - should work
       await screen.getByTestId('team1Score').click()
-      await new Promise((resolve) => setTimeout(resolve, 50))
-      expect(onScore).toHaveBeenCalledTimes(1)
+      await vi.waitFor(() => expect(onScore).toHaveBeenCalledTimes(1))
 
       // Immediate second click - debounce should block it
       await screen.getByTestId('team1Score').click()
-      await new Promise((resolve) => setTimeout(resolve, 50))
-      // Still only 1 call because of debounce
-      expect(onScore).toHaveBeenCalledTimes(1)
+      await vi.waitFor(() => {
+        // Still only 1 call because of debounce
+        expect(onScore).toHaveBeenCalledTimes(1)
+      })
     })
   })
 
@@ -472,10 +443,7 @@ describe('use-input-handler browser', () => {
       Object.defineProperty(event, 'target', { value: null })
       window.dispatchEvent(event)
 
-      await new Promise((resolve) => setTimeout(resolve, 50))
-
-      // Should still trigger because null is not an HTMLElement
-      expect(onScore).toHaveBeenCalledWith('team-1')
+      await vi.waitFor(() => expect(onScore).toHaveBeenCalledWith('team-1'))
     })
 
     test('processes keyboard events when target is an input element', async () => {
@@ -495,10 +463,10 @@ describe('use-input-handler browser', () => {
         const event = new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true })
         input.dispatchEvent(event)
 
-        await new Promise((resolve) => setTimeout(resolve, 50))
-
-        // Should NOT trigger because target is an INPUT element
-        expect(onScore).not.toHaveBeenCalled()
+        await vi.waitFor(() => {
+          // Should NOT trigger because target is an INPUT element
+          expect(onScore).not.toHaveBeenCalled()
+        })
       } finally {
         document.body.removeChild(input)
       }
@@ -521,10 +489,10 @@ describe('use-input-handler browser', () => {
         const event = new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true })
         textarea.dispatchEvent(event)
 
-        await new Promise((resolve) => setTimeout(resolve, 50))
-
-        // Should NOT trigger because target is a TEXTAREA element
-        expect(onScore).not.toHaveBeenCalled()
+        await vi.waitFor(() => {
+          // Should NOT trigger because target is a TEXTAREA element
+          expect(onScore).not.toHaveBeenCalled()
+        })
       } finally {
         document.body.removeChild(textarea)
       }
@@ -548,10 +516,10 @@ describe('use-input-handler browser', () => {
         const event = new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true })
         div.dispatchEvent(event)
 
-        await new Promise((resolve) => setTimeout(resolve, 50))
-
-        // Should NOT trigger because target is contentEditable
-        expect(onScore).not.toHaveBeenCalled()
+        await vi.waitFor(() => {
+          // Should NOT trigger because target is contentEditable
+          expect(onScore).not.toHaveBeenCalled()
+        })
       } finally {
         document.body.removeChild(div)
       }

@@ -18,12 +18,14 @@ export interface UseWakeLockReturn {
 export function useWakeLock(options: UseWakeLockOptions = {}): UseWakeLockReturn {
   const { enabled = true, onError } = options
 
-  const isSupportedValue = typeof navigator !== 'undefined' && 'wakeLock' in navigator
+  const isSupportedValue =
+    typeof navigator !== 'undefined' && typeof navigator.wakeLock?.request === 'function'
   const [isSupported] = useState(() => isSupportedValue)
   const [isActive, setIsActive] = useState(false)
   const [error, setError] = useState<Error | null>(null)
 
   const wakeLockRef = useRef<WakeLockSentinel | null>(null)
+  const isMountedRef = useRef(true)
 
   const requestWakeLock = useCallback(async () => {
     if (!isSupportedValue) {
@@ -38,15 +40,24 @@ export function useWakeLock(options: UseWakeLockOptions = {}): UseWakeLockReturn
     try {
       const wakeLock = await navigator.wakeLock.request('screen')
       wakeLockRef.current = wakeLock
-      setIsActive(true)
-      setError(null)
 
-      wakeLock.addEventListener('release', () => {
-        setIsActive(false)
-      })
+      const handleRelease = () => {
+        if (isMountedRef.current) {
+          setIsActive(false)
+        }
+        wakeLockRef.current = null
+      }
+
+      wakeLock.addEventListener('release', handleRelease)
+      if (isMountedRef.current) {
+        setIsActive(true)
+        setError(null)
+      }
     } catch (err) {
       const wakeLockError = err instanceof Error ? err : new Error(String(err))
-      setError(wakeLockError)
+      if (isMountedRef.current) {
+        setError(wakeLockError)
+      }
       if (onError) {
         onError(wakeLockError)
       }
@@ -58,16 +69,24 @@ export function useWakeLock(options: UseWakeLockOptions = {}): UseWakeLockReturn
     if (wakeLockRef.current) {
       try {
         await wakeLockRef.current.release()
+        if (isMountedRef.current) {
+          setIsActive(false)
+        }
         wakeLockRef.current = null
-        setIsActive(false)
       } catch (err) {
         const releaseError = err instanceof Error ? err : new Error(String(err))
         console.warn('Wake Lock release failed:', releaseError.message)
+        if (isMountedRef.current) {
+          setIsActive(false)
+          setError(releaseError)
+        }
+        if (onError) {
+          onError(releaseError)
+        }
         wakeLockRef.current = null
-        setIsActive(false)
       }
     }
-  }, [])
+  }, [onError])
 
   useEffect(() => {
     if (!isSupportedValue || !enabled) {
@@ -97,6 +116,7 @@ export function useWakeLock(options: UseWakeLockOptions = {}): UseWakeLockReturn
 
   useEffect(() => {
     return () => {
+      isMountedRef.current = false
       if (wakeLockRef.current) {
         wakeLockRef.current.release().catch(() => {
           // Silently ignore cleanup errors

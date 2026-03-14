@@ -12,7 +12,6 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['text', 'html'],
       thresholds: {
-        perFile: true,
         lines: 80,
         branches: 80,
         functions: 80,

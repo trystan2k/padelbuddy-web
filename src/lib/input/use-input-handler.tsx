@@ -122,6 +122,12 @@ export function useInputHandler(
       }
 
       const action = getActionFromKey(event.key)
+
+      // Prevent default browser behavior for handled keys to avoid navigation/scrolling
+      if (action !== 'unknown') {
+        event.preventDefault()
+      }
+
       handleAction(action)
     },
     [enabled, handleAction]
