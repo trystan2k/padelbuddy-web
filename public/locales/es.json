@@ -1,0 +1,94 @@
+{
+  "app": {
+    "title": "Padel Buddy",
+    "description": "Una base estilizada para el rastreador de puntuación en vivo."
+  },
+  "appShell": {
+    "eyebrow": "Base de la aplicación",
+    "lead": "Una base estilizada para el rastreador de puntuación en vivo, configurada para soportar futuros flujos de partidos sin parecer un andamiaje provisional.",
+    "statusPills": {
+      "clientOnly": "Solo cliente",
+      "mobileReady": "Listo para móvil",
+      "accessibleBaseline": "Base accesible"
+    },
+    "foundation": {
+      "sectionLabel": "Base de estilo",
+      "sectionTitle": "Estado de inicialización",
+      "sectionText": "La base ahora establece estilos globales compartidos, estilo con alcance de componente y una capa de presentación responsiva que funciona claramente en escritorio y pantallas móviles en cancha."
+    },
+    "foundationItems": {
+      "tanstackShell": {
+        "title": "Shell TanStack Start",
+        "detail": "La generación de rutas y la inicialización solo cliente ya están cargando la estructura de la aplicación."
+      },
+      "designTokens": {
+        "title": "Tokens de diseño compartidos",
+        "detail": "Las variables globales ahora definen el espaciado, colores, tipografía y línea base de enfoque para futuros trabajos de UI."
+      },
+      "scopedStyling": {
+        "title": "Estilo de componente con alcance",
+        "detail": "CSS Modules mantienen la presentación del shell aislada mientras la aplicación crece en nuevas pantallas y controles."
+      }
+    },
+    "baseUiCheck": {
+      "trigger": "Verificar Base UI",
+      "eyebrow": "Base de interacción",
+      "title": "Base UI conectado",
+      "description": "Este diálogo confirma que la base puede renderizar primitivas accesibles y estilizadas dentro de la ruta TanStack Start.",
+      "close": "Cerrar panel"
+    }
+  },
+  "notFound": {
+    "eyebrow": "Página no encontrada",
+    "title": "No pudimos encontrar esa ruta.",
+    "description": "La base de la aplicación está funcionando, pero esta página no existe en el árbol de rutas actual.",
+    "backLink": "Volver a la pantalla de inicio"
+  },
+  "startupGate": {
+    "loading": {
+      "eyebrow": "Verificación de inicio",
+      "title": "Buscando partido guardado",
+      "body": "Padel Buddy está restaurando el espacio de trabajo del partido actual antes de abrir el shell."
+    },
+    "corrupt": {
+      "eyebrow": "Recuperación de inicio",
+      "title": "El partido guardado necesita recuperación",
+      "body": "El registro del partido actual no pudo ser restaurado de forma segura. Reinicia el partido guardado para continuar en el shell de la aplicación.",
+      "resetButton": "Reiniciar y continuar"
+    },
+    "notice": {
+      "title": "El partido guardado fue reiniciado",
+      "body": "Un partido guardado más antiguo fue eliminado porque ya no coincide con el esquema actual de la aplicación.",
+      "dismiss": "Descartar"
+    },
+    "resume": {
+      "eyebrow": "Partido guardado encontrado",
+      "title": "¿Retomar partido guardado?",
+      "body": "Padel Buddy restauró un partido actual en progreso. Retomar mantiene el registro de acciones y restaura el estado de puntuación en vivo a través de replay.",
+      "resumeButton": "Retomar partido guardado",
+      "discardButton": "Descartar partido guardado"
+    }
+  },
+  "speech": {
+    "verbosity": {
+      "minimal": "Mínimo",
+      "standard": "Estándar",
+      "verbose": "Detallado"
+    }
+  },
+  "score": {
+    "points": {
+      "0": "Cero",
+      "15": "Quince",
+      "30": "Treinta",
+      "40": "Cuarenta",
+      "Ad": "Ventaja"
+    },
+    "announcements": {
+      "game": "Juego",
+      "set": "Set",
+      "match": "Partido",
+      "serving": "Sacando"
+    }
+  }
+}

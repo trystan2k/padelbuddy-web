@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import {
   clearCurrentMatch,
@@ -54,6 +55,7 @@ export function clearCurrentMatchStartup(
 }
 
 export function CurrentMatchStartupGate({ children, persistence }: CurrentMatchStartupGateProps) {
+  const { t } = useTranslation()
   const [startupState, setStartupState] = useState<CurrentMatchStartupViewState>({
     status: 'loading'
   })
@@ -168,11 +170,9 @@ export function CurrentMatchStartupGate({ children, persistence }: CurrentMatchS
     return (
       <main className={styles.loadingPage}>
         <section className={styles.loadingCard} aria-live="polite">
-          <p className={styles.eyebrow}>Startup check</p>
-          <h1 className={styles.title}>Checking for a saved match</h1>
-          <p className={styles.body}>
-            Padel Buddy is restoring the current-match workspace before opening the shell.
-          </p>
+          <p className={styles.eyebrow}>{t('startupGate.loading.eyebrow')}</p>
+          <h1 className={styles.title}>{t('startupGate.loading.title')}</h1>
+          <p className={styles.body}>{t('startupGate.loading.body')}</p>
         </section>
       </main>
     )
@@ -182,12 +182,9 @@ export function CurrentMatchStartupGate({ children, persistence }: CurrentMatchS
     return (
       <main className={styles.loadingPage}>
         <section className={styles.recoveryCard} aria-live="assertive">
-          <p className={styles.eyebrow}>Startup recovery</p>
-          <h1 className={styles.title}>Saved match needs recovery</h1>
-          <p className={styles.body}>
-            The current-match record could not be restored safely. Reset the saved match to continue
-            into the app shell.
-          </p>
+          <p className={styles.eyebrow}>{t('startupGate.corrupt.eyebrow')}</p>
+          <h1 className={styles.title}>{t('startupGate.corrupt.title')}</h1>
+          <p className={styles.body}>{t('startupGate.corrupt.body')}</p>
           <p className={styles.detail}>{startupState.message}</p>
           {clearErrorMessage ? (
             <p className={styles.detail} role="alert">
@@ -200,7 +197,7 @@ export function CurrentMatchStartupGate({ children, persistence }: CurrentMatchS
             onClick={handleClearSavedMatch}
             type="button"
           >
-            Reset and continue
+            {t('startupGate.corrupt.resetButton')}
           </button>
         </section>
       </main>
@@ -212,13 +209,11 @@ export function CurrentMatchStartupGate({ children, persistence }: CurrentMatchS
       {startupState.notice ? (
         <aside className={styles.notice} role="status">
           <div className={styles.noticeCopy}>
-            <p className={styles.noticeTitle}>Saved match was reset</p>
-            <p className={styles.noticeText}>
-              An older saved match was cleared because it no longer matches the current app schema.
-            </p>
+            <p className={styles.noticeTitle}>{t('startupGate.notice.title')}</p>
+            <p className={styles.noticeText}>{t('startupGate.notice.body')}</p>
           </div>
           <button className={styles.noticeButton} onClick={dismissNotice} type="button">
-            Dismiss
+            {t('startupGate.notice.dismiss')}
           </button>
         </aside>
       ) : null}
@@ -235,13 +230,12 @@ export function CurrentMatchStartupGate({ children, persistence }: CurrentMatchS
             ref={resumeDialogRef}
             role="dialog"
           >
-            <p className={styles.eyebrow}>Saved match found</p>
+            <p className={styles.eyebrow}>{t('startupGate.resume.eyebrow')}</p>
             <h2 className={styles.promptTitle} id="resume-match-heading">
-              Resume saved match?
+              {t('startupGate.resume.title')}
             </h2>
             <p className={styles.body} id="resume-match-description">
-              Padel Buddy restored an in-progress current match. Resume keeps the action log and
-              restores the live score state through replay.
+              {t('startupGate.resume.body')}
             </p>
             {clearErrorMessage ? (
               <p className={styles.detail} role="alert">
@@ -257,7 +251,7 @@ export function CurrentMatchStartupGate({ children, persistence }: CurrentMatchS
                 ref={resumeButtonRef}
                 type="button"
               >
-                Resume saved match
+                {t('startupGate.resume.resumeButton')}
               </button>
               <button
                 className={styles.secondaryButton}
@@ -265,7 +259,7 @@ export function CurrentMatchStartupGate({ children, persistence }: CurrentMatchS
                 onClick={handleClearSavedMatch}
                 type="button"
               >
-                Discard saved match
+                {t('startupGate.resume.discardButton')}
               </button>
             </div>
           </section>

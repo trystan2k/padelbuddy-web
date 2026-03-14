@@ -1,38 +1,39 @@
 import { Dialog } from '@base-ui/react/dialog'
+import { useTranslation } from 'react-i18next'
 
 import styles from './AppShell.module.css'
 
-const foundationItems = [
-  {
-    title: 'TanStack Start shell',
-    detail: 'Route generation and the client-only bootstrap are already carrying the app frame.'
-  },
-  {
-    title: 'Shared design tokens',
-    detail:
-      'Global variables now define the spacing, color, typography, and focus baseline for future UI work.'
-  },
-  {
-    title: 'Scoped component styling',
-    detail:
-      'CSS Modules keep shell presentation isolated while the app grows into new screens and controls.'
-  }
-] as const
-
-const statusPills = ['Client-only', 'Mobile-ready', 'Accessible baseline'] as const
-
 export function AppShell() {
+  const { t } = useTranslation()
+
+  const foundationItems = [
+    {
+      title: t('appShell.foundationItems.tanstackShell.title'),
+      detail: t('appShell.foundationItems.tanstackShell.detail')
+    },
+    {
+      title: t('appShell.foundationItems.designTokens.title'),
+      detail: t('appShell.foundationItems.designTokens.detail')
+    },
+    {
+      title: t('appShell.foundationItems.scopedStyling.title'),
+      detail: t('appShell.foundationItems.scopedStyling.detail')
+    }
+  ] as const
+
+  const statusPills = [
+    t('appShell.statusPills.clientOnly'),
+    t('appShell.statusPills.mobileReady'),
+    t('appShell.statusPills.accessibleBaseline')
+  ] as const
   return (
     <main className={styles.page}>
       <div className={styles.shell}>
         <header className={styles.hero}>
           <div className={styles.heroCopy}>
-            <p className={styles.eyebrow}>App foundation</p>
-            <h1 className={styles.title}>Padel Buddy</h1>
-            <p className={styles.lead}>
-              A deliberately styled starter shell for the live score tracker, set up to carry future
-              match flows without feeling like placeholder scaffolding.
-            </p>
+            <p className={styles.eyebrow}>{t('appShell.eyebrow')}</p>
+            <h1 className={styles.title}>{t('app.title')}</h1>
+            <p className={styles.lead}>{t('appShell.lead')}</p>
           </div>
 
           <div className={styles.heroFooter}>
@@ -45,17 +46,22 @@ export function AppShell() {
             </ul>
 
             <Dialog.Root>
-              <Dialog.Trigger className={styles.primaryButton}>Open Base UI check</Dialog.Trigger>
+              <Dialog.Trigger className={styles.primaryButton}>
+                {t('appShell.baseUiCheck.trigger')}
+              </Dialog.Trigger>
               <Dialog.Portal>
                 <Dialog.Backdrop className={styles.dialogBackdrop} />
                 <Dialog.Popup className={styles.dialogPopup}>
-                  <p className={styles.dialogEyebrow}>Interaction baseline</p>
-                  <Dialog.Title className={styles.dialogTitle}>Base UI is wired</Dialog.Title>
+                  <p className={styles.dialogEyebrow}>{t('appShell.baseUiCheck.eyebrow')}</p>
+                  <Dialog.Title className={styles.dialogTitle}>
+                    {t('appShell.baseUiCheck.title')}
+                  </Dialog.Title>
                   <Dialog.Description className={styles.dialogDescription}>
-                    This dialog confirms the starter shell can render accessible, styled primitives
-                    inside the TanStack Start route.
+                    {t('appShell.baseUiCheck.description')}
                   </Dialog.Description>
-                  <Dialog.Close className={styles.secondaryButton}>Close panel</Dialog.Close>
+                  <Dialog.Close className={styles.secondaryButton}>
+                    {t('appShell.baseUiCheck.close')}
+                  </Dialog.Close>
                 </Dialog.Popup>
               </Dialog.Portal>
             </Dialog.Root>
@@ -64,15 +70,11 @@ export function AppShell() {
 
         <section className={styles.panel} aria-labelledby="foundation-heading">
           <div className={styles.panelHeader}>
-            <p className={styles.sectionLabel}>Styling foundation</p>
+            <p className={styles.sectionLabel}>{t('appShell.foundation.sectionLabel')}</p>
             <h2 className={styles.sectionTitle} id="foundation-heading">
-              Bootstrap status
+              {t('appShell.foundation.sectionTitle')}
             </h2>
-            <p className={styles.sectionText}>
-              The shell now establishes shared global styles, component-scoped styling, and a
-              responsive presentation layer that works cleanly on desktop and on-court mobile
-              screens.
-            </p>
+            <p className={styles.sectionText}>{t('appShell.foundation.sectionText')}</p>
           </div>
 
           <ul className={styles.foundationGrid}>
