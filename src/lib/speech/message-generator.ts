@@ -32,6 +32,16 @@ function generatePointScoreMessage(data: SpeechEventData): string | null {
     return null // No point-by-point in minimal mode
   }
 
+  // Issue 6: Guard against undefined/null scores
+  if (
+    team1Score === undefined ||
+    team1Score === null ||
+    team2Score === undefined ||
+    team2Score === null
+  ) {
+    return null
+  }
+
   // For tiebreak, use numeric scores
   if (isTiebreak) {
     return `${team1Score}-${team2Score}`
@@ -93,9 +103,10 @@ function generateGameWonMessage(data: SpeechEventData): string {
   const { winningTeam, team1Name, team2Name, verbosity } = data
   const t = i18n.t.bind(i18n)
 
+  // Issue 7: Handle missing winnerName gracefully
   const winnerName = winningTeam === 'team-1' ? team1Name : team2Name
 
-  if (verbosity === 'minimal') {
+  if (verbosity === 'minimal' || !winnerName) {
     return t('score.announcements.game')
   }
 
@@ -106,9 +117,10 @@ function generateSetWonMessage(data: SpeechEventData): string {
   const { winningTeam, team1Name, team2Name, verbosity } = data
   const t = i18n.t.bind(i18n)
 
+  // Issue 7: Handle missing winnerName gracefully
   const winnerName = winningTeam === 'team-1' ? team1Name : team2Name
 
-  if (verbosity === 'minimal') {
+  if (verbosity === 'minimal' || !winnerName) {
     return t('score.announcements.set')
   }
 
@@ -119,9 +131,10 @@ function generateMatchWonMessage(data: SpeechEventData): string {
   const { winningTeam, team1Name, team2Name, verbosity } = data
   const t = i18n.t.bind(i18n)
 
+  // Issue 7: Handle missing winnerName gracefully
   const winnerName = winningTeam === 'team-1' ? team1Name : team2Name
 
-  if (verbosity === 'minimal') {
+  if (verbosity === 'minimal' || !winnerName) {
     return t('score.announcements.match')
   }
 

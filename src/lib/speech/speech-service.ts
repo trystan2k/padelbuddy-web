@@ -49,19 +49,30 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
 
   // Initialize from storage and load voices
   useEffect(() => {
-    let cancelled = false
+    const abortController = new AbortController()
+    const { signal } = abortController
 
     async function initialize() {
       if (initializedRef.current) return
       initializedRef.current = true
 
-      const prefs = await loadSpeechPreferences()
+      // Issue 3: Wrap loadSpeechPreferences in try/catch to handle IndexedDB unavailability
+      try {
+        const prefs = await loadSpeechPreferences()
 
-      if (cancelled) return
+        if (signal.aborted) return
 
-      if (prefs) {
-        setMutedState(prefs.muted)
-        setVerbosityState(prefs.verbosity)
+        if (prefs) {
+          setMutedState(prefs.muted)
+          setVerbosityState(prefs.verbosity)
+        }
+      } catch (error) {
+        // IndexedDB unavailable - continue with defaults
+        if (!signal.aborted) {
+          config.onError?.(
+            error instanceof Error ? error : new Error('Failed to load speech preferences')
+          )
+        }
       }
 
       if (typeof speechSynthesis === 'undefined') {
@@ -70,38 +81,52 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
         return
       }
 
-      const voices = await getAvailableVoices()
-      const currentLocale = getSafeLocale(i18n.language)
-      const selectedVoice = selectVoice(currentLocale, voices)
+      try {
+        // Issue 5: Pass AbortSignal for proper cleanup on unmount
+        const voices = await getAvailableVoices(signal)
+        const currentLocale = getSafeLocale(i18n.language)
+        const selectedVoice = selectVoice(currentLocale, voices)
 
-      if (!cancelled) {
-        setVoice(selectedVoice)
-        config.onVoiceChange?.(selectedVoice)
+        if (!signal.aborted) {
+          setVoice(selectedVoice)
+          config.onVoiceChange?.(selectedVoice)
 
-        // Log warning if no suitable voice found
-        if (!selectedVoice) {
-          config.onError?.(new Error('No suitable voice found'))
+          // Log warning if no suitable voice found
+          if (!selectedVoice) {
+            config.onError?.(new Error('No suitable voice found'))
+          }
         }
+      } catch {
+        // Operation was aborted or failed - ignore
       }
     }
 
     void initialize()
 
     return () => {
-      cancelled = true
+      abortController.abort()
     }
   }, [config])
 
   // Update voice when locale changes
   useEffect(() => {
-    async function updateVoice() {
-      if (typeof speechSynthesis === 'undefined') return
+    const abortController = new AbortController()
+    const { signal } = abortController
 
-      const voices = await getAvailableVoices()
-      const currentLocale = getSafeLocale(i18n.language)
-      const selectedVoice = selectVoice(currentLocale, voices)
-      setVoice(selectedVoice)
-      config.onVoiceChange?.(selectedVoice)
+    async function updateVoice() {
+      if (typeof speechSynthesis === 'undefined' || signal.aborted) return
+
+      try {
+        // Issue 5: Pass AbortSignal for proper cleanup on unmount
+        const voices = await getAvailableVoices(signal)
+        if (signal.aborted) return
+        const currentLocale = getSafeLocale(i18n.language)
+        const selectedVoice = selectVoice(currentLocale, voices)
+        setVoice(selectedVoice)
+        config.onVoiceChange?.(selectedVoice)
+      } catch {
+        // Operation was aborted or failed - ignore
+      }
     }
 
     void updateVoice()
@@ -113,6 +138,7 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
 
     i18n.on('languageChanged', handleLanguageChanged)
     return () => {
+      abortController.abort()
       i18n.off('languageChanged', handleLanguageChanged)
     }
   }, [config])
@@ -179,32 +205,42 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
     isSpeakingRef.current = false
   }, [])
 
+  // Issue 4: Handle saveSpeechPreferences rejections
   const setMuted = useCallback(
     (newMuted: boolean) => {
       setMutedState(newMuted)
-      void saveSpeechPreferences({
+      saveSpeechPreferences({
         muted: newMuted,
         verbosity,
         updatedAt: new Date().toISOString()
+      }).catch((error) => {
+        config.onError?.(
+          error instanceof Error ? error : new Error('Failed to save speech preferences')
+        )
       })
 
       if (newMuted) {
         cancel()
       }
     },
-    [verbosity, cancel]
+    [verbosity, cancel, config]
   )
 
+  // Issue 4: Handle saveSpeechPreferences rejections
   const setVerbosity = useCallback(
     (level: VerbosityLevel) => {
       setVerbosityState(level)
-      void saveSpeechPreferences({
+      saveSpeechPreferences({
         muted,
         verbosity: level,
         updatedAt: new Date().toISOString()
+      }).catch((error) => {
+        config.onError?.(
+          error instanceof Error ? error : new Error('Failed to save speech preferences')
+        )
       })
     },
-    [muted]
+    [muted, config]
   )
 
   const announce = useCallback(
@@ -249,21 +285,33 @@ export function createSpeechService(config: SpeechServiceConfig = {}): SpeechSer
   const utteranceQueue: SpeechSynthesisUtterance[] = []
   let isSpeaking = false
   let destroyed = false
+  const abortController = new AbortController()
+  const { signal } = abortController
 
   const handleLanguageChanged = async () => {
-    if (destroyed) return
-    const voices = await getAvailableVoices()
-    currentVoice = selectVoice(getSafeLocale(i18n.language), voices)
-    config.onVoiceChange?.(currentVoice)
+    if (destroyed || signal.aborted) return
+    try {
+      const voices = await getAvailableVoices(signal)
+      if (signal.aborted) return
+      currentVoice = selectVoice(getSafeLocale(i18n.language), voices)
+      config.onVoiceChange?.(currentVoice)
+    } catch {
+      // Operation was aborted or failed - ignore
+    }
   }
 
   // Initialize voice
   if (typeof speechSynthesis !== 'undefined') {
     void (async () => {
-      if (destroyed) return
-      const voices = await getAvailableVoices()
-      currentVoice = selectVoice(getSafeLocale(i18n.language), voices)
-      config.onVoiceChange?.(currentVoice)
+      if (destroyed || signal.aborted) return
+      try {
+        const voices = await getAvailableVoices(signal)
+        if (signal.aborted) return
+        currentVoice = selectVoice(getSafeLocale(i18n.language), voices)
+        config.onVoiceChange?.(currentVoice)
+      } catch {
+        // Operation was aborted or failed - ignore
+      }
     })()
 
     i18n.on('languageChanged', handleLanguageChanged)
@@ -351,6 +399,7 @@ export function createSpeechService(config: SpeechServiceConfig = {}): SpeechSer
 
   const destroy = () => {
     destroyed = true
+    abortController.abort()
     i18n.off('languageChanged', handleLanguageChanged)
     cancel()
   }

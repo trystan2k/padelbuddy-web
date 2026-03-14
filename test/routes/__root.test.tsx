@@ -65,21 +65,21 @@ describe('root route', () => {
     expect(Route.options.notFoundComponent).toBeTypeOf('function')
   })
 
-  test('renders route outlet after i18n initialization', async () => {
+  test('renders loading state before i18n initialization', () => {
     const RootDocument = Route.options.component
 
     if (!RootDocument) {
       throw new Error('Expected the root route to expose component')
     }
 
-    // First render - i18n not ready yet
+    // Initial render shows loading state without Outlet
     const initialMarkup = renderToStaticMarkup(<RootDocument />)
     expect(initialMarkup).toContain('<html lang="en">')
     expect(initialMarkup).not.toContain('route outlet')
+    expect(initialMarkup).toContain('scripts')
 
-    // After i18n initialization, the component would render the outlet
-    // However, renderToStaticMarkup doesn't handle async state updates
-    // This test verifies the component structure, not the async behavior
-    // The actual async behavior is tested in browser tests
+    // Note: Testing async state transition (i18nReady -> true) requires
+    // browser tests with React Testing Library's act() and waitFor().
+    // The async behavior is covered in E2E tests.
   })
 })

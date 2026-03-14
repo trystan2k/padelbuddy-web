@@ -34,11 +34,39 @@ function RootDocument() {
   const [currentLang, setCurrentLang] = useState('en')
 
   useEffect(() => {
-    void initializeI18n().then(() => {
-      setI18nReady(true)
-      setCurrentLang(i18n.language || 'en')
-      return undefined
-    })
+    let cancelled = false
+
+    void initializeI18n()
+      .then(() => {
+        if (cancelled) return undefined
+        setI18nReady(true)
+        setCurrentLang(i18n.language || 'en')
+        return undefined
+      })
+      .catch((error) => {
+        if (cancelled) return
+        // Log the error but still render the app with fallback language
+        console.error('Failed to initialize i18n:', error)
+        setI18nReady(true)
+        setCurrentLang('en')
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  // Subscribe to language changes to keep <html lang> in sync
+  useEffect(() => {
+    const handleLanguageChanged = (lng: string) => {
+      setCurrentLang(lng || 'en')
+    }
+
+    i18n.on('languageChanged', handleLanguageChanged)
+
+    return () => {
+      i18n.off('languageChanged', handleLanguageChanged)
+    }
   }, [])
 
   if (!i18nReady) {
