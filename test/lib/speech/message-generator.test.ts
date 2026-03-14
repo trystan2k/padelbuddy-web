@@ -197,6 +197,26 @@ describe('message-generator', () => {
       })
       expect(message).toBe('Serving Team B')
     })
+
+    it('returns null when servingTeam is missing', () => {
+      const message = generateSpeechMessage({
+        eventType: 'server-change',
+        team1Name: 'Team A',
+        team2Name: 'Team B',
+        verbosity: 'standard'
+      })
+      expect(message).toBeNull()
+    })
+
+    it('returns null when team name is missing for the serving team', () => {
+      const message = generateSpeechMessage({
+        eventType: 'server-change',
+        servingTeam: 'team-1',
+        team2Name: 'Team B',
+        verbosity: 'standard'
+      })
+      expect(message).toBeNull()
+    })
   })
 
   describe('unknown event type', () => {

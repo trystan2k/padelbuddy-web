@@ -20,12 +20,13 @@ export interface SpeechService {
   speak(text: string, options?: SpeechOptions): void
   cancel(): void
   getMuted(): boolean
-  setMuted(muted: boolean): void | Promise<void>
+  setMuted(muted: boolean): void
   getVerbosity(): VerbosityLevel
-  setVerbosity(level: VerbosityLevel): void | Promise<void>
+  setVerbosity(level: VerbosityLevel): void
   getVoice(): SpeechSynthesisVoice | null
   isSupported(): boolean
   announce(eventData: Omit<SpeechEventData, 'verbosity'>): void
+  destroy(): void
 }
 
 export interface SpeechOptions {

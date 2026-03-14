@@ -6,7 +6,6 @@ const defaultObjectStoreName = 'locale-preference'
 
 // Shared object store names for coordinated upgrades
 const speechStoreName = 'speech-preference'
-const localeStoreName = 'locale-preference'
 const localePreferenceKey = 'locale-preference'
 
 export interface LocaleStorageOptions {
@@ -106,8 +105,9 @@ function openDatabase(config: Required<LocaleStorageOptions>): Promise<IDBDataba
       if (!database.objectStoreNames.contains(speechStoreName)) {
         database.createObjectStore(speechStoreName)
       }
-      if (!database.objectStoreNames.contains(localeStoreName)) {
-        database.createObjectStore(localeStoreName)
+      // Use the configured objectStoreName to ensure it exists
+      if (!database.objectStoreNames.contains(config.objectStoreName)) {
+        database.createObjectStore(config.objectStoreName)
       }
     })
 

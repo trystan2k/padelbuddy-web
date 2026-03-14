@@ -180,9 +180,9 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
   }, [])
 
   const setMuted = useCallback(
-    async (newMuted: boolean) => {
+    (newMuted: boolean) => {
       setMutedState(newMuted)
-      await saveSpeechPreferences({
+      void saveSpeechPreferences({
         muted: newMuted,
         verbosity,
         updatedAt: new Date().toISOString()
@@ -196,9 +196,9 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
   )
 
   const setVerbosity = useCallback(
-    async (level: VerbosityLevel) => {
+    (level: VerbosityLevel) => {
       setVerbosityState(level)
-      await saveSpeechPreferences({
+      void saveSpeechPreferences({
         muted,
         verbosity: level,
         updatedAt: new Date().toISOString()
@@ -230,13 +230,17 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
     setVerbosity,
     getVoice: () => voice,
     isSupported: () => typeof speechSynthesis !== 'undefined',
-    announce
+    announce,
+    destroy: () => {
+      // No-op for hook version - cleanup handled by useEffect
+    }
   }
 }
 
 /**
  * Non-hook version for use outside of React components.
  * Does not support persistence - use for one-off announcements.
+ * IMPORTANT: Call destroy() when done to clean up event listeners.
  */
 export function createSpeechService(config: SpeechServiceConfig = {}): SpeechService {
   let muted = config.muted ?? false
@@ -244,20 +248,25 @@ export function createSpeechService(config: SpeechServiceConfig = {}): SpeechSer
   let currentVoice: SpeechSynthesisVoice | null = null
   const utteranceQueue: SpeechSynthesisUtterance[] = []
   let isSpeaking = false
+  let destroyed = false
+
+  const handleLanguageChanged = async () => {
+    if (destroyed) return
+    const voices = await getAvailableVoices()
+    currentVoice = selectVoice(getSafeLocale(i18n.language), voices)
+    config.onVoiceChange?.(currentVoice)
+  }
 
   // Initialize voice
   if (typeof speechSynthesis !== 'undefined') {
     void (async () => {
+      if (destroyed) return
       const voices = await getAvailableVoices()
       currentVoice = selectVoice(getSafeLocale(i18n.language), voices)
       config.onVoiceChange?.(currentVoice)
     })()
 
-    i18n.on('languageChanged', async () => {
-      const voices = await getAvailableVoices()
-      currentVoice = selectVoice(getSafeLocale(i18n.language), voices)
-      config.onVoiceChange?.(currentVoice)
-    })
+    i18n.on('languageChanged', handleLanguageChanged)
   }
 
   const processQueue = () => {
@@ -340,6 +349,12 @@ export function createSpeechService(config: SpeechServiceConfig = {}): SpeechSer
     }
   }
 
+  const destroy = () => {
+    destroyed = true
+    i18n.off('languageChanged', handleLanguageChanged)
+    cancel()
+  }
+
   return {
     speak,
     cancel,
@@ -349,6 +364,7 @@ export function createSpeechService(config: SpeechServiceConfig = {}): SpeechSer
     setVerbosity,
     getVoice: () => currentVoice,
     isSupported: () => typeof speechSynthesis !== 'undefined',
-    announce
+    announce,
+    destroy
   }
 }

@@ -5,7 +5,6 @@ const defaultDatabaseVersion = 3
 const defaultObjectStoreName = 'speech-preference'
 
 // Shared object store names for coordinated upgrades
-const speechStoreName = 'speech-preference'
 const localeStoreName = 'locale-preference'
 const speechPreferenceKey = 'speech-preference'
 
@@ -89,8 +88,9 @@ function openDatabase(config: Required<SpeechStorageOptions>): Promise<IDBDataba
 
       // Create both stores to prevent version collision with locale-storage
       // This ensures all object stores exist regardless of which module opens the DB first
-      if (!database.objectStoreNames.contains(speechStoreName)) {
-        database.createObjectStore(speechStoreName)
+      // Use the configured objectStoreName to ensure it exists
+      if (!database.objectStoreNames.contains(config.objectStoreName)) {
+        database.createObjectStore(config.objectStoreName)
       }
       if (!database.objectStoreNames.contains(localeStoreName)) {
         database.createObjectStore(localeStoreName)

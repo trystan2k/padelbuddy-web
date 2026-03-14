@@ -136,7 +136,18 @@ function generateServerChangeMessage(data: SpeechEventData): string | null {
     return null // No server change in minimal mode
   }
 
+  // Defensive guard: ensure servingTeam is valid before accessing team name
+  if (!servingTeam) {
+    return null
+  }
+
   const serverName = servingTeam === 'team-1' ? team1Name : team2Name
+
+  // Defensive guard: ensure serverName is defined
+  if (!serverName) {
+    return null
+  }
+
   return `${t('score.announcements.serving')} ${serverName}`
 }
 

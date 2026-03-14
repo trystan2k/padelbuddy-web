@@ -139,16 +139,19 @@ describe('utterance-cancellation', () => {
     })
 
     speechService!.speak('Message')
-    // Note: setMuted returns void | Promise<void> per interface, but is async internally
-    // We need to wait for the cancel to be called since it happens after async storage save
-    void speechService!.setMuted(true)
+    // Note: setMuted is async internally but returns void (fire-and-forget)
+    // We need to wait for the cancel to be called since it happens synchronously
+    speechService!.setMuted(true)
 
     // Wait for the cancel to be called (happens asynchronously)
     await vi.waitFor(() => {
       expect(mockSpeechSynthesis.cancel).toHaveBeenCalled()
     })
 
-    expect(speechService!.getMuted()).toBe(true)
+    // Wait for the muted state to update (React state is async)
+    await vi.waitFor(() => {
+      expect(speechService!.getMuted()).toBe(true)
+    })
   })
 
   it('does not speak when muted', async () => {

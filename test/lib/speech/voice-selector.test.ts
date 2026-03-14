@@ -78,12 +78,23 @@ describe('voice-selector', () => {
     let mockSpeechSynthesis: {
       getVoices: ReturnType<typeof vi.fn>
       onvoiceschanged: ((this: SpeechSynthesis, ev: Event) => unknown) | null
+      addEventListener: ReturnType<typeof vi.fn>
+      removeEventListener: ReturnType<typeof vi.fn>
     }
 
     beforeEach(() => {
+      const listeners = new Map<string, Set<EventListener>>()
       mockSpeechSynthesis = {
         getVoices: vi.fn(() => mockVoices),
-        onvoiceschanged: null
+        onvoiceschanged: null,
+        addEventListener: vi.fn((type: string, listener: EventListener) => {
+          const set = listeners.get(type) ?? new Set()
+          set.add(listener)
+          listeners.set(type, set)
+        }),
+        removeEventListener: vi.fn((type: string, listener: EventListener) => {
+          listeners.get(type)?.delete(listener)
+        })
       }
       vi.stubGlobal('speechSynthesis', mockSpeechSynthesis)
     })
@@ -108,26 +119,49 @@ describe('voice-selector', () => {
     it('waits for voiceschanged event when voices not loaded', async () => {
       // First call returns empty, then voices load
       let voicesLoaded = false
+      const listeners = new Map<string, Set<EventListener>>()
+
       mockSpeechSynthesis.getVoices = vi.fn(() => {
         if (voicesLoaded) {
           return mockVoices
         }
         return []
       })
+      mockSpeechSynthesis.addEventListener = vi.fn((type: string, listener: EventListener) => {
+        const set = listeners.get(type) ?? new Set()
+        set.add(listener)
+        listeners.set(type, set)
+      })
+      mockSpeechSynthesis.removeEventListener = vi.fn((type: string, listener: EventListener) => {
+        listeners.get(type)?.delete(listener)
+      })
 
       const voicesPromise = getAvailableVoices()
 
+      // Verify addEventListener was called
+      expect(mockSpeechSynthesis.addEventListener).toHaveBeenCalledWith(
+        'voiceschanged',
+        expect.any(Function)
+      )
+
       // Simulate voices loading
       voicesLoaded = true
-      if (mockSpeechSynthesis.onvoiceschanged) {
-        mockSpeechSynthesis.onvoiceschanged.call(
-          mockSpeechSynthesis as unknown as SpeechSynthesis,
-          new Event('voiceschanged')
-        )
+      // Trigger the voiceschanged event listeners
+      const voiceschangedListeners = listeners.get('voiceschanged')
+      if (voiceschangedListeners) {
+        for (const listener of voiceschangedListeners) {
+          listener(new Event('voiceschanged'))
+        }
       }
 
       const voices = await voicesPromise
       expect(voices).toEqual(mockVoices)
+
+      // Verify removeEventListener was called for cleanup
+      expect(mockSpeechSynthesis.removeEventListener).toHaveBeenCalledWith(
+        'voiceschanged',
+        expect.any(Function)
+      )
     })
   })
 

@@ -1,13 +1,10 @@
 import { defaultLocale, supportedLocales, type SupportedLocale } from './types'
 
-// Cast to readonly string array for type-safe includes check
-const supportedLocaleValues: readonly string[] = supportedLocales
-
 /**
  * Type guard to check if a string is a valid supported locale.
  */
 function isValidSupportedLocale(lang: string): lang is SupportedLocale {
-  return supportedLocaleValues.includes(lang)
+  return (supportedLocales as readonly string[]).includes(lang)
 }
 
 /**

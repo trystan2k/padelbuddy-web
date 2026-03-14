@@ -41,10 +41,14 @@ export function getAvailableVoices(): Promise<SpeechSynthesisVoice[]> {
       return
     }
 
-    // Voices might not be loaded yet
-    speechSynthesis.onvoiceschanged = () => {
+    // Voices might not be loaded yet - use addEventListener for proper cleanup
+    // and to support multiple concurrent callers
+    const handleVoicesChanged = () => {
+      speechSynthesis.removeEventListener('voiceschanged', handleVoicesChanged)
       resolve(speechSynthesis.getVoices())
     }
+
+    speechSynthesis.addEventListener('voiceschanged', handleVoicesChanged)
   })
 }
 
