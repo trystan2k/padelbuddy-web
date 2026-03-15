@@ -177,3 +177,4 @@ function SearchInput({ query, onQueryChange }) {
 * **React type imports (no namespace globals)** [references/type-import-conventions.md](references/type-import-conventions.md)
 * **React file naming** [references/component-file-naming.md](references/component-file-naming.md)
 - **React styling conventions** [references/styling-conventions.md](references/styling-conventions.md)
+- **React barrel file imports** [references/bundle-barrel-imports.md](references/bundle-barrel-imports.md)

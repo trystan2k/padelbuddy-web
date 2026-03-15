@@ -1,20 +1,21 @@
 import { Link } from '@tanstack/react-router'
+import { useTranslation } from 'react-i18next'
 
 import styles from './NotFoundPage.module.css'
 
 export function NotFoundPage() {
+  const { t } = useTranslation()
+
   return (
     <main className={styles.page}>
       <section className={styles.card} aria-labelledby="not-found-title">
-        <p className={styles.eyebrow}>Page not found</p>
+        <p className={styles.eyebrow}>{t('notFound.eyebrow')}</p>
         <h1 className={styles.title} id="not-found-title">
-          We could not find that route.
+          {t('notFound.title')}
         </h1>
-        <p className={styles.description}>
-          The app foundation is running, but this page does not exist in the current route tree.
-        </p>
+        <p className={styles.description}>{t('notFound.description')}</p>
         <Link className={styles.link} to="/">
-          Go back to the home screen
+          {t('notFound.backLink')}
         </Link>
       </section>
     </main>
