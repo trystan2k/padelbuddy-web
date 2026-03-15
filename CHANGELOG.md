@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.0](https://github.com/trystan2k/padelbuddy-web/compare/v0.5.0...v0.6.0) (2026-03-15)
+
+
+### Features
+
+* **design:** implement design tokens and integrate style dictionary ([7eeca1c](https://github.com/trystan2k/padelbuddy-web/commit/7eeca1c53f43f79b614713aa6beed8d095dad036))
+
 ## [0.5.0](https://github.com/trystan2k/padelbuddy-web/compare/v0.4.0...v0.5.0) (2026-03-15)
 
 
