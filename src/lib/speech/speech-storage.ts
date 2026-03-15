@@ -1,7 +1,7 @@
 import { type SpeechPreferences, verbosityLevels } from './types'
 
 const defaultDatabaseName = 'padel-buddy-web'
-const defaultDatabaseVersion = 3
+const defaultDatabaseVersion = 4
 const defaultObjectStoreName = 'speech-preference'
 
 // Shared object store names for coordinated upgrades
@@ -87,6 +87,9 @@ function getIndexedDb(): IDBFactory {
   return indexedDB
 }
 
+// Shared object store name for coordinated upgrades
+const currentMatchStoreName = 'current-match'
+
 function openDatabase(config: Required<SpeechStorageOptions>): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
     const request = getIndexedDb().open(config.databaseName, config.databaseVersion)
@@ -94,14 +97,16 @@ function openDatabase(config: Required<SpeechStorageOptions>): Promise<IDBDataba
     request.addEventListener('upgradeneeded', () => {
       const database = request.result
 
-      // Create both stores to prevent version collision with locale-storage
+      // Create all stores to prevent version collision with other modules
       // This ensures all object stores exist regardless of which module opens the DB first
-      // Use the configured objectStoreName to ensure it exists
       if (!database.objectStoreNames.contains(config.objectStoreName)) {
         database.createObjectStore(config.objectStoreName)
       }
       if (!database.objectStoreNames.contains(localeStoreName)) {
         database.createObjectStore(localeStoreName)
+      }
+      if (!database.objectStoreNames.contains(currentMatchStoreName)) {
+        database.createObjectStore(currentMatchStoreName)
       }
     })
 

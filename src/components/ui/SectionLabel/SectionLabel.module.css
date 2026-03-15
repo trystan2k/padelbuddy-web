@@ -1,0 +1,17 @@
+.label {
+  margin: 0;
+  font-family: var(--semantic-typography-family-body);
+  font-size: var(--semantic-typography-size-label-md);
+  font-weight: var(--semantic-typography-weight-strong);
+  letter-spacing: var(--semantic-typography-letter-spacing-label);
+  text-transform: uppercase;
+  color: var(--semantic-color-content-primary);
+}
+
+.teamOne {
+  color: var(--semantic-color-content-accent-primary);
+}
+
+.teamTwo {
+  color: var(--semantic-color-content-accent-secondary);
+}

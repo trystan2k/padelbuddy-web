@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 
-import { AppShell } from '@/components/AppShell/AppShell'
+import { SetupScreen } from '@/components/SetupScreen'
 import { CurrentMatchStartupGate } from '@/components/CurrentMatchStartupGate/CurrentMatchStartupGate'
 
 export const Route = createFileRoute('/')({
@@ -10,7 +10,7 @@ export const Route = createFileRoute('/')({
 function HomeRoute() {
   return (
     <CurrentMatchStartupGate>
-      <AppShell />
+      <SetupScreen />
     </CurrentMatchStartupGate>
   )
 }

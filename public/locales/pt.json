@@ -91,5 +91,42 @@
       "serving": "Sacando",
       "all": "iguais"
     }
+  },
+  "setup": {
+    "header": {
+      "appName": "Padel Buddy"
+    },
+    "teams": {
+      "team1Label": "TIME 1",
+      "team2Label": "TIME 2",
+      "team1Default": "Time A",
+      "team2Default": "Time B",
+      "playerPlaceholder": "Nomes dos jogadores"
+    },
+    "firstServer": {
+      "label": "PRIMEIRO SAQUE",
+      "team1": "Time 1",
+      "team2": "Time 2"
+    },
+    "format": {
+      "label": "FORMATO DA PARTIDA",
+      "bestOf1": "Melhor de 1",
+      "bestOf3": "Melhor de 3",
+      "bestOf5": "Melhor de 5"
+    },
+    "rules": {
+      "goldenPoint": "Ponto de Ouro",
+      "goldenPointHint": "Sem vantagem no deuce",
+      "superTiebreak": "Super Tiebreak",
+      "superTiebreakHint": "Tiebreak no set final até 10 pontos",
+      "sideSwitch": "Lembretes de Troca de Lado",
+      "sideSwitchHint": "Lembrar jogadores de trocar de lado"
+    },
+    "startButton": "Iniciar Partida",
+    "validation": {
+      "teamNamesRequired": "Ambos os nomes dos times são obrigatórios",
+      "selectFormat": "Por favor, selecione um formato de partida",
+      "selectServer": "Por favor, selecione o primeiro sacador"
+    }
   }
 }

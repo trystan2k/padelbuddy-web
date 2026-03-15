@@ -1,0 +1,13 @@
+.card {
+  border-radius: var(--component-card-panel-radius);
+  background-color: var(--component-card-panel-background);
+  border: 2px solid var(--component-card-panel-border);
+}
+
+.teamOne {
+  border-color: var(--semantic-color-border-accent-primary);
+}
+
+.teamTwo {
+  border-color: var(--semantic-color-border-accent-secondary);
+}
