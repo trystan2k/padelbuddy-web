@@ -197,9 +197,10 @@ export function SetupScreen() {
               label={localeLabels[currentLocale]}
               onClick={handleToggleLocaleMenu}
               active
+              aria-expanded={showLocaleMenu}
             />
             {showLocaleMenu && (
-              <div className={styles.localeMenu} role="listbox" aria-label="Select language">
+              <div className={styles.localeMenu} aria-label={t('setup.locale.selectLanguage')}>
                 {availableLocales.map((locale) => (
                   <LocaleChip
                     key={locale}
@@ -228,7 +229,7 @@ export function SetupScreen() {
                 placeholder={t('setup.teams.playerPlaceholder')}
                 aria-label={t('setup.teams.team1Label')}
               />
-              {errors.team1Name && <p className={styles.errorText}>{errors.team1Name}</p>}
+              {errors.team1Name && <p className={styles.errorText}>{t(errors.team1Name)}</p>}
             </Card>
 
             {/* Team 2 */}
@@ -241,7 +242,7 @@ export function SetupScreen() {
                 placeholder={t('setup.teams.playerPlaceholder')}
                 aria-label={t('setup.teams.team2Label')}
               />
-              {errors.team2Name && <p className={styles.errorText}>{errors.team2Name}</p>}
+              {errors.team2Name && <p className={styles.errorText}>{t(errors.team2Name)}</p>}
             </Card>
 
             {/* First Server */}

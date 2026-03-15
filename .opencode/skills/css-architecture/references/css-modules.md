@@ -83,10 +83,10 @@ Compose styles from other classes within the same file or from other files.
 
 ## Conditional Styling
 
-Use the `cn` utility from `#/utils/cn` to conditionally apply classes or join multiple classes. This replaces the need for template literals or manual string concatenation.
+Use the `cn` utility from `@/lib/utils/cn` to conditionally apply classes or join multiple classes. This replaces the need for template literals or manual string concatenation.
 
 ```tsx
-import { cn } from '#/utils/cn';
+import { cn } from '@/lib/utils/cn';
 import styles from './Button.module.css';
 
 export function Button({ variant = 'primary', disabled, className }) {
