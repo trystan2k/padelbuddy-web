@@ -1,0 +1,446 @@
+/* oxlint-disable jsx-no-new-function-as-prop -- Test files use inline functions for readability */
+/* oxlint-disable button-has-type -- Test buttons don't need type attribute */
+
+import { describe, expect, test, beforeEach } from 'vitest'
+import { render } from 'vitest-browser-react'
+
+import { useSetupForm } from '@/components/SetupScreen/useSetupForm'
+
+// Wrapper component to test the hook
+function SetupFormTester({
+  onStateChange
+}: {
+  onStateChange: (state: ReturnType<typeof useSetupForm>) => void
+}) {
+  const formState = useSetupForm()
+  onStateChange(formState)
+  return <div data-testid="form-tester">Test</div>
+}
+
+describe('useSetupForm', () => {
+  let capturedState: ReturnType<typeof useSetupForm> | null = null
+
+  beforeEach(() => {
+    capturedState = null
+  })
+
+  test('initializes with default values', async () => {
+    const screen = await render(
+      <SetupFormTester
+        onStateChange={(state) => {
+          capturedState = state
+        }}
+      />
+    )
+
+    await expect.element(screen.getByTestId('form-tester')).toBeInTheDocument()
+
+    // Uses actual i18n translations from browser setup
+    expect(capturedState!.formData.team1Name).toBe('Team A')
+    expect(capturedState!.formData.team2Name).toBe('Team B')
+    expect(capturedState!.formData.format).toBe('best-of-3')
+    expect(capturedState!.formData.gameMode).toBe('advantage')
+    expect(capturedState!.formData.initialServer).toBe('team-1')
+    expect(capturedState!.formData.decidingSetSuperTiebreak).toBe(false)
+    expect(capturedState!.formData.sideSwitchPrompts).toBe(true)
+  })
+
+  test('initializes with empty errors', async () => {
+    const screen = await render(
+      <SetupFormTester
+        onStateChange={(state) => {
+          capturedState = state
+        }}
+      />
+    )
+
+    await expect.element(screen.getByTestId('form-tester')).toBeInTheDocument()
+
+    expect(capturedState!.errors).toEqual({})
+  })
+
+  test('isGoldenPointEnabled returns false for advantage mode', async () => {
+    const screen = await render(
+      <SetupFormTester
+        onStateChange={(state) => {
+          capturedState = state
+        }}
+      />
+    )
+
+    await expect.element(screen.getByTestId('form-tester')).toBeInTheDocument()
+
+    expect(capturedState!.isGoldenPointEnabled).toBe(false)
+  })
+
+  test('showSuperTiebreakOption returns true for best-of-3 (default)', async () => {
+    const screen = await render(
+      <SetupFormTester
+        onStateChange={(state) => {
+          capturedState = state
+        }}
+      />
+    )
+
+    await expect.element(screen.getByTestId('form-tester')).toBeInTheDocument()
+
+    expect(capturedState!.showSuperTiebreakOption).toBe(true)
+  })
+})
+
+// Interactive test component for testing state changes
+function SetupFormController({
+  onGetState
+}: {
+  onGetState?: (form: ReturnType<typeof useSetupForm>) => void
+}) {
+  const formState = useSetupForm()
+
+  return (
+    <div>
+      <button
+        data-testid="update-team1"
+        onClick={() => {
+          formState.updateTeamName('team-1', 'Alpha Team')
+        }}
+      >
+        Update Team 1
+      </button>
+      <button
+        data-testid="update-team2"
+        onClick={() => {
+          formState.updateTeamName('team-2', 'Beta Team')
+        }}
+      >
+        Update Team 2
+      </button>
+      <button
+        data-testid="update-format-bo5"
+        onClick={() => {
+          formState.updateFormat('best-of-5')
+        }}
+      >
+        Format BO5
+      </button>
+      <button
+        data-testid="update-format-bo1"
+        onClick={() => {
+          formState.updateFormat('best-of-1')
+        }}
+      >
+        Format BO1
+      </button>
+      <button
+        data-testid="update-golden-point"
+        onClick={() => {
+          formState.updateGameMode('golden-point')
+        }}
+      >
+        Golden Point
+      </button>
+      <button
+        data-testid="update-advantage"
+        onClick={() => {
+          formState.updateGameMode('advantage')
+        }}
+      >
+        Advantage
+      </button>
+      <button
+        data-testid="update-server-team2"
+        onClick={() => {
+          formState.updateInitialServer('team-2')
+        }}
+      >
+        Server Team 2
+      </button>
+      <button
+        data-testid="update-super-tiebreak-true"
+        onClick={() => {
+          formState.updateDecidingSetSuperTiebreak(true)
+        }}
+      >
+        Super Tiebreak ON
+      </button>
+      <button
+        data-testid="update-super-tiebreak-false"
+        onClick={() => {
+          formState.updateDecidingSetSuperTiebreak(false)
+        }}
+      >
+        Super Tiebreak OFF
+      </button>
+      <button
+        data-testid="update-side-switch-false"
+        onClick={() => {
+          formState.updateSideSwitchPrompts(false)
+        }}
+      >
+        Side Switch OFF
+      </button>
+      <button
+        data-testid="update-side-switch-true"
+        onClick={() => {
+          formState.updateSideSwitchPrompts(true)
+        }}
+      >
+        Side Switch ON
+      </button>
+      <button
+        data-testid="validate"
+        onClick={() => {
+          formState.validate()
+        }}
+      >
+        Validate
+      </button>
+      <button
+        data-testid="clear-team1"
+        onClick={() => {
+          formState.updateTeamName('team-1', '')
+        }}
+      >
+        Clear Team 1
+      </button>
+      <button
+        data-testid="clear-team2"
+        onClick={() => {
+          formState.updateTeamName('team-2', '')
+        }}
+      >
+        Clear Team 2
+      </button>
+      <button data-testid="get-state" onClick={() => onGetState?.(formState)}>
+        Get State
+      </button>
+      <div data-testid="state">{JSON.stringify(formState.formData)}</div>
+      <div data-testid="errors">{JSON.stringify(formState.errors)}</div>
+      <div data-testid="is-golden">{String(formState.isGoldenPointEnabled)}</div>
+      <div data-testid="show-super">{String(formState.showSuperTiebreakOption)}</div>
+    </div>
+  )
+}
+
+describe('useSetupForm interactions', () => {
+  let formState: ReturnType<typeof useSetupForm> | null = null
+
+  beforeEach(() => {
+    formState = null
+  })
+
+  test('updateTeamName updates team-1 name', async () => {
+    const screen = await render(
+      <SetupFormController
+        onGetState={(s) => {
+          formState = s
+        }}
+      />
+    )
+
+    await screen.getByTestId('update-team1').click()
+    await screen.getByTestId('get-state').click()
+
+    expect(formState!.formData.team1Name).toBe('Alpha Team')
+  })
+
+  test('updateTeamName updates team-2 name', async () => {
+    const screen = await render(
+      <SetupFormController
+        onGetState={(s) => {
+          formState = s
+        }}
+      />
+    )
+
+    await screen.getByTestId('update-team2').click()
+    await screen.getByTestId('get-state').click()
+
+    expect(formState!.formData.team2Name).toBe('Beta Team')
+  })
+
+  test('updateFormat updates match format', async () => {
+    const screen = await render(
+      <SetupFormController
+        onGetState={(s) => {
+          formState = s
+        }}
+      />
+    )
+
+    await screen.getByTestId('update-format-bo5').click()
+    await screen.getByTestId('get-state').click()
+
+    expect(formState!.formData.format).toBe('best-of-5')
+  })
+
+  test('updateGameMode updates game mode', async () => {
+    const screen = await render(
+      <SetupFormController
+        onGetState={(s) => {
+          formState = s
+        }}
+      />
+    )
+
+    await screen.getByTestId('update-golden-point').click()
+    await screen.getByTestId('get-state').click()
+
+    expect(formState!.formData.gameMode).toBe('golden-point')
+  })
+
+  test('updateInitialServer updates initial server', async () => {
+    const screen = await render(
+      <SetupFormController
+        onGetState={(s) => {
+          formState = s
+        }}
+      />
+    )
+
+    await screen.getByTestId('update-server-team2').click()
+    await screen.getByTestId('get-state').click()
+
+    expect(formState!.formData.initialServer).toBe('team-2')
+  })
+
+  test('updateDecidingSetSuperTiebreak updates value to true', async () => {
+    const screen = await render(
+      <SetupFormController
+        onGetState={(s) => {
+          formState = s
+        }}
+      />
+    )
+
+    await screen.getByTestId('update-super-tiebreak-true').click()
+    await screen.getByTestId('get-state').click()
+
+    expect(formState!.formData.decidingSetSuperTiebreak).toBe(true)
+  })
+
+  test('updateDecidingSetSuperTiebreak updates value to false', async () => {
+    const screen = await render(
+      <SetupFormController
+        onGetState={(s) => {
+          formState = s
+        }}
+      />
+    )
+
+    await screen.getByTestId('update-super-tiebreak-true').click()
+    await screen.getByTestId('update-super-tiebreak-false').click()
+    await screen.getByTestId('get-state').click()
+
+    expect(formState!.formData.decidingSetSuperTiebreak).toBe(false)
+  })
+
+  test('updateSideSwitchPrompts updates value to false', async () => {
+    const screen = await render(
+      <SetupFormController
+        onGetState={(s) => {
+          formState = s
+        }}
+      />
+    )
+
+    await screen.getByTestId('update-side-switch-false').click()
+    await screen.getByTestId('get-state').click()
+
+    expect(formState!.formData.sideSwitchPrompts).toBe(false)
+  })
+
+  test('validate returns true for valid form', async () => {
+    const screen = await render(
+      <SetupFormController
+        onGetState={(s) => {
+          formState = s
+        }}
+      />
+    )
+
+    await screen.getByTestId('validate').click()
+    await screen.getByTestId('get-state').click()
+
+    expect(formState!.errors).toEqual({})
+  })
+
+  test('validate returns false when team1Name is empty', async () => {
+    const screen = await render(
+      <SetupFormController
+        onGetState={(s) => {
+          formState = s
+        }}
+      />
+    )
+
+    await screen.getByTestId('clear-team1').click()
+    await screen.getByTestId('validate').click()
+    await screen.getByTestId('get-state').click()
+
+    expect(formState!.errors.team1Name).toBe('setup.validation.teamNamesRequired')
+  })
+
+  test('validate returns false when team2Name is empty', async () => {
+    const screen = await render(
+      <SetupFormController
+        onGetState={(s) => {
+          formState = s
+        }}
+      />
+    )
+
+    await screen.getByTestId('clear-team2').click()
+    await screen.getByTestId('validate').click()
+    await screen.getByTestId('get-state').click()
+
+    expect(formState!.errors.team2Name).toBe('setup.validation.teamNamesRequired')
+  })
+
+  test('isGoldenPointEnabled returns true for golden-point mode', async () => {
+    const screen = await render(<SetupFormController />)
+
+    await screen.getByTestId('update-golden-point').click()
+
+    await expect.element(screen.getByTestId('is-golden')).toHaveTextContent('true')
+  })
+
+  test('showSuperTiebreakOption returns false for best-of-1', async () => {
+    const screen = await render(<SetupFormController />)
+
+    await screen.getByTestId('update-format-bo1').click()
+
+    await expect.element(screen.getByTestId('show-super')).toHaveTextContent('false')
+  })
+
+  test('showSuperTiebreakOption returns true for best-of-5', async () => {
+    const screen = await render(<SetupFormController />)
+
+    await screen.getByTestId('update-format-bo5').click()
+
+    await expect.element(screen.getByTestId('show-super')).toHaveTextContent('true')
+  })
+
+  test('updating team name clears existing error', async () => {
+    const screen = await render(
+      <SetupFormController
+        onGetState={(s) => {
+          formState = s
+        }}
+      />
+    )
+
+    // Make form invalid
+    await screen.getByTestId('clear-team1').click()
+    await screen.getByTestId('validate').click()
+    await screen.getByTestId('get-state').click()
+
+    expect(formState!.errors.team1Name).toBeDefined()
+
+    // Fix the field
+    await screen.getByTestId('update-team1').click()
+    await screen.getByTestId('get-state').click()
+
+    // Error should be cleared
+    expect(formState!.errors.team1Name).toBeUndefined()
+  })
+})

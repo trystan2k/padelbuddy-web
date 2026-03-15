@@ -83,16 +83,16 @@ Compose styles from other classes within the same file or from other files.
 
 ## Conditional Styling
 
-Use the `cx` utility from `#/utils/cx` to conditionally apply classes or join multiple classes. This replaces the need for template literals or manual string concatenation.
+Use the `cn` utility from `#/utils/cn` to conditionally apply classes or join multiple classes. This replaces the need for template literals or manual string concatenation.
 
 ```tsx
-import { cx } from '#/utils/cx';
+import { cn } from '#/utils/cn';
 import styles from './Button.module.css';
 
 export function Button({ variant = 'primary', disabled, className }) {
   return (
     <button
-      className={cx(
+      className={cn(
         styles.button,
         styles[variant],
         disabled && styles.disabled,
@@ -126,4 +126,4 @@ Use `:global` to define global styles when necessary (use sparingly).
 3. **Avoid Nesting**: Keep selectors flat to reduce specificity issues.
 4. **Variables**: Use CSS Variables for theme values (colors, spacing, etc.).
 5. **Global Styles**: Use `kebab-case` for non-module global styles such as `match-shell.css` or `design-tokens.css`.
-6. **Class Composition**: Use `cx` utility for joining classes and conditional logic instead of template literals.
+6. **Class Composition**: Use `cn` utility for joining classes and conditional logic instead of template literals.

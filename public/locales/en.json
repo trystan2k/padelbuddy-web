@@ -91,5 +91,42 @@
       "serving": "Serving",
       "all": "all"
     }
+  },
+  "setup": {
+    "header": {
+      "appName": "Padel Buddy"
+    },
+    "teams": {
+      "team1Label": "TEAM 1",
+      "team2Label": "TEAM 2",
+      "team1Default": "Team A",
+      "team2Default": "Team B",
+      "playerPlaceholder": "Player names"
+    },
+    "firstServer": {
+      "label": "FIRST SERVER",
+      "team1": "Team 1",
+      "team2": "Team 2"
+    },
+    "format": {
+      "label": "MATCH FORMAT",
+      "bestOf1": "Best of 1",
+      "bestOf3": "Best of 3",
+      "bestOf5": "Best of 5"
+    },
+    "rules": {
+      "goldenPoint": "Golden Point",
+      "goldenPointHint": "No advantage on deuce",
+      "superTiebreak": "Super Tiebreak",
+      "superTiebreakHint": "Final set tiebreak to 10 points",
+      "sideSwitch": "Side-switch Prompts",
+      "sideSwitchHint": "Prompt players for court side changes"
+    },
+    "startButton": "Start Match",
+    "validation": {
+      "teamNamesRequired": "Both team names are required",
+      "selectFormat": "Please select a match format",
+      "selectServer": "Please select the first server"
+    }
   }
 }

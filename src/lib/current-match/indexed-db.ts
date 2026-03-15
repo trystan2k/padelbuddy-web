@@ -9,7 +9,7 @@ import {
 import { queueCurrentMatchResetNotice } from './reset-notice'
 
 const defaultDatabaseName = 'padel-buddy-web'
-const defaultDatabaseVersion = 1
+const defaultDatabaseVersion = 4
 const defaultObjectStoreName = 'current-match'
 const currentMatchRecordKey = 'current-match'
 
@@ -130,6 +130,10 @@ function getIndexedDb(): IDBFactory {
   return indexedDB
 }
 
+// Shared object store names for coordinated upgrades
+const localeStoreName = 'locale-preference'
+const speechStoreName = 'speech-preference'
+
 function openDatabase(config: Required<CurrentMatchPersistenceOptions>): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
     const request = getIndexedDb().open(config.databaseName, config.databaseVersion)
@@ -137,8 +141,16 @@ function openDatabase(config: Required<CurrentMatchPersistenceOptions>): Promise
     request.addEventListener('upgradeneeded', () => {
       const database = request.result
 
+      // Create all stores to prevent version collision with other modules
+      // This ensures all object stores exist regardless of which module opens the DB first
       if (!database.objectStoreNames.contains(config.objectStoreName)) {
         database.createObjectStore(config.objectStoreName)
+      }
+      if (!database.objectStoreNames.contains(localeStoreName)) {
+        database.createObjectStore(localeStoreName)
+      }
+      if (!database.objectStoreNames.contains(speechStoreName)) {
+        database.createObjectStore(speechStoreName)
       }
     })
 

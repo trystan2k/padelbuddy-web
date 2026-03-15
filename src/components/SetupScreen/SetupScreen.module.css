@@ -1,0 +1,175 @@
+.page {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, var(--base-color-surface-canvas) 0%, #e9f3df 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.page::before {
+  content: '';
+  position: absolute;
+  top: -5%;
+  left: -10%;
+  width: 50%;
+  height: 40%;
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--base-color-brand-highlight) 100%, transparent) 0%,
+    transparent 70%
+  );
+  opacity: 0.2;
+  pointer-events: none;
+}
+
+.container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  padding: 28px 32px;
+  max-width: 1024px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.appName {
+  margin: 0;
+  font-family: var(--semantic-typography-family-display);
+  font-size: var(--base-font-size-34);
+  font-weight: var(--base-font-weight-extrabold);
+  letter-spacing: var(--semantic-typography-letter-spacing-display);
+  color: var(--semantic-color-content-primary);
+}
+
+/* Main content */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Left column (teams section) */
+.leftColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Right column (options section) */
+.rightColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Team cards */
+.teamCard {
+  padding: 20px 22px;
+}
+
+/* Error text */
+.errorText {
+  margin: 8px 0 0;
+  font-size: var(--base-font-size-12);
+  font-weight: var(--base-font-weight-medium);
+  color: var(--semantic-color-content-danger);
+}
+
+/* Server row */
+.serverRow {
+  display: flex;
+  gap: 14px;
+}
+
+.serverChipText {
+  font-family: var(--semantic-typography-family-display);
+  font-size: var(--base-font-size-24);
+  font-weight: var(--semantic-typography-weight-strong);
+}
+
+.serverChipTextSelected {
+  color: var(--semantic-color-content-accent-primary);
+}
+
+.serverChipTextUnselected {
+  color: var(--semantic-color-content-secondary);
+}
+
+/* Format row */
+.formatRow {
+  display: flex;
+  gap: 12px;
+}
+
+.formatChipText {
+  font-family: var(--semantic-typography-family-display);
+  font-size: var(--base-font-size-24);
+  font-weight: var(--semantic-typography-weight-strong);
+}
+
+.formatChipTextSelected {
+  color: var(--semantic-color-content-accent-primary);
+}
+
+.formatChipTextUnselected {
+  color: var(--semantic-color-content-secondary);
+}
+
+/* Rules card */
+.rulesCard {
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Footer */
+.footer {
+  margin-top: auto;
+}
+
+/* Locale wrapper for positioning the dropdown */
+.localeWrapper {
+  position: relative;
+}
+
+/* Locale Menu - positioned relative to wrapper */
+.localeMenu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  background-color: var(--semantic-color-background-surface);
+  border: 1px solid var(--semantic-color-border-subtle);
+  border-radius: var(--base-radius-20);
+  box-shadow: 0 4px 12px var(--base-color-common-overlay-soft);
+  z-index: 100;
+}
+
+/* Responsive: two columns on tablet/desktop */
+@media (width >= 48rem) {
+  .main {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  .leftColumn,
+  .rightColumn {
+    flex: 1;
+  }
+}
