@@ -1,0 +1,16 @@
+{
+  "base": {
+    "radius": {
+      "16": { "value": "16px", "type": "borderRadius" },
+      "18": { "value": "18px", "type": "borderRadius" },
+      "20": { "value": "20px", "type": "borderRadius" },
+      "22": { "value": "22px", "type": "borderRadius" },
+      "24": { "value": "24px", "type": "borderRadius" },
+      "26": { "value": "26px", "type": "borderRadius" },
+      "28": { "value": "28px", "type": "borderRadius" },
+      "32": { "value": "32px", "type": "borderRadius" },
+      "36": { "value": "36px", "type": "borderRadius" },
+      "54": { "value": "54px", "type": "borderRadius" }
+    }
+  }
+}

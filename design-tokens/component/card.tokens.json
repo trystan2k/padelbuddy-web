@@ -1,0 +1,24 @@
+{
+  "component": {
+    "card": {
+      "panel": {
+        "background": { "value": "{semantic.color.background.surface}", "type": "color" },
+        "border": { "value": "{semantic.color.border.subtle}", "type": "color" },
+        "radius": { "value": "{base.radius.24}", "type": "borderRadius" }
+      },
+      "scoreboard-team": {
+        "radius": { "value": "{base.radius.36}", "type": "borderRadius" },
+        "padding-top": { "value": "{base.space.14}", "type": "spacing" },
+        "padding-x": { "value": "{base.space.18}", "type": "spacing" },
+        "padding-bottom": { "value": "{base.space.16}", "type": "spacing" }
+      },
+      "overlay": {
+        "background": { "value": "{semantic.color.background.surface}", "type": "color" },
+        "border": { "value": "{semantic.color.border.subtle}", "type": "color" },
+        "radius": { "value": "{base.radius.20}", "type": "borderRadius" },
+        "padding-y": { "value": "{base.space.10}", "type": "spacing" },
+        "padding-x": { "value": "{base.space.12}", "type": "spacing" }
+      }
+    }
+  }
+}

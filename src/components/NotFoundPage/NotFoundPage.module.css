@@ -10,12 +10,21 @@
   display: grid;
   gap: 0.9rem;
   padding: clamp(1.5rem, 1.2rem + 1.4vw, 2.25rem);
-  border: 1px solid var(--color-border-strong);
+  border: 1px solid
+    color-mix(
+      in srgb,
+      var(--semantic-color-border-subtle) 72%,
+      var(--semantic-color-content-primary)
+    );
   border-radius: 1.75rem;
   background:
-    linear-gradient(145deg, rgb(255 255 255 / 90%), rgb(245 240 232 / 80%)),
-    var(--color-surface-elevated);
-  box-shadow: var(--shadow-panel);
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--semantic-color-content-inverse) 90%, transparent),
+      color-mix(in srgb, var(--semantic-color-background-surface-muted) 80%, transparent)
+    ),
+    var(--semantic-color-background-surface-muted);
+  box-shadow: 0 1.5rem 4rem var(--base-color-common-overlay-soft);
   text-align: center;
 }
 
@@ -24,22 +33,26 @@
   font-size: 0.8rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--color-accent-strong);
+  color: color-mix(
+    in srgb,
+    var(--semantic-color-content-accent-secondary) 72%,
+    var(--semantic-color-content-primary)
+  );
 }
 
 .title {
   margin: 0;
-  font-family: var(--font-display);
+  font-family: var(--semantic-typography-family-display);
   font-size: clamp(2.1rem, 1.7rem + 2vw, 3rem);
   font-weight: 600;
   line-height: 0.98;
   letter-spacing: -0.04em;
-  color: var(--color-ink-strong);
+  color: var(--semantic-color-content-primary);
 }
 
 .description {
   margin: 0;
-  color: var(--color-ink-muted);
+  color: var(--semantic-color-content-secondary);
   font-size: 1rem;
   line-height: 1.7;
 }
@@ -52,9 +65,18 @@
   justify-content: center;
   padding: 0.8rem 1.2rem;
   border-radius: 999px;
-  background: linear-gradient(135deg, var(--color-accent-strong), var(--color-accent));
-  box-shadow: 0 1rem 2.5rem rgb(181 72 46 / 24%);
-  color: var(--color-surface);
+  background: linear-gradient(
+    135deg,
+    color-mix(
+      in srgb,
+      var(--semantic-color-content-accent-secondary) 72%,
+      var(--semantic-color-content-primary)
+    ),
+    var(--semantic-color-content-accent-secondary)
+  );
+  box-shadow: 0 1rem 2.5rem
+    color-mix(in srgb, var(--semantic-color-content-accent-secondary) 24%, transparent);
+  color: var(--semantic-color-content-inverse);
   font-weight: 600;
   text-decoration: none;
 }

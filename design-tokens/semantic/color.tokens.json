@@ -1,0 +1,45 @@
+{
+  "semantic": {
+    "color": {
+      "background": {
+        "canvas": { "value": "{base.color.surface.canvas}", "type": "color" },
+        "surface": { "value": "{base.color.surface.panel}", "type": "color" },
+        "surface-muted": { "value": "{base.color.surface.muted}", "type": "color" },
+        "accent-primary-subtle": { "value": "{base.color.brand.primary-subtle}", "type": "color" },
+        "accent-secondary-subtle": {
+          "value": "{base.color.brand.secondary-subtle}",
+          "type": "color"
+        },
+        "success-subtle": { "value": "{base.color.brand.success-subtle}", "type": "color" },
+        "critical-subtle": { "value": "{base.color.feedback.critical-subtle}", "type": "color" },
+        "critical-subtle-alt": {
+          "value": "{base.color.feedback.critical-subtle-alt}",
+          "type": "color"
+        }
+      },
+      "content": {
+        "primary": { "value": "{base.color.ink.strong}", "type": "color" },
+        "secondary": { "value": "{base.color.ink.mid}", "type": "color" },
+        "inverse": { "value": "{base.color.common.white}", "type": "color" },
+        "accent-primary": { "value": "{base.color.brand.primary}", "type": "color" },
+        "accent-secondary": { "value": "{base.color.brand.secondary}", "type": "color" },
+        "success": { "value": "{base.color.brand.success}", "type": "color" }
+      },
+      "border": {
+        "subtle": { "value": "{base.color.border.subtle}", "type": "color" },
+        "accent-primary": { "value": "{base.color.brand.primary}", "type": "color" },
+        "accent-secondary": { "value": "{base.color.brand.secondary}", "type": "color" },
+        "critical-subtle": { "value": "{base.color.border.critical-subtle}", "type": "color" },
+        "critical-subtle-alt": {
+          "value": "{base.color.border.critical-subtle-alt}",
+          "type": "color"
+        }
+      },
+      "action": {
+        "primary": { "value": "{base.color.brand.success}", "type": "color" },
+        "accent-primary": { "value": "{base.color.brand.primary}", "type": "color" },
+        "accent-secondary": { "value": "{base.color.brand.secondary}", "type": "color" }
+      }
+    }
+  }
+}

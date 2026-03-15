@@ -1,0 +1,22 @@
+{
+  "app": {
+    "scoreboard": {
+      "team-panel-width": {
+        "value": "{base.dimension.scoreboard.panel-width}",
+        "type": "dimension"
+      },
+      "team-panel-height": {
+        "value": "{base.dimension.scoreboard.panel-height}",
+        "type": "dimension"
+      },
+      "sets-overlay-width": {
+        "value": "{base.dimension.scoreboard.overlay-sets-width}",
+        "type": "dimension"
+      },
+      "court-overlay-width": {
+        "value": "{base.dimension.scoreboard.overlay-court-width}",
+        "type": "dimension"
+      }
+    }
+  }
+}

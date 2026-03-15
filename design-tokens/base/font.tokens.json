@@ -1,0 +1,49 @@
+{
+  "base": {
+    "font": {
+      "family": {
+        "body": { "value": "inter", "type": "fontFamilies" },
+        "display": { "value": "outfit", "type": "fontFamilies" }
+      },
+      "weight": {
+        "medium": { "value": "500", "type": "fontWeights" },
+        "semibold": { "value": "600", "type": "fontWeights" },
+        "bold": { "value": "700", "type": "fontWeights" },
+        "extrabold": { "value": "800", "type": "fontWeights" },
+        "black": { "value": "900", "type": "fontWeights" }
+      },
+      "size": {
+        "11": { "value": "11px", "type": "fontSizes" },
+        "13": { "value": "13px", "type": "fontSizes" },
+        "14": { "value": "14px", "type": "fontSizes" },
+        "15": { "value": "15px", "type": "fontSizes" },
+        "16": { "value": "16px", "type": "fontSizes" },
+        "18": { "value": "18px", "type": "fontSizes" },
+        "20": { "value": "20px", "type": "fontSizes" },
+        "24": { "value": "24px", "type": "fontSizes" },
+        "26": { "value": "26px", "type": "fontSizes" },
+        "28": { "value": "28px", "type": "fontSizes" },
+        "30": { "value": "30px", "type": "fontSizes" },
+        "32": { "value": "32px", "type": "fontSizes" },
+        "34": { "value": "34px", "type": "fontSizes" },
+        "36": { "value": "36px", "type": "fontSizes" },
+        "46": { "value": "46px", "type": "fontSizes" },
+        "64": { "value": "64px", "type": "fontSizes" },
+        "232": { "value": "232px", "type": "fontSizes" }
+      },
+      "letterSpacing": {
+        "tight-xl": { "value": "-1px", "type": "letterSpacing" },
+        "tight-sm": { "value": "-0.5px", "type": "letterSpacing" },
+        "normal": { "value": "0px", "type": "letterSpacing" },
+        "wide-sm": { "value": "0.2px", "type": "letterSpacing" },
+        "wide-md": { "value": "1.2px", "type": "letterSpacing" },
+        "wide-lg": { "value": "1.6px", "type": "letterSpacing" },
+        "wide-xl": { "value": "1.8px", "type": "letterSpacing" }
+      },
+      "lineHeight": {
+        "compact": { "value": 0.85, "type": "lineHeights" },
+        "relaxed": { "value": 1.35, "type": "lineHeights" }
+      }
+    }
+  }
+}

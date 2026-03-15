@@ -1,18 +1,13 @@
+@import url('@fontsource/inter/500.css');
+@import url('@fontsource/inter/600.css');
+@import url('@fontsource/inter/700.css');
+@import url('@fontsource/outfit/700.css');
+@import url('@fontsource/outfit/800.css');
+@import url('@fontsource/outfit/900.css');
+@import url('../design-tokens/dist/variables.css');
+
 :root {
   color-scheme: light;
-
-  --font-body: 'Avenir Next', 'Segoe UI', sans-serif;
-  --font-display: 'Iowan Old Style', 'Palatino Linotype', serif;
-  --color-ink: #243028;
-  --color-ink-strong: #182119;
-  --color-ink-muted: #516056;
-  --color-surface: #fffaf4;
-  --color-surface-elevated: #f5efe6;
-  --color-border-soft: rgb(36 48 40 / 12%);
-  --color-border-strong: rgb(36 48 40 / 18%);
-  --color-accent: #e67f58;
-  --color-accent-strong: #b54c31;
-  --shadow-panel: 0 1.5rem 4rem rgb(32 40 34 / 12%);
 }
 
 * {
@@ -23,16 +18,36 @@ html {
   min-height: 100%;
   font-size: 100%;
   background:
-    radial-gradient(circle at top left, rgb(230 127 88 / 24%), transparent 28%),
-    radial-gradient(circle at top right, rgb(71 121 90 / 16%), transparent 30%),
-    linear-gradient(180deg, #f2ece3 0%, #e6efe6 100%);
+    radial-gradient(
+      circle at top left,
+      color-mix(in srgb, var(--semantic-color-content-accent-secondary) 24%, transparent),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at top right,
+      color-mix(in srgb, var(--semantic-color-content-success) 16%, transparent),
+      transparent 30%
+    ),
+    linear-gradient(
+      180deg,
+      color-mix(
+        in srgb,
+        var(--semantic-color-background-canvas) 86%,
+        var(--semantic-color-background-surface)
+      ),
+      color-mix(
+        in srgb,
+        var(--semantic-color-background-canvas) 64%,
+        var(--semantic-color-background-success-subtle)
+      )
+    );
 }
 
 body {
   min-height: 100vh;
   margin: 0;
-  font-family: var(--font-body);
-  color: var(--color-ink);
+  font-family: var(--semantic-typography-family-body);
+  color: var(--semantic-color-content-primary);
   background: transparent;
 }
 
@@ -67,16 +82,16 @@ svg {
 }
 
 ::selection {
-  color: var(--color-surface);
-  background: rgb(181 76 49 / 90%);
+  color: var(--semantic-color-content-inverse);
+  background: color-mix(in srgb, var(--semantic-color-content-accent-secondary) 90%, black);
 }
 
 :focus-visible {
-  outline: 3px solid var(--color-ink-strong);
+  outline: 3px solid var(--semantic-color-content-primary);
   outline-offset: 3px;
   box-shadow:
-    0 0 0 3px rgb(255 250 244 / 96%),
-    0 0 0 6px rgb(181 76 49 / 90%);
+    0 0 0 3px color-mix(in srgb, var(--semantic-color-background-surface) 96%, transparent),
+    0 0 0 6px color-mix(in srgb, var(--semantic-color-content-accent-secondary) 90%, black);
 }
 
 @media (prefers-reduced-motion: reduce) {

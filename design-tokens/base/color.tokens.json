@@ -1,0 +1,37 @@
+{
+  "base": {
+    "color": {
+      "ink": {
+        "strong": { "value": "#13233B", "type": "color" },
+        "mid": { "value": "#5E6B7D", "type": "color" }
+      },
+      "surface": {
+        "canvas": { "value": "#F4F0E7", "type": "color" },
+        "panel": { "value": "#FCFAF6", "type": "color" },
+        "muted": { "value": "#EFE7D8", "type": "color" }
+      },
+      "brand": {
+        "primary": { "value": "#2F7CF6", "type": "color" },
+        "primary-subtle": { "value": "#E6F0FF", "type": "color" },
+        "secondary": { "value": "#E28A1A", "type": "color" },
+        "secondary-subtle": { "value": "#FFF0DB", "type": "color" },
+        "success": { "value": "#1FA24A", "type": "color" },
+        "success-subtle": { "value": "#E0F4E6", "type": "color" },
+        "highlight": { "value": "#D8EA42", "type": "color" }
+      },
+      "feedback": {
+        "critical-subtle": { "value": "#F9E4E4", "type": "color" },
+        "critical-subtle-alt": { "value": "#FBE6E0", "type": "color" }
+      },
+      "border": {
+        "subtle": { "value": "#D7CFBF", "type": "color" },
+        "critical-subtle": { "value": "#D6B4B4", "type": "color" },
+        "critical-subtle-alt": { "value": "#E3B8AA", "type": "color" }
+      },
+      "common": {
+        "white": { "value": "#FFFFFF", "type": "color" },
+        "overlay-soft": { "value": "#00000012", "type": "color" }
+      }
+    }
+  }
+}

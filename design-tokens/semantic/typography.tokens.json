@@ -1,0 +1,39 @@
+{
+  "semantic": {
+    "typography": {
+      "family": {
+        "body": { "value": "{base.font.family.body}", "type": "fontFamilies" },
+        "display": { "value": "{base.font.family.display}", "type": "fontFamilies" }
+      },
+      "weight": {
+        "body": { "value": "{base.font.weight.medium}", "type": "fontWeights" },
+        "strong": { "value": "{base.font.weight.bold}", "type": "fontWeights" },
+        "heading": { "value": "{base.font.weight.extrabold}", "type": "fontWeights" },
+        "display": { "value": "{base.font.weight.black}", "type": "fontWeights" }
+      },
+      "size": {
+        "label-sm": { "value": "{base.font.size.11}", "type": "fontSizes" },
+        "label-md": { "value": "{base.font.size.14}", "type": "fontSizes" },
+        "body-sm": { "value": "{base.font.size.15}", "type": "fontSizes" },
+        "body-md": { "value": "{base.font.size.16}", "type": "fontSizes" },
+        "body-lg": { "value": "{base.font.size.18}", "type": "fontSizes" },
+        "title-sm": { "value": "{base.font.size.20}", "type": "fontSizes" },
+        "title-md": { "value": "{base.font.size.24}", "type": "fontSizes" },
+        "title-lg": { "value": "{base.font.size.28}", "type": "fontSizes" },
+        "title-xl": { "value": "{base.font.size.34}", "type": "fontSizes" },
+        "display-md": { "value": "{base.font.size.46}", "type": "fontSizes" },
+        "display-score": { "value": "{base.font.size.232}", "type": "fontSizes" }
+      },
+      "letterSpacing": {
+        "label": { "value": "{base.font.letterSpacing.wide-lg}", "type": "letterSpacing" },
+        "label-tight": { "value": "{base.font.letterSpacing.wide-md}", "type": "letterSpacing" },
+        "heading": { "value": "{base.font.letterSpacing.tight-sm}", "type": "letterSpacing" },
+        "display": { "value": "{base.font.letterSpacing.tight-xl}", "type": "letterSpacing" }
+      },
+      "lineHeight": {
+        "display": { "value": "{base.font.lineHeight.compact}", "type": "lineHeights" },
+        "body": { "value": "{base.font.lineHeight.relaxed}", "type": "lineHeights" }
+      }
+    }
+  }
+}

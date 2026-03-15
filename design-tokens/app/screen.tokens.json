@@ -1,0 +1,16 @@
+{
+  "app": {
+    "screen": {
+      "tablet": {
+        "landscape-width": {
+          "value": "{base.dimension.screen.tablet-landscape-width}",
+          "type": "dimension"
+        },
+        "landscape-height": {
+          "value": "{base.dimension.screen.tablet-landscape-height}",
+          "type": "dimension"
+        }
+      }
+    }
+  }
+}
