@@ -96,6 +96,9 @@
     "header": {
       "appName": "Padel Buddy"
     },
+    "locale": {
+      "selectLanguage": "Seleccionar idioma"
+    },
     "teams": {
       "team1Label": "EQUIPO 1",
       "team2Label": "EQUIPO 2",

@@ -8,6 +8,8 @@ export interface LocaleChipProps {
   onClick?: () => void
   active?: boolean
   className?: string
+  /** For dropdown triggers: indicates whether the dropdown is expanded */
+  'aria-expanded'?: boolean
 }
 
 const localeFlags: Record<SupportedLocale, string> = {
@@ -16,13 +18,21 @@ const localeFlags: Record<SupportedLocale, string> = {
   es: '🇪🇸'
 }
 
-export function LocaleChip({ locale, label, onClick, active = false, className }: LocaleChipProps) {
+export function LocaleChip({
+  locale,
+  label,
+  onClick,
+  active = false,
+  className,
+  'aria-expanded': ariaExpanded
+}: LocaleChipProps) {
   return (
     <button
       type="button"
       onClick={onClick}
       className={`${styles.chip}${active ? ` ${styles.active}` : ''}${className ? ` ${className}` : ''}`}
       aria-pressed={active}
+      aria-expanded={ariaExpanded}
     >
       <span aria-hidden="true">{localeFlags[locale]}</span>
       <span className={styles.text}>{label}</span>

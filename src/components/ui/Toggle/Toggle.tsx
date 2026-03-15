@@ -30,6 +30,7 @@ export function Toggle({
         onCheckedChange={onChange}
         disabled={disabled}
         className={styles.switch}
+        aria-label={label}
       >
         <Switch.Thumb className={styles.thumb} />
       </Switch.Root>
