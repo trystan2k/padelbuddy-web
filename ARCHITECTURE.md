@@ -146,4 +146,23 @@ The local developer workflow is:
 
 Pre-commit hooks are installed through Husky, and `lint-staged` reads `.lintstagedrc.json` to keep staged-file checks limited to Oxlint, CSS Module Stylelint, and a final Oxfmt pass.
 
-This document reflects the repository's current structure and should evolve as more match logic, routes, and automated suites are added.
+## 6. Design System
+
+All app screens MUST be developed following the Pencil design file strictly. The design tokens and visual specifications are defined in the Pencil design file at `docs/design/padelbuddyweb.pen`.
+
+### 6.1 Design Tokens
+
+The project uses the design tokens defined in the design-tokens/ directory.
+
+### 6.2 Design Implementation
+
+When implementing UI screens:
+
+1. Open the Pencil design file to reference the exact layout, spacing, and visual specifications
+2. Use design tokens from the table above instead of hardcoded values
+3. Match colors, typography, spacing, and component styling exactly as shown in the design
+4. Verify implementation matches the design visually before considering the task complete
+
+### 6.3 Accessing Design Variables in Code
+
+Design tokens can be accessed via the `get_variables()` MCP tool or by referencing the design file directly. Always prioritize the Pencil design as the single source of truth for visual implementation.
