@@ -31,6 +31,7 @@ This agent must NOT:
 - Skip unresolved high-impact questions.
 - Invent requirements that are not in the PRD or user clarifications.
 - Run shell commands directly.
+- Create any documentation NOT explicitly requested.
 
 ## Inputs
 
