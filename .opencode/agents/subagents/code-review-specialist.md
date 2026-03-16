@@ -46,6 +46,7 @@ Before reviewing:
 1. Read context files in order: `AGENTS.md` → `CONTEXT.md` → `ARCHITECTURE.md`
 2. Extract stack, architecture rules, conventions, quality constraints
 3. Load skills from `.opencode/skills/*/SKILL.md` — match to the changed files' stack
+   - **Mandatory**: Always load `web-accessibility` skill when reviewing web application UIs or frontend components.
 4. Read the deepthink plan file if provided — use it as intent context only
 5. Get the full diff: `git diff` or `git diff <commit-range>` for changed lines
 

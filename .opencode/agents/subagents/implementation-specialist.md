@@ -71,6 +71,7 @@ Follow this protocol before writing code:
 2. Extract stack details for frontend, backend, database, testing, and infrastructure.
 3. Discover available local skills in `.opencode/skills/*/SKILL.md`.
 4. Match detected stack and task intent to available skills by skill name and description.
+   - **Mandatory**: Always load `web-accessibility` skill when implementing web application UIs or frontend components.
 5. Load all relevant matched skills before implementation.
 6. If no matching skill exists, proceed with repository conventions and established best practices.
 

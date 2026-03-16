@@ -49,6 +49,7 @@ This project uses Linear for issue tracking and project management. GitHub is us
 ## Skills (load when needed)
 
 - `react-modern` - Modern React 19 patterns and best practices
+- `web-accessibility` - Web accessibility standards (WCAG) and best practices
 - `typescript-modern` - Modern TypeScript patterns, strict type safety, and runtime validation
 - `tanstack-start` - Tanstack Start features
 - `css-modules` - CSS Modules features
