@@ -1,4 +1,5 @@
 import { useCallback } from 'react'
+import type { ChangeEvent } from 'react'
 
 import { cn } from '@/lib/utils/cn'
 
@@ -38,7 +39,7 @@ export function TextInput({
         : undefined
 
   const handleChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
+    (e: ChangeEvent<HTMLInputElement>) => {
       onChange(e.target.value)
     },
     [onChange]

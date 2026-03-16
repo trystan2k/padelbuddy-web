@@ -1,7 +1,11 @@
+import type { ReactNode } from 'react'
+
+import { cn } from '@/lib/utils/cn'
+
 import styles from './PrimaryButton.module.css'
 
 export interface PrimaryButtonProps {
-  children: React.ReactNode
+  children: ReactNode
   onClick: () => void
   disabled?: boolean
   type?: 'button' | 'submit' | 'reset'
@@ -21,7 +25,7 @@ export function PrimaryButton({
       type={type}
       onClick={onClick}
       disabled={disabled}
-      className={`${styles.button}${className ? ` ${className}` : ''}`}
+      className={cn(styles.button, className)}
     >
       {children}
     </button>

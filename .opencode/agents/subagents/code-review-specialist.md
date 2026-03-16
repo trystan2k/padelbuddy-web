@@ -83,6 +83,9 @@ Work through **every section** below for every changed file. Do not skip section
 - [ ] Forms — uncontrolled inputs mixed with controlled, missing validation
 - [ ] Loading and error states — are they handled and shown to the user?
 - [ ] Memory leaks — subscriptions, timers, event listeners not cleaned up in useEffect return
+- [ ] React namespace imports — use `import type { ReactNode, ChangeEvent, KeyboardEvent } from 'react'` instead of `React.ReactNode`, `React.ChangeEvent`, etc.
+- [ ] Duplicate constants — check if a constant already exists before creating a new one (e.g., use `supportedLocales` from `@/lib/i18n/types` instead of defining `availableLocales`)
+- [ ] Unused function returns — if a function returns a value, either use it or remove the call
 
 ### 4. TanStack-specific (apply when TanStack Router or Query is in scope)
 - [ ] Router loaders — are they throwing errors or returning them? (loaders must throw)
@@ -92,6 +95,7 @@ Work through **every section** below for every changed file. Do not skip section
 - [ ] Route params accessed without validation or type-safety
 - [ ] `defer()` used incorrectly — blocking data mixed with deferred data
 - [ ] Search params — are they validated/parsed with a schema (e.g., Zod)?
+- [ ] SPA navigation — use `useNavigate()` from TanStack Router instead of `window.location.href` for in-app navigation
 
 ### 5. TypeScript
 - [ ] `any` used where a real type is possible
@@ -122,6 +126,14 @@ Work through **every section** below for every changed file. Do not skip section
 - [ ] Mocks that make tests pass regardless of real behavior
 - [ ] Tests that test implementation details instead of behavior
 - [ ] Missing test for the specific bug or requirement this task addresses
+
+### 9. CSS Modules
+
+- [ ] Class names not using the `styles.` prefix
+- [ ] Duplicate class names in different files
+- [ ] Class names not following the `styles.` prefix
+- [ ] Class names not following the `styles.` prefix
+- [ ] cn() utility for className — use `cn(styles.foo, className)` instead of template literal concatenation like `${styles.foo}${className ? ' ' + className : ''}`
 
 ## Findings Format
 

@@ -1,5 +1,7 @@
 import { Switch } from '@base-ui/react/switch'
 
+import { cn } from '@/lib/utils/cn'
+
 import styles from './Toggle.module.css'
 
 export interface ToggleProps {
@@ -20,7 +22,7 @@ export function Toggle({
   className
 }: ToggleProps) {
   return (
-    <div className={`${styles.row}${className ? ` ${className}` : ''}`}>
+    <div className={cn(styles.row, className)}>
       <div className={styles.labelGroup}>
         <span className={styles.title}>{label}</span>
         {hint && <span className={styles.hint}>{hint}</span>}
