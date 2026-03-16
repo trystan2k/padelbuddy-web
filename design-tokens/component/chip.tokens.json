@@ -1,0 +1,19 @@
+{
+  "component": {
+    "chip": {
+      "locale": {
+        "gap": { "value": "{base.space.8}", "type": "spacing" },
+        "padding-y": { "value": "{base.space.10}", "type": "spacing" },
+        "padding-x": { "value": "{base.space.16}", "type": "spacing" },
+        "radius": { "value": "{base.radius.20}", "type": "borderRadius" }
+      },
+      "selectable": {
+        "gap": { "value": "{base.space.10}", "type": "spacing" },
+        "padding-y": { "value": "{base.space.16}", "type": "spacing" },
+        "padding-x": { "value": "{base.space.18}", "type": "spacing" },
+        "radius": { "value": "{base.radius.22}", "type": "borderRadius" },
+        "dot-size": { "value": "{base.space.14}", "type": "dimension" }
+      }
+    }
+  }
+}

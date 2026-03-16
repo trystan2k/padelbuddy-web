@@ -94,7 +94,8 @@
   },
   "setup": {
     "header": {
-      "appName": "Padel Buddy"
+      "appName": "Padel Buddy",
+      "subtitle": "Configurar partido"
     },
     "locale": {
       "selectLanguage": "Seleccionar idioma"

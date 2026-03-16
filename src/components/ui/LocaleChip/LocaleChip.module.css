@@ -2,9 +2,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 10px 16px;
-  border-radius: var(--base-radius-20);
+  gap: var(--component-chip-locale-gap);
+  padding: var(--component-chip-locale-padding-y) var(--component-chip-locale-padding-x);
+  border-radius: var(--component-chip-locale-radius);
   border: 1px solid var(--semantic-color-border-subtle);
   background-color: var(--semantic-color-background-surface);
   cursor: pointer;

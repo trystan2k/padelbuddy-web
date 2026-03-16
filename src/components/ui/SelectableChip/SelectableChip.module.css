@@ -2,8 +2,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 16px 18px;
-  border-radius: var(--base-radius-22);
+  padding: var(--component-chip-selectable-padding-y) var(--component-chip-selectable-padding-x);
+  border-radius: var(--component-chip-selectable-radius);
   border: 2px solid var(--semantic-color-border-subtle);
   background-color: var(--semantic-color-background-surface);
   cursor: pointer;
@@ -51,12 +51,12 @@
 .content {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--component-chip-selectable-gap);
 }
 
 .dot {
-  width: 14px;
-  height: 14px;
+  width: var(--component-chip-selectable-dot-size);
+  height: var(--component-chip-selectable-dot-size);
   border-radius: 50%;
   flex-shrink: 0;
 }

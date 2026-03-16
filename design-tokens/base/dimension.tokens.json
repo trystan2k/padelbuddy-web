@@ -3,13 +3,19 @@
     "dimension": {
       "screen": {
         "tablet-landscape-width": { "value": "1024px", "type": "dimension" },
-        "tablet-landscape-height": { "value": "768px", "type": "dimension" }
+        "tablet-landscape-height": { "value": "771px", "type": "dimension" },
+        "header-height": { "value": "64px", "type": "dimension" },
+        "body-height": { "value": "505px", "type": "dimension" },
+        "footer-height": { "value": "90px", "type": "dimension" },
+        "header-icon-size": { "value": "40px", "type": "dimension" }
       },
       "scoreboard": {
         "panel-width": { "value": "452px", "type": "dimension" },
         "panel-height": { "value": "362px", "type": "dimension" },
         "overlay-sets-width": { "value": "180px", "type": "dimension" },
-        "overlay-court-width": { "value": "212px", "type": "dimension" }
+        "overlay-court-width": { "value": "177px", "type": "dimension" },
+        "serve-indicator-width": { "value": "220px", "type": "dimension" },
+        "serve-indicator-height": { "value": "12px", "type": "dimension" }
       }
     }
   }

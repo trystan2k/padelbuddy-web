@@ -180,7 +180,13 @@ export function SetupScreen() {
   // Header content
   const headerContent = (
     <>
-      <h1 className={styles.appName}>{t('setup.header.appName')}</h1>
+      <div className={styles.headerBrand}>
+        <div className={styles.titleRow}>
+          <img alt="" aria-hidden="true" className={styles.headerIcon} src="/icon.png" />
+          <h1 className={styles.appName}>{t('setup.header.appName')}</h1>
+        </div>
+        <p className={styles.headerSubtitle}>{t('setup.header.subtitle')}</p>
+      </div>
       <div className={styles.localeWrapper}>
         <LocaleChip
           flag={LOCALE_FLAGS[currentLocale]}

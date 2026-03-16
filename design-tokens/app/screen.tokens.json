@@ -10,6 +10,20 @@
           "value": "{base.dimension.screen.tablet-landscape-height}",
           "type": "dimension"
         }
+      },
+      "shell": {
+        "padding-y": { "value": "{base.space.28}", "type": "spacing" },
+        "padding-x": { "value": "{base.space.32}", "type": "spacing" },
+        "section-gap": { "value": "{base.space.28}", "type": "spacing" },
+        "header-height": { "value": "{base.dimension.screen.header-height}", "type": "dimension" },
+        "body-height": { "value": "{base.dimension.screen.body-height}", "type": "dimension" },
+        "footer-height": { "value": "{base.dimension.screen.footer-height}", "type": "dimension" }
+      },
+      "header": {
+        "title-gap": { "value": "{base.space.12}", "type": "spacing" },
+        "subtitle-gap": { "value": "{base.space.2}", "type": "spacing" },
+        "icon-size": { "value": "{base.dimension.screen.header-icon-size}", "type": "dimension" },
+        "subtitle-indent": { "value": "{base.space.52}", "type": "spacing" }
       }
     }
   }

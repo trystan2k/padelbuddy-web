@@ -16,8 +16,15 @@
         "background": { "value": "{semantic.color.background.surface}", "type": "color" },
         "border": { "value": "{semantic.color.border.subtle}", "type": "color" },
         "radius": { "value": "{base.radius.20}", "type": "borderRadius" },
-        "padding-y": { "value": "{base.space.10}", "type": "spacing" },
-        "padding-x": { "value": "{base.space.12}", "type": "spacing" }
+        "padding-y": { "value": "{base.space.12}", "type": "spacing" },
+        "padding-x": { "value": "{base.space.14}", "type": "spacing" }
+      },
+      "form": {
+        "padding": { "value": "{base.space.24}", "type": "spacing" }
+      },
+      "rules": {
+        "padding": { "value": "{base.space.24}", "type": "spacing" },
+        "gap": { "value": "{base.space.18}", "type": "spacing" }
       }
     }
   }

@@ -1,7 +1,6 @@
 import { afterEach, beforeEach, describe, expect, test } from 'vitest'
 import { render } from 'vitest-browser-react'
 
-import { AppShell } from '@/components/AppShell/AppShell'
 import { CurrentMatchStartupGate } from '@/components/CurrentMatchStartupGate/CurrentMatchStartupGate'
 import {
   clearCurrentMatch,
@@ -35,7 +34,7 @@ describe('CurrentMatchStartupGate browser', () => {
   test('renders the shell directly when no saved match exists', async () => {
     const screen = await render(
       <CurrentMatchStartupGate persistence={persistence}>
-        <AppShell />
+        <TestShell />
       </CurrentMatchStartupGate>
     )
 
@@ -53,7 +52,7 @@ describe('CurrentMatchStartupGate browser', () => {
 
     const screen = await render(
       <CurrentMatchStartupGate persistence={persistence}>
-        <AppShell />
+        <TestShell />
       </CurrentMatchStartupGate>
     )
     const resumeDialog = screen.getByRole('dialog', { name: 'Resume saved match?' })
@@ -85,7 +84,7 @@ describe('CurrentMatchStartupGate browser', () => {
 
     const repeatedStartupScreen = await render(
       <CurrentMatchStartupGate persistence={persistence}>
-        <AppShell />
+        <TestShell />
       </CurrentMatchStartupGate>
     )
 
@@ -104,7 +103,7 @@ describe('CurrentMatchStartupGate browser', () => {
 
     const firstScreen = await render(
       <CurrentMatchStartupGate persistence={persistence}>
-        <AppShell />
+        <TestShell />
       </CurrentMatchStartupGate>
     )
 
@@ -117,7 +116,7 @@ describe('CurrentMatchStartupGate browser', () => {
 
     const secondScreen = await render(
       <CurrentMatchStartupGate persistence={persistence}>
-        <AppShell />
+        <TestShell />
       </CurrentMatchStartupGate>
     )
 
@@ -139,7 +138,7 @@ describe('CurrentMatchStartupGate browser', () => {
 
     const screen = await render(
       <CurrentMatchStartupGate persistence={persistence}>
-        <AppShell />
+        <TestShell />
       </CurrentMatchStartupGate>
     )
 
@@ -163,7 +162,7 @@ describe('CurrentMatchStartupGate browser', () => {
 
     const firstScreen = await render(
       <CurrentMatchStartupGate persistence={persistence}>
-        <AppShell />
+        <TestShell />
       </CurrentMatchStartupGate>
     )
 
@@ -176,7 +175,7 @@ describe('CurrentMatchStartupGate browser', () => {
 
     const secondScreen = await render(
       <CurrentMatchStartupGate persistence={persistence}>
-        <AppShell />
+        <TestShell />
       </CurrentMatchStartupGate>
     )
 
@@ -198,7 +197,7 @@ describe('CurrentMatchStartupGate browser', () => {
 
     const firstScreen = await render(
       <CurrentMatchStartupGate persistence={persistence}>
-        <AppShell />
+        <TestShell />
       </CurrentMatchStartupGate>
     )
 
@@ -210,7 +209,7 @@ describe('CurrentMatchStartupGate browser', () => {
 
     const secondScreen = await render(
       <CurrentMatchStartupGate persistence={persistence}>
-        <AppShell />
+        <TestShell />
       </CurrentMatchStartupGate>
     )
 
@@ -228,7 +227,7 @@ describe('CurrentMatchStartupGate browser', () => {
 
     const firstScreen = await render(
       <CurrentMatchStartupGate>
-        <AppShell />
+        <TestShell />
       </CurrentMatchStartupGate>
     )
 
@@ -244,7 +243,7 @@ describe('CurrentMatchStartupGate browser', () => {
 
     const secondScreen = await render(
       <CurrentMatchStartupGate>
-        <AppShell />
+        <TestShell />
       </CurrentMatchStartupGate>
     )
 
@@ -273,7 +272,7 @@ describe('CurrentMatchStartupGate browser', () => {
           }
         })}
       >
-        <AppShell />
+        <TestShell />
       </CurrentMatchStartupGate>
     )
 
@@ -299,7 +298,7 @@ describe('CurrentMatchStartupGate browser', () => {
           }
         })}
       >
-        <AppShell />
+        <TestShell />
       </CurrentMatchStartupGate>
     )
 
@@ -394,4 +393,8 @@ function createPersistenceStub(overrides: {
     loadCurrentMatch: overrides.loadCurrentMatch,
     clearCurrentMatch: overrides.clearCurrentMatch
   }
+}
+
+function TestShell() {
+  return <h1>Padel Buddy</h1>
 }

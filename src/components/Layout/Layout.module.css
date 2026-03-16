@@ -31,8 +31,8 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: var(--base-space-28);
-  padding: var(--base-space-28) var(--base-space-32);
+  gap: var(--app-screen-shell-section-gap);
+  padding: var(--app-screen-shell-padding-y) var(--app-screen-shell-padding-x);
   max-width: var(--app-screen-tablet-landscape-width);
   width: 100%;
   margin: 0 auto;
@@ -43,11 +43,12 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  min-height: var(--app-screen-shell-header-height);
 }
 
 /* Body section - main content area, grows to fill space */
 .body {
-  flex: 1;
+  min-height: var(--app-screen-shell-body-height);
   display: flex;
   flex-direction: column;
 }
@@ -55,4 +56,5 @@
 /* Footer section - action area, pinned to bottom */
 .footer {
   margin-top: auto;
+  min-height: var(--app-screen-shell-footer-height);
 }

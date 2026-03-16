@@ -1,4 +1,22 @@
 /* Header */
+.headerBrand {
+  display: flex;
+  flex-direction: column;
+  gap: var(--app-screen-header-subtitle-gap);
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: var(--app-screen-header-title-gap);
+}
+
+.headerIcon {
+  width: var(--app-screen-header-icon-size);
+  height: var(--app-screen-header-icon-size);
+  flex-shrink: 0;
+}
+
 .appName {
   margin: 0;
   font-family: var(--semantic-typography-family-display);
@@ -6,6 +24,15 @@
   font-weight: var(--base-font-weight-extrabold);
   letter-spacing: var(--semantic-typography-letter-spacing-display);
   color: var(--semantic-color-content-primary);
+}
+
+.headerSubtitle {
+  margin: 0;
+  padding-left: var(--app-screen-header-subtitle-indent);
+  font-family: var(--semantic-typography-family-body);
+  font-size: var(--semantic-typography-size-body-md);
+  font-weight: var(--semantic-typography-weight-strong);
+  color: var(--semantic-color-content-secondary);
 }
 
 /* Main content wrapper for responsive 2-column layout.
@@ -22,24 +49,24 @@
 .leftColumn {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: var(--base-space-16);
 }
 
 /* Right column (options section) */
 .rightColumn {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: var(--base-space-16);
 }
 
 /* Team cards */
 .teamCard {
-  padding: 20px 22px;
+  padding: var(--component-card-form-padding);
 }
 
 /* Error text */
 .errorText {
-  margin: 8px 0 0;
+  margin: var(--base-space-8) 0 0;
   font-size: var(--base-font-size-12);
   font-weight: var(--base-font-weight-medium);
   color: var(--semantic-color-content-danger);
@@ -48,7 +75,7 @@
 /* Server row */
 .serverRow {
   display: flex;
-  gap: 14px;
+  gap: var(--base-space-14);
 }
 
 .serverChipText {
@@ -68,7 +95,7 @@
 /* Format row */
 .formatRow {
   display: flex;
-  gap: 12px;
+  gap: var(--base-space-12);
 }
 
 .formatChipText {
@@ -87,10 +114,10 @@
 
 /* Rules card */
 .rulesCard {
-  padding: 18px 20px;
+  padding: var(--component-card-rules-padding);
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: var(--component-card-rules-gap);
 }
 
 /* Locale wrapper for positioning the dropdown */
@@ -103,11 +130,11 @@
   position: absolute;
   top: 100%;
   right: 0;
-  margin-top: 8px;
+  margin-top: var(--base-space-8);
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 12px;
+  gap: var(--base-space-8);
+  padding: var(--base-space-12);
   background-color: var(--semantic-color-background-surface);
   border: 1px solid var(--semantic-color-border-subtle);
   border-radius: var(--base-radius-20);

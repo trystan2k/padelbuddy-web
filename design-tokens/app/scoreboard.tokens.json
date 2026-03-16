@@ -16,6 +16,14 @@
       "court-overlay-width": {
         "value": "{base.dimension.scoreboard.overlay-court-width}",
         "type": "dimension"
+      },
+      "serve-indicator-width": {
+        "value": "{base.dimension.scoreboard.serve-indicator-width}",
+        "type": "dimension"
+      },
+      "serve-indicator-height": {
+        "value": "{base.dimension.scoreboard.serve-indicator-height}",
+        "type": "dimension"
       }
     }
   }
