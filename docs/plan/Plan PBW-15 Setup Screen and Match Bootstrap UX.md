@@ -104,7 +104,7 @@
       "team2Label": "TEAM 2",
       "team1Default": "Team A",
       "team2Default": "Team B",
-      "playerPlaceholder": "Player names"
+      "playerPlaceholder": "Team name"
     },
     "firstServer": {
       "label": "FIRST SERVER",

@@ -8,10 +8,10 @@
   color: var(--semantic-color-content-primary);
 }
 
-.teamOne {
+.accentPrimary {
   color: var(--semantic-color-content-accent-primary);
 }
 
-.teamTwo {
+.accentSecondary {
   color: var(--semantic-color-content-accent-secondary);
 }

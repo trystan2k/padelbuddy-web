@@ -5,6 +5,7 @@ import { createMatchSetup, matchFormats, type MatchFormat } from '@/core/match'
 import { createCurrentMatchSession, saveCurrentMatch } from '@/lib/current-match'
 import { changeLocale } from '@/lib/i18n/i18n'
 import { isSupportedLocale, type SupportedLocale } from '@/lib/i18n/types'
+import { LOCALE_FLAGS, LOCALE_LABELS } from '@/lib/i18n'
 import { cn } from '@/lib/utils/cn'
 
 import {
@@ -33,13 +34,6 @@ const formatKeys: Record<MatchFormat, string> = {
   'best-of-1': 'bestOf1',
   'best-of-3': 'bestOf3',
   'best-of-5': 'bestOf5'
-}
-
-// Locale labels
-const localeLabels: Record<SupportedLocale, string> = {
-  en: 'English',
-  pt: 'Português',
-  es: 'Español'
 }
 
 // Available locales for the menu
@@ -193,19 +187,25 @@ export function SetupScreen() {
           <h1 className={styles.appName}>{t('setup.header.appName')}</h1>
           <div className={styles.localeWrapper}>
             <LocaleChip
-              locale={currentLocale}
-              label={localeLabels[currentLocale]}
+              flag={LOCALE_FLAGS[currentLocale]}
+              label={LOCALE_LABELS[currentLocale]}
               onClick={handleToggleLocaleMenu}
               active
               aria-expanded={showLocaleMenu}
+              {...(showLocaleMenu && { 'aria-controls': 'locale-menu' })}
             />
             {showLocaleMenu && (
-              <div className={styles.localeMenu} aria-label={t('setup.locale.selectLanguage')}>
+              <div
+                id="locale-menu"
+                className={styles.localeMenu}
+                role="group"
+                aria-label={t('setup.locale.selectLanguage')}
+              >
                 {availableLocales.map((locale) => (
                   <LocaleChip
                     key={locale}
-                    locale={locale}
-                    label={localeLabels[locale]}
+                    flag={LOCALE_FLAGS[locale]}
+                    label={LOCALE_LABELS[locale]}
                     onClick={createLocaleClickHandler(locale)}
                     active={locale === currentLocale}
                   />
@@ -220,12 +220,12 @@ export function SetupScreen() {
           {/* Left column - Teams */}
           <div className={styles.leftColumn}>
             {/* Team 1 */}
-            <SectionLabel variant="team-one">{t('setup.teams.team1Label')}</SectionLabel>
-            <Card variant="team-one" className={styles.teamCard}>
+            <SectionLabel accent="primary">{t('setup.teams.team1Label')}</SectionLabel>
+            <Card accent="primary" className={styles.teamCard}>
               <TextInput
                 value={formData.team1Name}
                 onChange={handleTeam1NameChange}
-                variant="team-one"
+                accent="primary"
                 placeholder={t('setup.teams.playerPlaceholder')}
                 aria-label={t('setup.teams.team1Label')}
               />
@@ -233,12 +233,12 @@ export function SetupScreen() {
             </Card>
 
             {/* Team 2 */}
-            <SectionLabel variant="team-two">{t('setup.teams.team2Label')}</SectionLabel>
-            <Card variant="team-two" className={styles.teamCard}>
+            <SectionLabel accent="secondary">{t('setup.teams.team2Label')}</SectionLabel>
+            <Card accent="secondary" className={styles.teamCard}>
               <TextInput
                 value={formData.team2Name}
                 onChange={handleTeam2NameChange}
-                variant="team-two"
+                accent="secondary"
                 placeholder={t('setup.teams.playerPlaceholder')}
                 aria-label={t('setup.teams.team2Label')}
               />
@@ -251,7 +251,7 @@ export function SetupScreen() {
               <SelectableChip
                 selected={formData.initialServer === 'team-1'}
                 onClick={handleTeam1ServerSelect}
-                variant="team-one"
+                accent="primary"
                 showDot
               >
                 <span
@@ -268,7 +268,7 @@ export function SetupScreen() {
               <SelectableChip
                 selected={formData.initialServer === 'team-2'}
                 onClick={handleTeam2ServerSelect}
-                variant="team-two"
+                accent="secondary"
                 showDot
               >
                 <span

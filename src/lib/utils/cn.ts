@@ -6,8 +6,7 @@
 export function cn(...classes: (string | undefined | null | false)[]): string {
   return classes
     .flat()
-    .filter((x) => typeof x === 'string')
-    .filter(Boolean)
+    .filter((x): x is string => typeof x === 'string' && x.length > 0)
     .join(' ')
     .trim()
 }

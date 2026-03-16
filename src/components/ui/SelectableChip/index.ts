@@ -1,5 +1,5 @@
 export {
   SelectableChip,
   type SelectableChipProps,
-  type SelectableChipVariant
+  type SelectableChipAccent
 } from './SelectableChip'

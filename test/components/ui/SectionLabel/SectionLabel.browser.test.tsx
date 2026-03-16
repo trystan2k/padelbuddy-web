@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'vitest'
 import { render } from 'vitest-browser-react'
 
-import { SectionLabel, type SectionLabelVariant } from '@/components/ui/SectionLabel/SectionLabel'
+import { SectionLabel, type SectionLabelAccent } from '@/components/ui/SectionLabel/SectionLabel'
 
 describe('SectionLabel', () => {
   test('renders children correctly', async () => {
@@ -24,25 +24,25 @@ describe('SectionLabel', () => {
     await expect.element(paragraph).toHaveClass('custom-class')
   })
 
-  test('renders with default variant', async () => {
+  test('renders with default (no accent)', async () => {
     const screen = await render(<SectionLabel>Default Label</SectionLabel>)
 
     await expect.element(screen.getByText('Default Label')).toBeInTheDocument()
   })
 
-  // Test all variants for branch coverage
-  const variants: SectionLabelVariant[] = ['default', 'team-one', 'team-two']
-  variants.forEach((variant) => {
-    test(`renders correctly with variant: ${variant}`, async () => {
-      const screen = await render(<SectionLabel variant={variant}>{variant} Label</SectionLabel>)
+  // Test all accents for branch coverage
+  const accents: SectionLabelAccent[] = ['primary', 'secondary']
+  accents.forEach((accent) => {
+    test(`renders correctly with accent: ${accent}`, async () => {
+      const screen = await render(<SectionLabel accent={accent}>{accent} Label</SectionLabel>)
 
-      await expect.element(screen.getByText(`${variant} Label`)).toBeInTheDocument()
+      await expect.element(screen.getByText(`${accent} Label`)).toBeInTheDocument()
     })
   })
 
-  test('applies both variant and custom className', async () => {
+  test('applies both accent and custom className', async () => {
     const screen = await render(
-      <SectionLabel variant="team-one" className="extra">
+      <SectionLabel accent="primary" className="extra">
         Combined
       </SectionLabel>
     )

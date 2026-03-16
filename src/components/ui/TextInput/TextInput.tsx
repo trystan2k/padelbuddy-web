@@ -1,8 +1,11 @@
 import { useCallback } from 'react'
 
+import { cn } from '@/lib/utils/cn'
+
+import type { Accent } from '../types'
 import styles from './TextInput.module.css'
 
-export type TextInputVariant = 'default' | 'team-one' | 'team-two'
+export type TextInputAccent = Accent
 
 export interface TextInputProps {
   value: string
@@ -10,7 +13,7 @@ export interface TextInputProps {
   placeholder?: string
   maxLength?: number
   disabled?: boolean
-  variant?: TextInputVariant
+  accent?: TextInputAccent
   className?: string
   id?: string
   'aria-label'?: string
@@ -22,13 +25,17 @@ export function TextInput({
   placeholder,
   maxLength,
   disabled,
-  variant = 'default',
+  accent,
   className,
   id,
   'aria-label': ariaLabel
 }: TextInputProps) {
-  const variantClass =
-    variant === 'team-one' ? styles.teamOne : variant === 'team-two' ? styles.teamTwo : ''
+  const accentClass =
+    accent === 'primary'
+      ? styles.accentPrimary
+      : accent === 'secondary'
+        ? styles.accentSecondary
+        : undefined
 
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -46,7 +53,7 @@ export function TextInput({
       placeholder={placeholder}
       maxLength={maxLength}
       disabled={disabled}
-      className={`${styles.input}${variantClass ? ` ${variantClass}` : ''}${className ? ` ${className}` : ''}`}
+      className={cn(styles.input, accentClass, className)}
       aria-label={ariaLabel}
     />
   )

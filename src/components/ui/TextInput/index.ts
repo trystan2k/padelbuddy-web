@@ -1,1 +1,1 @@
-export { TextInput, type TextInputProps, type TextInputVariant } from './TextInput'
+export { TextInput, type TextInputProps, type TextInputAccent } from './TextInput'

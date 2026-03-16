@@ -1,12 +1,15 @@
+import { cn } from '@/lib/utils/cn'
+
+import type { Accent } from '../types'
 import styles from './SelectableChip.module.css'
 
-export type SelectableChipVariant = 'default' | 'team-one' | 'team-two'
+export type SelectableChipAccent = Accent
 
 export interface SelectableChipProps {
   children: React.ReactNode
   selected: boolean
   onClick: () => void
-  variant?: SelectableChipVariant
+  accent?: SelectableChipAccent
   disabled?: boolean
   className?: string
   showDot?: boolean
@@ -16,28 +19,30 @@ export function SelectableChip({
   children,
   selected,
   onClick,
-  variant = 'default',
+  accent,
   disabled = false,
   className,
   showDot = false
 }: SelectableChipProps) {
-  const variantClass =
-    variant === 'team-one' ? styles.teamOne : variant === 'team-two' ? styles.teamTwo : ''
+  const accentClass =
+    accent === 'primary'
+      ? styles.accentPrimary
+      : accent === 'secondary'
+        ? styles.accentSecondary
+        : undefined
 
-  const selectedClass = selected ? styles.selected : ''
+  const selectedClass = selected ? styles.selected : undefined
 
   return (
     <button
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className={`${styles.chip}${variantClass ? ` ${variantClass}` : ''}${selectedClass ? ` ${selectedClass}` : ''}${className ? ` ${className}` : ''}`}
+      className={cn(styles.chip, accentClass, selectedClass, className)}
       aria-pressed={selected}
     >
       <span className={styles.content}>
-        {showDot && (variant === 'team-one' || variant === 'team-two') && (
-          <span className={styles.dot} aria-hidden="true" />
-        )}
+        {showDot && accent && <span className={styles.dot} aria-hidden="true" />}
         {children}
       </span>
     </button>

@@ -5,7 +5,7 @@ import { render } from 'vitest-browser-react'
 
 import {
   SelectableChip,
-  type SelectableChipVariant
+  type SelectableChipAccent
 } from '@/components/ui/SelectableChip/SelectableChip'
 
 describe('SelectableChip', () => {
@@ -87,25 +87,25 @@ describe('SelectableChip', () => {
     await expect.element(button).toHaveClass('custom-class')
   })
 
-  // Test all variants
-  const variants: SelectableChipVariant[] = ['default', 'team-one', 'team-two']
-  variants.forEach((variant) => {
-    test(`renders correctly with variant: ${variant}`, async () => {
+  // Test all accents
+  const accents: SelectableChipAccent[] = ['primary', 'secondary']
+  accents.forEach((accent) => {
+    test(`renders correctly with accent: ${accent}`, async () => {
       const screen = await render(
-        <SelectableChip selected={false} onClick={() => {}} variant={variant}>
-          {variant} Chip
+        <SelectableChip selected={false} onClick={() => {}} accent={accent}>
+          {accent} Chip
         </SelectableChip>
       )
 
-      await expect.element(screen.getByText(`${variant} Chip`)).toBeInTheDocument()
+      await expect.element(screen.getByText(`${accent} Chip`)).toBeInTheDocument()
     })
   })
 
-  // Test showDot with different variants
-  test('shows dot when showDot is true and variant is team-one', async () => {
+  // Test showDot with different accents
+  test('shows dot when showDot is true and accent is primary', async () => {
     const screen = await render(
-      <SelectableChip selected={false} onClick={() => {}} variant="team-one" showDot>
-        Team One
+      <SelectableChip selected={false} onClick={() => {}} accent="primary" showDot>
+        Primary
       </SelectableChip>
     )
 
@@ -113,10 +113,10 @@ describe('SelectableChip', () => {
     expect(dot).toBeTruthy()
   })
 
-  test('shows dot when showDot is true and variant is team-two', async () => {
+  test('shows dot when showDot is true and accent is secondary', async () => {
     const screen = await render(
-      <SelectableChip selected={false} onClick={() => {}} variant="team-two" showDot>
-        Team Two
+      <SelectableChip selected={false} onClick={() => {}} accent="secondary" showDot>
+        Secondary
       </SelectableChip>
     )
 
@@ -124,22 +124,22 @@ describe('SelectableChip', () => {
     expect(dot).toBeTruthy()
   })
 
-  test('does not show dot when showDot is true but variant is default', async () => {
+  test('does not show dot when showDot is true but no accent', async () => {
     const screen = await render(
-      <SelectableChip selected={false} onClick={() => {}} variant="default" showDot>
+      <SelectableChip selected={false} onClick={() => {}} showDot>
         Default
       </SelectableChip>
     )
 
     const button = screen.getByRole('button').element()
-    // The dot should not exist for default variant even with showDot=true
+    // The dot should not exist when no accent is provided even with showDot=true
     const dot = button.querySelector('[class*="dot"]')
     expect(dot).toBeNull()
   })
 
   test('does not show dot when showDot is false', async () => {
     const screen = await render(
-      <SelectableChip selected={false} onClick={() => {}} variant="team-one" showDot={false}>
+      <SelectableChip selected={false} onClick={() => {}} accent="primary" showDot={false}>
         No Dot
       </SelectableChip>
     )
@@ -150,10 +150,10 @@ describe('SelectableChip', () => {
   })
 
   // Combined state tests for branch coverage
-  test('renders selected team-one chip with dot', async () => {
+  test('renders selected primary chip with dot', async () => {
     const screen = await render(
-      <SelectableChip selected={true} onClick={() => {}} variant="team-one" showDot>
-        Selected Team One
+      <SelectableChip selected={true} onClick={() => {}} accent="primary" showDot>
+        Selected Primary
       </SelectableChip>
     )
 
@@ -161,10 +161,10 @@ describe('SelectableChip', () => {
     await expect.element(button).toHaveAttribute('aria-pressed', 'true')
   })
 
-  test('renders selected team-two chip with dot', async () => {
+  test('renders selected secondary chip with dot', async () => {
     const screen = await render(
-      <SelectableChip selected={true} onClick={() => {}} variant="team-two" showDot>
-        Selected Team Two
+      <SelectableChip selected={true} onClick={() => {}} accent="secondary" showDot>
+        Selected Secondary
       </SelectableChip>
     )
 

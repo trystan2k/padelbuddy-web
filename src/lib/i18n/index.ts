@@ -6,6 +6,7 @@ export {
   type InitializeI18nOptions
 } from './i18n'
 export { detectBrowserLocale, resolveInitialLocale } from './locale-detector'
+export { LOCALE_FLAGS, LOCALE_LABELS } from './locale-display'
 export {
   clearLocalePreference,
   createLocaleStorage,

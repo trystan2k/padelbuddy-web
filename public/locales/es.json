@@ -104,7 +104,7 @@
       "team2Label": "EQUIPO 2",
       "team1Default": "Equipo A",
       "team2Default": "Equipo B",
-      "playerPlaceholder": "Nombres de jugadores"
+      "playerPlaceholder": "Nombre del equipo"
     },
     "firstServer": {
       "label": "PRIMER SAQUE",
