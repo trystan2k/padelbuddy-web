@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.0](https://github.com/trystan2k/padelbuddy-web/compare/v0.7.0...v0.8.0) (2026-03-16)
+
+
+### Features
+
+* add Playwright E2E test setup and Setup Screen smoke tests ([#18](https://github.com/trystan2k/padelbuddy-web/issues/18)) ([784d4c9](https://github.com/trystan2k/padelbuddy-web/commit/784d4c9a0edfcd29339409a7ff22a2210edd971a))
+
 ## [0.7.0](https://github.com/trystan2k/padelbuddy-web/compare/v0.6.0...v0.7.0) (2026-03-16)
 
 
