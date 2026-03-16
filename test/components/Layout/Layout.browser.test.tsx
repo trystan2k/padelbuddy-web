@@ -58,7 +58,7 @@ describe('Layout', () => {
       </Layout>
     )
 
-    const body = screen.container.querySelector('[class*="body"]') as HTMLElement
+    const body = screen.getByTestId('layout-body')
     await expect.element(body).toHaveClass('custom-body-class')
   })
 

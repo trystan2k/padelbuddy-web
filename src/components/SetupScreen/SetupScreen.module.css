@@ -8,10 +8,9 @@
   color: var(--semantic-color-content-primary);
 }
 
-/* Main content wrapper for responsive layout.
-   NOTE: Repeats flex-column + gap from Layout's .body because that gap
-   only applies when Layout has multiple children; here it applies to
-   leftColumn/rightColumn spacing instead. */
+/* Main content wrapper for responsive 2-column layout.
+   Uses flex-column with gap for spacing between leftColumn and rightColumn
+   on mobile; switches to flex-row on tablet/desktop via media query. */
 .mainContent {
   flex: 1;
   display: flex;

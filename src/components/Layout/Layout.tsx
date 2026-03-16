@@ -22,7 +22,9 @@ export function Layout({ header, footer, children, className, bodyClassName }: L
     <main className={cn(styles.layout, className)}>
       <div className={styles.container}>
         {header && <header className={styles.header}>{header}</header>}
-        <div className={cn(styles.body, bodyClassName)}>{children}</div>
+        <div className={cn(styles.body, bodyClassName)} data-testid="layout-body">
+          {children}
+        </div>
         {footer && <footer className={styles.footer}>{footer}</footer>}
       </div>
     </main>

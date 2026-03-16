@@ -64,8 +64,7 @@
     "react/self-closing-comp": "warn",
     "react-perf/jsx-no-new-array-as-prop": "warn",
     "react-perf/jsx-no-new-function-as-prop": "warn",
-    "react-perf/jsx-no-new-object-as-prop": "warn",
-    "react-perf/jsx-no-jsx-as-prop": "off"
+    "react-perf/jsx-no-new-object-as-prop": "warn"
   },
   "settings": {
     "jsx-a11y": {
@@ -109,6 +108,15 @@
       },
       "rules": {
         "no-console": "off"
+      }
+    },
+    {
+      "files": [
+        "src/components/SetupScreen/SetupScreen.tsx",
+        "test/components/Layout/Layout.browser.test.tsx"
+      ],
+      "rules": {
+        "react-perf/jsx-no-jsx-as-prop": "off"
       }
     }
   ]
