@@ -14,6 +14,7 @@ import {
 } from '@/lib/i18n'
 import { cn } from '@/lib/utils/cn'
 
+import { Layout } from '@/components/Layout'
 import {
   Card,
   Divider,
@@ -176,180 +177,179 @@ export function SetupScreen() {
     [handleLocaleChange]
   )
 
+  // Header content
+  const headerContent = (
+    <>
+      <h1 className={styles.appName}>{t('setup.header.appName')}</h1>
+      <div className={styles.localeWrapper}>
+        <LocaleChip
+          flag={LOCALE_FLAGS[currentLocale]}
+          label={LOCALE_LABELS[currentLocale]}
+          onClick={handleToggleLocaleMenu}
+          active
+          aria-expanded={showLocaleMenu}
+          {...(showLocaleMenu && { 'aria-controls': 'locale-menu' })}
+        />
+        {showLocaleMenu && (
+          <div
+            id="locale-menu"
+            className={styles.localeMenu}
+            role="group"
+            aria-label={t('setup.locale.selectLanguage')}
+          >
+            {supportedLocales.map((locale) => (
+              <LocaleChip
+                key={locale}
+                flag={LOCALE_FLAGS[locale]}
+                label={LOCALE_LABELS[locale]}
+                onClick={createLocaleClickHandler(locale)}
+                active={locale === currentLocale}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    </>
+  )
+
+  // Footer content
+  const footerContent = (
+    <PrimaryButton onClick={handleStartMatch} disabled={isStarting || hasErrors}>
+      {t('setup.startButton')}
+    </PrimaryButton>
+  )
+
   return (
-    <main className={styles.page}>
-      <div className={styles.container}>
-        {/* Header */}
-        <header className={styles.header}>
-          <h1 className={styles.appName}>{t('setup.header.appName')}</h1>
-          <div className={styles.localeWrapper}>
-            <LocaleChip
-              flag={LOCALE_FLAGS[currentLocale]}
-              label={LOCALE_LABELS[currentLocale]}
-              onClick={handleToggleLocaleMenu}
-              active
-              aria-expanded={showLocaleMenu}
-              {...(showLocaleMenu && { 'aria-controls': 'locale-menu' })}
+    <Layout header={headerContent} footer={footerContent}>
+      <div className={styles.mainContent}>
+        {/* Left column - Teams */}
+        <div className={styles.leftColumn}>
+          {/* Team 1 */}
+          <SectionLabel accent="primary">{t('setup.teams.team1Label')}</SectionLabel>
+          <Card accent="primary" className={styles.teamCard}>
+            <TextInput
+              value={formData.team1Name}
+              onChange={handleTeam1NameChange}
+              accent="primary"
+              placeholder={t('setup.teams.playerPlaceholder')}
+              aria-label={t('setup.teams.team1Label')}
             />
-            {showLocaleMenu && (
-              <div
-                id="locale-menu"
-                className={styles.localeMenu}
-                role="group"
-                aria-label={t('setup.locale.selectLanguage')}
+            {errors.team1Name && <p className={styles.errorText}>{t(errors.team1Name)}</p>}
+          </Card>
+
+          {/* Team 2 */}
+          <SectionLabel accent="secondary">{t('setup.teams.team2Label')}</SectionLabel>
+          <Card accent="secondary" className={styles.teamCard}>
+            <TextInput
+              value={formData.team2Name}
+              onChange={handleTeam2NameChange}
+              accent="secondary"
+              placeholder={t('setup.teams.playerPlaceholder')}
+              aria-label={t('setup.teams.team2Label')}
+            />
+            {errors.team2Name && <p className={styles.errorText}>{t(errors.team2Name)}</p>}
+          </Card>
+
+          {/* First Server */}
+          <SectionLabel>{t('setup.firstServer.label')}</SectionLabel>
+          <div className={styles.serverRow}>
+            <SelectableChip
+              selected={formData.initialServer === 'team-1'}
+              onClick={handleTeam1ServerSelect}
+              accent="primary"
+              showDot
+            >
+              <span
+                className={cn(
+                  styles.serverChipText,
+                  formData.initialServer === 'team-1'
+                    ? styles.serverChipTextSelected
+                    : styles.serverChipTextUnselected
+                )}
               >
-                {supportedLocales.map((locale) => (
-                  <LocaleChip
-                    key={locale}
-                    flag={LOCALE_FLAGS[locale]}
-                    label={LOCALE_LABELS[locale]}
-                    onClick={createLocaleClickHandler(locale)}
-                    active={locale === currentLocale}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-        </header>
-
-        {/* Main content */}
-        <div className={styles.main}>
-          {/* Left column - Teams */}
-          <div className={styles.leftColumn}>
-            {/* Team 1 */}
-            <SectionLabel accent="primary">{t('setup.teams.team1Label')}</SectionLabel>
-            <Card accent="primary" className={styles.teamCard}>
-              <TextInput
-                value={formData.team1Name}
-                onChange={handleTeam1NameChange}
-                accent="primary"
-                placeholder={t('setup.teams.playerPlaceholder')}
-                aria-label={t('setup.teams.team1Label')}
-              />
-              {errors.team1Name && <p className={styles.errorText}>{t(errors.team1Name)}</p>}
-            </Card>
-
-            {/* Team 2 */}
-            <SectionLabel accent="secondary">{t('setup.teams.team2Label')}</SectionLabel>
-            <Card accent="secondary" className={styles.teamCard}>
-              <TextInput
-                value={formData.team2Name}
-                onChange={handleTeam2NameChange}
-                accent="secondary"
-                placeholder={t('setup.teams.playerPlaceholder')}
-                aria-label={t('setup.teams.team2Label')}
-              />
-              {errors.team2Name && <p className={styles.errorText}>{t(errors.team2Name)}</p>}
-            </Card>
-
-            {/* First Server */}
-            <SectionLabel>{t('setup.firstServer.label')}</SectionLabel>
-            <div className={styles.serverRow}>
-              <SelectableChip
-                selected={formData.initialServer === 'team-1'}
-                onClick={handleTeam1ServerSelect}
-                accent="primary"
-                showDot
+                {t('setup.firstServer.team1')}
+              </span>
+            </SelectableChip>
+            <SelectableChip
+              selected={formData.initialServer === 'team-2'}
+              onClick={handleTeam2ServerSelect}
+              accent="secondary"
+              showDot
+            >
+              <span
+                className={cn(
+                  styles.serverChipText,
+                  formData.initialServer === 'team-2'
+                    ? styles.serverChipTextSelected
+                    : styles.serverChipTextUnselected
+                )}
               >
-                <span
-                  className={cn(
-                    styles.serverChipText,
-                    formData.initialServer === 'team-1'
-                      ? styles.serverChipTextSelected
-                      : styles.serverChipTextUnselected
-                  )}
-                >
-                  {t('setup.firstServer.team1')}
-                </span>
-              </SelectableChip>
-              <SelectableChip
-                selected={formData.initialServer === 'team-2'}
-                onClick={handleTeam2ServerSelect}
-                accent="secondary"
-                showDot
-              >
-                <span
-                  className={cn(
-                    styles.serverChipText,
-                    formData.initialServer === 'team-2'
-                      ? styles.serverChipTextSelected
-                      : styles.serverChipTextUnselected
-                  )}
-                >
-                  {t('setup.firstServer.team2')}
-                </span>
-              </SelectableChip>
-            </div>
-          </div>
-
-          {/* Right column - Options */}
-          <div className={styles.rightColumn}>
-            {/* Match Format */}
-            <SectionLabel>{t('setup.format.label')}</SectionLabel>
-            <div className={styles.formatRow}>
-              {matchFormats.map((format) => (
-                <SelectableChip
-                  key={format}
-                  selected={formData.format === format}
-                  onClick={createFormatClickHandler(format)}
-                >
-                  <span
-                    className={cn(
-                      styles.formatChipText,
-                      formData.format === format
-                        ? styles.formatChipTextSelected
-                        : styles.formatChipTextUnselected
-                    )}
-                  >
-                    {t(`setup.format.${formatKeys[format]}`)}
-                  </span>
-                </SelectableChip>
-              ))}
-            </div>
-
-            {/* Rules Card */}
-            <Card className={styles.rulesCard}>
-              {/* Golden Point */}
-              <Toggle
-                checked={isGoldenPointEnabled}
-                onChange={handleGoldenPointChange}
-                label={t('setup.rules.goldenPoint')}
-                hint={t('setup.rules.goldenPointHint')}
-              />
-
-              <Divider />
-
-              {/* Super Tiebreak - only for best-of-3 and best-of-5 */}
-              {showSuperTiebreakOption && (
-                <>
-                  <Toggle
-                    checked={formData.decidingSetSuperTiebreak}
-                    onChange={updateDecidingSetSuperTiebreak}
-                    label={t('setup.rules.superTiebreak')}
-                    hint={t('setup.rules.superTiebreakHint')}
-                  />
-                  <Divider />
-                </>
-              )}
-
-              {/* Side Switch Prompts */}
-              <Toggle
-                checked={formData.sideSwitchPrompts}
-                onChange={updateSideSwitchPrompts}
-                label={t('setup.rules.sideSwitch')}
-                hint={t('setup.rules.sideSwitchHint')}
-              />
-            </Card>
+                {t('setup.firstServer.team2')}
+              </span>
+            </SelectableChip>
           </div>
         </div>
 
-        {/* Footer */}
-        <footer className={styles.footer}>
-          <PrimaryButton onClick={handleStartMatch} disabled={isStarting || hasErrors}>
-            {t('setup.startButton')}
-          </PrimaryButton>
-        </footer>
+        {/* Right column - Options */}
+        <div className={styles.rightColumn}>
+          {/* Match Format */}
+          <SectionLabel>{t('setup.format.label')}</SectionLabel>
+          <div className={styles.formatRow}>
+            {matchFormats.map((format) => (
+              <SelectableChip
+                key={format}
+                selected={formData.format === format}
+                onClick={createFormatClickHandler(format)}
+              >
+                <span
+                  className={cn(
+                    styles.formatChipText,
+                    formData.format === format
+                      ? styles.formatChipTextSelected
+                      : styles.formatChipTextUnselected
+                  )}
+                >
+                  {t(`setup.format.${formatKeys[format]}`)}
+                </span>
+              </SelectableChip>
+            ))}
+          </div>
+
+          {/* Rules Card */}
+          <Card className={styles.rulesCard}>
+            {/* Golden Point */}
+            <Toggle
+              checked={isGoldenPointEnabled}
+              onChange={handleGoldenPointChange}
+              label={t('setup.rules.goldenPoint')}
+              hint={t('setup.rules.goldenPointHint')}
+            />
+
+            <Divider />
+
+            {/* Super Tiebreak - only for best-of-3 and best-of-5 */}
+            {showSuperTiebreakOption && (
+              <>
+                <Toggle
+                  checked={formData.decidingSetSuperTiebreak}
+                  onChange={updateDecidingSetSuperTiebreak}
+                  label={t('setup.rules.superTiebreak')}
+                  hint={t('setup.rules.superTiebreakHint')}
+                />
+                <Divider />
+              </>
+            )}
+
+            {/* Side Switch Prompts */}
+            <Toggle
+              checked={formData.sideSwitchPrompts}
+              onChange={updateSideSwitchPrompts}
+              label={t('setup.rules.sideSwitch')}
+              hint={t('setup.rules.sideSwitchHint')}
+            />
+          </Card>
+        </div>
       </div>
-    </main>
+    </Layout>
   )
 }

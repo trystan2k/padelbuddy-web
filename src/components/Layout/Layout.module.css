@@ -1,0 +1,58 @@
+/* Layout shell - full viewport with background gradient */
+.layout {
+  min-height: 100vh;
+  min-height: 100dvh; /* Dynamic viewport height for mobile */
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(
+    180deg,
+    var(--semantic-color-background-canvas) 0%,
+    var(--semantic-color-background-canvas-end) 100%
+  );
+  position: relative;
+  overflow: hidden;
+}
+
+/* Radial gradient overlay - decorative accent */
+.layout::before {
+  content: '';
+  position: absolute;
+  top: -5%;
+  left: -10%;
+  width: 50%;
+  height: 40%;
+  background: radial-gradient(circle, var(--base-color-brand-highlight) 0%, transparent 70%);
+  opacity: 0.2;
+  pointer-events: none;
+}
+
+/* Container - centers content and applies consistent padding */
+.container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--base-space-28);
+  padding: var(--base-space-28) var(--base-space-32);
+  max-width: var(--app-screen-tablet-landscape-width);
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* Header section - top navigation/metadata area */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Body section - main content area, grows to fill space */
+.body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Footer section - action area, pinned to bottom */
+.footer {
+  margin-top: auto;
+}

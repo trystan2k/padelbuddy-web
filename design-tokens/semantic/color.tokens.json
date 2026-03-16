@@ -3,6 +3,11 @@
     "color": {
       "background": {
         "canvas": { "value": "{base.color.surface.canvas}", "type": "color" },
+        "canvas-end": {
+          "value": "{base.color.surface.canvas-end}",
+          "type": "color",
+          "description": "Canvas background gradient end color"
+        },
         "surface": { "value": "{base.color.surface.panel}", "type": "color" },
         "surface-muted": { "value": "{base.color.surface.muted}", "type": "color" },
         "accent-primary-subtle": { "value": "{base.color.brand.primary-subtle}", "type": "color" },
