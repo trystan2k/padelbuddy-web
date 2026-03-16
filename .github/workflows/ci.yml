@@ -158,12 +158,50 @@ jobs:
           path: dist/client/
           retention-days: 7
 
+  e2e_tests:
+    name: E2E Tests
+    needs: detect_changes
+    if: needs.detect_changes.outputs.docs_only != 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          cache: pnpm
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps chromium webkit
+
+      - name: Run E2E tests
+        run: pnpm test:e2e
+
+      - name: Upload Playwright report
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-${{ github.sha }}
+          path: playwright-report/
+          retention-days: 7
+
   ci:
     name: CI
     needs:
       - detect_changes
       - docs_checks
       - full_checks
+      - e2e_tests
     if: always()
     runs-on: ubuntu-latest
     steps:
@@ -173,6 +211,7 @@ jobs:
           DOCS_ONLY: ${{ needs.detect_changes.outputs.docs_only }}
           DOCS_RESULT: ${{ needs.docs_checks.result }}
           FULL_RESULT: ${{ needs.full_checks.result }}
+          E2E_RESULT: ${{ needs.e2e_tests.result }}
         run: |
           if [[ "$DOCS_ONLY" == "true" ]]; then
             if [[ "$DOCS_RESULT" != "success" ]]; then
@@ -185,5 +224,10 @@ jobs:
 
           if [[ "$FULL_RESULT" != "success" ]]; then
             echo "Full CI failed with result: $FULL_RESULT"
+            exit 1
+          fi
+
+          if [[ "$E2E_RESULT" != "success" ]]; then
+            echo "E2E tests failed with result: $E2E_RESULT"
             exit 1
           fi
