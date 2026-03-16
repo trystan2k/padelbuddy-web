@@ -17,7 +17,8 @@
         "secondary-subtle": { "value": "#FFF0DB", "type": "color" },
         "success": { "value": "#1FA24A", "type": "color" },
         "success-subtle": { "value": "#E0F4E6", "type": "color" },
-        "highlight": { "value": "#D8EA42", "type": "color" }
+        "highlight": { "value": "#D8EA42", "type": "color" },
+        "danger": { "value": "#D64A4A", "type": "color" }
       },
       "feedback": {
         "critical-subtle": { "value": "#F9E4E4", "type": "color" },

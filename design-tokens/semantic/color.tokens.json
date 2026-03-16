@@ -23,7 +23,8 @@
         "inverse": { "value": "{base.color.common.white}", "type": "color" },
         "accent-primary": { "value": "{base.color.brand.primary}", "type": "color" },
         "accent-secondary": { "value": "{base.color.brand.secondary}", "type": "color" },
-        "success": { "value": "{base.color.brand.success}", "type": "color" }
+        "success": { "value": "{base.color.brand.success}", "type": "color" },
+        "danger": { "value": "{base.color.brand.danger}", "type": "color" }
       },
       "border": {
         "subtle": { "value": "{base.color.border.subtle}", "type": "color" },
