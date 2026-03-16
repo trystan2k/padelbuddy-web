@@ -17,6 +17,7 @@ export {
 } from './locale-storage'
 export {
   defaultLocale,
+  isSupportedLocale,
   supportedLocales,
   type I18nConfig,
   type LocalePreference,

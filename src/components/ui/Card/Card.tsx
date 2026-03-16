@@ -1,3 +1,5 @@
+import type { ReactNode } from 'react'
+
 import { cn } from '@/lib/utils/cn'
 
 import type { Accent } from '../types'
@@ -6,7 +8,7 @@ import styles from './Card.module.css'
 export type CardAccent = Accent
 
 export interface CardProps {
-  children: React.ReactNode
+  children: ReactNode
   className?: string | undefined
   accent?: CardAccent
 }

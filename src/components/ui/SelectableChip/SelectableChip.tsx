@@ -1,3 +1,5 @@
+import type { ReactNode } from 'react'
+
 import { cn } from '@/lib/utils/cn'
 
 import type { Accent } from '../types'
@@ -6,7 +8,7 @@ import styles from './SelectableChip.module.css'
 export type SelectableChipAccent = Accent
 
 export interface SelectableChipProps {
-  children: React.ReactNode
+  children: ReactNode
   selected: boolean
   onClick: () => void
   accent?: SelectableChipAccent

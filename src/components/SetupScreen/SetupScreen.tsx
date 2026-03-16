@@ -1,11 +1,17 @@
 import { useState, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from '@tanstack/react-router'
 
 import { createMatchSetup, matchFormats, type MatchFormat } from '@/core/match'
-import { createCurrentMatchSession, saveCurrentMatch } from '@/lib/current-match'
-import { changeLocale } from '@/lib/i18n/i18n'
-import { isSupportedLocale, type SupportedLocale } from '@/lib/i18n/types'
-import { LOCALE_FLAGS, LOCALE_LABELS } from '@/lib/i18n'
+import { saveCurrentMatch } from '@/lib/current-match'
+import {
+  changeLocale,
+  isSupportedLocale,
+  LOCALE_FLAGS,
+  LOCALE_LABELS,
+  supportedLocales,
+  type SupportedLocale
+} from '@/lib/i18n'
 import { cn } from '@/lib/utils/cn'
 
 import {
@@ -36,11 +42,9 @@ const formatKeys: Record<MatchFormat, string> = {
   'best-of-5': 'bestOf5'
 }
 
-// Available locales for the menu
-const availableLocales: SupportedLocale[] = ['en', 'pt', 'es']
-
 export function SetupScreen() {
   const { t, i18n } = useTranslation()
+  const navigate = useNavigate()
   const rawLocale = i18n.resolvedLanguage || i18n.language
   const currentLocale: SupportedLocale = isSupportedLocale(rawLocale) ? rawLocale : 'en'
   const [isStarting, setIsStarting] = useState(false)
@@ -97,24 +101,17 @@ export function SetupScreen() {
       // Create validated match setup
       const setup = createMatchSetup(setupInput)
 
-      // Create current match session
-      createCurrentMatchSession({
-        setup,
-        actions: []
-      })
-
       // Persist match state to IndexedDB before navigation
       await saveCurrentMatch({ setup, actions: [] })
 
       // Generate match ID and navigate
       const matchId = generateMatchId()
-      // Navigate using path string - route types will be regenerated on next build
-      window.location.href = `/match/${matchId}`
+      await navigate({ to: '/match/$id', params: { id: matchId } })
     } catch (error) {
       console.error('Failed to start match:', error)
       setIsStarting(false)
     }
-  }, [formData, validate])
+  }, [formData, validate, navigate])
 
   const handleFormatChange = useCallback(
     (format: MatchFormat) => {
@@ -201,7 +198,7 @@ export function SetupScreen() {
                 role="group"
                 aria-label={t('setup.locale.selectLanguage')}
               >
-                {availableLocales.map((locale) => (
+                {supportedLocales.map((locale) => (
                   <LocaleChip
                     key={locale}
                     flag={LOCALE_FLAGS[locale]}
