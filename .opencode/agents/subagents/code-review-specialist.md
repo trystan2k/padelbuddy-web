@@ -132,7 +132,6 @@ Work through **every section** below for every changed file. Do not skip section
 - [ ] Class names not using the `styles.` prefix
 - [ ] Duplicate class names in different files
 - [ ] Class names not following the `styles.` prefix
-- [ ] Class names not following the `styles.` prefix
 - [ ] cn() utility for className — use `cn(styles.foo, className)` instead of template literal concatenation like `${styles.foo}${className ? ' ' + className : ''}`
 
 ## Findings Format
