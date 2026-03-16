@@ -109,6 +109,15 @@
       "rules": {
         "no-console": "off"
       }
+    },
+    {
+      "files": [
+        "src/components/SetupScreen/SetupScreen.tsx",
+        "test/components/Layout/Layout.browser.test.tsx"
+      ],
+      "rules": {
+        "react-perf/jsx-no-jsx-as-prop": "off"
+      }
     }
   ]
 }

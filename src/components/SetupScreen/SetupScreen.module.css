@@ -1,47 +1,4 @@
-.page {
-  min-height: 100vh;
-  min-height: 100dvh;
-  display: flex;
-  flex-direction: column;
-  background: linear-gradient(180deg, var(--base-color-surface-canvas) 0%, #e9f3df 100%);
-  position: relative;
-  overflow: hidden;
-}
-
-.page::before {
-  content: '';
-  position: absolute;
-  top: -5%;
-  left: -10%;
-  width: 50%;
-  height: 40%;
-  background: radial-gradient(
-    circle,
-    color-mix(in srgb, var(--base-color-brand-highlight) 100%, transparent) 0%,
-    transparent 70%
-  );
-  opacity: 0.2;
-  pointer-events: none;
-}
-
-.container {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 28px;
-  padding: 28px 32px;
-  max-width: 1024px;
-  width: 100%;
-  margin: 0 auto;
-}
-
 /* Header */
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
 .appName {
   margin: 0;
   font-family: var(--semantic-typography-family-display);
@@ -51,12 +8,14 @@
   color: var(--semantic-color-content-primary);
 }
 
-/* Main content */
-.main {
+/* Main content wrapper for responsive 2-column layout.
+   Uses flex-column with gap for spacing between leftColumn and rightColumn
+   on mobile; switches to flex-row on tablet/desktop via media query. */
+.mainContent {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: var(--base-space-24);
 }
 
 /* Left column (teams section) */
@@ -134,11 +93,6 @@
   gap: 18px;
 }
 
-/* Footer */
-.footer {
-  margin-top: auto;
-}
-
 /* Locale wrapper for positioning the dropdown */
 .localeWrapper {
   position: relative;
@@ -163,7 +117,7 @@
 
 /* Responsive: two columns on tablet/desktop */
 @media (width >= 48rem) {
-  .main {
+  .mainContent {
     flex-direction: row;
     align-items: flex-start;
   }
