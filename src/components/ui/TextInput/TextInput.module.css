@@ -21,17 +21,17 @@
   opacity: 0.6;
 }
 
-/* Focus ring handled by team variant colors */
+/* Focus ring handled by accent colors */
 .input:focus-visible {
   outline: 2px solid var(--semantic-color-border-subtle);
   outline-offset: 2px;
   border-radius: 4px;
 }
 
-.teamOne .input:focus-visible {
+.input.accentPrimary:focus-visible {
   outline-color: var(--semantic-color-border-accent-primary);
 }
 
-.teamTwo .input:focus-visible {
+.input.accentSecondary:focus-visible {
   outline-color: var(--semantic-color-border-accent-secondary);
 }

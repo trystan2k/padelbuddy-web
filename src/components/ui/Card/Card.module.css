@@ -4,10 +4,10 @@
   border: 2px solid var(--component-card-panel-border);
 }
 
-.teamOne {
+.accentPrimary {
   border-color: var(--semantic-color-border-accent-primary);
 }
 
-.teamTwo {
+.accentSecondary {
   border-color: var(--semantic-color-border-accent-secondary);
 }

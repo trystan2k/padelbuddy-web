@@ -21,22 +21,30 @@
   opacity: 0.6;
 }
 
-/* Selected state - default (uses team-one colors) */
+/* Selected state - default (uses primary accent colors) */
 .selected {
   border-color: var(--semantic-color-border-accent-primary);
   background-color: var(--semantic-color-background-accent-primary-subtle);
 }
 
-/* Team one variant */
-.teamOne.selected {
+/* Primary accent */
+.accentPrimary.selected {
   border-color: var(--semantic-color-border-accent-primary);
   background-color: var(--semantic-color-background-accent-primary-subtle);
 }
 
-/* Team two variant */
-.teamTwo.selected {
+.accentPrimary .dot {
+  background-color: var(--semantic-color-content-accent-primary);
+}
+
+/* Secondary accent */
+.accentSecondary.selected {
   border-color: var(--semantic-color-border-accent-secondary);
   background-color: var(--semantic-color-background-accent-secondary-subtle);
+}
+
+.accentSecondary .dot {
+  background-color: var(--semantic-color-content-accent-secondary);
 }
 
 /* Content styling */
@@ -51,20 +59,4 @@
   height: 14px;
   border-radius: 50%;
   flex-shrink: 0;
-}
-
-.teamOne .dot {
-  background-color: var(--semantic-color-content-accent-primary);
-}
-
-.teamTwo .dot {
-  background-color: var(--semantic-color-content-accent-secondary);
-}
-
-.teamOne.selected .dot {
-  background-color: var(--semantic-color-content-accent-primary);
-}
-
-.teamTwo.selected .dot {
-  background-color: var(--semantic-color-content-accent-secondary);
 }

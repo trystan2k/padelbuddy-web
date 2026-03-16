@@ -1,22 +1,23 @@
+import { cn } from '@/lib/utils/cn'
+
+import type { Accent } from '../types'
 import styles from './SectionLabel.module.css'
 
-export type SectionLabelVariant = 'default' | 'team-one' | 'team-two'
+export type SectionLabelAccent = Accent
 
 export interface SectionLabelProps {
   children: React.ReactNode
   className?: string
-  variant?: SectionLabelVariant
+  accent?: SectionLabelAccent
 }
 
-export function SectionLabel({ children, className, variant = 'default' }: SectionLabelProps) {
-  const variantClass =
-    variant === 'team-one' ? styles.teamOne : variant === 'team-two' ? styles.teamTwo : ''
+export function SectionLabel({ children, className, accent }: SectionLabelProps) {
+  const accentClass =
+    accent === 'primary'
+      ? styles.accentPrimary
+      : accent === 'secondary'
+        ? styles.accentSecondary
+        : undefined
 
-  return (
-    <p
-      className={`${styles.label}${variantClass ? ` ${variantClass}` : ''}${className ? ` ${className}` : ''}`}
-    >
-      {children}
-    </p>
-  )
+  return <p className={cn(styles.label, accentClass, className)}>{children}</p>
 }

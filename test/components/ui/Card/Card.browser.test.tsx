@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'vitest'
 import { render } from 'vitest-browser-react'
 
-import { Card, type CardVariant } from '@/components/ui/Card/Card'
+import { Card, type CardAccent } from '@/components/ui/Card/Card'
 
 describe('Card', () => {
   test('renders children correctly', async () => {
@@ -14,7 +14,7 @@ describe('Card', () => {
     await expect.element(screen.getByText('Test Content')).toBeInTheDocument()
   })
 
-  test('renders with default variant', async () => {
+  test('renders with default (no accent)', async () => {
     const screen = await render(
       <Card>
         <span>Default Card</span>
@@ -24,24 +24,24 @@ describe('Card', () => {
     await expect.element(screen.getByText('Default Card')).toBeInTheDocument()
   })
 
-  test('renders with team-one variant', async () => {
+  test('renders with primary accent', async () => {
     const screen = await render(
-      <Card variant="team-one">
-        <span>Team One Card</span>
+      <Card accent="primary">
+        <span>Primary Card</span>
       </Card>
     )
 
-    await expect.element(screen.getByText('Team One Card')).toBeInTheDocument()
+    await expect.element(screen.getByText('Primary Card')).toBeInTheDocument()
   })
 
-  test('renders with team-two variant', async () => {
+  test('renders with secondary accent', async () => {
     const screen = await render(
-      <Card variant="team-two">
-        <span>Team Two Card</span>
+      <Card accent="secondary">
+        <span>Secondary Card</span>
       </Card>
     )
 
-    await expect.element(screen.getByText('Team Two Card')).toBeInTheDocument()
+    await expect.element(screen.getByText('Secondary Card')).toBeInTheDocument()
   })
 
   test('applies custom className', async () => {
@@ -56,9 +56,9 @@ describe('Card', () => {
     expect(card).toBeTruthy()
   })
 
-  test('applies both variant and custom className', async () => {
+  test('applies both accent and custom className', async () => {
     const screen = await render(
-      <Card variant="team-one" className="extra-class">
+      <Card accent="primary" className="extra-class">
         <span>Combined Card</span>
       </Card>
     )
@@ -67,17 +67,17 @@ describe('Card', () => {
     expect(card).toBeTruthy()
   })
 
-  // Test all variant branches
-  const variants: CardVariant[] = ['default', 'team-one', 'team-two']
-  variants.forEach((variant) => {
-    test(`renders correctly with variant: ${variant}`, async () => {
+  // Test all accent branches
+  const accents: CardAccent[] = ['primary', 'secondary']
+  accents.forEach((accent) => {
+    test(`renders correctly with accent: ${accent}`, async () => {
       const screen = await render(
-        <Card variant={variant}>
-          <span>{variant} Card</span>
+        <Card accent={accent}>
+          <span>{accent} Card</span>
         </Card>
       )
 
-      await expect.element(screen.getByText(`${variant} Card`)).toBeInTheDocument()
+      await expect.element(screen.getByText(`${accent} Card`)).toBeInTheDocument()
     })
   })
 })

@@ -104,7 +104,7 @@
       "team2Label": "TIME 2",
       "team1Default": "Time A",
       "team2Default": "Time B",
-      "playerPlaceholder": "Nomes dos jogadores"
+      "playerPlaceholder": "Nome do time"
     },
     "firstServer": {
       "label": "PRIMEIRO SAQUE",

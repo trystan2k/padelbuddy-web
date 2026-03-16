@@ -3,7 +3,7 @@
 import { describe, expect, test, vi } from 'vitest'
 import { render } from 'vitest-browser-react'
 
-import { TextInput, type TextInputVariant } from '@/components/ui/TextInput/TextInput'
+import { TextInput, type TextInputAccent } from '@/components/ui/TextInput/TextInput'
 
 describe('TextInput', () => {
   test('renders with value', async () => {
@@ -93,11 +93,11 @@ describe('TextInput', () => {
     await expect.element(input).not.toHaveAttribute('aria-label')
   })
 
-  // Test all variants for branch coverage
-  const variants: TextInputVariant[] = ['default', 'team-one', 'team-two']
-  variants.forEach((variant) => {
-    test(`renders correctly with variant: ${variant}`, async () => {
-      const screen = await render(<TextInput value="test" onChange={() => {}} variant={variant} />)
+  // Test all accents for branch coverage
+  const accents: TextInputAccent[] = ['primary', 'secondary']
+  accents.forEach((accent) => {
+    test(`renders correctly with accent: ${accent}`, async () => {
+      const screen = await render(<TextInput value="test" onChange={() => {}} accent={accent} />)
 
       const input = screen.getByRole('textbox')
       await expect.element(input).toHaveValue('test')

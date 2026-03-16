@@ -1,40 +1,38 @@
-import type { SupportedLocale } from '@/lib/i18n/types'
-
+import { cn } from '@/lib/utils/cn'
 import styles from './LocaleChip.module.css'
 
 export interface LocaleChipProps {
-  locale: SupportedLocale
+  /** Flag emoji to display */
+  flag: string
   label: string
   onClick?: () => void
   active?: boolean
   className?: string
   /** For dropdown triggers: indicates whether the dropdown is expanded */
   'aria-expanded'?: boolean
-}
-
-const localeFlags: Record<SupportedLocale, string> = {
-  en: '🇺🇸',
-  pt: '🇧🇷',
-  es: '🇪🇸'
+  /** For dropdown triggers: references the controlled element */
+  'aria-controls'?: string
 }
 
 export function LocaleChip({
-  locale,
+  flag,
   label,
   onClick,
   active = false,
   className,
-  'aria-expanded': ariaExpanded
+  'aria-expanded': ariaExpanded,
+  'aria-controls': ariaControls
 }: LocaleChipProps) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`${styles.chip}${active ? ` ${styles.active}` : ''}${className ? ` ${className}` : ''}`}
-      aria-pressed={active}
+      className={cn(styles.chip, active && styles.active, className)}
+      aria-pressed={ariaExpanded !== undefined ? undefined : active}
       aria-expanded={ariaExpanded}
+      aria-controls={ariaControls}
     >
-      <span aria-hidden="true">{localeFlags[locale]}</span>
+      <span aria-hidden="true">{flag}</span>
       <span className={styles.text}>{label}</span>
     </button>
   )

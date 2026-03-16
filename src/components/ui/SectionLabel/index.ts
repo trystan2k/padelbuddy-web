@@ -1,1 +1,1 @@
-export { SectionLabel, type SectionLabelProps, type SectionLabelVariant } from './SectionLabel'
+export { SectionLabel, type SectionLabelProps, type SectionLabelAccent } from './SectionLabel'
