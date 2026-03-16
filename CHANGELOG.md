@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.7.0](https://github.com/trystan2k/padelbuddy-web/compare/v0.6.0...v0.7.0) (2026-03-16)
+
+
+### Features
+
+* **design-tokens:** add danger color token to brand palette ([63fbdac](https://github.com/trystan2k/padelbuddy-web/commit/63fbdac722acce52e97e5416b4ea2e64ad5fbaba))
+* implement Setup Screen and Match Bootstrap UX (PBW-15) ([7d96ecf](https://github.com/trystan2k/padelbuddy-web/commit/7d96ecffeabac18d0256ab1f51854ebe0e5ac8f7))
+
+
+### Bug Fixes
+
+* address Copilot review feedback and add code review checklist ([800b48c](https://github.com/trystan2k/padelbuddy-web/commit/800b48cd0834056274605727bc7dc9813c4ad710))
+* address PR review feedback for PBW-15 ([72d2613](https://github.com/trystan2k/padelbuddy-web/commit/72d2613f7b18b8c23908ddbd162baf58789d2c8b))
+
 ## [0.6.0](https://github.com/trystan2k/padelbuddy-web/compare/v0.5.0...v0.6.0) (2026-03-15)
 
 
