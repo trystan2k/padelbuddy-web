@@ -255,6 +255,7 @@ describe('CurrentMatchStartupGate browser', () => {
 
   test('keeps the resume dialog open and shows an error when discarding fails', async () => {
     const setup = createTestSetup()
+    const testStartedAt = Date.now()
 
     const screen = await render(
       <CurrentMatchStartupGate
@@ -264,7 +265,8 @@ describe('CurrentMatchStartupGate browser', () => {
             record: {
               schemaVersion: currentMatchSchemaVersion,
               setup,
-              actions: scorePoints('team-1')
+              actions: scorePoints('team-1'),
+              startedAt: testStartedAt
             }
           }),
           clearCurrentMatch: async () => {

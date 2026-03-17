@@ -1,4 +1,10 @@
 {
+  "common": {
+    "loading": "Cargando..."
+  },
+  "error": {
+    "loadMatch": "Error al cargar el partido"
+  },
   "app": {
     "title": "Padel Buddy",
     "description": "Una base estilizada para el rastreador de puntuación en vivo."
@@ -131,6 +137,45 @@
       "teamNamesRequired": "Ambos nombres de equipo son obligatorios",
       "selectFormat": "Por favor, selecciona un formato de partido",
       "selectServer": "Por favor, selecciona el primer sacador"
+    }
+  },
+  "match": {
+    "header": {
+      "appName": "Padel Buddy",
+      "subtitle": "Partido en vivo"
+    },
+    "score": {
+      "games": "Juegos"
+    },
+    "scorePointFor": "Anotar punto para {{teamName}}",
+    "serving": "Sacando",
+    "info": {
+      "title": "Detalles de cancha",
+      "goldenPoint": "PO",
+      "goldenPointOn": "Punto de oro activado",
+      "goldenPointOff": "Punto de oro desactivado",
+      "superTiebreakOn": "Super tiebreak activado",
+      "superTiebreakOff": "Super tiebreak desactivado",
+      "sideSwitchOn": "Cambios de lado: activado",
+      "sideSwitchOff": "Cambios de lado: desactivado"
+    },
+    "sets": {
+      "label": "Sets",
+      "winner": "Ganador del set",
+      "current": "Set actual"
+    },
+    "timer": {
+      "label": "Tiempo de partido: {{time}}"
+    },
+    "actions": {
+      "revertPoint": "Deshacer punto",
+      "finishMatch": "Terminar Partido"
+    },
+    "sideSwitch": {
+      "oddGames": "Cambiar de lado (juegos impares)",
+      "tiebreakInterval": "Cambiar de lado (tiebreak)",
+      "description": "Los jugadores deben cambiar de lado ahora.",
+      "confirm": "Cambiado"
     }
   }
 }

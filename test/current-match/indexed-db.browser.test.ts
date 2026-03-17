@@ -34,14 +34,16 @@ describe('current match IndexedDB persistence', () => {
       decidingSetSuperTiebreak: true
     })
     const actions = [...winQuickGame('team-1'), ...scorePoints('team-2', 'team-2')]
+    const startedAt = Date.now()
 
-    const savedRecord = await persistence.saveCurrentMatch({ setup, actions })
+    const savedRecord = await persistence.saveCurrentMatch({ setup, actions, startedAt })
     const loadedRecord = await persistence.loadCurrentMatch()
 
     expect(savedRecord).toEqual({
       schemaVersion: currentMatchSchemaVersion,
       setup,
-      actions
+      actions,
+      startedAt
     })
     expect(loadedRecord).toEqual({
       status: 'ok',
@@ -58,7 +60,8 @@ describe('current match IndexedDB persistence', () => {
   test('clears the stored current match record', async () => {
     await persistence.saveCurrentMatch({
       setup: createTestSetup(),
-      actions: winQuickGame('team-1')
+      actions: winQuickGame('team-1'),
+      startedAt: Date.now()
     })
 
     await persistence.clearCurrentMatch()
@@ -84,7 +87,7 @@ describe('current match IndexedDB persistence', () => {
     await expect(persistence.loadCurrentMatch()).resolves.toEqual({
       status: 'reset-required',
       reason: 'schema-version',
-      storedSchemaVersion: 2
+      storedSchemaVersion: 3
     })
     expect(consumeCurrentMatchResetNotice()).toEqual({
       reason: 'schema-version'

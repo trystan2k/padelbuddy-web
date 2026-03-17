@@ -1,0 +1,84 @@
+/* TopBar - Following Pencil design node ID: eFLga
+   Height: 64px
+   Left: matchMeta (app icon + title + subtitle)
+   Right: locale chip
+*/
+
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: var(--app-screen-shell-header-height);
+}
+
+/* Match meta - left side */
+.matchMeta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--base-space-2);
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: var(--base-space-10);
+}
+
+.icon {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--base-radius-8);
+  object-fit: contain;
+}
+
+.appName {
+  margin: 0;
+  font-family: var(--semantic-typography-family-display);
+  font-size: var(--base-font-size-20);
+  font-weight: var(--semantic-typography-weight-display);
+  color: var(--semantic-color-content-primary);
+  letter-spacing: var(--base-font-letter-spacing-tight);
+}
+
+.subtitle {
+  margin: 0;
+  font-family: var(--semantic-typography-family-body);
+  font-size: var(--base-font-size-13);
+  font-weight: var(--semantic-typography-weight-strong);
+  color: var(--semantic-color-content-secondary);
+  letter-spacing: var(--base-font-letter-spacing-wide-sm);
+  text-transform: uppercase;
+}
+
+/* Locale wrapper - right side */
+.localeWrapper {
+  position: relative;
+}
+
+.localeMenu {
+  position: absolute;
+  top: calc(100% + var(--base-space-8));
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--base-space-4);
+  padding: var(--base-space-8);
+  background-color: var(--semantic-color-background-surface);
+  border: 1px solid var(--semantic-color-border-subtle);
+  border-radius: var(--base-radius-12);
+  box-shadow: var(--semantic-shadow-subtle);
+  z-index: 100;
+}
+
+/* Responsive adjustments */
+@media (width <= 767px) {
+  .appName {
+    font-size: var(--base-font-size-18);
+  }
+
+  .icon {
+    width: 28px;
+    height: 28px;
+  }
+}

@@ -10,6 +10,8 @@ import {
 import { createTestSetup, scorePoints } from '../core/match/test-helpers'
 
 describe('current match IndexedDB internals', () => {
+  const testStartedAt = Date.now()
+
   afterEach(() => {
     vi.unstubAllGlobals()
   })
@@ -33,7 +35,8 @@ describe('current match IndexedDB internals', () => {
     await expect(
       saveCurrentMatch({
         setup: createTestSetup(),
-        actions: scorePoints('team-1')
+        actions: scorePoints('team-1'),
+        startedAt: testStartedAt
       })
     ).resolves.toMatchObject({
       actions: scorePoints('team-1')

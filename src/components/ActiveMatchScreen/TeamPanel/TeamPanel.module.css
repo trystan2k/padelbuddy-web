@@ -1,0 +1,177 @@
+/* TeamPanel - Following Pencil design node IDs: ilG6v (team1), Lwif8 (team2)   Container: 452px width, 362px height, corner radius 36px
+   Team colors: team-one (#2F7CF6), team-one-soft (#E6F0FF)
+                   team-two (#E28A1A), team-two-soft (#FFF0DB)
+*/
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  width: var(--app-scoreboard-team-panel-width);
+  height: var(--app-scoreboard-team-panel-height);
+  border-radius: var(--component-card-scoreboard-team-radius);
+  padding: var(--component-card-scoreboard-team-padding-top)
+    var(--component-card-scoreboard-team-padding-x)
+    var(--component-card-scoreboard-team-padding-bottom)
+    var(--component-card-scoreboard-team-padding-x);
+  cursor: pointer;
+  transition:
+    transform 0.1s ease,
+    opacity 0.1s ease;
+  border: 2px solid;
+}
+
+.panel:hover:not(:disabled) {
+  transform: scale(1.01);
+}
+
+.panel:active:not(:disabled) {
+  transform: scale(0.99);
+}
+
+.panel:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.panel:focus-visible {
+  outline: 3px solid var(--semantic-color-content-primary);
+  outline-offset: 3px;
+}
+
+/* Team 1 specific styles */
+.team1Panel {
+  background-color: var(--base-color-brand-primary-subtle);
+  border-color: var(--semantic-color-border-accent-primary);
+}
+
+/* Team 2 specific styles */
+.team2Panel {
+  background-color: var(--base-color-brand-secondary-subtle);
+  border-color: var(--semantic-color-border-accent-secondary);
+}
+
+/* Team name section at top */
+.teamNameSection {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Team name at top */
+.teamName {
+  font-family: var(--semantic-typography-family-body);
+  font-size: var(--base-font-size-16);
+  font-weight: var(--semantic-typography-weight-strong);
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.team1Panel .teamName {
+  color: var(--semantic-color-content-accent-primary);
+}
+
+.team2Panel .teamName {
+  color: var(--semantic-color-content-accent-secondary);
+}
+
+/* Score stack - score and serve indicator */
+.scoreStack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--base-space-12);
+}
+
+/* Large score display */
+.score {
+  font-family: var(--semantic-typography-family-display);
+  font-size: var(--semantic-typography-size-display-score);
+  font-weight: var(--semantic-typography-weight-display);
+  letter-spacing: -10px;
+  line-height: var(--semantic-typography-line-height-display);
+  color: var(--semantic-color-content-primary);
+}
+
+/* Serve indicator bar */
+.serveBar {
+  width: var(--app-scoreboard-serve-indicator-width);
+  height: var(--app-scoreboard-serve-indicator-height);
+  border-radius: 999px;
+  background-color: var(--semantic-color-content-success);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.serving .serveBar {
+  opacity: 1;
+}
+
+/* Bottom section - serve chip and games */
+.bottomSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--base-space-12);
+}
+
+/* Serve chip indicator */
+.serveChip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--base-space-8) var(--base-space-14);
+  border-radius: var(--base-radius-16);
+  background-color: var(--semantic-color-background-success-subtle);
+  font-family: var(--semantic-typography-family-body);
+  font-size: var(--base-font-size-14);
+  font-weight: var(--semantic-typography-weight-strong);
+  color: var(--semantic-color-content-success);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.serving .serveChip {
+  opacity: 1;
+}
+
+/* Games label */
+.gamesLabel {
+  font-family: var(--semantic-typography-family-display);
+  font-size: var(--base-font-size-36);
+  font-weight: var(--semantic-typography-weight-strong);
+  color: var(--semantic-color-content-secondary);
+  text-align: center;
+}
+
+/* Golden point indicator */
+.goldenPointIndicator {
+  font-family: var(--semantic-typography-family-body);
+  font-size: var(--base-font-size-12);
+  font-weight: var(--semantic-typography-weight-strong);
+  color: var(--semantic-color-content-success);
+  background-color: var(--semantic-color-background-success-subtle);
+  padding: var(--base-space-4) var(--base-space-8);
+  border-radius: var(--base-radius-16);
+  margin-top: var(--base-space-4);
+}
+
+/* Responsive adjustments */
+@media (width <= 767px) {
+  .panel {
+    width: 100%;
+    height: auto;
+    min-height: 280px;
+    padding: var(--base-space-16);
+  }
+
+  .score {
+    font-size: 180px;
+  }
+
+  .gamesLabel {
+    font-size: var(--base-font-size-28);
+  }
+}

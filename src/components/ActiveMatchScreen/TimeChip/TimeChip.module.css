@@ -1,0 +1,18 @@
+/* TimeChip.module.css - Following Pencil design node ID: cOPm9
+   Container: corner radius 20px, padding 10x16px
+   Text: Outfit 20px, weight 700
+*/
+
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--component-chip-locale-padding-y) var(--component-chip-locale-padding-x);
+  background-color: var(--component-card-overlay-background);
+  border: 1px solid var(--component-card-overlay-border);
+  border-radius: var(--component-chip-locale-radius);
+  font-family: var(--semantic-typography-family-display);
+  font-size: var(--semantic-typography-size-title-sm);
+  font-weight: var(--semantic-typography-weight-strong);
+  color: var(--semantic-color-content-primary);
+}
