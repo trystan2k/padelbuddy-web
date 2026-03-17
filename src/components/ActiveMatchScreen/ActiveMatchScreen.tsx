@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
+import { useTranslation } from 'react-i18next'
 
 import { Layout } from '@/components/Layout'
 import { TeamPanel } from './TeamPanel'
@@ -12,7 +13,7 @@ import { SideSwitchPrompt } from './SideSwitchPrompt'
 import { TopBar } from './TopBar/TopBar'
 import { useMatchTimer } from './useMatchTimer'
 import { useMatchSession } from './useMatchSession'
-import { getCurrentLocale } from '@/lib/i18n'
+import { isSupportedLocale, defaultLocale, type SupportedLocale } from '@/lib/i18n'
 
 import type { MatchAction, MatchSetup, MatchTeamId } from '@/core/match'
 
@@ -37,7 +38,10 @@ export function ActiveMatchScreen({
   startedAt
 }: ActiveMatchScreenProps) {
   const navigate = useNavigate()
-  const currentLocale = getCurrentLocale()
+  const { i18n } = useTranslation()
+  const currentLocale: SupportedLocale = isSupportedLocale(i18n.language)
+    ? i18n.language
+    : defaultLocale
   const [sideSwitchDismissed, setSideSwitchDismissed] = useState(false)
 
   // Session hook
@@ -62,7 +66,7 @@ export function ActiveMatchScreen({
   const team2Name = team2Side?.playerNames.join(' & ') || 'Team 2'
 
   // Score display
-  const { scoreDisplay, setsWon, activeSetIndex, servingTeam, sideSwitch, winner } = derived
+  const { scoreDisplay, activeSetIndex, servingTeam, sideSwitch, winner } = derived
 
   // Reset dismissed flag when a new side switch prompt appears
   useEffect(() => {
@@ -154,7 +158,7 @@ export function ActiveMatchScreen({
 
         {/* Center column: Sets, Info, Time */}
         <div className={styles.centerColumn}>
-          <SetsCard sets={state.sets} currentSetIndex={activeSetIndex} setsWon={setsWon} />
+          <SetsCard sets={state.sets} currentSetIndex={activeSetIndex} />
           <InfoCard
             isGoldenPoint={setup.gameMode === 'golden-point'}
             isSuperTiebreak={setup.decidingSetSuperTiebreak}

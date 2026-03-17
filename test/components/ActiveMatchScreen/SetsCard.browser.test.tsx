@@ -14,9 +14,7 @@ describe('SetsCard', () => {
     const projection = projectMatch(setup, [])
     const sets = projection.state.sets
 
-    const screen = await render(
-      <SetsCard sets={sets} currentSetIndex={0} setsWon={{ 'team-1': 0, 'team-2': 0 }} />
-    )
+    const screen = await render(<SetsCard sets={sets} currentSetIndex={0} />)
 
     await expect.element(screen.getByText('Sets')).toBeInTheDocument()
   })
@@ -26,9 +24,7 @@ describe('SetsCard', () => {
     const projection = projectMatch(setup, [])
     const sets = projection.state.sets
 
-    const screen = await render(
-      <SetsCard sets={sets} currentSetIndex={0} setsWon={{ 'team-1': 0, 'team-2': 0 }} />
-    )
+    const screen = await render(<SetsCard sets={sets} currentSetIndex={0} />)
 
     // First set should show 0-0
     await expect.element(screen.getByTestId('set-row-0')).toBeInTheDocument()
@@ -41,9 +37,7 @@ describe('SetsCard', () => {
     const projection = projectMatch(setup, [])
     const sets = projection.state.sets
 
-    const screen = await render(
-      <SetsCard sets={sets} currentSetIndex={0} setsWon={{ 'team-1': 0, 'team-2': 0 }} />
-    )
+    const screen = await render(<SetsCard sets={sets} currentSetIndex={0} />)
 
     // Current set should have the indicator
     const currentIndicator = screen.container.querySelector('[aria-label="Current set"]')
@@ -56,9 +50,7 @@ describe('SetsCard', () => {
     const projection = projectMatch(setup, actions)
     const sets = projection.state.sets
 
-    const screen = await render(
-      <SetsCard sets={sets} currentSetIndex={1} setsWon={{ 'team-1': 1, 'team-2': 0 }} />
-    )
+    const screen = await render(<SetsCard sets={sets} currentSetIndex={1} />)
 
     // First set should be completed with winner indicator
     const firstSetRow = screen.getByTestId('set-row-0')
@@ -73,9 +65,7 @@ describe('SetsCard', () => {
     const projection = projectMatch(setup, [])
     const sets = projection.state.sets
 
-    const screen = await render(
-      <SetsCard sets={sets} currentSetIndex={0} setsWon={{ 'team-1': 0, 'team-2': 0 }} />
-    )
+    const screen = await render(<SetsCard sets={sets} currentSetIndex={0} />)
 
     const setRow = screen.getByTestId('set-row-0')
     await expect.element(setRow).toHaveTextContent('0-0')
@@ -86,9 +76,7 @@ describe('SetsCard', () => {
     const projection = projectMatch(setup, [])
     const sets = projection.state.sets
 
-    const screen = await render(
-      <SetsCard sets={sets} currentSetIndex={0} setsWon={{ 'team-1': 0, 'team-2': 0 }} />
-    )
+    const screen = await render(<SetsCard sets={sets} currentSetIndex={0} />)
 
     await expect.element(screen.getByTestId('sets-card')).toBeInTheDocument()
   })
@@ -98,9 +86,7 @@ describe('SetsCard', () => {
     const projection = projectMatch(setup, [])
     const sets = projection.state.sets
 
-    const screen = await render(
-      <SetsCard sets={sets} currentSetIndex={null} setsWon={{ 'team-1': 0, 'team-2': 0 }} />
-    )
+    const screen = await render(<SetsCard sets={sets} currentSetIndex={null} />)
 
     // Should still render sets
     await expect.element(screen.getByTestId('sets-card')).toBeInTheDocument()
@@ -111,12 +97,15 @@ describe('SetsCard', () => {
     const projection = projectMatch(setup, [])
     const sets = projection.state.sets
 
-    const screen = await render(
-      <SetsCard sets={sets} currentSetIndex={0} setsWon={{ 'team-1': 0, 'team-2': 0 }} />
-    )
+    const screen = await render(<SetsCard sets={sets} currentSetIndex={0} />)
 
     // Set numbers should be 1-indexed
-    const setNumber = screen.container.querySelector('[aria-current="true"]')
-    expect(setNumber?.textContent).toBe('1')
+    // aria-current is on the setRow, find the set number inside it using test id
+    const currentRow = screen.container.querySelector('[aria-current="true"]')
+    const setNumberTestId = currentRow
+      ?.getAttribute('data-testid')
+      ?.replace('set-row-', 'set-number-')
+    const setNumber = setNumberTestId ? screen.getByTestId(setNumberTestId) : null
+    await expect.element(setNumber).toHaveTextContent('1')
   })
 })

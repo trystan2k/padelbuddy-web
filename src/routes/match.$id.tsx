@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { ActiveMatchScreen } from '@/components/ActiveMatchScreen'
 import { loadCurrentMatch } from '@/lib/current-match'
@@ -15,6 +16,7 @@ export const Route = createFileRoute('/match/$id')({
 })
 
 function MatchRoute() {
+  const { t } = useTranslation()
   const { matchId, matchData } = Route.useLoaderData()
   const navigate = useNavigate()
   const [isReady, setIsReady] = useState(false)
@@ -47,7 +49,7 @@ function MatchRoute() {
   if (!isReady) {
     return (
       <main>
-        <p>Loading...</p>
+        <p>{t('common.loading')}</p>
       </main>
     )
   }
@@ -56,7 +58,7 @@ function MatchRoute() {
     // This shouldn't happen due to the redirects above, but TypeScript needs it
     return (
       <main>
-        <p>Error loading match</p>
+        <p>{t('error.loadMatch')}</p>
       </main>
     )
   }

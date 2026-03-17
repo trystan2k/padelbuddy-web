@@ -218,6 +218,8 @@ describe('use-input-handler browser', () => {
 
   describe('debounce prevents rapid duplicate scores', () => {
     test('debounces rapid button clicks', async () => {
+      vi.useFakeTimers({ toFake: ['Date'] })
+
       const onScore = vi.fn()
       const options = createOptions(session)
       const callbacks = { onScore }
@@ -226,20 +228,20 @@ describe('use-input-handler browser', () => {
         <InputHandlerTestComponent options={options} callbacks={callbacks} />
       )
 
-      // First click should register
+      // First click registers and sets debounce timestamp
       await screen.getByTestId('team1Score').click()
 
-      // Wait for the callback to be called
+      // Wait for the first callback to complete
       await vi.waitFor(() => expect(onScore).toHaveBeenCalledTimes(1))
       expect(onScore).toHaveBeenCalledWith('team-1')
 
-      // Rapid second click should be debounced
+      // Don't advance time - second click should be debounced
       await screen.getByTestId('team1Score').click()
 
-      await vi.waitFor(() => {
-        // Still only one call because of debounce
-        expect(onScore).toHaveBeenCalledTimes(1)
-      })
+      // Verify debounce blocked the second click
+      expect(onScore).toHaveBeenCalledTimes(1)
+
+      vi.useRealTimers()
     })
 
     test('allows score after debounce period', async () => {

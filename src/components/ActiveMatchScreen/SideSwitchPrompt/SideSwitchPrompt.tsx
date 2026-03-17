@@ -10,7 +10,8 @@ export interface SideSwitchPromptProps {
 
 /**
  * SideSwitchPrompt component - Modal that prompts players to switch sides.
- * Uses Base UI Dialog for accessibility (focus trap, escape to dismiss).
+ * Uses a plain dialog implementation with ARIA attributes for accessibility.
+ * TODO: Consider migrating to Base UI Dialog for enhanced focus trap and keyboard handling.
  */
 export function SideSwitchPrompt({ isOpen, reason, onConfirm }: SideSwitchPromptProps) {
   const { t } = useTranslation()

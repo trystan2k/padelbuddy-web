@@ -1,4 +1,10 @@
 {
+  "common": {
+    "loading": "Cargando..."
+  },
+  "error": {
+    "loadMatch": "Error al cargar el partido"
+  },
   "app": {
     "title": "Padel Buddy",
     "description": "Una base estilizada para el rastreador de puntuación en vivo."

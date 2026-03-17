@@ -1,13 +1,12 @@
 import { useTranslation } from 'react-i18next'
 
-import type { MatchSetState, TeamScore } from '@/core/match'
+import type { MatchSetState } from '@/core/match'
 
 import styles from './SetsCard.module.css'
 
 export interface SetsCardProps {
   sets: MatchSetState[]
   currentSetIndex: number | null
-  setsWon: TeamScore<number>
 }
 
 /**
@@ -15,7 +14,7 @@ export interface SetsCardProps {
  * Follows Pencil design node ID: pGBiU
  * Container: 180px width, corner radius 20px
  */
-export function SetsCard({ sets, currentSetIndex, setsWon: _setsWon }: SetsCardProps) {
+export function SetsCard({ sets, currentSetIndex }: SetsCardProps) {
   const { t } = useTranslation()
 
   return (
@@ -27,8 +26,13 @@ export function SetsCard({ sets, currentSetIndex, setsWon: _setsWon }: SetsCardP
           const isCurrent = index === currentSetIndex
 
           return (
-            <div key={set.index} className={styles.setRow} data-testid={`set-row-${index}`}>
-              <span className={styles.setNumber} aria-current={isCurrent ? 'true' : undefined}>
+            <div
+              key={set.index}
+              className={styles.setRow}
+              aria-current={isCurrent ? 'true' : undefined}
+              data-testid={`set-row-${index}`}
+            >
+              <span className={styles.setNumber} data-testid={`set-number-${index}`}>
                 {index + 1}
               </span>
               <span className={styles.setScore}>
