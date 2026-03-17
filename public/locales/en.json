@@ -132,5 +132,44 @@
       "selectFormat": "Please select a match format",
       "selectServer": "Please select the first server"
     }
+  },
+  "match": {
+    "header": {
+      "appName": "Padel Buddy",
+      "subtitle": "Live Match"
+    },
+    "score": {
+      "games": "Games"
+    },
+    "scorePointFor": "Score point for {{teamName}}",
+    "serving": "Serving",
+    "info": {
+      "title": "Court details",
+      "goldenPoint": "GP",
+      "goldenPointOn": "Golden point on",
+      "goldenPointOff": "Golden point off",
+      "superTiebreakOn": "Super tiebreak on",
+      "superTiebreakOff": "Super tiebreak off",
+      "sideSwitchOn": "Side-switch prompts: on",
+      "sideSwitchOff": "Side-switch prompts: off"
+    },
+    "sets": {
+      "label": "Sets",
+      "winner": "Set winner",
+      "current": "Current set"
+    },
+    "timer": {
+      "label": "Match time: {{time}}"
+    },
+    "actions": {
+      "revertPoint": "Revert point",
+      "finishMatch": "Finish Game"
+    },
+    "sideSwitch": {
+      "oddGames": "Switch sides (odd games)",
+      "tiebreakInterval": "Switch sides (tiebreak)",
+      "description": "Players should switch sides now.",
+      "confirm": "Switched"
+    }
   }
 }

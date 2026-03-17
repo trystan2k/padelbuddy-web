@@ -13,6 +13,7 @@ import { currentMatchPersistence, type CurrentMatchPersistence } from './indexed
 export interface CurrentMatchSessionInput {
   setup: MatchSetup
   actions: MatchAction[]
+  startedAt: number
 }
 
 export interface CurrentMatchSessionSnapshot extends CurrentMatchSessionInput {
@@ -35,7 +36,8 @@ export function createCurrentMatchSession(
 ): CurrentMatchSession {
   let snapshot = createCurrentMatchSessionSnapshot({
     setup: options.setup,
-    actions: options.actions
+    actions: options.actions,
+    startedAt: options.startedAt
   })
   const persistence = options.persistence ?? currentMatchPersistence
   let pendingMutation = Promise.resolve()
@@ -53,7 +55,8 @@ export function createCurrentMatchSession(
         ] satisfies MatchAction[]
         const nextSnapshot = createCurrentMatchSessionSnapshot({
           setup: snapshot.setup,
-          actions: nextActions
+          actions: nextActions,
+          startedAt: snapshot.startedAt
         })
 
         // The domain reducer ignores score inputs once they stop changing canonical state, so this
@@ -75,7 +78,8 @@ export function createCurrentMatchSession(
         return commitSnapshot(
           createCurrentMatchSessionSnapshot({
             setup: snapshot.setup,
-            actions: nextActions
+            actions: nextActions,
+            startedAt: snapshot.startedAt
           })
         )
       }),
@@ -90,7 +94,8 @@ export function createCurrentMatchSession(
         return commitSnapshot(
           createCurrentMatchSessionSnapshot({
             setup: nextSetup,
-            actions: snapshot.actions
+            actions: snapshot.actions,
+            startedAt: snapshot.startedAt
           })
         )
       })
@@ -114,7 +119,8 @@ export function createCurrentMatchSession(
   ): Promise<CurrentMatchSessionSnapshot> {
     await persistence.saveCurrentMatch({
       setup: nextSnapshot.setup,
-      actions: nextSnapshot.actions
+      actions: nextSnapshot.actions,
+      startedAt: nextSnapshot.startedAt
     })
 
     snapshot = nextSnapshot
@@ -129,6 +135,7 @@ export function createCurrentMatchSessionSnapshot(
   return {
     setup: input.setup,
     actions: input.actions,
+    startedAt: input.startedAt,
     projection: projectMatch(input.setup, input.actions)
   }
 }

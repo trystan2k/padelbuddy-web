@@ -8,6 +8,7 @@ import { getActionFromKey, createDebounce } from '@/lib/input'
 import { createTestSetup, scorePoints, winQuickGame, winQuickSet } from '../core/match/test-helpers'
 
 describe('input regression', () => {
+  const testStartedAt = Date.now()
   let persistence: CurrentMatchPersistence
   // Using Mock type for vitest mock to allow .mock.calls access
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -16,10 +17,11 @@ describe('input regression', () => {
   beforeEach(() => {
     saveCurrentMatchMock = vi
       .fn<CurrentMatchPersistence['saveCurrentMatch']>()
-      .mockImplementation(async ({ setup, actions }) => ({
+      .mockImplementation(async ({ setup, actions, startedAt }) => ({
         schemaVersion: currentMatchSchemaVersion,
         setup,
-        actions
+        actions,
+        startedAt: startedAt ?? testStartedAt
       }))
 
     persistence = {
@@ -38,7 +40,12 @@ describe('input regression', () => {
       const setup = createTestSetup()
 
       // Via session (input path)
-      const session = createCurrentMatchSession({ setup, actions: [], persistence })
+      const session = createCurrentMatchSession({
+        setup,
+        actions: [],
+        startedAt: testStartedAt,
+        persistence
+      })
       await session.scorePoint('team-1')
       const sessionSnapshot = session.getSnapshot()
 
@@ -52,7 +59,12 @@ describe('input regression', () => {
     test('single team-2 score via keyboard alias matches direct call', async () => {
       const setup = createTestSetup()
 
-      const session = createCurrentMatchSession({ setup, actions: [], persistence })
+      const session = createCurrentMatchSession({
+        setup,
+        actions: [],
+        startedAt: testStartedAt,
+        persistence
+      })
       await session.scorePoint('team-2')
       const sessionSnapshot = session.getSnapshot()
 
@@ -72,7 +84,12 @@ describe('input regression', () => {
         'team-2'
       ]
 
-      const session = createCurrentMatchSession({ setup, actions: [], persistence })
+      const session = createCurrentMatchSession({
+        setup,
+        actions: [],
+        startedAt: testStartedAt,
+        persistence
+      })
 
       for (const teamId of scoreSequence) {
         await session.scorePoint(teamId) // eslint-disable-line no-await-in-loop
@@ -89,7 +106,12 @@ describe('input regression', () => {
     test('undo after scores restores correct state', async () => {
       const setup = createTestSetup()
 
-      const session = createCurrentMatchSession({ setup, actions: [], persistence })
+      const session = createCurrentMatchSession({
+        setup,
+        actions: [],
+        startedAt: testStartedAt,
+        persistence
+      })
 
       await session.scorePoint('team-1')
       await session.scorePoint('team-2')
@@ -109,7 +131,12 @@ describe('input regression', () => {
     test('multiple undos restore correct state', async () => {
       const setup = createTestSetup()
 
-      const session = createCurrentMatchSession({ setup, actions: [], persistence })
+      const session = createCurrentMatchSession({
+        setup,
+        actions: [],
+        startedAt: testStartedAt,
+        persistence
+      })
 
       await session.scorePoint('team-1')
       await session.scorePoint('team-2')
@@ -129,7 +156,12 @@ describe('input regression', () => {
     test('score after undo produces correct final state', async () => {
       const setup = createTestSetup()
 
-      const session = createCurrentMatchSession({ setup, actions: [], persistence })
+      const session = createCurrentMatchSession({
+        setup,
+        actions: [],
+        startedAt: testStartedAt,
+        persistence
+      })
 
       await session.scorePoint('team-1')
       await session.scorePoint('team-2')
@@ -185,7 +217,12 @@ describe('input regression', () => {
       const setup = createTestSetup()
       const debounce = createDebounce({ delay: 300 })
 
-      const session = createCurrentMatchSession({ setup, actions: [], persistence })
+      const session = createCurrentMatchSession({
+        setup,
+        actions: [],
+        startedAt: testStartedAt,
+        persistence
+      })
 
       // Simulate debounced input sequence
       const inputs: MatchTeamId[] = ['team-1', 'team-2', 'team-1']
@@ -212,7 +249,12 @@ describe('input regression', () => {
       const setup = createTestSetup()
       const debounce = createDebounce({ delay: 300 })
 
-      const session = createCurrentMatchSession({ setup, actions: [], persistence })
+      const session = createCurrentMatchSession({
+        setup,
+        actions: [],
+        startedAt: testStartedAt,
+        persistence
+      })
 
       // First input should succeed
       if (debounce.isReady()) {
@@ -253,7 +295,12 @@ describe('input regression', () => {
     test('complete game via keyboard produces correct winner', async () => {
       const setup = createTestSetup({ format: 'best-of-1' })
 
-      const session = createCurrentMatchSession({ setup, actions: [], persistence })
+      const session = createCurrentMatchSession({
+        setup,
+        actions: [],
+        startedAt: testStartedAt,
+        persistence
+      })
 
       // Team 1 wins 4 points to win a game
       for (let i = 0; i < 4; i++) {
@@ -277,7 +324,12 @@ describe('input regression', () => {
     test('complete set via keyboard produces correct winner', async () => {
       const setup = createTestSetup({ format: 'best-of-1' })
 
-      const session = createCurrentMatchSession({ setup, actions: [], persistence })
+      const session = createCurrentMatchSession({
+        setup,
+        actions: [],
+        startedAt: testStartedAt,
+        persistence
+      })
 
       // Team 1 wins 6 games to win a set
       const winSetActions = winQuickSet('team-1')
@@ -297,7 +349,12 @@ describe('input regression', () => {
     test('match state is consistent after complex sequence', async () => {
       const setup = createTestSetup()
 
-      const session = createCurrentMatchSession({ setup, actions: [], persistence })
+      const session = createCurrentMatchSession({
+        setup,
+        actions: [],
+        startedAt: testStartedAt,
+        persistence
+      })
 
       // Complex sequence with scoring and undoing
       await session.scorePoint('team-1')
@@ -325,7 +382,12 @@ describe('input regression', () => {
     test('session persistence matches direct persistence call', async () => {
       const setup = createTestSetup()
 
-      const session = createCurrentMatchSession({ setup, actions: [], persistence })
+      const session = createCurrentMatchSession({
+        setup,
+        actions: [],
+        startedAt: testStartedAt,
+        persistence
+      })
 
       await session.scorePoint('team-1')
       await session.scorePoint('team-2')

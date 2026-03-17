@@ -8,17 +8,19 @@ import {
   type MatchTeamId
 } from '@/core/match'
 
-export const currentMatchSchemaVersion = 1 as const
+export const currentMatchSchemaVersion = 2 as const
 
 export interface CurrentMatchSaveInput {
   setup: MatchSetup
   actions: MatchAction[]
+  startedAt?: number // Unix timestamp in milliseconds, defaults to Date.now()
 }
 
 export interface CurrentMatchRecord {
   schemaVersion: typeof currentMatchSchemaVersion
   setup: MatchSetup
   actions: MatchAction[]
+  startedAt: number // Unix timestamp in milliseconds
 }
 
 export interface CurrentMatchDecodeOkResult {
@@ -46,7 +48,8 @@ export function createCurrentMatchRecord(input: CurrentMatchSaveInput): CurrentM
   return {
     schemaVersion: currentMatchSchemaVersion,
     setup: parseMatchSetup(input.setup),
-    actions: parseMatchActions(input.actions)
+    actions: parseMatchActions(input.actions),
+    startedAt: input.startedAt ?? Date.now()
   }
 }
 
@@ -100,12 +103,20 @@ export function decodeCurrentMatchRecord(input: unknown): CurrentMatchDecodeResu
       record: {
         schemaVersion: currentMatchSchemaVersion,
         setup: parseMatchSetup(record.setup),
-        actions: parseMatchActions(record.actions)
+        actions: parseMatchActions(record.actions),
+        startedAt: parseStartedAt(record.startedAt)
       }
     }
   } catch (error) {
     return createCorruptResult(error)
   }
+}
+
+function parseStartedAt(input: unknown): number {
+  if (typeof input !== 'number' || !Number.isFinite(input) || input <= 0) {
+    throw new Error('Current match startedAt must be a positive number.')
+  }
+  return input
 }
 
 function parseMatchSetup(input: unknown): MatchSetup {

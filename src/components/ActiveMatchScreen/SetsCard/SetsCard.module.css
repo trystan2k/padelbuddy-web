@@ -1,0 +1,81 @@
+/* SetsCard.module.css - Following Pencil design node ID: pGBiU
+   Container: 180px width, corner radius 20px
+   Label: Inter 11px, weight 700, letter-spacing 1.2
+   Set rows: 6px gap between rows
+*/
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--base-space-8);
+  width: var(--app-scoreboard-sets-overlay-width);
+  background-color: var(--component-card-overlay-background);
+  border: 1px solid var(--component-card-overlay-border);
+  border-radius: var(--component-card-overlay-radius);
+  padding: var(--component-card-overlay-padding-y) var(--component-card-overlay-padding-x);
+}
+
+.label {
+  font-family: var(--semantic-typography-family-body);
+  font-size: var(--semantic-typography-size-label-sm);
+  font-weight: var(--semantic-typography-weight-strong);
+  letter-spacing: var(--semantic-typography-letter-spacing-label-tight);
+  color: var(--semantic-color-content-secondary);
+  text-transform: uppercase;
+  margin-bottom: var(--base-space-8);
+}
+
+.setsGrid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--base-space-6);
+}
+
+.setRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--base-space-4) 0;
+}
+
+.setNumber {
+  font-family: var(--semantic-typography-family-body);
+  font-size: var(--base-font-size-13);
+  font-weight: var(--base-font-weight-bold);
+  color: var(--semantic-color-content-secondary);
+  min-width: 16px;
+}
+
+.setScore {
+  display: flex;
+  align-items: center;
+  gap: var(--base-space-4);
+}
+
+.team1Games,
+.team2Games {
+  font-family: var(--semantic-typography-family-display);
+  font-size: var(--base-font-size-18);
+  font-weight: var(--semantic-typography-weight-strong);
+  color: var(--semantic-color-content-primary);
+}
+
+.divider {
+  color: var(--semantic-color-content-secondary);
+  font-weight: var(--base-font-weight-medium);
+}
+
+.winnerIndicator {
+  color: var(--semantic-color-content-success);
+  font-size: var(--base-font-size-14);
+}
+
+.currentIndicator {
+  color: var(--semantic-color-content-accent-primary);
+  font-size: var(--base-font-size-12);
+}
+
+.setRow[aria-current='true'] {
+  background-color: var(--semantic-color-background-surface-muted);
+  border-radius: var(--base-radius-8);
+}

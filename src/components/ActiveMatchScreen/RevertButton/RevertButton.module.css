@@ -1,0 +1,51 @@
+/* RevertButton.module.css - Following Pencil design
+   Team 1: #F9E4E4 fill, #D6B4B4 border
+   Team 2: #FBE6E0 fill, #E3B8AA border
+   Container: 220px width, corner radius 18px
+*/
+
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--app-scoreboard-serve-indicator-width);
+  padding: var(--component-button-revert-padding-y) var(--component-button-revert-padding-x);
+  border-radius: var(--component-button-revert-radius);
+  font-family: var(--semantic-typography-family-display);
+  font-size: var(--base-font-size-18);
+  font-weight: var(--semantic-typography-weight-strong);
+  color: var(--component-button-revert-text);
+  cursor: pointer;
+  transition:
+    opacity 0.1s ease,
+    transform 0.1s ease;
+}
+
+.container:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: scale(1.02);
+}
+
+.container:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.container:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.container:focus-visible {
+  outline: 3px solid var(--semantic-color-content-primary);
+  outline-offset: 3px;
+}
+
+.team1 {
+  background-color: var(--base-color-feedback-critical-subtle);
+  border: 1px solid var(--base-color-border-critical-subtle);
+}
+
+.team2 {
+  background-color: var(--base-color-feedback-critical-subtle-alt);
+  border: 1px solid var(--base-color-border-critical-subtle-alt);
+}

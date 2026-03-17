@@ -11,15 +11,20 @@ import {
 import { createTestSetup, scorePoints, winQuickGame, winQuickSet } from '../core/match/test-helpers'
 
 describe('current match session', () => {
+  const testStartedAt = Date.now()
+
   test('derives the initial projection from canonical setup and actions', () => {
     const setup = createTestSetup()
     const actions = [...winQuickGame('team-1'), ...scorePoints('team-2')]
 
-    expect(createCurrentMatchSessionSnapshot({ setup, actions })).toEqual({
-      setup,
-      actions,
-      projection: projectMatch(setup, actions)
-    })
+    expect(createCurrentMatchSessionSnapshot({ setup, actions, startedAt: testStartedAt })).toEqual(
+      {
+        setup,
+        actions,
+        startedAt: testStartedAt,
+        projection: projectMatch(setup, actions)
+      }
+    )
   })
 
   test('persists score mutations after replay projects the next state', async () => {
@@ -28,6 +33,7 @@ describe('current match session', () => {
     const session = createCurrentMatchSession({
       setup,
       actions: [],
+      startedAt: testStartedAt,
       persistence
     })
 
@@ -35,7 +41,8 @@ describe('current match session', () => {
 
     expect(saveCurrentMatchMock).toHaveBeenCalledWith({
       setup,
-      actions: scorePoints('team-1')
+      actions: scorePoints('team-1'),
+      startedAt: testStartedAt
     })
     expect(snapshot.projection.state.actionCount).toBe(1)
     expect(snapshot.projection.derived.scoreDisplay).toEqual({
@@ -56,6 +63,7 @@ describe('current match session', () => {
     const session = createCurrentMatchSession({
       setup,
       actions: completedActions,
+      startedAt: testStartedAt,
       persistence
     })
 
@@ -64,7 +72,8 @@ describe('current match session', () => {
 
     expect(saveCurrentMatchMock).toHaveBeenCalledWith({
       setup,
-      actions: undoneActions
+      actions: undoneActions,
+      startedAt: testStartedAt
     })
     expect(snapshot.actions).toEqual(undoneActions)
     expect(snapshot.projection).toEqual(projectMatch(setup, undoneActions))
@@ -78,13 +87,16 @@ describe('current match session', () => {
     const session = createCurrentMatchSession({
       setup,
       actions: [],
+      startedAt: testStartedAt,
       persistence
     })
 
     const snapshot = await session.undoScoreAction()
 
     expect(saveCurrentMatchMock).not.toHaveBeenCalled()
-    expect(snapshot).toEqual(createCurrentMatchSessionSnapshot({ setup, actions: [] }))
+    expect(snapshot).toEqual(
+      createCurrentMatchSessionSnapshot({ setup, actions: [], startedAt: testStartedAt })
+    )
   })
 
   test('skips persisting score actions that replay ignores after match completion', async () => {
@@ -96,6 +108,7 @@ describe('current match session', () => {
     const session = createCurrentMatchSession({
       setup,
       actions: completedActions,
+      startedAt: testStartedAt,
       persistence
     })
 
@@ -117,6 +130,7 @@ describe('current match session', () => {
     const session = createCurrentMatchSession({
       setup,
       actions,
+      startedAt: testStartedAt,
       persistence
     })
 
@@ -124,7 +138,8 @@ describe('current match session', () => {
 
     expect(saveCurrentMatchMock).toHaveBeenCalledWith({
       setup: continuedSetup,
-      actions
+      actions,
+      startedAt: testStartedAt
     })
     expect(snapshot.setup).toEqual(continuedSetup)
     expect(snapshot.projection).toEqual(projectMatch(continuedSetup, actions))
@@ -141,6 +156,7 @@ describe('current match session', () => {
     const session = createCurrentMatchSession({
       setup: continuedSetup,
       actions: completedActions,
+      startedAt: testStartedAt,
       persistence
     })
 
@@ -150,7 +166,8 @@ describe('current match session', () => {
     expect(snapshot).toEqual(
       createCurrentMatchSessionSnapshot({
         setup: continuedSetup,
-        actions: completedActions
+        actions: completedActions,
+        startedAt: testStartedAt
       })
     )
   })
@@ -166,6 +183,7 @@ describe('current match session', () => {
     const session = createCurrentMatchSession({
       setup: continuedSetup,
       actions: actionsWithEndlessPoint,
+      startedAt: testStartedAt,
       persistence
     })
 
@@ -173,7 +191,8 @@ describe('current match session', () => {
 
     expect(saveCurrentMatchMock).toHaveBeenCalledWith({
       setup: continuedSetup,
-      actions: completedActions
+      actions: completedActions,
+      startedAt: testStartedAt
     })
     expect(snapshot.projection).toEqual(projectMatch(continuedSetup, completedActions))
     expect(snapshot.projection.derived.status).toBe('in-progress')
@@ -199,7 +218,8 @@ describe('current match session', () => {
         return {
           schemaVersion: currentMatchSchemaVersion,
           setup,
-          actions: scorePoints('team-1')
+          actions: scorePoints('team-1'),
+          startedAt: testStartedAt
         }
       })
       .mockImplementationOnce(async () => {
@@ -208,12 +228,14 @@ describe('current match session', () => {
         return {
           schemaVersion: currentMatchSchemaVersion,
           setup,
-          actions: scorePoints('team-1', 'team-2')
+          actions: scorePoints('team-1', 'team-2'),
+          startedAt: testStartedAt
         }
       })
     const session = createCurrentMatchSession({
       setup,
       actions: [],
+      startedAt: testStartedAt,
       persistence: {
         saveCurrentMatch: saveCurrentMatchMock,
         loadCurrentMatch: vi.fn(),
@@ -229,7 +251,8 @@ describe('current match session', () => {
     expect(saveCurrentMatchMock).toHaveBeenCalledTimes(1)
     expect(saveCurrentMatchMock).toHaveBeenNthCalledWith(1, {
       setup,
-      actions: scorePoints('team-1')
+      actions: scorePoints('team-1'),
+      startedAt: testStartedAt
     })
 
     firstSave.resolve()
@@ -239,7 +262,8 @@ describe('current match session', () => {
     expect(saveCurrentMatchMock).toHaveBeenCalledTimes(2)
     expect(saveCurrentMatchMock).toHaveBeenNthCalledWith(2, {
       setup,
-      actions: scorePoints('team-1', 'team-2')
+      actions: scorePoints('team-1', 'team-2'),
+      startedAt: testStartedAt
     })
 
     secondSave.resolve()
@@ -255,10 +279,11 @@ function createPersistenceStub(): {
   persistence: CurrentMatchPersistence
   saveCurrentMatchMock: ReturnType<typeof vi.fn>
 } {
-  const saveCurrentMatchMock = vi.fn(async ({ setup, actions }) => ({
+  const saveCurrentMatchMock = vi.fn(async ({ setup, actions, startedAt }) => ({
     schemaVersion: currentMatchSchemaVersion,
     setup,
-    actions
+    actions,
+    startedAt
   }))
 
   return {

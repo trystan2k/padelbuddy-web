@@ -59,21 +59,24 @@ describe('use-input-handler browser', () => {
   let mockPersistence: CurrentMatchPersistence
 
   beforeEach(() => {
-    const setup = createTestSetup()
+    const matchSetup = createTestSetup()
+    const testStartedAt = Date.now()
     mockPersistence = {
       saveCurrentMatch: vi
         .fn<CurrentMatchPersistence['saveCurrentMatch']>()
-        .mockImplementation(async () => ({
+        .mockImplementation(async ({ setup, actions, startedAt }) => ({
           schemaVersion: currentMatchSchemaVersion,
           setup,
-          actions: []
+          actions,
+          startedAt: startedAt ?? testStartedAt
         })),
       loadCurrentMatch: vi.fn(),
       clearCurrentMatch: vi.fn(async () => undefined)
     }
     session = createCurrentMatchSession({
-      setup,
+      setup: matchSetup,
       actions: [],
+      startedAt: testStartedAt,
       persistence: mockPersistence
     })
   })

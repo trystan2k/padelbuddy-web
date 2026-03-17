@@ -23,7 +23,8 @@ describe('current match persistence helpers', () => {
     expect(record).toEqual({
       schemaVersion: currentMatchSchemaVersion,
       setup,
-      actions
+      actions,
+      startedAt: expect.any(Number)
     })
   })
 
@@ -37,7 +38,8 @@ describe('current match persistence helpers', () => {
     expect(createCurrentMatchRecord({ setup, actions: [] })).toEqual({
       schemaVersion: currentMatchSchemaVersion,
       setup,
-      actions: []
+      actions: [],
+      startedAt: expect.any(Number)
     })
   })
 
@@ -83,7 +85,7 @@ describe('current match persistence helpers', () => {
     ).toEqual({
       status: 'reset-required',
       reason: 'schema-version',
-      storedSchemaVersion: 2
+      storedSchemaVersion: 3
     })
     expect(() =>
       parseCurrentMatchRecord({
@@ -91,7 +93,7 @@ describe('current match persistence helpers', () => {
         setup,
         actions: []
       })
-    ).toThrowError('Unsupported current match schema version: 2')
+    ).toThrowError('Unsupported current match schema version: 3')
   })
 
   test('classifies malformed current-version payloads as corrupt', () => {

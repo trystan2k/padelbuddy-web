@@ -103,7 +103,7 @@ export function SetupScreen() {
       const setup = createMatchSetup(setupInput)
 
       // Persist match state to IndexedDB before navigation
-      await saveCurrentMatch({ setup, actions: [] })
+      await saveCurrentMatch({ setup, actions: [], startedAt: Date.now() })
 
       // Generate match ID and navigate
       const matchId = generateMatchId()
