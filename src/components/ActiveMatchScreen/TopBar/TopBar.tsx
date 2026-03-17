@@ -9,7 +9,7 @@ import {
   type SupportedLocale
 } from '@/lib/i18n'
 
-import { LocaleChip } from '@/components/ui'
+import { Chip } from '@/components/ui'
 
 import styles from './TopBar.module.css'
 
@@ -55,15 +55,18 @@ export function TopBar({ currentLocale }: TopBarProps) {
         <p className={styles.subtitle}>{t('match.header.subtitle')}</p>
       </div>
       <div className={styles.localeWrapper}>
-        <LocaleChip
-          flag={LOCALE_FLAGS[currentLocale]}
-          label={LOCALE_LABELS[currentLocale]}
-          onClick={handleLocaleMenuToggle}
-          active
+        <Chip
+          variant="button"
+          size="sm"
+          pressed={showLocaleMenu}
+          onPressedChange={handleLocaleMenuToggle}
           aria-expanded={showLocaleMenu}
           aria-haspopup="true"
           {...(showLocaleMenu && { 'aria-controls': 'locale-menu' })}
-        />
+        >
+          <span aria-hidden="true">{LOCALE_FLAGS[currentLocale]}</span>
+          <span>{LOCALE_LABELS[currentLocale]}</span>
+        </Chip>
         {showLocaleMenu && (
           <div
             id="locale-menu"
@@ -72,13 +75,15 @@ export function TopBar({ currentLocale }: TopBarProps) {
             aria-label={t('setup.locale.selectLanguage')}
           >
             {supportedLocales.map((locale) => (
-              <LocaleChip
+              <Chip
                 key={locale}
-                flag={LOCALE_FLAGS[locale]}
-                label={LOCALE_LABELS[locale]}
-                onClick={createLocaleClickHandler(locale)}
-                active={locale === currentLocale}
-              />
+                size="sm"
+                pressed={locale === currentLocale}
+                onPressedChange={createLocaleClickHandler(locale)}
+              >
+                <span aria-hidden="true">{LOCALE_FLAGS[locale]}</span>
+                <span>{LOCALE_LABELS[locale]}</span>
+              </Chip>
             ))}
           </div>
         )}

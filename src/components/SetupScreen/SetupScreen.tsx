@@ -17,10 +17,9 @@ import { cn } from '@/lib/utils/cn'
 import { Layout } from '@/components/Layout'
 import {
   Card,
+  Chip,
   Divider,
-  LocaleChip,
   PrimaryButton,
-  SelectableChip,
   SectionLabel,
   TextInput,
   Toggle
@@ -188,14 +187,18 @@ export function SetupScreen() {
         <p className={styles.headerSubtitle}>{t('setup.header.subtitle')}</p>
       </div>
       <div className={styles.localeWrapper}>
-        <LocaleChip
-          flag={LOCALE_FLAGS[currentLocale]}
-          label={LOCALE_LABELS[currentLocale]}
-          onClick={handleToggleLocaleMenu}
-          active
+        <Chip
+          variant="button"
+          size="sm"
+          pressed={showLocaleMenu}
+          onPressedChange={handleToggleLocaleMenu}
           aria-expanded={showLocaleMenu}
+          aria-haspopup="true"
           {...(showLocaleMenu && { 'aria-controls': 'locale-menu' })}
-        />
+        >
+          <span aria-hidden="true">{LOCALE_FLAGS[currentLocale]}</span>
+          <span>{LOCALE_LABELS[currentLocale]}</span>
+        </Chip>
         {showLocaleMenu && (
           <div
             id="locale-menu"
@@ -204,13 +207,15 @@ export function SetupScreen() {
             aria-label={t('setup.locale.selectLanguage')}
           >
             {supportedLocales.map((locale) => (
-              <LocaleChip
+              <Chip
                 key={locale}
-                flag={LOCALE_FLAGS[locale]}
-                label={LOCALE_LABELS[locale]}
-                onClick={createLocaleClickHandler(locale)}
-                active={locale === currentLocale}
-              />
+                size="sm"
+                pressed={locale === currentLocale}
+                onPressedChange={createLocaleClickHandler(locale)}
+              >
+                <span aria-hidden="true">{LOCALE_FLAGS[locale]}</span>
+                <span>{LOCALE_LABELS[locale]}</span>
+              </Chip>
             ))}
           </div>
         )}
@@ -259,9 +264,9 @@ export function SetupScreen() {
           {/* First Server */}
           <SectionLabel>{t('setup.firstServer.label')}</SectionLabel>
           <div className={styles.serverRow}>
-            <SelectableChip
-              selected={formData.initialServer === 'team-1'}
-              onClick={handleTeam1ServerSelect}
+            <Chip
+              pressed={formData.initialServer === 'team-1'}
+              onPressedChange={handleTeam1ServerSelect}
               accent="primary"
               showDot
             >
@@ -275,10 +280,10 @@ export function SetupScreen() {
               >
                 {t('setup.firstServer.team1')}
               </span>
-            </SelectableChip>
-            <SelectableChip
-              selected={formData.initialServer === 'team-2'}
-              onClick={handleTeam2ServerSelect}
+            </Chip>
+            <Chip
+              pressed={formData.initialServer === 'team-2'}
+              onPressedChange={handleTeam2ServerSelect}
               accent="secondary"
               showDot
             >
@@ -292,7 +297,7 @@ export function SetupScreen() {
               >
                 {t('setup.firstServer.team2')}
               </span>
-            </SelectableChip>
+            </Chip>
           </div>
         </div>
 
@@ -302,10 +307,10 @@ export function SetupScreen() {
           <SectionLabel>{t('setup.format.label')}</SectionLabel>
           <div className={styles.formatRow}>
             {matchFormats.map((format) => (
-              <SelectableChip
+              <Chip
                 key={format}
-                selected={formData.format === format}
-                onClick={createFormatClickHandler(format)}
+                pressed={formData.format === format}
+                onPressedChange={createFormatClickHandler(format)}
               >
                 <span
                   className={cn(
@@ -317,7 +322,7 @@ export function SetupScreen() {
                 >
                   {t(`setup.format.${formatKeys[format]}`)}
                 </span>
-              </SelectableChip>
+              </Chip>
             ))}
           </div>
 
