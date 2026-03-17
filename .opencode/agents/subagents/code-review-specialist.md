@@ -148,10 +148,10 @@ Fix: Concrete suggestion — include a code snippet if the fix is non-obvious.
 Severity levels:
 - `CRITICAL` — data loss, security vulnerability, crash in production
 - `MAJOR` — incorrect behavior, broken feature, significant performance regression
-- `MINOR` — code quality issue that will cause problems later (tech debt)
-- `NIT` — style, naming, minor readability
+- `MINOR` — code quality issue that will cause problems later (tech debt). **Must be reported and trigger a `follow-up-fix`, especially for performance or maintainability.**
+- `NIT` — style, naming, minor readability. **Must be reported and trigger a `follow-up-fix`, especially for performance or maintainability.**
 
-**Do not soften findings.** If something is wrong, say it is wrong and say why.
+**Do not soften findings.** If something is wrong, say it is wrong and say why. Even minor and nit issues must result in a `follow-up-fix` recommendation to ensure they are addressed by the orchestrator.
 
 ## Tool Usage
 
