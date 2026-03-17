@@ -1,5 +1,7 @@
 import type { ReactNode } from 'react'
 
+import { Button } from '@base-ui/react/button'
+
 import { cn } from '@/lib/utils/cn'
 
 import styles from './PrimaryButton.module.css'
@@ -20,14 +22,13 @@ export function PrimaryButton({
   className
 }: PrimaryButtonProps) {
   return (
-    <button
-      // oxlint-disable-next-line button-has-type -- Type is validated by TypeScript, defaults to 'button'
+    <Button
       type={type}
       onClick={onClick}
       disabled={disabled}
       className={cn(styles.button, className)}
     >
       {children}
-    </button>
+    </Button>
   )
 }

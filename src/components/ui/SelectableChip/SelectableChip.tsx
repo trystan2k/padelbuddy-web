@@ -1,5 +1,7 @@
 import type { ReactNode } from 'react'
 
+import { Toggle } from '@base-ui/react/toggle'
+
 import { cn } from '@/lib/utils/cn'
 
 import type { Accent } from '../types'
@@ -33,20 +35,17 @@ export function SelectableChip({
         ? styles.accentSecondary
         : undefined
 
-  const selectedClass = selected ? styles.selected : undefined
-
   return (
-    <button
-      type="button"
-      onClick={onClick}
+    <Toggle
+      pressed={selected}
+      onPressedChange={onClick}
       disabled={disabled}
-      className={cn(styles.chip, accentClass, selectedClass, className)}
-      aria-pressed={selected}
+      className={cn(styles.chip, accentClass, className)}
     >
       <span className={styles.content}>
         {showDot && accent && <span className={styles.dot} aria-hidden="true" />}
         {children}
       </span>
-    </button>
+    </Toggle>
   )
 }

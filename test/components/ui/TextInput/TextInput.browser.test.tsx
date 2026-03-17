@@ -58,6 +58,13 @@ describe('TextInput', () => {
     await expect.element(input).toBeDisabled()
   })
 
+  test('renders with data-disabled attribute when disabled', async () => {
+    const screen = await render(<TextInput value="" onChange={() => {}} disabled />)
+
+    const input = screen.getByRole('textbox')
+    await expect.element(input).toHaveAttribute('data-disabled')
+  })
+
   test('renders enabled by default', async () => {
     const screen = await render(<TextInput value="" onChange={() => {}} />)
 

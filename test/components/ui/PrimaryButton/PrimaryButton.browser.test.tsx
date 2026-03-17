@@ -32,6 +32,17 @@ describe('PrimaryButton', () => {
     await expect.element(button).toBeDisabled()
   })
 
+  test('renders with data-disabled attribute when disabled', async () => {
+    const screen = await render(
+      <PrimaryButton onClick={() => {}} disabled>
+        Disabled Button
+      </PrimaryButton>
+    )
+
+    const button = screen.getByRole('button')
+    await expect.element(button).toHaveAttribute('data-disabled')
+  })
+
   test('renders enabled by default', async () => {
     const screen = await render(<PrimaryButton onClick={() => {}}>Enabled Button</PrimaryButton>)
 

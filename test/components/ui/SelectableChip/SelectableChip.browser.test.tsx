@@ -43,6 +43,28 @@ describe('SelectableChip', () => {
     await expect.element(button).toHaveAttribute('aria-pressed', 'true')
   })
 
+  test('renders with data-pressed attribute when selected', async () => {
+    const screen = await render(
+      <SelectableChip selected={true} onClick={() => {}}>
+        Selected
+      </SelectableChip>
+    )
+
+    const button = screen.getByRole('button')
+    await expect.element(button).toHaveAttribute('data-pressed')
+  })
+
+  test('renders without data-pressed attribute when unselected', async () => {
+    const screen = await render(
+      <SelectableChip selected={false} onClick={() => {}}>
+        Unselected
+      </SelectableChip>
+    )
+
+    const button = screen.getByRole('button')
+    await expect.element(button).not.toHaveAttribute('data-pressed')
+  })
+
   test('renders with unselected state', async () => {
     const screen = await render(
       <SelectableChip selected={false} onClick={() => {}}>
@@ -63,6 +85,17 @@ describe('SelectableChip', () => {
 
     const button = screen.getByRole('button')
     await expect.element(button).toBeDisabled()
+  })
+
+  test('renders with data-disabled attribute when disabled', async () => {
+    const screen = await render(
+      <SelectableChip selected={false} onClick={() => {}} disabled>
+        Disabled
+      </SelectableChip>
+    )
+
+    const button = screen.getByRole('button')
+    await expect.element(button).toHaveAttribute('data-disabled')
   })
 
   test('renders enabled by default', async () => {

@@ -17,6 +17,20 @@ describe('LocaleChip', () => {
     await expect.element(button).toHaveAttribute('aria-pressed', 'true')
   })
 
+  test('renders with data-pressed attribute when active', async () => {
+    const screen = await render(<LocaleChip flag="🇺🇸" label="English" active />)
+
+    const button = screen.getByRole('button')
+    await expect.element(button).toHaveAttribute('data-pressed')
+  })
+
+  test('renders without data-pressed attribute when inactive', async () => {
+    const screen = await render(<LocaleChip flag="🇺🇸" label="English" />)
+
+    const button = screen.getByRole('button')
+    await expect.element(button).not.toHaveAttribute('data-pressed')
+  })
+
   test('renders with inactive state (default)', async () => {
     const screen = await render(<LocaleChip flag="🇺🇸" label="English" />)
 
@@ -75,7 +89,17 @@ describe('LocaleChip', () => {
       <LocaleChip flag="🇺🇸" label="English" active aria-expanded={false} />
     )
     const button = screen.getByRole('button')
+    // Button component doesn't have aria-pressed semantics (unlike Toggle)
     await expect.element(button).not.toHaveAttribute('aria-pressed')
+  })
+
+  test('sets data-pressed in dropdown trigger mode when active', async () => {
+    const screen = await render(
+      <LocaleChip flag="🇺🇸" label="English" active aria-expanded={false} aria-haspopup="true" />
+    )
+    const button = screen.getByRole('button')
+    // Button manually sets data-pressed for visual styling
+    await expect.element(button).toHaveAttribute('data-pressed')
   })
 
   test('sets aria-expanded correctly', async () => {
@@ -99,7 +123,7 @@ describe('LocaleChip', () => {
     const button = screen.getByRole('button')
     await expect.element(button).toHaveAttribute('aria-controls', 'locale-menu')
     await expect.element(button).toHaveAttribute('aria-expanded', 'true')
-    // aria-pressed must be suppressed when aria-expanded is present
+    // Button component doesn't add aria-pressed (unlike Toggle)
     await expect.element(button).not.toHaveAttribute('aria-pressed')
   })
 

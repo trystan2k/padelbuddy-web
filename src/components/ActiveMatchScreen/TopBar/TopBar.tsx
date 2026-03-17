@@ -61,6 +61,7 @@ export function TopBar({ currentLocale }: TopBarProps) {
           onClick={handleLocaleMenuToggle}
           active
           aria-expanded={showLocaleMenu}
+          aria-haspopup="true"
           {...(showLocaleMenu && { 'aria-controls': 'locale-menu' })}
         />
         {showLocaleMenu && (
