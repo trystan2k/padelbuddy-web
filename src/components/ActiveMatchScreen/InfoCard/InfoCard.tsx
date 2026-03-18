@@ -1,5 +1,7 @@
 import { useTranslation } from 'react-i18next'
 
+import { Card } from '@/components/ui'
+
 import styles from './InfoCard.module.css'
 
 export interface InfoCardProps {
@@ -17,7 +19,7 @@ export function InfoCard({ isGoldenPoint, isSuperTiebreak, sideSwitchPrompts }: 
   const { t } = useTranslation()
 
   return (
-    <div className={styles.container} data-testid="info-card">
+    <Card className={styles.container} testId="info-card">
       <span className={styles.label}>{t('match.info.title')}</span>
       <div className={styles.items}>
         <span className={styles.item}>
@@ -30,6 +32,6 @@ export function InfoCard({ isGoldenPoint, isSuperTiebreak, sideSwitchPrompts }: 
           {sideSwitchPrompts ? t('match.info.sideSwitchOn') : t('match.info.sideSwitchOff')}
         </span>
       </div>
-    </div>
+    </Card>
   )
 }

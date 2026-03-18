@@ -9,9 +9,6 @@
   flex-direction: column;
   gap: var(--base-space-8);
   width: var(--app-scoreboard-sets-overlay-width);
-  background-color: var(--component-card-overlay-background);
-  border: 1px solid var(--component-card-overlay-border);
-  border-radius: var(--component-card-overlay-radius);
   padding: var(--component-card-overlay-padding-y) var(--component-card-overlay-padding-x);
 }
 
