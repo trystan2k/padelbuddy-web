@@ -2,8 +2,8 @@
   "base": {
     "dimension": {
       "screen": {
-        "tablet-landscape-width": { "value": "1024px", "type": "dimension" },
-        "tablet-landscape-height": { "value": "771px", "type": "dimension" },
+        "tablet-landscape-max-width": { "value": "1024px", "type": "dimension" },
+        "tablet-landscape-min-width": { "value": "375px", "type": "dimension" },
         "header-height": { "value": "64px", "type": "dimension" },
         "body-height": { "value": "505px", "type": "dimension" },
         "footer-height": { "value": "90px", "type": "dimension" },

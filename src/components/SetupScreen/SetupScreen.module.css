@@ -1,40 +1,3 @@
-/* Header */
-.headerBrand {
-  display: flex;
-  flex-direction: column;
-  gap: var(--app-screen-header-subtitle-gap);
-}
-
-.titleRow {
-  display: flex;
-  align-items: center;
-  gap: var(--app-screen-header-title-gap);
-}
-
-.headerIcon {
-  width: var(--app-screen-header-icon-size);
-  height: var(--app-screen-header-icon-size);
-  flex-shrink: 0;
-}
-
-.appName {
-  margin: 0;
-  font-family: var(--semantic-typography-family-display);
-  font-size: var(--base-font-size-34);
-  font-weight: var(--base-font-weight-extrabold);
-  letter-spacing: var(--semantic-typography-letter-spacing-display);
-  color: var(--semantic-color-content-primary);
-}
-
-.headerSubtitle {
-  margin: 0;
-  padding-left: var(--app-screen-header-subtitle-indent);
-  font-family: var(--semantic-typography-family-body);
-  font-size: var(--semantic-typography-size-body-md);
-  font-weight: var(--semantic-typography-weight-strong);
-  color: var(--semantic-color-content-secondary);
-}
-
 /* Main content wrapper for responsive 2-column layout.
    Uses flex-column with gap for spacing between leftColumn and rightColumn
    on mobile; switches to flex-row on tablet/desktop via media query. */
@@ -118,28 +81,6 @@
   display: flex;
   flex-direction: column;
   gap: var(--component-card-rules-gap);
-}
-
-/* Locale wrapper for positioning the dropdown */
-.localeWrapper {
-  position: relative;
-}
-
-/* Locale Menu - positioned relative to wrapper */
-.localeMenu {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  margin-top: var(--base-space-8);
-  display: flex;
-  flex-direction: column;
-  gap: var(--base-space-8);
-  padding: var(--base-space-12);
-  background-color: var(--semantic-color-background-surface);
-  border: 1px solid var(--semantic-color-border-subtle);
-  border-radius: var(--base-radius-20);
-  box-shadow: 0 4px 12px var(--base-color-common-overlay-soft);
-  z-index: 100;
 }
 
 /* Responsive: two columns on tablet/desktop */

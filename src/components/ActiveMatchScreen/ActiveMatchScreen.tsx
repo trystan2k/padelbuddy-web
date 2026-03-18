@@ -10,10 +10,9 @@ import { TimeChip } from './TimeChip'
 import { RevertButton } from './RevertButton'
 import { FinishButton } from './FinishButton'
 import { SideSwitchPrompt } from './SideSwitchPrompt'
-import { TopBar } from './TopBar/TopBar'
+import { TopBar } from '@/components/ui'
 import { useMatchTimer } from './useMatchTimer'
 import { useMatchSession } from './useMatchSession'
-import { isSupportedLocale, defaultLocale, type SupportedLocale } from '@/lib/i18n'
 
 import type { MatchAction, MatchSetup, MatchTeamId } from '@/core/match'
 
@@ -38,10 +37,7 @@ export function ActiveMatchScreen({
   startedAt
 }: ActiveMatchScreenProps) {
   const navigate = useNavigate()
-  const { i18n } = useTranslation()
-  const currentLocale: SupportedLocale = isSupportedLocale(i18n.language)
-    ? i18n.language
-    : defaultLocale
+  const { t } = useTranslation()
   const [sideSwitchDismissed, setSideSwitchDismissed] = useState(false)
 
   // Session hook
@@ -126,7 +122,18 @@ export function ActiveMatchScreen({
     sideSwitch.shouldPrompt && setup.sideSwitchPrompts && !sideSwitchDismissed
 
   // Header content
-  const headerContent = useMemo(() => <TopBar currentLocale={currentLocale} />, [currentLocale])
+  const headerContent = useMemo(
+    () => (
+      <TopBar
+        iconSrc="/icon.png"
+        iconAlt=""
+        title={t('match.header.appName')}
+        subtitle={t('match.header.subtitle')}
+        showLocaleSelector
+      />
+    ),
+    [t]
+  )
 
   // Footer content
   const footerContent = useMemo(

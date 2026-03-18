@@ -4,14 +4,6 @@ import { useNavigate } from '@tanstack/react-router'
 
 import { createMatchSetup, matchFormats, type MatchFormat } from '@/core/match'
 import { saveCurrentMatch } from '@/lib/current-match'
-import {
-  changeLocale,
-  isSupportedLocale,
-  LOCALE_FLAGS,
-  LOCALE_LABELS,
-  supportedLocales,
-  type SupportedLocale
-} from '@/lib/i18n'
 import { cn } from '@/lib/utils/cn'
 
 import { Layout } from '@/components/Layout'
@@ -22,7 +14,8 @@ import {
   PrimaryButton,
   SectionLabel,
   TextInput,
-  Toggle
+  Toggle,
+  TopBar
 } from '@/components/ui'
 
 import { useSetupForm } from './useSetupForm'
@@ -43,12 +36,9 @@ const formatKeys: Record<MatchFormat, string> = {
 }
 
 export function SetupScreen() {
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
   const navigate = useNavigate()
-  const rawLocale = i18n.resolvedLanguage || i18n.language
-  const currentLocale: SupportedLocale = isSupportedLocale(rawLocale) ? rawLocale : 'en'
   const [isStarting, setIsStarting] = useState(false)
-  const [showLocaleMenu, setShowLocaleMenu] = useState(false)
 
   const {
     formData,
@@ -65,17 +55,6 @@ export function SetupScreen() {
   } = useSetupForm()
 
   const hasErrors = Object.keys(errors).length > 0
-
-  const handleLocaleChange = useCallback(
-    async (locale: SupportedLocale) => {
-      if (locale !== currentLocale) {
-        await changeLocale(locale)
-        // i18n.language will update reactively, causing a re-render
-      }
-      setShowLocaleMenu(false)
-    },
-    [currentLocale]
-  )
 
   const handleStartMatch = useCallback(async () => {
     if (!validate()) {
@@ -155,11 +134,6 @@ export function SetupScreen() {
     updateInitialServer('team-2')
   }, [updateInitialServer])
 
-  // Stable handler for locale menu toggle
-  const handleToggleLocaleMenu = useCallback(() => {
-    setShowLocaleMenu((prev) => !prev)
-  }, [])
-
   // Handler factory for format selection (returns stable handler per format)
   const createFormatClickHandler = useCallback(
     (format: MatchFormat) => () => {
@@ -168,59 +142,15 @@ export function SetupScreen() {
     [handleFormatChange]
   )
 
-  // Handler factory for locale selection (returns stable handler per locale)
-  const createLocaleClickHandler = useCallback(
-    (locale: SupportedLocale) => () => {
-      void handleLocaleChange(locale)
-    },
-    [handleLocaleChange]
-  )
-
   // Header content
   const headerContent = (
-    <>
-      <div className={styles.headerBrand}>
-        <div className={styles.titleRow}>
-          <img alt="" aria-hidden="true" className={styles.headerIcon} src="/icon.png" />
-          <h1 className={styles.appName}>{t('setup.header.appName')}</h1>
-        </div>
-        <p className={styles.headerSubtitle}>{t('setup.header.subtitle')}</p>
-      </div>
-      <div className={styles.localeWrapper}>
-        <Chip
-          variant="button"
-          size="sm"
-          pressed={showLocaleMenu}
-          onPressedChange={handleToggleLocaleMenu}
-          aria-expanded={showLocaleMenu}
-          aria-haspopup="true"
-          {...(showLocaleMenu && { 'aria-controls': 'locale-menu' })}
-        >
-          <span aria-hidden="true">{LOCALE_FLAGS[currentLocale]}</span>
-          <span>{LOCALE_LABELS[currentLocale]}</span>
-        </Chip>
-        {showLocaleMenu && (
-          <div
-            id="locale-menu"
-            className={styles.localeMenu}
-            role="group"
-            aria-label={t('setup.locale.selectLanguage')}
-          >
-            {supportedLocales.map((locale) => (
-              <Chip
-                key={locale}
-                size="sm"
-                pressed={locale === currentLocale}
-                onPressedChange={createLocaleClickHandler(locale)}
-              >
-                <span aria-hidden="true">{LOCALE_FLAGS[locale]}</span>
-                <span>{LOCALE_LABELS[locale]}</span>
-              </Chip>
-            ))}
-          </div>
-        )}
-      </div>
-    </>
+    <TopBar
+      iconSrc="/icon.png"
+      iconAlt=""
+      title={t('app.title')}
+      subtitle={t('setup.header.subtitle')}
+      showLocaleSelector
+    />
   )
 
   // Footer content

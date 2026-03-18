@@ -2,12 +2,12 @@
   "app": {
     "screen": {
       "tablet": {
-        "landscape-width": {
-          "value": "{base.dimension.screen.tablet-landscape-width}",
+        "landscape-max-width": {
+          "value": "{base.dimension.screen.tablet-landscape-max-width}",
           "type": "dimension"
         },
-        "landscape-height": {
-          "value": "{base.dimension.screen.tablet-landscape-height}",
+        "landscape-min-width": {
+          "value": "{base.dimension.screen.tablet-landscape-min-width}",
           "type": "dimension"
         }
       },
