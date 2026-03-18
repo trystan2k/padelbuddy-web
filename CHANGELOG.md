@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.9.0](https://github.com/trystan2k/padelbuddy-web/compare/v0.8.0...v0.9.0) (2026-03-18)
+
+
+### Features
+
+* add Common Layout component and refactor SetupScreen (PBW-35) ([#20](https://github.com/trystan2k/padelbuddy-web/issues/20)) ([5656a81](https://github.com/trystan2k/padelbuddy-web/commit/5656a810be72a7c179acb34afa8bd3894cc98c9f))
+* implement active match screen ([b867ec4](https://github.com/trystan2k/padelbuddy-web/commit/b867ec4fe8db7cf8f2b442d7819feccaf8b6f027))
+* Migrate UI Components to Base UI ([e2396f0](https://github.com/trystan2k/padelbuddy-web/commit/e2396f0dc519fdc4095860e68bc9680388c8a352))
+* update design tokens and layout for setup screen ([7abb2e9](https://github.com/trystan2k/padelbuddy-web/commit/7abb2e95d5a59f98bd7d63c8ef8da828db1b2fe0))
+
 ## [0.8.0](https://github.com/trystan2k/padelbuddy-web/compare/v0.7.0...v0.8.0) (2026-03-16)
 
 
