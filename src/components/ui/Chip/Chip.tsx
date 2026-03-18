@@ -73,6 +73,7 @@ export function Chip({
         role={role}
         aria-label={ariaLabel}
         data-testid={testId}
+        data-readonly=""
       >
         {showDot && <span className={styles.dot} aria-hidden="true" />}
         {children}
