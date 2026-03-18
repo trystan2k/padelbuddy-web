@@ -17,7 +17,7 @@ export interface SideSwitchPromptProps {
 /**
  * SideSwitchPrompt component - Modal that prompts players to switch sides.
  * Uses Base UI Dialog for accessibility with focus trap and keyboard handling.
- * Auto-closes after a configurable delay (default 15 seconds).
+ * Auto-closes after a configurable delay (default 10 seconds).
  */
 export function SideSwitchPrompt({
   isOpen,
