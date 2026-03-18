@@ -225,6 +225,7 @@ export function ActiveMatchScreen({
         isOpen={shouldShowSideSwitch}
         reason={sideSwitch.reason}
         onConfirm={handleSideSwitchConfirm}
+        onDismiss={handleSideSwitchConfirm}
       />
     </Layout>
   )

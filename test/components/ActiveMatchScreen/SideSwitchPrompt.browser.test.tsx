@@ -10,6 +10,7 @@ describe('SideSwitchPrompt', () => {
     isOpen: true,
     reason: 'odd-games' as const,
     onConfirm: vi.fn(),
+    onDismiss: vi.fn(),
     autoCloseDelay: 0 // Disable auto-close for tests
   }
 
@@ -53,6 +54,17 @@ describe('SideSwitchPrompt', () => {
     await screen.getByText('Switched').click()
 
     expect(handleConfirm).toHaveBeenCalledTimes(1)
+  })
+
+  test('calls onDismiss when click on backdrop', async () => {
+    const handleDismiss = vi.fn()
+    const screen = await render(<SideSwitchPrompt {...defaultProps} onDismiss={handleDismiss} />)
+
+    const backdrop = screen.getByTestId('side-switch-backdrop')
+    // Click top-left corner to avoid clicking the centered dialog
+    await backdrop.click({ position: { x: 0, y: 0 } })
+
+    expect(handleDismiss).toHaveBeenCalledTimes(1)
   })
 
   test('renders description text', async () => {

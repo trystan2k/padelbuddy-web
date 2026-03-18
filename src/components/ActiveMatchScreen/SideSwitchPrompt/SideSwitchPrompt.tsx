@@ -10,6 +10,7 @@ export interface SideSwitchPromptProps {
   isOpen: boolean
   reason: 'odd-games' | 'tiebreak-interval' | null
   onConfirm: () => void
+  onDismiss: () => void
   /** Delay in milliseconds before auto-closing. Set to 0 to disable auto-close. */
   autoCloseDelay?: number
 }
@@ -23,6 +24,7 @@ export function SideSwitchPrompt({
   isOpen,
   reason,
   onConfirm,
+  onDismiss,
   autoCloseDelay = 10000
 }: SideSwitchPromptProps) {
   const { t } = useTranslation()
@@ -52,9 +54,13 @@ export function SideSwitchPrompt({
     reason === 'odd-games' ? t('match.sideSwitch.oddGames') : t('match.sideSwitch.tiebreakInterval')
 
   return (
-    <Dialog.Root open={isOpen} onOpenChange={(open) => !open && onConfirm()}>
+    <Dialog.Root open={isOpen} onOpenChange={(open) => !open && onDismiss()}>
       <Dialog.Portal>
-        <Dialog.Backdrop render={(props) => <div {...props} className={styles.overlay} />} />
+        <Dialog.Backdrop
+          render={(props) => (
+            <div {...props} data-testid="side-switch-backdrop" className={styles.overlay} />
+          )}
+        />
 
         <Dialog.Popup
           render={(props) => (
