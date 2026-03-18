@@ -1,7 +1,7 @@
 /* oxlint-disable jsx-no-new-function-as-prop -- Test files use inline functions for readability */
 
-import { describe, expect, test, vi } from 'vitest'
-import { render } from 'vitest-browser-react'
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
+import { render, cleanup } from 'vitest-browser-react'
 
 import { SideSwitchPrompt } from '@/components/ActiveMatchScreen/SideSwitchPrompt/SideSwitchPrompt'
 
@@ -9,8 +9,18 @@ describe('SideSwitchPrompt', () => {
   const defaultProps = {
     isOpen: true,
     reason: 'odd-games' as const,
-    onConfirm: vi.fn()
+    onConfirm: vi.fn(),
+    autoCloseDelay: 0 // Disable auto-close for tests
   }
+
+  // Ensure cleanup between tests
+  afterEach(async () => {
+    await cleanup()
+  })
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
 
   test('renders when open with odd-games reason', async () => {
     const screen = await render(<SideSwitchPrompt {...defaultProps} />)
@@ -74,7 +84,9 @@ describe('SideSwitchPrompt', () => {
   test('has accessible label for title', async () => {
     const screen = await render(<SideSwitchPrompt {...defaultProps} />)
 
-    const title = screen.container.querySelector('#side-switch-title')
+    // Dialog is rendered in a portal, so we query via the dialog element
+    const dialog = screen.getByRole('dialog')
+    const title = dialog.element().querySelector('#side-switch-title')
     expect(title).toBeTruthy()
     expect(title?.textContent).toBe('Switch sides (odd games)')
   })
@@ -84,5 +96,38 @@ describe('SideSwitchPrompt', () => {
 
     const confirmButton = screen.getByText('Switched')
     await expect.element(confirmButton).toHaveAttribute('type', 'button')
+  })
+
+  test('auto-closes after specified delay', async () => {
+    vi.useFakeTimers()
+
+    const handleConfirm = vi.fn()
+    await render(
+      <SideSwitchPrompt {...defaultProps} onConfirm={handleConfirm} autoCloseDelay={5000} />
+    )
+
+    // Before delay - not called
+    expect(handleConfirm).not.toHaveBeenCalled()
+
+    // After delay - called
+    vi.advanceTimersByTime(5000)
+    expect(handleConfirm).toHaveBeenCalledTimes(1)
+
+    vi.useRealTimers()
+  })
+
+  test('does not auto-close when autoCloseDelay is 0', async () => {
+    vi.useFakeTimers()
+
+    const handleConfirm = vi.fn()
+    await render(
+      <SideSwitchPrompt {...defaultProps} onConfirm={handleConfirm} autoCloseDelay={0} />
+    )
+
+    // Even after a long time
+    vi.advanceTimersByTime(60000)
+    expect(handleConfirm).not.toHaveBeenCalled()
+
+    vi.useRealTimers()
   })
 })
