@@ -38,29 +38,3 @@
   color: var(--semantic-color-content-secondary);
   text-align: center;
 }
-
-.confirmButton {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  padding: var(--base-space-12) var(--base-space-24);
-  background-color: var(--semantic-color-action-primary);
-  border: none;
-  border-radius: var(--base-radius-28);
-  font-family: var(--semantic-typography-family-body);
-  font-size: var(--semantic-typography-size-body-md);
-  font-weight: var(--semantic-typography-weight-strong);
-  color: var(--semantic-color-content-inverse);
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.confirmButton:hover {
-  opacity: 0.9;
-}
-
-.confirmButton:focus-visible {
-  outline: 3px solid var(--semantic-color-content-primary);
-  outline-offset: 3px;
-}

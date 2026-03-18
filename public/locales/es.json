@@ -71,8 +71,8 @@
       "eyebrow": "Partido guardado encontrado",
       "title": "¿Retomar partido guardado?",
       "body": "Padel Buddy restauró un partido actual en progreso. Retomar mantiene el registro de acciones y restaura el estado de puntuación en vivo a través de replay.",
-      "resumeButton": "Retomar partido guardado",
-      "discardButton": "Descartar partido guardado"
+      "resumeButton": "Retomar",
+      "discardButton": "Descartar"
     }
   },
   "speech": {

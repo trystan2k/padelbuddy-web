@@ -1,5 +1,7 @@
 import { useTranslation } from 'react-i18next'
 
+import { Button } from '@/components/ui'
+
 import styles from './SideSwitchPrompt.module.css'
 
 export interface SideSwitchPromptProps {
@@ -36,9 +38,9 @@ export function SideSwitchPrompt({ isOpen, reason, onConfirm }: SideSwitchPrompt
           {title}
         </h2>
         <p className={styles.description}>{t('match.sideSwitch.description')}</p>
-        <button type="button" onClick={onConfirm} className={styles.confirmButton}>
+        <Button variant="solid" size="sm" accent="success" onClick={onConfirm}>
           {t('match.sideSwitch.confirm')}
-        </button>
+        </Button>
       </div>
     </div>
   )

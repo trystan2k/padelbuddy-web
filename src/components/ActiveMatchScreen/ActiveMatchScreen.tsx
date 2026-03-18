@@ -7,10 +7,8 @@ import { TeamPanel } from './TeamPanel'
 import { SetsCard } from './SetsCard'
 import { InfoCard } from './InfoCard'
 import { TimeChip } from './TimeChip'
-import { RevertButton } from './RevertButton'
-import { FinishButton } from './FinishButton'
 import { SideSwitchPrompt } from './SideSwitchPrompt'
-import { TopBar } from '@/components/ui'
+import { Button, TopBar } from '@/components/ui'
 import { useMatchTimer } from './useMatchTimer'
 import { useMatchSession } from './useMatchSession'
 
@@ -137,8 +135,18 @@ export function ActiveMatchScreen({
 
   // Footer content
   const footerContent = useMemo(
-    () => <FinishButton onClick={handleFinish} disabled={isLoading || !winner} />,
-    [handleFinish, isLoading, winner]
+    () => (
+      <Button
+        variant="outline"
+        size="lg"
+        onClick={handleFinish}
+        disabled={isLoading || !winner}
+        testId="finish-button"
+      >
+        {t('match.actions.finishMatch')}
+      </Button>
+    ),
+    [handleFinish, isLoading, winner, t]
   )
 
   return (
@@ -156,11 +164,16 @@ export function ActiveMatchScreen({
             onClick={handleScoreTeam1}
             disabled={isLoading || isMatchCompleted}
           />
-          <RevertButton
-            teamId="team-1"
+          <Button
+            variant="soft"
+            size="sm"
+            accent="primary"
             onClick={handleRevert}
             disabled={isLoading || snapshot.actions.length === 0}
-          />
+            testId="revert-button-team-1"
+          >
+            {t('match.actions.revertPoint')}
+          </Button>
         </div>
 
         {/* Center column: Sets, Info, Time */}
@@ -186,11 +199,16 @@ export function ActiveMatchScreen({
             onClick={handleScoreTeam2}
             disabled={isLoading || isMatchCompleted}
           />
-          <RevertButton
-            teamId="team-2"
+          <Button
+            variant="soft"
+            size="sm"
+            accent="secondary"
             onClick={handleRevert}
             disabled={isLoading || snapshot.actions.length === 0}
-          />
+            testId="revert-button-team-2"
+          >
+            {t('match.actions.revertPoint')}
+          </Button>
         </div>
       </div>
 

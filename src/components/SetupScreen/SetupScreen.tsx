@@ -8,10 +8,10 @@ import { cn } from '@/lib/utils/cn'
 
 import { Layout } from '@/components/Layout'
 import {
+  Button,
   Card,
   Chip,
   Divider,
-  PrimaryButton,
   SectionLabel,
   TextInput,
   Toggle,
@@ -155,9 +155,15 @@ export function SetupScreen() {
 
   // Footer content
   const footerContent = (
-    <PrimaryButton onClick={handleStartMatch} disabled={isStarting || hasErrors}>
+    <Button
+      variant="solid"
+      size="lg"
+      accent="success"
+      onClick={handleStartMatch}
+      disabled={isStarting || hasErrors}
+    >
       {t('setup.startButton')}
-    </PrimaryButton>
+    </Button>
   )
 
   return (

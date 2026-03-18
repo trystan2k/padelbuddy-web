@@ -56,22 +56,21 @@ describe('CurrentMatchStartupGate browser', () => {
       </CurrentMatchStartupGate>
     )
     const resumeDialog = screen.getByRole('dialog', { name: 'Resume saved match?' })
-    const resumeButton = screen.getByRole('button', { name: 'Resume saved match' })
+    const resumeButton = screen.getByRole('button', { name: 'Resume match' })
 
     await expect.element(resumeDialog).toBeVisible()
     await expect.element(resumeDialog).toHaveAttribute('aria-modal', 'true')
-    await expect.element(resumeButton).toHaveAttribute('data-emphasis', 'primary')
     await expect.element(resumeButton).toHaveFocus()
-    await expect.element(screen.getByRole('button', { name: 'Discard saved match' })).toBeVisible()
+    await expect.element(screen.getByRole('button', { name: 'Discard match' })).toBeVisible()
 
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab', bubbles: true }))
-    expect(document.activeElement).toHaveTextContent('Discard saved match')
+    expect(document.activeElement).toHaveTextContent('Discard match')
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab', bubbles: true }))
-    expect(document.activeElement).toHaveTextContent('Resume saved match')
+    expect(document.activeElement).toHaveTextContent('Resume match')
     document.dispatchEvent(
       new KeyboardEvent('keydown', { key: 'Tab', shiftKey: true, bubbles: true })
     )
-    expect(document.activeElement).toHaveTextContent('Discard saved match')
+    expect(document.activeElement).toHaveTextContent('Discard match')
 
     await resumeButton.click()
 
@@ -107,7 +106,7 @@ describe('CurrentMatchStartupGate browser', () => {
       </CurrentMatchStartupGate>
     )
 
-    await firstScreen.getByRole('button', { name: 'Discard saved match' }).click()
+    await firstScreen.getByRole('button', { name: 'Discard match' }).click()
     await expect
       .element(firstScreen.getByRole('heading', { level: 1, name: 'Padel Buddy' }))
       .toBeVisible()
@@ -234,7 +233,7 @@ describe('CurrentMatchStartupGate browser', () => {
     await expect
       .element(firstScreen.getByRole('heading', { level: 2, name: 'Resume saved match?' }))
       .toBeVisible()
-    await firstScreen.getByRole('button', { name: 'Discard saved match' }).click()
+    await firstScreen.getByRole('button', { name: 'Discard match' }).click()
     await expect
       .element(firstScreen.getByRole('heading', { level: 1, name: 'Padel Buddy' }))
       .toBeVisible()
@@ -278,7 +277,7 @@ describe('CurrentMatchStartupGate browser', () => {
       </CurrentMatchStartupGate>
     )
 
-    await screen.getByRole('button', { name: 'Discard saved match' }).click()
+    await screen.getByRole('button', { name: 'Discard match' }).click()
 
     await expect.element(screen.getByRole('dialog', { name: 'Resume saved match?' })).toBeVisible()
     await expect

@@ -1,0 +1,140 @@
+/* Button.module.css - Unified Button component
+   Supports variants: solid, outline, soft
+   Supports sizes: sm, lg
+   Supports accents: primary, secondary, success
+*/
+
+/* Base styles */
+.button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  transition: all 150ms ease;
+  font-family: var(--semantic-typography-family-display);
+  letter-spacing: var(--semantic-typography-letter-spacing-display);
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--semantic-color-content-inverse);
+  outline-offset: 2px;
+}
+
+.button:disabled,
+.button[data-disabled] {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* Size variants */
+.sizeLg {
+  width: 100%;
+  padding: var(--component-button-primary-padding-y) var(--component-button-primary-padding-x);
+  border-radius: var(--component-button-primary-radius);
+  font-size: var(--base-font-size-34);
+  font-weight: var(--base-font-weight-extrabold);
+}
+
+.sizeSm {
+  width: var(--app-scoreboard-serve-indicator-width);
+  padding: var(--component-button-revert-padding-y) var(--component-button-revert-padding-x);
+  border-radius: var(--component-button-revert-radius);
+  font-size: var(--base-font-size-18);
+  font-weight: var(--semantic-typography-weight-strong);
+}
+
+/* Solid variant - solid background, white text */
+.solid {
+  background-color: var(--component-button-primary-background);
+  color: var(--component-button-primary-text);
+}
+
+.solid:hover:not(:disabled) {
+  filter: brightness(1.05);
+}
+
+/* Outline variant - surface background, subtle border, primary text */
+.outline {
+  background-color: var(--semantic-color-background-surface);
+  color: var(--semantic-color-content-primary);
+  border: 1px solid var(--semantic-color-border-subtle);
+}
+
+.outline:hover:not(:disabled) {
+  background-color: var(--semantic-color-background-surface-muted);
+}
+
+.outline:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+/* Soft variant - accent-subtle background, accent-subtle border, secondary text */
+.soft {
+  color: var(--component-button-revert-text);
+}
+
+.soft:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: scale(1.02);
+}
+
+.soft:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+/* Accent colors for soft variant */
+.accentPrimary {
+  /* For solid variant - primary accent */
+  --solid-bg: var(--base-color-brand-primary);
+
+  /* For soft variant - primary accent */
+  --soft-bg: var(--base-color-brand-primary-subtle);
+  --soft-border: var(--base-color-border-critical-subtle);
+}
+
+.accentSecondary {
+  /* For solid variant - secondary accent */
+  --solid-bg: var(--base-color-brand-secondary);
+
+  /* For soft variant - secondary accent */
+  --soft-bg: var(--base-color-brand-secondary-subtle);
+  --soft-border: var(--base-color-border-critical-subtle-alt);
+}
+
+.accentSuccess {
+  /* For solid variant - success accent */
+  --solid-bg: var(--base-color-brand-success);
+
+  /* For soft variant - success accent */
+  --soft-bg: var(--base-color-brand-success-subtle);
+  --soft-border: var(--semantic-color-border-subtle);
+}
+
+/* Apply accent colors based on variant */
+.solid.accentPrimary {
+  background-color: var(--base-color-brand-primary);
+}
+
+.solid.accentSecondary {
+  background-color: var(--base-color-brand-secondary);
+}
+
+.solid.accentSuccess {
+  background-color: var(--base-color-brand-success);
+}
+
+.soft.accentPrimary {
+  background-color: var(--base-color-feedback-critical-subtle);
+  border: 1px solid var(--base-color-border-critical-subtle);
+}
+
+.soft.accentSecondary {
+  background-color: var(--base-color-feedback-critical-subtle-alt);
+  border: 1px solid var(--base-color-border-critical-subtle-alt);
+}
+
+.soft.accentSuccess {
+  background-color: var(--base-color-brand-success-subtle);
+  border: 1px solid var(--semantic-color-border-subtle);
+}
