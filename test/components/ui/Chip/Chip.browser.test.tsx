@@ -460,4 +460,136 @@ describe('Chip', () => {
     const button = screen.getByRole('button')
     await expect.element(button).toHaveAttribute('data-pressed')
   })
+
+  // ===========================================
+  // Readonly mode tests
+  // ===========================================
+  describe('readonly mode', () => {
+    test('renders as div, not button', async () => {
+      const screen = await render(<Chip readonly>Readonly Chip</Chip>)
+
+      // Should not find a button element
+      const buttons = screen.container.querySelectorAll('button')
+      expect(buttons.length).toBe(0)
+
+      // Should find a div with the chip class
+      const chip = screen.getByText('Readonly Chip')
+      await expect.element(chip).toBeInTheDocument()
+      expect(chip.element().tagName).toBe('DIV')
+    })
+
+    test('applies custom role', async () => {
+      const screen = await render(
+        <Chip readonly role="timer">
+          Timer
+        </Chip>
+      )
+
+      const timer = screen.getByRole('timer')
+      await expect.element(timer).toBeInTheDocument()
+    })
+
+    test('applies aria-label', async () => {
+      const screen = await render(
+        <Chip readonly role="timer" aria-label="Match timer: 10:30">
+          10:30
+        </Chip>
+      )
+
+      const timer = screen.getByRole('timer')
+      await expect.element(timer).toHaveAttribute('aria-label', 'Match timer: 10:30')
+    })
+
+    test('applies data-testid', async () => {
+      const screen = await render(
+        <Chip readonly testId="time-chip">
+          Time
+        </Chip>
+      )
+
+      const chip = screen.getByTestId('time-chip')
+      await expect.element(chip).toBeInTheDocument()
+    })
+
+    test('does not have interactive attributes', async () => {
+      const screen = await render(<Chip readonly>Readonly</Chip>)
+
+      const chip = screen.getByText('Readonly').element()
+      // Should not have interactive attributes
+      expect(chip.hasAttribute('aria-pressed')).toBe(false)
+      expect(chip.hasAttribute('aria-expanded')).toBe(false)
+      expect(chip.hasAttribute('disabled')).toBe(false)
+      expect(chip.getAttribute('tabindex')).toBeNull()
+    })
+
+    test('applies size class correctly', async () => {
+      const screen = await render(
+        <Chip readonly size="sm">
+          Small Readonly
+        </Chip>
+      )
+
+      const chip = screen.getByText('Small Readonly').element()
+      expect(chip.className).toMatch(/sizeSm/)
+    })
+
+    test('applies accent class correctly', async () => {
+      const screen = await render(
+        <Chip readonly accent="secondary">
+          Secondary Readonly
+        </Chip>
+      )
+
+      const chip = screen.getByText('Secondary Readonly').element()
+      expect(chip.className).toMatch(/accentSecondary/)
+    })
+
+    test('applies custom className', async () => {
+      const screen = await render(
+        <Chip readonly className="custom-class">
+          Custom
+        </Chip>
+      )
+
+      const chip = screen.getByText('Custom')
+      await expect.element(chip).toHaveClass('custom-class')
+    })
+
+    test('shows dot when showDot is true', async () => {
+      const screen = await render(
+        <Chip readonly showDot>
+          With Dot
+        </Chip>
+      )
+
+      const chip = screen.getByText('With Dot').element()
+      const dot = chip.querySelector('[aria-hidden="true"]')
+      expect(dot).toBeTruthy()
+      expect(dot?.className).toMatch(/dot/)
+    })
+
+    test('ignores interactive props', async () => {
+      // These props should be ignored in readonly mode
+      const screen = await render(
+        <Chip
+          readonly
+          pressed={true}
+          onPressedChange={() => {}}
+          disabled={true}
+          variant="button"
+          aria-expanded={true}
+        >
+          Ignored Props
+        </Chip>
+      )
+
+      const chip = screen.getByText('Ignored Props').element()
+      // Should be a div, not a button
+      expect(chip.tagName).toBe('DIV')
+      // Should not have interactive attributes
+      expect(chip.hasAttribute('aria-pressed')).toBe(false)
+      expect(chip.hasAttribute('aria-expanded')).toBe(false)
+      expect(chip.hasAttribute('disabled')).toBe(false)
+    })
+  })
 })

@@ -6,9 +6,8 @@ import { Layout } from '@/components/Layout'
 import { TeamPanel } from './TeamPanel'
 import { SetsCard } from './SetsCard'
 import { InfoCard } from './InfoCard'
-import { TimeChip } from './TimeChip'
 import { SideSwitchPrompt } from './SideSwitchPrompt'
-import { Button, TopBar } from '@/components/ui'
+import { Button, Chip, TopBar } from '@/components/ui'
 import { useMatchTimer } from './useMatchTimer'
 import { useMatchSession } from './useMatchSession'
 
@@ -26,7 +25,7 @@ export interface ActiveMatchScreenProps {
 /**
  * ActiveMatchScreen component - Main screen for an active match.
  * Follows Pencil design node ID: VSRKf
- * Composed of TeamPanel, SetsCard, InfoCard, TimeChip, RevertButton, FinishButton, SideSwitchPrompt, TopBar
+ * Composed of TeamPanel, SetsCard, InfoCard, Chip (timer), RevertButton, FinishButton, SideSwitchPrompt, TopBar
  */
 export function ActiveMatchScreen({
   matchId: _matchId,
@@ -184,7 +183,15 @@ export function ActiveMatchScreen({
             isSuperTiebreak={setup.decidingSetSuperTiebreak}
             sideSwitchPrompts={setup.sideSwitchPrompts}
           />
-          <TimeChip formattedTime={formattedTime} />
+          <Chip
+            readonly
+            size="sm"
+            role="timer"
+            aria-label={t('match.timer.label', { time: formattedTime })}
+            testId="time-chip"
+          >
+            {formattedTime}
+          </Chip>
         </div>
 
         {/* Team 2 Panel */}

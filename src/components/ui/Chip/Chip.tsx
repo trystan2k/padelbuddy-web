@@ -26,6 +26,14 @@ export interface ChipProps {
   'aria-controls'?: string
   /** For dropdown triggers: declares the popup type */
   'aria-haspopup'?: boolean | 'false' | 'true' | 'menu' | 'listbox' | 'tree' | 'grid' | 'dialog'
+  /** When true, renders as a non-interactive div instead of button */
+  readonly?: boolean
+  /** Custom role for readonly mode (e.g., "timer", "status") */
+  role?: string
+  /** Accessible label for readonly mode */
+  'aria-label'?: string
+  /** Test ID for testing */
+  testId?: string
 }
 
 export function Chip({
@@ -40,7 +48,11 @@ export function Chip({
   className,
   'aria-expanded': ariaExpanded,
   'aria-controls': ariaControls,
-  'aria-haspopup': ariaHaspopup
+  'aria-haspopup': ariaHaspopup,
+  readonly = false,
+  role,
+  'aria-label': ariaLabel,
+  testId
 }: ChipProps) {
   const sizeClass = size === 'sm' ? styles.sizeSm : styles.sizeMd
   const accentClass = accent === 'secondary' ? styles.accentSecondary : undefined
@@ -53,6 +65,21 @@ export function Chip({
     onPressedChange?.(!pressed)
   }, [onPressedChange, pressed])
 
+  // Readonly mode: render a non-interactive div
+  if (readonly) {
+    return (
+      <div
+        className={cn(styles.chip, sizeClass, accentClass, className)}
+        role={role}
+        aria-label={ariaLabel}
+        data-testid={testId}
+      >
+        {showDot && <span className={styles.dot} aria-hidden="true" />}
+        {children}
+      </div>
+    )
+  }
+
   if (effectiveVariant === 'button') {
     return (
       <Button
@@ -62,6 +89,8 @@ export function Chip({
         aria-expanded={ariaExpanded}
         aria-controls={ariaControls}
         aria-haspopup={ariaHaspopup}
+        aria-label={ariaLabel}
+        data-testid={testId}
         data-pressed={pressed || undefined}
       >
         {showDot && <span className={styles.dot} aria-hidden="true" />}
@@ -76,6 +105,8 @@ export function Chip({
       onPressedChange={onPressedChange}
       disabled={disabled}
       className={cn(styles.chip, sizeClass, accentClass, className)}
+      aria-label={ariaLabel}
+      data-testid={testId}
     >
       {showDot && <span className={styles.dot} aria-hidden="true" />}
       {children}
