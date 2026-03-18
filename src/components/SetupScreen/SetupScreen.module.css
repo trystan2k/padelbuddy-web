@@ -83,6 +83,10 @@
   gap: var(--component-card-rules-gap);
 }
 
+.startButton {
+  width: 100%;
+}
+
 /* Responsive: two columns on tablet/desktop */
 @media (width >= 48rem) {
   .mainContent {

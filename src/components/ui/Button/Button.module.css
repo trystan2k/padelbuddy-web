@@ -29,7 +29,6 @@
 
 /* Size variants */
 .sizeLg {
-  width: 100%;
   padding: var(--component-button-primary-padding-y) var(--component-button-primary-padding-x);
   border-radius: var(--component-button-primary-radius);
   font-size: var(--base-font-size-34);
@@ -37,7 +36,6 @@
 }
 
 .sizeSm {
-  width: var(--app-scoreboard-serve-indicator-width);
   padding: var(--component-button-revert-padding-y) var(--component-button-revert-padding-x);
   border-radius: var(--component-button-revert-radius);
   font-size: var(--base-font-size-18);

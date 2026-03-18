@@ -14,7 +14,7 @@ export interface ButtonProps {
   onClick: () => void
   disabled?: boolean
   type?: 'button' | 'submit' | 'reset'
-  className?: string
+  className?: string | undefined
   variant?: ButtonVariant
   size?: ButtonSize
   accent?: ButtonAccent

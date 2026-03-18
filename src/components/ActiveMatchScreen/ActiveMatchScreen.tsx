@@ -136,6 +136,7 @@ export function ActiveMatchScreen({
   const footerContent = useMemo(
     () => (
       <Button
+        className={styles.finishButton}
         variant="outline"
         size="lg"
         onClick={handleFinish}

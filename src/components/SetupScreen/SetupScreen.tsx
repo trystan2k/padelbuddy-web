@@ -156,6 +156,7 @@ export function SetupScreen() {
   // Footer content
   const footerContent = (
     <Button
+      className={styles.startButton}
       variant="solid"
       size="lg"
       accent="success"
