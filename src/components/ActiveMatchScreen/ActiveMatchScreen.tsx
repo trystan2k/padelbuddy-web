@@ -110,7 +110,7 @@ export function ActiveMatchScreen({
     await navigate({ to: '/' })
   }, [isLoading, navigate])
 
-  const handleSideSwitchConfirm = useCallback(() => {
+  const handleSideSwitchClose = useCallback(() => {
     setSideSwitchDismissed(true)
   }, [])
 
@@ -224,8 +224,7 @@ export function ActiveMatchScreen({
       <SideSwitchPrompt
         isOpen={shouldShowSideSwitch}
         reason={sideSwitch.reason}
-        onConfirm={handleSideSwitchConfirm}
-        onDismiss={handleSideSwitchConfirm}
+        onClose={handleSideSwitchClose}
       />
     </Layout>
   )

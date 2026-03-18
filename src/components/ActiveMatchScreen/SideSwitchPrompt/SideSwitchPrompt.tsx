@@ -9,8 +9,7 @@ import styles from './SideSwitchPrompt.module.css'
 export interface SideSwitchPromptProps {
   isOpen: boolean
   reason: 'odd-games' | 'tiebreak-interval' | null
-  onConfirm: () => void
-  onDismiss: () => void
+  onClose: () => void
   /** Delay in milliseconds before auto-closing. Set to 0 to disable auto-close. */
   autoCloseDelay?: number
 }
@@ -23,8 +22,7 @@ export interface SideSwitchPromptProps {
 export function SideSwitchPrompt({
   isOpen,
   reason,
-  onConfirm,
-  onDismiss,
+  onClose,
   autoCloseDelay = 10000
 }: SideSwitchPromptProps) {
   const { t } = useTranslation()
@@ -34,7 +32,7 @@ export function SideSwitchPrompt({
   useEffect(() => {
     if (isOpen && autoCloseDelay > 0) {
       timeoutRef.current = setTimeout(() => {
-        onConfirm()
+        onClose()
       }, autoCloseDelay)
     }
 
@@ -44,7 +42,7 @@ export function SideSwitchPrompt({
         timeoutRef.current = null
       }
     }
-  }, [isOpen, autoCloseDelay, onConfirm])
+  }, [isOpen, autoCloseDelay, onClose])
 
   if (!reason) {
     return null
@@ -54,7 +52,7 @@ export function SideSwitchPrompt({
     reason === 'odd-games' ? t('match.sideSwitch.oddGames') : t('match.sideSwitch.tiebreakInterval')
 
   return (
-    <Dialog.Root open={isOpen} onOpenChange={(open) => !open && onDismiss()}>
+    <Dialog.Root open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <Dialog.Portal>
         <Dialog.Backdrop
           render={(props) => (
@@ -86,7 +84,7 @@ export function SideSwitchPrompt({
                 )}
               />
 
-              <Button variant="solid" size="sm" accent="success" onClick={onConfirm}>
+              <Button variant="solid" size="sm" accent="success" onClick={onClose}>
                 {t('match.sideSwitch.confirm')}
               </Button>
             </div>

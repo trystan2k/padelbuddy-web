@@ -9,8 +9,7 @@ describe('SideSwitchPrompt', () => {
   const defaultProps = {
     isOpen: true,
     reason: 'odd-games' as const,
-    onConfirm: vi.fn(),
-    onDismiss: vi.fn(),
+    onClose: vi.fn(),
     autoCloseDelay: 0 // Disable auto-close for tests
   }
 
@@ -47,24 +46,24 @@ describe('SideSwitchPrompt', () => {
     expect(screen.container.innerHTML).toBe('')
   })
 
-  test('calls onConfirm when confirm button clicked', async () => {
-    const handleConfirm = vi.fn()
-    const screen = await render(<SideSwitchPrompt {...defaultProps} onConfirm={handleConfirm} />)
+  test('calls onClose when confirm button clicked', async () => {
+    const handleClose = vi.fn()
+    const screen = await render(<SideSwitchPrompt {...defaultProps} onClose={handleClose} />)
 
     await screen.getByText('Switched').click()
 
-    expect(handleConfirm).toHaveBeenCalledTimes(1)
+    expect(handleClose).toHaveBeenCalledTimes(1)
   })
 
-  test('calls onDismiss when click on backdrop', async () => {
-    const handleDismiss = vi.fn()
-    const screen = await render(<SideSwitchPrompt {...defaultProps} onDismiss={handleDismiss} />)
+  test('calls onClose when click on backdrop', async () => {
+    const handleClose = vi.fn()
+    const screen = await render(<SideSwitchPrompt {...defaultProps} onClose={handleClose} />)
 
     const backdrop = screen.getByTestId('side-switch-backdrop')
     // Click top-left corner to avoid clicking the centered dialog
     await backdrop.click({ position: { x: 0, y: 0 } })
 
-    expect(handleDismiss).toHaveBeenCalledTimes(1)
+    expect(handleClose).toHaveBeenCalledTimes(1)
   })
 
   test('renders description text', async () => {
@@ -113,17 +112,15 @@ describe('SideSwitchPrompt', () => {
   test('auto-closes after specified delay', async () => {
     vi.useFakeTimers()
 
-    const handleConfirm = vi.fn()
-    await render(
-      <SideSwitchPrompt {...defaultProps} onConfirm={handleConfirm} autoCloseDelay={5000} />
-    )
+    const handleClose = vi.fn()
+    await render(<SideSwitchPrompt {...defaultProps} onClose={handleClose} autoCloseDelay={5000} />)
 
     // Before delay - not called
-    expect(handleConfirm).not.toHaveBeenCalled()
+    expect(handleClose).not.toHaveBeenCalled()
 
     // After delay - called
     vi.advanceTimersByTime(5000)
-    expect(handleConfirm).toHaveBeenCalledTimes(1)
+    expect(handleClose).toHaveBeenCalledTimes(1)
 
     vi.useRealTimers()
   })
@@ -131,14 +128,12 @@ describe('SideSwitchPrompt', () => {
   test('does not auto-close when autoCloseDelay is 0', async () => {
     vi.useFakeTimers()
 
-    const handleConfirm = vi.fn()
-    await render(
-      <SideSwitchPrompt {...defaultProps} onConfirm={handleConfirm} autoCloseDelay={0} />
-    )
+    const handleClose = vi.fn()
+    await render(<SideSwitchPrompt {...defaultProps} onClose={handleClose} autoCloseDelay={0} />)
 
     // Even after a long time
     vi.advanceTimersByTime(60000)
-    expect(handleConfirm).not.toHaveBeenCalled()
+    expect(handleClose).not.toHaveBeenCalled()
 
     vi.useRealTimers()
   })
