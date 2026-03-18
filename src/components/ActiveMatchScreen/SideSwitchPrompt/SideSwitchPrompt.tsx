@@ -44,7 +44,7 @@ export function SideSwitchPrompt({
     }
   }, [isOpen, autoCloseDelay, onClose])
 
-  if (!reason) {
+  if (!reason || !isOpen) {
     return null
   }
 
