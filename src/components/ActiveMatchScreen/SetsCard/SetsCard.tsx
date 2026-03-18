@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 
 import type { MatchSetState } from '@/core/match'
+import { Card } from '@/components/ui'
 
 import styles from './SetsCard.module.css'
 
@@ -18,7 +19,7 @@ export function SetsCard({ sets, currentSetIndex }: SetsCardProps) {
   const { t } = useTranslation()
 
   return (
-    <div className={styles.container} data-testid="sets-card">
+    <Card className={styles.container} testId="sets-card">
       <span className={styles.label}>{t('match.sets.label')}</span>
       <div className={styles.setsGrid}>
         {sets.map((set, index) => {
@@ -54,6 +55,6 @@ export function SetsCard({ sets, currentSetIndex }: SetsCardProps) {
           )
         })}
       </div>
-    </div>
+    </Card>
   )
 }

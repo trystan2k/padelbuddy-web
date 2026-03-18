@@ -1,7 +1,7 @@
-/* TopBar - Following Pencil design node ID: eFLga
-   Height: 64px
-   Left: matchMeta (app icon + title + subtitle)
-   Right: locale chip
+/* TopBar - Reusable header component
+   Height: var(--app-screen-shell-header-height)
+   Left: branding content (icon, title, subtitle)
+   Right: locale selector (optional)
 */
 
 .container {
@@ -12,8 +12,8 @@
   height: var(--app-screen-shell-header-height);
 }
 
-/* Match meta - left side */
-.matchMeta {
+/* Branding - left side */
+.branding {
   display: flex;
   flex-direction: column;
   gap: var(--base-space-2);
@@ -22,12 +22,12 @@
 .titleRow {
   display: flex;
   align-items: center;
-  gap: var(--base-space-10);
+  gap: var(--app-screen-header-title-gap);
 }
 
 .icon {
-  width: 32px;
-  height: 32px;
+  width: var(--app-screen-header-icon-size);
+  height: var(--app-screen-header-icon-size);
   border-radius: var(--base-radius-8);
   object-fit: contain;
 }
@@ -35,27 +35,29 @@
 .appName {
   margin: 0;
   font-family: var(--semantic-typography-family-display);
-  font-size: var(--base-font-size-20);
-  font-weight: var(--semantic-typography-weight-display);
+  font-size: var(--base-font-size-34);
+  font-weight: var(--semantic-typography-weight-heading);
   color: var(--semantic-color-content-primary);
-  letter-spacing: var(--base-font-letter-spacing-tight);
+  letter-spacing: var(--base-font-letter-spacing-tight-xl);
 }
 
 .subtitle {
   margin: 0;
+  margin-left: var(--app-screen-header-subtitle-indent);
   font-family: var(--semantic-typography-family-body);
-  font-size: var(--base-font-size-13);
+  font-size: var(--base-font-size-16);
   font-weight: var(--semantic-typography-weight-strong);
   color: var(--semantic-color-content-secondary);
   letter-spacing: var(--base-font-letter-spacing-wide-sm);
-  text-transform: uppercase;
 }
 
 /* Locale wrapper - right side */
 .localeWrapper {
   position: relative;
+  margin-left: auto;
 }
 
+/* Locale Menu - positioned relative to wrapper */
 .localeMenu {
   position: absolute;
   top: calc(100% + var(--base-space-8));
@@ -71,14 +73,11 @@
   z-index: 100;
 }
 
-/* Responsive adjustments */
-@media (width <= 767px) {
-  .appName {
-    font-size: var(--base-font-size-18);
-  }
-
-  .icon {
-    width: 28px;
-    height: 28px;
-  }
+.localeLabel {
+  margin: 0;
+  font-family: var(--semantic-typography-family-body);
+  font-size: var(--base-font-size-15);
+  font-weight: var(--semantic-typography-weight-strong);
+  letter-spacing: var(--base-font-letter-spacing-wide-sm);
+  color: var(--semantic-color-content-primary);
 }

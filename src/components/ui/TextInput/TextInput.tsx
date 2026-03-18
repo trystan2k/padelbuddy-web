@@ -1,5 +1,6 @@
 import { useCallback } from 'react'
-import type { ChangeEvent } from 'react'
+
+import { Input } from '@base-ui/react/input'
 
 import { cn } from '@/lib/utils/cn'
 
@@ -38,19 +39,14 @@ export function TextInput({
         ? styles.accentSecondary
         : undefined
 
-  const handleChange = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      onChange(e.target.value)
-    },
-    [onChange]
-  )
+  const handleValueChange = useCallback((newValue: string) => onChange(newValue), [onChange])
 
   return (
-    <input
+    <Input
       type="text"
       id={id}
       value={value}
-      onChange={handleChange}
+      onValueChange={handleValueChange}
       placeholder={placeholder}
       maxLength={maxLength}
       disabled={disabled}

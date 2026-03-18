@@ -118,6 +118,12 @@
       "rules": {
         "react-perf/jsx-no-jsx-as-prop": "off"
       }
+    },
+    {
+      "files": ["src/components/ActiveMatchScreen/SideSwitchPrompt/SideSwitchPrompt.tsx"],
+      "rules": {
+        "react-perf/jsx-no-new-function-as-prop": "off"
+      }
     }
   ]
 }

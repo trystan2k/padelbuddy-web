@@ -6,14 +6,10 @@ import { Layout } from '@/components/Layout'
 import { TeamPanel } from './TeamPanel'
 import { SetsCard } from './SetsCard'
 import { InfoCard } from './InfoCard'
-import { TimeChip } from './TimeChip'
-import { RevertButton } from './RevertButton'
-import { FinishButton } from './FinishButton'
 import { SideSwitchPrompt } from './SideSwitchPrompt'
-import { TopBar } from './TopBar/TopBar'
+import { Button, Chip, TopBar } from '@/components/ui'
 import { useMatchTimer } from './useMatchTimer'
 import { useMatchSession } from './useMatchSession'
-import { isSupportedLocale, defaultLocale, type SupportedLocale } from '@/lib/i18n'
 
 import type { MatchAction, MatchSetup, MatchTeamId } from '@/core/match'
 
@@ -29,7 +25,7 @@ export interface ActiveMatchScreenProps {
 /**
  * ActiveMatchScreen component - Main screen for an active match.
  * Follows Pencil design node ID: VSRKf
- * Composed of TeamPanel, SetsCard, InfoCard, TimeChip, RevertButton, FinishButton, SideSwitchPrompt, TopBar
+ * Composed of TeamPanel, SetsCard, InfoCard, Chip (timer), Button-based match controls, SideSwitchPrompt, TopBar
  */
 export function ActiveMatchScreen({
   matchId: _matchId,
@@ -38,10 +34,7 @@ export function ActiveMatchScreen({
   startedAt
 }: ActiveMatchScreenProps) {
   const navigate = useNavigate()
-  const { i18n } = useTranslation()
-  const currentLocale: SupportedLocale = isSupportedLocale(i18n.language)
-    ? i18n.language
-    : defaultLocale
+  const { t } = useTranslation()
   const [sideSwitchDismissed, setSideSwitchDismissed] = useState(false)
 
   // Session hook
@@ -117,7 +110,7 @@ export function ActiveMatchScreen({
     await navigate({ to: '/' })
   }, [isLoading, navigate])
 
-  const handleSideSwitchConfirm = useCallback(() => {
+  const handleSideSwitchClose = useCallback(() => {
     setSideSwitchDismissed(true)
   }, [])
 
@@ -126,12 +119,34 @@ export function ActiveMatchScreen({
     sideSwitch.shouldPrompt && setup.sideSwitchPrompts && !sideSwitchDismissed
 
   // Header content
-  const headerContent = useMemo(() => <TopBar currentLocale={currentLocale} />, [currentLocale])
+  const headerContent = useMemo(
+    () => (
+      <TopBar
+        iconSrc="/icon.png"
+        iconAlt=""
+        title={t('match.header.appName')}
+        subtitle={t('match.header.subtitle')}
+        showLocaleSelector
+      />
+    ),
+    [t]
+  )
 
   // Footer content
   const footerContent = useMemo(
-    () => <FinishButton onClick={handleFinish} disabled={isLoading || !winner} />,
-    [handleFinish, isLoading, winner]
+    () => (
+      <Button
+        className={styles.finishButton}
+        variant="outline"
+        size="lg"
+        onClick={handleFinish}
+        disabled={isLoading || !winner}
+        testId="finish-button"
+      >
+        {t('match.actions.finishMatch')}
+      </Button>
+    ),
+    [handleFinish, isLoading, winner, t]
   )
 
   return (
@@ -149,11 +164,16 @@ export function ActiveMatchScreen({
             onClick={handleScoreTeam1}
             disabled={isLoading || isMatchCompleted}
           />
-          <RevertButton
-            teamId="team-1"
+          <Button
+            variant="soft"
+            size="sm"
+            accent="primary"
             onClick={handleRevert}
             disabled={isLoading || snapshot.actions.length === 0}
-          />
+            testId="revert-button-team-1"
+          >
+            {t('match.actions.revertPoint')}
+          </Button>
         </div>
 
         {/* Center column: Sets, Info, Time */}
@@ -164,7 +184,15 @@ export function ActiveMatchScreen({
             isSuperTiebreak={setup.decidingSetSuperTiebreak}
             sideSwitchPrompts={setup.sideSwitchPrompts}
           />
-          <TimeChip formattedTime={formattedTime} />
+          <Chip
+            readonly
+            size="sm"
+            role="timer"
+            aria-label={t('match.timer.label', { time: formattedTime })}
+            testId="time-chip"
+          >
+            {formattedTime}
+          </Chip>
         </div>
 
         {/* Team 2 Panel */}
@@ -179,11 +207,16 @@ export function ActiveMatchScreen({
             onClick={handleScoreTeam2}
             disabled={isLoading || isMatchCompleted}
           />
-          <RevertButton
-            teamId="team-2"
+          <Button
+            variant="soft"
+            size="sm"
+            accent="secondary"
             onClick={handleRevert}
             disabled={isLoading || snapshot.actions.length === 0}
-          />
+            testId="revert-button-team-2"
+          >
+            {t('match.actions.revertPoint')}
+          </Button>
         </div>
       </div>
 
@@ -191,7 +224,7 @@ export function ActiveMatchScreen({
       <SideSwitchPrompt
         isOpen={shouldShowSideSwitch}
         reason={sideSwitch.reason}
-        onConfirm={handleSideSwitchConfirm}
+        onClose={handleSideSwitchClose}
       />
     </Layout>
   )

@@ -33,7 +33,8 @@
   flex-direction: column;
   gap: var(--app-screen-shell-section-gap);
   padding: var(--app-screen-shell-padding-y) var(--app-screen-shell-padding-x);
-  max-width: var(--app-screen-tablet-landscape-width);
+  max-width: var(--app-screen-tablet-landscape-max-width);
+  min-width: var(--app-screen-tablet-landscape-min-width);
   width: 100%;
   margin: 0 auto;
 }

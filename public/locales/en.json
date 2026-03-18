@@ -71,8 +71,8 @@
       "eyebrow": "Saved match found",
       "title": "Resume saved match?",
       "body": "Padel Buddy restored an in-progress current match. Resume keeps the action log and restores the live score state through replay.",
-      "resumeButton": "Resume saved match",
-      "discardButton": "Discard saved match"
+      "resumeButton": "Resume match",
+      "discardButton": "Discard match"
     }
   },
   "speech": {

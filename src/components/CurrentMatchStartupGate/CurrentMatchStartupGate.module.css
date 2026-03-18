@@ -77,52 +77,6 @@
   font-size: 0.95rem;
 }
 
-.primaryButton,
-.secondaryButton,
-.noticeButton {
-  min-height: 3rem;
-  padding: 0.8rem 1.2rem;
-  border-radius: 999px;
-  border: 0;
-  font: inherit;
-  font-weight: 600;
-  cursor: pointer;
-  transition:
-    transform 160ms ease,
-    box-shadow 160ms ease,
-    background-color 160ms ease,
-    color 160ms ease;
-}
-
-.primaryButton {
-  justify-self: start;
-  background: linear-gradient(
-    135deg,
-    color-mix(
-      in srgb,
-      var(--semantic-color-content-accent-secondary) 72%,
-      var(--semantic-color-content-primary)
-    ),
-    var(--semantic-color-content-accent-secondary)
-  );
-  color: var(--semantic-color-content-inverse);
-  box-shadow: 0 1rem 2.5rem
-    color-mix(in srgb, var(--semantic-color-content-accent-secondary) 24%, transparent);
-}
-
-.secondaryButton,
-.noticeButton {
-  background: var(--semantic-color-background-surface);
-  color: var(--semantic-color-content-primary);
-  border: 1px solid var(--semantic-color-border-subtle);
-}
-
-.primaryButton:hover,
-.secondaryButton:hover,
-.noticeButton:hover {
-  transform: translateY(-1px);
-}
-
 .notice {
   width: min(72rem, calc(100% - 2rem));
   margin: 1rem auto 0;
@@ -160,6 +114,6 @@
 
   .promptActions {
     grid-template-columns: repeat(2, minmax(0, auto));
-    justify-content: start;
+    justify-content: center;
   }
 }

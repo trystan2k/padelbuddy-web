@@ -1,3 +1,5 @@
+import { Separator } from '@base-ui/react/separator'
+
 import { cn } from '@/lib/utils/cn'
 
 import styles from './Divider.module.css'
@@ -7,5 +9,5 @@ export interface DividerProps {
 }
 
 export function Divider({ className }: DividerProps) {
-  return <div className={cn(styles.divider, className)} role="separator" />
+  return <Separator orientation="horizontal" className={cn(styles.divider, className)} />
 }

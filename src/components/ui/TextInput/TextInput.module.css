@@ -16,7 +16,8 @@
   color: var(--semantic-color-content-secondary);
 }
 
-.input:disabled {
+.input:disabled,
+.input[data-disabled] {
   cursor: not-allowed;
   opacity: 0.6;
 }

@@ -38,6 +38,10 @@
   padding-top: var(--base-space-16);
 }
 
+.finishButton {
+  width: 100%;
+}
+
 /* Responsive adjustments */
 @media (width <= 1023px) {
   .scorePanel {

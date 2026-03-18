@@ -30,4 +30,11 @@ describe('Divider', () => {
     const divider = screen.getByRole('separator')
     await expect.element(divider).toHaveClass('my-extra-class')
   })
+
+  test('renders with horizontal orientation (data-orientation)', async () => {
+    const screen = await render(<Divider />)
+
+    const divider = screen.getByRole('separator')
+    await expect.element(divider).toHaveAttribute('data-orientation', 'horizontal')
+  })
 })

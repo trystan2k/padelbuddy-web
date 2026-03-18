@@ -71,8 +71,8 @@
       "eyebrow": "Partida salva encontrada",
       "title": "Retomar partida salva?",
       "body": "Padel Buddy restaurou uma partida atual em andamento. Retomar mantém o registro de ações e restaura o estado da pontuação ao vivo através de replay.",
-      "resumeButton": "Retomar partida salva",
-      "discardButton": "Descartar partida salva"
+      "resumeButton": "Retomar",
+      "discardButton": "Descartar"
     }
   },
   "speech": {

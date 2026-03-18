@@ -11,9 +11,10 @@ export interface CardProps {
   children: ReactNode
   className?: string | undefined
   accent?: CardAccent
+  testId?: string
 }
 
-export function Card({ children, className, accent }: CardProps) {
+export function Card({ children, className, accent, testId }: CardProps) {
   const accentClass =
     accent === 'primary'
       ? styles.accentPrimary
@@ -21,5 +22,9 @@ export function Card({ children, className, accent }: CardProps) {
         ? styles.accentSecondary
         : undefined
 
-  return <div className={cn(styles.card, accentClass, className)}>{children}</div>
+  return (
+    <div className={cn(styles.card, accentClass, className)} data-testid={testId}>
+      {children}
+    </div>
+  )
 }

@@ -98,8 +98,8 @@ Follow these steps:
    - test adequacy
    - validation coverage
    - migration or rollout safety
-9. Classify findings by severity (`critical`, `major`, `minor`, `nit`) and provide concrete remediation suggestions.
-10. Return the structured summary and a recommended action for the requester.
+9. Classify findings by severity (`critical`, `major`, `minor`, `nit`) and provide concrete remediation suggestions. **CRITICAL:** You must explicitly include `minor` and `nit` issues in your report, especially those regarding performance or maintainability.
+10. Return the structured summary and a recommended action for the requester. If `minor` or `nit` issues (especially performance/maintainability) are found, the recommended action must be `follow-up-fix` to ensure they are addressed.
 
 ## Tool Usage Rules
 

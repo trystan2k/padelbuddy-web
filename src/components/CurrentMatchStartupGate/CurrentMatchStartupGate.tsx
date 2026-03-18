@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { Button } from '@/components/ui'
 import {
   clearCurrentMatch,
   hydrateCurrentMatchStartup,
@@ -191,14 +192,15 @@ export function CurrentMatchStartupGate({ children, persistence }: CurrentMatchS
               {clearErrorMessage}
             </p>
           ) : null}
-          <button
-            className={styles.primaryButton}
+          <Button
+            variant="solid"
+            size="sm"
+            accent="secondary"
             disabled={isClearing}
             onClick={handleClearSavedMatch}
-            type="button"
           >
             {t('startupGate.corrupt.resetButton')}
-          </button>
+          </Button>
         </section>
       </main>
     )
@@ -212,9 +214,9 @@ export function CurrentMatchStartupGate({ children, persistence }: CurrentMatchS
             <p className={styles.noticeTitle}>{t('startupGate.notice.title')}</p>
             <p className={styles.noticeText}>{t('startupGate.notice.body')}</p>
           </div>
-          <button className={styles.noticeButton} onClick={dismissNotice} type="button">
+          <Button variant="outline" size="sm" onClick={dismissNotice}>
             {t('startupGate.notice.dismiss')}
-          </button>
+          </Button>
         </aside>
       ) : null}
 
@@ -243,24 +245,24 @@ export function CurrentMatchStartupGate({ children, persistence }: CurrentMatchS
               </p>
             ) : null}
             <div className={styles.promptActions}>
-              <button
-                className={styles.primaryButton}
-                data-emphasis="primary"
+              <Button
+                variant="solid"
+                size="sm"
+                accent="secondary"
                 disabled={isClearing}
                 onClick={resumeSavedMatch}
                 ref={resumeButtonRef}
-                type="button"
               >
                 {t('startupGate.resume.resumeButton')}
-              </button>
-              <button
-                className={styles.secondaryButton}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
                 disabled={isClearing}
                 onClick={handleClearSavedMatch}
-                type="button"
               >
                 {t('startupGate.resume.discardButton')}
-              </button>
+              </Button>
             </div>
           </section>
         </div>
