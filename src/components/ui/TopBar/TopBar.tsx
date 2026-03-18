@@ -104,7 +104,7 @@ export function TopBar({
             {...(showLocaleMenu && { 'aria-controls': 'locale-menu' })}
           >
             <span aria-hidden="true">{LOCALE_FLAGS[currentLocale]}</span>
-            <span>{LOCALE_LABELS[currentLocale]}</span>
+            <span className={styles.localeLabel}>{LOCALE_LABELS[currentLocale]}</span>
           </Chip>
           {showLocaleMenu && (
             <div
@@ -121,7 +121,7 @@ export function TopBar({
                   onPressedChange={createLocaleClickHandler(locale)}
                 >
                   <span aria-hidden="true">{LOCALE_FLAGS[locale]}</span>
-                  <span>{LOCALE_LABELS[locale]}</span>
+                  <span className={styles.localeLabel}>{LOCALE_LABELS[locale]}</span>
                 </Chip>
               ))}
             </div>

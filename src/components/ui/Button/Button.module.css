@@ -81,34 +81,6 @@
   transform: scale(0.98);
 }
 
-/* Accent colors for soft variant */
-.accentPrimary {
-  /* For solid variant - primary accent */
-  --solid-bg: var(--base-color-brand-primary);
-
-  /* For soft variant - primary accent */
-  --soft-bg: var(--base-color-brand-primary-subtle);
-  --soft-border: var(--base-color-border-critical-subtle);
-}
-
-.accentSecondary {
-  /* For solid variant - secondary accent */
-  --solid-bg: var(--base-color-brand-secondary);
-
-  /* For soft variant - secondary accent */
-  --soft-bg: var(--base-color-brand-secondary-subtle);
-  --soft-border: var(--base-color-border-critical-subtle-alt);
-}
-
-.accentSuccess {
-  /* For solid variant - success accent */
-  --solid-bg: var(--base-color-brand-success);
-
-  /* For soft variant - success accent */
-  --soft-bg: var(--base-color-brand-success-subtle);
-  --soft-border: var(--semantic-color-border-subtle);
-}
-
 /* Apply accent colors based on variant */
 .solid.accentPrimary {
   background-color: var(--base-color-brand-primary);

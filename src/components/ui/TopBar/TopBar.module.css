@@ -72,3 +72,12 @@
   box-shadow: var(--semantic-shadow-subtle);
   z-index: 100;
 }
+
+.localeLabel {
+  margin: 0;
+  font-family: var(--semantic-typography-family-body);
+  font-size: var(--base-font-size-15);
+  font-weight: var(--semantic-typography-weight-strong);
+  letter-spacing: var(--base-font-letter-spacing-wide-sm);
+  color: var(--semantic-color-content-primary);
+}

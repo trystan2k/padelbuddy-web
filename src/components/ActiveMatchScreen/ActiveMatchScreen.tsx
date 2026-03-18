@@ -25,7 +25,7 @@ export interface ActiveMatchScreenProps {
 /**
  * ActiveMatchScreen component - Main screen for an active match.
  * Follows Pencil design node ID: VSRKf
- * Composed of TeamPanel, SetsCard, InfoCard, Chip (timer), RevertButton, FinishButton, SideSwitchPrompt, TopBar
+ * Composed of TeamPanel, SetsCard, InfoCard, Chip (timer), Button-based match controls, SideSwitchPrompt, TopBar
  */
 export function ActiveMatchScreen({
   matchId: _matchId,

@@ -70,13 +70,3 @@
 .accentSecondary .dot {
   background-color: var(--semantic-color-content-accent-secondary);
 }
-
-/* Label text styling for sizeSm chips (locale-style) */
-.sizeSm :not([aria-hidden]) {
-  margin: 0;
-  font-family: var(--semantic-typography-family-body);
-  font-size: var(--base-font-size-15);
-  font-weight: var(--semantic-typography-weight-strong);
-  letter-spacing: var(--base-font-letter-spacing-wide-sm);
-  color: var(--semantic-color-content-primary);
-}
