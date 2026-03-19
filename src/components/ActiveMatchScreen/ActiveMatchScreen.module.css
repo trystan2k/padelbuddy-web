@@ -3,12 +3,6 @@
 */
 
 .scorePanel {
-  --active-match-team-panel-offset-top: 56px; /* Pencil VSRKf team panel Y offset */
-  --active-match-sets-overlay-top: 15px; /* Pencil VSRKf sets card Y offset */
-  --active-match-timer-overlay-top: 237px; /* Pencil VSRKf timer chip Y offset */
-  --active-match-info-overlay-top: 387px; /* Pencil VSRKf info card Y offset */
-  --active-match-revert-button-width: 220px; /* Pencil VSRKf revert button width */
-
   position: relative;
   display: flex;
   justify-content: space-between;
@@ -23,7 +17,7 @@
   gap: var(--base-space-24);
   align-items: center;
   width: var(--app-scoreboard-team-panel-width);
-  padding-top: var(--active-match-team-panel-offset-top);
+  padding-top: var(--base-space-56);
 }
 
 .team2Panel {
@@ -32,7 +26,7 @@
   gap: var(--base-space-24);
   align-items: center;
   width: var(--app-scoreboard-team-panel-width);
-  padding-top: var(--active-match-team-panel-offset-top);
+  padding-top: var(--base-space-56);
 }
 
 .finishButton {
@@ -40,7 +34,7 @@
 }
 
 .revertButton {
-  width: var(--active-match-revert-button-width);
+  width: calc(var(--base-space-8) * 28);
 }
 
 .setsOverlay,
@@ -53,11 +47,11 @@
 }
 
 .setsOverlay {
-  top: var(--active-match-sets-overlay-top);
+  top: var(--base-space-16);
 }
 
 .timerChip {
-  top: var(--active-match-timer-overlay-top);
+  top: calc(var(--base-space-8) * 30);
   pointer-events: none;
   font-family: var(--semantic-typography-family-display);
   font-size: var(--semantic-typography-size-title-sm);
@@ -66,7 +60,7 @@
 }
 
 .infoOverlay {
-  top: var(--active-match-info-overlay-top);
+  top: calc(var(--base-space-8) * 48);
 }
 
 /* Responsive adjustments */

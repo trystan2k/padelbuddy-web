@@ -1,4 +1,4 @@
-import { useCallback, useId, type KeyboardEvent } from 'react'
+import { useId } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { cn } from '@/lib/utils/cn'
@@ -39,23 +39,11 @@ export function TeamPanel({
   const isTeam1 = teamId === 'team-1'
   const panelClass = isTeam1 ? styles.team1Panel : styles.team2Panel
 
-  const handleKeyDown = useCallback(
-    (event: KeyboardEvent<HTMLButtonElement>) => {
-      if (disabled) return
-      if (event.key === 'Enter' || event.key === ' ') {
-        event.preventDefault()
-        onClick()
-      }
-    },
-    [disabled, onClick]
-  )
-
   return (
     <button
       type="button"
       className={cn(styles.panel, panelClass)}
       onClick={disabled ? undefined : onClick}
-      onKeyDown={handleKeyDown}
       disabled={disabled}
       aria-label={t('match.scorePointFor', { teamName })}
       {...(isServing ? { 'aria-describedby': servingStatusId } : {})}

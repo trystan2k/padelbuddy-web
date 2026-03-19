@@ -120,7 +120,13 @@ describe('TeamPanel', () => {
     expect(serveBar?.getAttribute('aria-hidden')).toBe('true')
 
     const button = screen.getByRole('button')
-    await expect.element(button).toHaveAttribute('aria-describedby')
+    const describedById = button.element().getAttribute('aria-describedby')
+    expect(describedById).toBeTruthy()
+    const describedElement = describedById
+      ? screen.container.querySelector(`#${describedById}`)
+      : null
+    expect(describedElement).toBeTruthy()
+    expect(describedElement?.textContent).toContain('Serving')
   })
 
   test('golden point chip has accessible label when active', async () => {
