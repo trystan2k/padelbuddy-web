@@ -10,6 +10,9 @@
   gap: var(--base-space-8);
   width: var(--app-scoreboard-court-overlay-width);
   padding: var(--component-card-overlay-padding-y) var(--component-card-overlay-padding-x);
+  border: 1px solid var(--component-card-overlay-border);
+  border-radius: var(--component-card-overlay-radius);
+  background-color: var(--component-card-overlay-background);
 }
 
 .label {

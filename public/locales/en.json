@@ -161,8 +161,8 @@
     },
     "sets": {
       "label": "Sets",
-      "winner": "Set winner",
-      "current": "Current set"
+      "setLabel": "Set {{number}}",
+      "currentShort": "Current"
     },
     "timer": {
       "label": "Match time: {{time}}"

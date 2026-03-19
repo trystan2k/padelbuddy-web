@@ -23,8 +23,10 @@ export function SetsCard({ sets, currentSetIndex }: SetsCardProps) {
       <span className={styles.label}>{t('match.sets.label')}</span>
       <div className={styles.setsGrid}>
         {sets.map((set, index) => {
-          const isCompleted = set.completed
           const isCurrent = index === currentSetIndex
+          const setLabel = isCurrent
+            ? t('match.sets.currentShort')
+            : t('match.sets.setLabel', { number: index + 1 })
 
           return (
             <div
@@ -34,23 +36,13 @@ export function SetsCard({ sets, currentSetIndex }: SetsCardProps) {
               data-testid={`set-row-${index}`}
             >
               <span className={styles.setNumber} data-testid={`set-number-${index}`}>
-                {index + 1}
+                {setLabel}
               </span>
               <span className={styles.setScore}>
                 <span className={styles.team1Games}>{set.games['team-1']}</span>
-                <span className={styles.divider}>-</span>
+                <span className={styles.divider}> - </span>
                 <span className={styles.team2Games}>{set.games['team-2']}</span>
               </span>
-              {isCompleted && set.winner && (
-                <span className={styles.winnerIndicator} aria-label={t('match.sets.winner')}>
-                  ✓
-                </span>
-              )}
-              {isCurrent && !isCompleted && (
-                <span className={styles.currentIndicator} aria-label={t('match.sets.current')}>
-                  ●
-                </span>
-              )}
             </div>
           )
         })}

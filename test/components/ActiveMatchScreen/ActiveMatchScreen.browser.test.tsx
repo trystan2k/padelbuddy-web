@@ -231,7 +231,7 @@ describe('ActiveMatchScreen', () => {
     await expect.element(revertButton).toBeDisabled()
   })
 
-  test('finish button is disabled when match not completed', async () => {
+  test('finish button stays enabled when match not completed', async () => {
     const setup = createTestSetup()
 
     const screen = await render(
@@ -244,7 +244,7 @@ describe('ActiveMatchScreen', () => {
     )
 
     const finishButton = screen.getByTestId('finish-button')
-    await expect.element(finishButton).toBeDisabled()
+    await expect.element(finishButton).not.toBeDisabled()
   })
 
   test('team panels are disabled when match is completed', async () => {
@@ -325,7 +325,34 @@ describe('ActiveMatchScreen', () => {
 
     // Team 1 should be serving
     const team1Panel = screen.getByTestId('team-panel-team-1')
-    const servingIndicator = team1Panel.element().querySelector('[aria-label="Serving"]')
+    const servingIndicator = team1Panel
+      .element()
+      .querySelector('[data-testid="serve-indicator-team-1"]')
     expect(servingIndicator).toBeTruthy()
+
+    const servingStatus = team1Panel.element().querySelector('[data-testid="serve-status-team-1"]')
+    expect(servingStatus?.textContent).toBe('Serving')
+  })
+
+  test('renders center overlays in set timer info order', async () => {
+    const setup = createTestSetup()
+
+    const screen = await render(
+      <ActiveMatchScreen
+        matchId="test-match"
+        initialSetup={setup}
+        initialActions={[]}
+        startedAt={defaultStartedAt}
+      />
+    )
+
+    // This covers DOM order only; final visual positioning is manually verified against Pencil per the plan.
+    const overlayNodes = Array.from(
+      screen.container.querySelectorAll(
+        '[data-testid="sets-card"], [data-testid="time-chip"], [data-testid="info-card"]'
+      )
+    ).map((node) => node.getAttribute('data-testid'))
+
+    expect(overlayNodes).toEqual(['sets-card', 'time-chip', 'info-card'])
   })
 })
