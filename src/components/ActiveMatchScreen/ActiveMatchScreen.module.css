@@ -2,6 +2,12 @@
    Main screen layout for active match
 */
 
+:root {
+  --app-active-match-revert-width: calc(var(--base-space-8) * 28);
+  --app-active-match-timer-top: calc(var(--base-space-8) * 30);
+  --app-active-match-info-top: calc(var(--base-space-8) * 48);
+}
+
 .scorePanel {
   position: relative;
   display: flex;
@@ -34,7 +40,7 @@
 }
 
 .revertButton {
-  width: calc(var(--base-space-8) * 28);
+  width: var(--app-active-match-revert-width);
 }
 
 .setsOverlay,
@@ -51,7 +57,7 @@
 }
 
 .timerChip {
-  top: calc(var(--base-space-8) * 30);
+  top: var(--app-active-match-timer-top);
   pointer-events: none;
   font-family: var(--semantic-typography-family-display);
   font-size: var(--semantic-typography-size-title-sm);
@@ -60,7 +66,7 @@
 }
 
 .infoOverlay {
-  top: calc(var(--base-space-8) * 48);
+  top: var(--app-active-match-info-top);
 }
 
 /* Responsive adjustments */
