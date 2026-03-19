@@ -9,15 +9,18 @@ import { useMatchTimer } from '@/components/ActiveMatchScreen/useMatchTimer'
 // Test component to render the hook output
 function TimerTestComponent({
   startedAt,
+  finishedAt,
   isMatchCompleted,
   onStateChange
 }: {
   startedAt: number | null
+  finishedAt?: number
   isMatchCompleted: boolean
   onStateChange?: (state: ReturnType<typeof useMatchTimer>) => void
 }) {
   const state = useMatchTimer({
     startedAt,
+    ...(typeof finishedAt === 'number' ? { finishedAt } : {}),
     isMatchCompleted
   })
 
@@ -96,9 +99,10 @@ describe('useMatchTimer', () => {
 
   test('isRunning is false when match is completed', async () => {
     const startedAt = Date.now() - 5 * 60 * 1000
+    const finishedAt = startedAt + 5 * 60 * 1000
 
     const screen = await render(
-      <TimerTestComponent startedAt={startedAt} isMatchCompleted={true} />
+      <TimerTestComponent startedAt={startedAt} finishedAt={finishedAt} isMatchCompleted={true} />
     )
 
     await expect.element(screen.getByTestId('isRunning')).toHaveTextContent('false')
@@ -134,6 +138,7 @@ describe('useMatchTimer', () => {
 
   test('stops updating when match is completed', async () => {
     const startedAt = Date.now()
+    const completedAfter = startedAt + 60 * 1000
     const onStateChange = vi.fn()
 
     const screen = await render(
@@ -155,6 +160,7 @@ describe('useMatchTimer', () => {
     void screen.rerender(
       <TimerTestComponent
         startedAt={startedAt}
+        finishedAt={completedAfter}
         isMatchCompleted={true}
         onStateChange={onStateChange}
       />
@@ -174,14 +180,17 @@ describe('useMatchTimer - dynamic state component', () => {
   // Component that can change isMatchCompleted dynamically
   function DynamicTimerComponent({
     initialStartedAt,
+    initialFinishedAt,
     initialIsCompleted
   }: {
     initialStartedAt: number
+    initialFinishedAt?: number
     initialIsCompleted: boolean
   }) {
     const [isMatchCompleted, setIsMatchCompleted] = useState(initialIsCompleted)
     const state = useMatchTimer({
       startedAt: initialStartedAt,
+      ...(typeof initialFinishedAt === 'number' ? { finishedAt: initialFinishedAt } : {}),
       isMatchCompleted
     })
 
@@ -233,5 +242,22 @@ describe('useMatchTimer - dynamic state component', () => {
 
     // Elapsed should still be 30 (stopped)
     await expect.element(screen.getByTestId('elapsedSeconds')).toHaveTextContent('30')
+  })
+
+  test('uses finishedAt to keep the completed duration frozen', async () => {
+    const startedAt = Date.now() - 20 * 60 * 1000
+    const finishedAt = startedAt + 5 * 60 * 1000
+
+    const screen = await render(
+      <TimerTestComponent startedAt={startedAt} finishedAt={finishedAt} isMatchCompleted />
+    )
+
+    await expect.element(screen.getByTestId('elapsedSeconds')).toHaveTextContent('300')
+    await expect.element(screen.getByTestId('formattedTime')).toHaveTextContent('5 min')
+
+    await vi.advanceTimersByTimeAsync(60 * 1000)
+
+    await expect.element(screen.getByTestId('elapsedSeconds')).toHaveTextContent('300')
+    await expect.element(screen.getByTestId('formattedTime')).toHaveTextContent('5 min')
   })
 })

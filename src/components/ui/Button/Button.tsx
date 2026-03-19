@@ -1,4 +1,4 @@
-import { forwardRef, type ReactNode } from 'react'
+import { forwardRef, type ComponentPropsWithoutRef, type ReactNode } from 'react'
 import { Button as BaseButton } from '@base-ui/react/button'
 
 import { cn } from '@/lib/utils/cn'
@@ -9,11 +9,11 @@ export type ButtonVariant = 'solid' | 'outline' | 'soft'
 export type ButtonSize = 'sm' | 'lg'
 export type ButtonAccent = 'primary' | 'secondary' | 'success'
 
-export interface ButtonProps {
+export interface ButtonProps extends Omit<
+  ComponentPropsWithoutRef<'button'>,
+  'children' | 'className'
+> {
   children: ReactNode
-  onClick: () => void
-  disabled?: boolean
-  type?: 'button' | 'submit' | 'reset'
   className?: string | undefined
   variant?: ButtonVariant
   size?: ButtonSize
@@ -24,14 +24,14 @@ export interface ButtonProps {
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
   {
     children,
-    onClick,
     disabled = false,
     type = 'button',
     className,
     variant = 'solid',
     size = 'lg',
     accent = 'success',
-    testId
+    testId,
+    ...buttonProps
   },
   ref
 ) {
@@ -51,10 +51,10 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
     <BaseButton
       ref={ref}
       type={type}
-      onClick={onClick}
       disabled={disabled}
       className={cn(styles.button, variantClass, sizeClass, accentClass, className)}
       data-testid={testId}
+      {...buttonProps}
     >
       {children}
     </BaseButton>

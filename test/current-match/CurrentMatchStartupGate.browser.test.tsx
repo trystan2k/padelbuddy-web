@@ -14,6 +14,7 @@ import {
 import { createTestSetup, scorePoints } from '../core/match/test-helpers'
 
 describe('CurrentMatchStartupGate browser', () => {
+  const testMatchId = 'test-match'
   let databaseName = ''
   let persistence: CurrentMatchPersistence
 
@@ -130,8 +131,10 @@ describe('CurrentMatchStartupGate browser', () => {
       databaseName,
       value: {
         schemaVersion: currentMatchSchemaVersion,
+        matchId: testMatchId,
         setup: createTestSetup(),
-        actions: [{ type: 'score-point', teamId: 'team-3' }]
+        actions: [{ type: 'score-point', teamId: 'team-3' }],
+        startedAt: Date.now()
       }
     })
 
@@ -154,8 +157,10 @@ describe('CurrentMatchStartupGate browser', () => {
       databaseName,
       value: {
         schemaVersion: currentMatchSchemaVersion,
+        matchId: testMatchId,
         setup: createTestSetup(),
-        actions: [{ type: 'score-point', teamId: 'team-3' }]
+        actions: [{ type: 'score-point', teamId: 'team-3' }],
+        startedAt: Date.now()
       }
     })
 
@@ -263,6 +268,7 @@ describe('CurrentMatchStartupGate browser', () => {
             status: 'ok',
             record: {
               schemaVersion: currentMatchSchemaVersion,
+              matchId: testMatchId,
               setup,
               actions: scorePoints('team-1'),
               startedAt: testStartedAt

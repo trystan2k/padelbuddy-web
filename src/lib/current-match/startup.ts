@@ -53,9 +53,13 @@ export async function hydrateCurrentMatchStartup(
   }
 
   const session = createCurrentMatchSession({
+    matchId: loadResult.record.matchId,
     setup: loadResult.record.setup,
     actions: loadResult.record.actions,
     startedAt: loadResult.record.startedAt,
+    ...(typeof loadResult.record.finishedAt === 'number'
+      ? { finishedAt: loadResult.record.finishedAt }
+      : {}),
     persistence
   })
 

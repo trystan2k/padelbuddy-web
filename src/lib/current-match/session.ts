@@ -14,9 +14,14 @@ export interface CurrentMatchSessionInput {
   setup: MatchSetup
   actions: MatchAction[]
   startedAt: number
+  finishedAt?: number
 }
 
-export interface CurrentMatchSessionSnapshot extends CurrentMatchSessionInput {
+export interface CurrentMatchSessionSnapshot {
+  setup: MatchSetup
+  actions: MatchAction[]
+  startedAt: number
+  finishedAt?: number
   projection: MatchProjection
 }
 
@@ -28,16 +33,19 @@ export interface CurrentMatchSession {
 }
 
 export interface CreateCurrentMatchSessionOptions extends CurrentMatchSessionInput {
+  matchId?: string
   persistence?: CurrentMatchPersistence
 }
 
 export function createCurrentMatchSession(
   options: CreateCurrentMatchSessionOptions
 ): CurrentMatchSession {
+  const matchId = options.matchId
   let snapshot = createCurrentMatchSessionSnapshot({
     setup: options.setup,
     actions: options.actions,
-    startedAt: options.startedAt
+    startedAt: options.startedAt,
+    ...(typeof options.finishedAt === 'number' ? { finishedAt: options.finishedAt } : {})
   })
   const persistence = options.persistence ?? currentMatchPersistence
   let pendingMutation = Promise.resolve()
@@ -65,7 +73,9 @@ export function createCurrentMatchSession(
           return snapshot
         }
 
-        return commitSnapshot(nextSnapshot)
+        return commitSnapshot(
+          withFinishedAtIfCompleted(nextSnapshot, snapshot.finishedAt ?? Date.now())
+        )
       }),
     undoScoreAction: () =>
       enqueueMutation(async () => {
@@ -76,11 +86,14 @@ export function createCurrentMatchSession(
         }
 
         return commitSnapshot(
-          createCurrentMatchSessionSnapshot({
-            setup: snapshot.setup,
-            actions: nextActions,
-            startedAt: snapshot.startedAt
-          })
+          withFinishedAtIfCompleted(
+            createCurrentMatchSessionSnapshot({
+              setup: snapshot.setup,
+              actions: nextActions,
+              startedAt: snapshot.startedAt
+            }),
+            snapshot.finishedAt
+          )
         )
       }),
     continuePlaying: () =>
@@ -91,11 +104,13 @@ export function createCurrentMatchSession(
           return snapshot
         }
 
+        const elapsedMilliseconds = getElapsedMilliseconds(snapshot)
+
         return commitSnapshot(
           createCurrentMatchSessionSnapshot({
             setup: nextSetup,
             actions: snapshot.actions,
-            startedAt: snapshot.startedAt
+            startedAt: Date.now() - elapsedMilliseconds
           })
         )
       })
@@ -118,9 +133,13 @@ export function createCurrentMatchSession(
     nextSnapshot: CurrentMatchSessionSnapshot
   ): Promise<CurrentMatchSessionSnapshot> {
     await persistence.saveCurrentMatch({
+      ...(matchId ? { matchId } : {}),
       setup: nextSnapshot.setup,
       actions: nextSnapshot.actions,
-      startedAt: nextSnapshot.startedAt
+      startedAt: nextSnapshot.startedAt,
+      ...(typeof nextSnapshot.finishedAt === 'number'
+        ? { finishedAt: nextSnapshot.finishedAt }
+        : {})
     })
 
     snapshot = nextSnapshot
@@ -136,6 +155,27 @@ export function createCurrentMatchSessionSnapshot(
     setup: input.setup,
     actions: input.actions,
     startedAt: input.startedAt,
+    ...(typeof input.finishedAt === 'number' ? { finishedAt: input.finishedAt } : {}),
     projection: projectMatch(input.setup, input.actions)
+  }
+}
+
+function getElapsedMilliseconds(snapshot: CurrentMatchSessionSnapshot): number {
+  const endTimestamp = snapshot.finishedAt ?? Date.now()
+
+  return Math.max(0, endTimestamp - snapshot.startedAt)
+}
+
+function withFinishedAtIfCompleted(
+  snapshot: CurrentMatchSessionSnapshot,
+  finishedAt: number | undefined
+): CurrentMatchSessionSnapshot {
+  if (snapshot.projection.derived.status !== 'completed' || typeof finishedAt !== 'number') {
+    return snapshot
+  }
+
+  return {
+    ...snapshot,
+    finishedAt
   }
 }

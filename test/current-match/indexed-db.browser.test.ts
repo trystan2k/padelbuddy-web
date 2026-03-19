@@ -11,6 +11,7 @@ import {
 import { createTestSetup, scorePoints, winQuickGame } from '../core/match/test-helpers'
 
 describe('current match IndexedDB persistence', () => {
+  const testMatchId = 'test-match'
   let databaseName = ''
   let objectStoreName = ''
   let persistence: CurrentMatchPersistence
@@ -36,11 +37,17 @@ describe('current match IndexedDB persistence', () => {
     const actions = [...winQuickGame('team-1'), ...scorePoints('team-2', 'team-2')]
     const startedAt = Date.now()
 
-    const savedRecord = await persistence.saveCurrentMatch({ setup, actions, startedAt })
+    const savedRecord = await persistence.saveCurrentMatch({
+      matchId: testMatchId,
+      setup,
+      actions,
+      startedAt
+    })
     const loadedRecord = await persistence.loadCurrentMatch()
 
     expect(savedRecord).toEqual({
       schemaVersion: currentMatchSchemaVersion,
+      matchId: testMatchId,
       setup,
       actions,
       startedAt
@@ -59,6 +66,7 @@ describe('current match IndexedDB persistence', () => {
 
   test('clears the stored current match record', async () => {
     await persistence.saveCurrentMatch({
+      matchId: testMatchId,
       setup: createTestSetup(),
       actions: winQuickGame('team-1'),
       startedAt: Date.now()
@@ -87,7 +95,7 @@ describe('current match IndexedDB persistence', () => {
     await expect(persistence.loadCurrentMatch()).resolves.toEqual({
       status: 'reset-required',
       reason: 'schema-version',
-      storedSchemaVersion: 3
+      storedSchemaVersion: currentMatchSchemaVersion + 1
     })
     expect(consumeCurrentMatchResetNotice()).toEqual({
       reason: 'schema-version'
@@ -106,8 +114,10 @@ describe('current match IndexedDB persistence', () => {
       objectStoreName,
       value: {
         schemaVersion: currentMatchSchemaVersion,
+        matchId: testMatchId,
         setup,
-        actions: [{ type: 'score-point', teamId: 'team-3' }]
+        actions: [{ type: 'score-point', teamId: 'team-3' }],
+        startedAt: Date.now()
       }
     })
 

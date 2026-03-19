@@ -9,6 +9,8 @@ import { useMatchSession } from '@/components/ActiveMatchScreen/useMatchSession'
 import { createTestSetup } from '../../core/match/test-helpers'
 import type { CurrentMatchPersistence } from '@/lib/current-match'
 
+const testMatchId = 'test-match'
+
 // Test component to render the hook output
 function SessionTestComponent({
   setup,
@@ -24,6 +26,7 @@ function SessionTestComponent({
   onStateChange?: (state: ReturnType<typeof useMatchSession>) => void
 }) {
   const state = useMatchSession({
+    matchId: testMatchId,
     setup,
     initialActions,
     startedAt,
@@ -298,6 +301,7 @@ describe('useMatchSession - error handling', () => {
       const [error, setError] = useState<Error | null>(null)
 
       const state = useMatchSession({
+        matchId: testMatchId,
         setup,
         initialActions: [],
         startedAt: defaultStartedAt,

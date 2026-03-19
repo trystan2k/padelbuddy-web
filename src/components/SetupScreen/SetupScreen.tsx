@@ -64,6 +64,8 @@ export function SetupScreen() {
     setIsStarting(true)
 
     try {
+      const matchId = generateMatchId()
+
       // Create match setup input
       const setupInput = {
         format: formData.format,
@@ -81,10 +83,9 @@ export function SetupScreen() {
       const setup = createMatchSetup(setupInput)
 
       // Persist match state to IndexedDB before navigation
-      await saveCurrentMatch({ setup, actions: [], startedAt: Date.now() })
+      await saveCurrentMatch({ matchId, setup, actions: [], startedAt: Date.now() })
 
-      // Generate match ID and navigate
-      const matchId = generateMatchId()
+      // Navigate to active match route
       await navigate({ to: '/match/$id', params: { id: matchId } })
     } catch (error) {
       console.error('Failed to start match:', error)

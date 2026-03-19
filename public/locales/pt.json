@@ -167,6 +167,34 @@
     "timer": {
       "label": "Tempo de partida: {{time}}"
     },
+    "end": {
+      "header": {
+        "appName": "Padel Buddy",
+        "subtitle": "Partida encerrada"
+      },
+      "winner": {
+        "label": "Vencedores"
+      },
+      "summary": {
+        "title": "Resumo dos sets",
+        "setLabel": "Set {{number}}",
+        "setScoreRow": "Set {{setNumber}}: {{teamOneName}} {{teamOneScore}}, {{teamTwoName}} {{teamTwoScore}}"
+      },
+      "stats": {
+        "matchLength": "Duração da partida",
+        "totalGames": "Total de games",
+        "durationHoursMinutes": "{{hours}}h {{minutes}}min",
+        "durationMinutes": "{{minutes}}min"
+      },
+      "actions": {
+        "newMatch": "Nova partida",
+        "continue": "Continuar"
+      },
+      "aria": {
+        "summaryRegion": "Resumo do resultado da partida",
+        "statisticsRegion": "Estatísticas da partida"
+      }
+    },
     "actions": {
       "revertPoint": "Desfazer ponto",
       "finishMatch": "Encerrar Partida"

@@ -1,0 +1,111 @@
+.card {
+  min-height: 31.5625rem;
+  border-radius: var(--base-radius-32);
+  border: 1px solid var(--semantic-color-border-subtle);
+  background-color: var(--semantic-color-background-surface);
+  padding: var(--base-space-24);
+  box-shadow: 0 16px 40px color-mix(in srgb, var(--semantic-color-content-primary) 7%, transparent);
+}
+
+.inner,
+.content {
+  display: flex;
+  flex-direction: column;
+}
+
+.inner {
+  height: 100%;
+  justify-content: space-between;
+  gap: var(--base-space-24);
+}
+
+.content {
+  gap: var(--base-space-16);
+}
+
+.trophyBadge {
+  display: flex;
+  width: 8.5rem;
+  height: 8.5rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background-color: var(--semantic-color-background-success-subtle);
+}
+
+.trophyIcon {
+  width: 4.75rem;
+  height: 4.75rem;
+  color: var(--semantic-color-content-success);
+}
+
+.label {
+  margin: 0;
+  font-family: var(--semantic-typography-family-body);
+  font-size: var(--base-font-size-18);
+  font-weight: var(--base-font-weight-semibold);
+  color: var(--semantic-color-content-secondary);
+}
+
+.winnerName {
+  margin: 0;
+  font-family: var(--semantic-typography-family-display);
+  font-size: var(--base-font-size-64);
+  font-weight: var(--semantic-typography-weight-display);
+  line-height: 0.94;
+  letter-spacing: -0.1875rem;
+  overflow-wrap: anywhere;
+}
+
+.teamPrimary {
+  color: var(--semantic-color-content-accent-primary);
+}
+
+.teamSecondary {
+  color: var(--semantic-color-content-accent-secondary);
+}
+
+.actionGroup {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--base-space-14);
+}
+
+.actionButton {
+  min-height: 4.125rem;
+  border-radius: var(--base-radius-24);
+  font-size: var(--base-font-size-26);
+  line-height: 1;
+}
+
+.primaryAction {
+  font-weight: var(--semantic-typography-weight-heading);
+}
+
+.secondaryAction {
+  border-color: var(--semantic-color-border-subtle);
+  background-color: var(--semantic-color-background-canvas);
+  color: var(--semantic-color-content-primary);
+  font-weight: var(--semantic-typography-weight-strong);
+}
+
+@media (width <= 1023px) {
+  .card {
+    min-height: auto;
+  }
+}
+
+@media (width <= 767px) {
+  .card {
+    padding: var(--base-space-20);
+  }
+
+  .winnerName {
+    font-size: var(--base-font-size-46);
+    letter-spacing: -0.125rem;
+  }
+
+  .actionGroup {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

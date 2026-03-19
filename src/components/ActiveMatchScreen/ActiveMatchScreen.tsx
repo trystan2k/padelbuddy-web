@@ -20,6 +20,7 @@ export interface ActiveMatchScreenProps {
   initialSetup: MatchSetup
   initialActions: MatchAction[]
   startedAt: number
+  finishedAt?: number
 }
 
 /**
@@ -28,10 +29,11 @@ export interface ActiveMatchScreenProps {
  * Composed of TeamPanel, SetsCard, InfoCard, Chip (timer), Button-based match controls, SideSwitchPrompt, TopBar
  */
 export function ActiveMatchScreen({
-  matchId: _matchId,
+  matchId,
   initialSetup,
   initialActions,
-  startedAt
+  startedAt,
+  finishedAt
 }: ActiveMatchScreenProps) {
   const navigate = useNavigate()
   const { t } = useTranslation()
@@ -39,15 +41,18 @@ export function ActiveMatchScreen({
 
   // Session hook
   const { snapshot, scorePoint, undoScoreAction, isLoading } = useMatchSession({
+    matchId,
     setup: initialSetup,
     initialActions,
-    startedAt
+    startedAt,
+    ...(typeof finishedAt === 'number' ? { initialFinishedAt: finishedAt } : {})
   })
 
   // Timer hook
   const isMatchCompleted = snapshot.projection.derived.status === 'completed'
   const { formattedTime } = useMatchTimer({
-    startedAt,
+    startedAt: snapshot.startedAt,
+    ...(typeof snapshot.finishedAt === 'number' ? { finishedAt: snapshot.finishedAt } : {}),
     isMatchCompleted
   })
 
@@ -67,6 +72,18 @@ export function ActiveMatchScreen({
       setSideSwitchDismissed(false)
     }
   }, [sideSwitch.shouldPrompt])
+
+  useEffect(() => {
+    if (!isMatchCompleted) {
+      return
+    }
+
+    void navigate({
+      to: '/match/finish/$id',
+      params: { id: matchId },
+      replace: true
+    })
+  }, [isMatchCompleted, matchId, navigate])
 
   // Get score for each team
   const getTeamScore = (teamId: MatchTeamId): string => {
@@ -186,7 +203,7 @@ export function ActiveMatchScreen({
           size="sm"
           role="timer"
           aria-label={t('match.timer.label', { time: formattedTime })}
-          className={styles.timerChip}
+          className={styles.timerChip ?? ''}
           testId="time-chip"
         >
           {formattedTime}

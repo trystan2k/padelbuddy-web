@@ -8,19 +8,24 @@ import {
   type MatchTeamId
 } from '@/core/match'
 
-export const currentMatchSchemaVersion = 2 as const
+export const currentMatchSchemaVersion = 4 as const
+const defaultCurrentMatchId = 'current-match'
 
 export interface CurrentMatchSaveInput {
+  matchId?: string
   setup: MatchSetup
   actions: MatchAction[]
   startedAt?: number // Unix timestamp in milliseconds, defaults to Date.now()
+  finishedAt?: number
 }
 
 export interface CurrentMatchRecord {
   schemaVersion: typeof currentMatchSchemaVersion
+  matchId: string
   setup: MatchSetup
   actions: MatchAction[]
   startedAt: number // Unix timestamp in milliseconds
+  finishedAt?: number
 }
 
 export interface CurrentMatchDecodeOkResult {
@@ -45,11 +50,17 @@ export type CurrentMatchDecodeResult =
   | CurrentMatchDecodeCorruptResult
 
 export function createCurrentMatchRecord(input: CurrentMatchSaveInput): CurrentMatchRecord {
+  const startedAt = input.startedAt ?? Date.now()
+
   return {
     schemaVersion: currentMatchSchemaVersion,
+    matchId: parseMatchId(input.matchId ?? defaultCurrentMatchId),
     setup: parseMatchSetup(input.setup),
     actions: parseMatchActions(input.actions),
-    startedAt: input.startedAt ?? Date.now()
+    startedAt,
+    ...(typeof input.finishedAt === 'number'
+      ? { finishedAt: parseFinishedAt(input.finishedAt, startedAt) }
+      : {})
   }
 }
 
@@ -98,13 +109,19 @@ export function decodeCurrentMatchRecord(input: unknown): CurrentMatchDecodeResu
   }
 
   try {
+    const startedAt = parseStartedAt(record.startedAt)
+
     return {
       status: 'ok',
       record: {
         schemaVersion: currentMatchSchemaVersion,
+        matchId: parseMatchId(record.matchId),
         setup: parseMatchSetup(record.setup),
         actions: parseMatchActions(record.actions),
-        startedAt: parseStartedAt(record.startedAt)
+        startedAt,
+        ...(typeof record.finishedAt === 'undefined'
+          ? {}
+          : { finishedAt: parseFinishedAt(record.finishedAt, startedAt) })
       }
     }
   } catch (error) {
@@ -112,10 +129,26 @@ export function decodeCurrentMatchRecord(input: unknown): CurrentMatchDecodeResu
   }
 }
 
+function parseMatchId(input: unknown): string {
+  if (typeof input !== 'string' || input.trim().length === 0) {
+    throw new Error('Current match matchId must be a non-empty string.')
+  }
+
+  return input
+}
+
 function parseStartedAt(input: unknown): number {
   if (typeof input !== 'number' || !Number.isFinite(input) || input <= 0) {
     throw new Error('Current match startedAt must be a positive number.')
   }
+  return input
+}
+
+function parseFinishedAt(input: unknown, startedAt: number): number {
+  if (typeof input !== 'number' || !Number.isFinite(input) || input < startedAt) {
+    throw new Error('Current match finishedAt must be a number greater than or equal to startedAt.')
+  }
+
   return input
 }
 

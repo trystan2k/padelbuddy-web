@@ -2,36 +2,34 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { ActiveMatchScreen } from '@/components/ActiveMatchScreen'
+import { MatchEndScreen } from '@/components/MatchEndScreen'
 import { loadCurrentMatch, type CurrentMatchLoadResult } from '@/lib/current-match'
 
 import { resolveMatchRouteState } from './-match-route-state'
 
-export const Route = createFileRoute('/match/$id')({
-  component: MatchRoute,
+export const Route = createFileRoute('/match/finish/$id')({
+  component: MatchFinishRoute,
   loader: async ({ params }) => {
-    // Load match data from persistence
-    // Match ID is stored for future use (sharing, history)
     const matchData = await loadCurrentMatch()
     return { matchId: params.id, matchData }
   }
 })
 
-function MatchRoute() {
+function MatchFinishRoute() {
   const { matchId, matchData } = Route.useLoaderData()
 
-  return <MatchRouteContent matchData={matchData} matchId={matchId} />
+  return <MatchFinishRouteContent matchData={matchData} matchId={matchId} />
 }
 
-export interface MatchRouteContentProps {
+export interface MatchFinishRouteContentProps {
   matchId: string
   matchData: CurrentMatchLoadResult
 }
 
-export function MatchRouteContent({ matchId, matchData }: MatchRouteContentProps) {
+export function MatchFinishRouteContent({ matchId, matchData }: MatchFinishRouteContentProps) {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const routeState = resolveMatchRouteState(matchId, matchData, 'active')
+  const routeState = resolveMatchRouteState(matchId, matchData, 'finish')
 
   useEffect(() => {
     if (matchData.status === 'corrupt') {
@@ -43,9 +41,9 @@ export function MatchRouteContent({ matchId, matchData }: MatchRouteContentProps
       return
     }
 
-    if (routeState.status === 'redirect-finish') {
+    if (routeState.status === 'redirect-active') {
       void navigate({
-        to: '/match/finish/$id',
+        to: '/match/$id',
         params: { id: routeState.matchId },
         replace: true
       })
@@ -61,14 +59,13 @@ export function MatchRouteContent({ matchId, matchData }: MatchRouteContentProps
     )
   }
 
-  const { setup, actions, startedAt } = routeState.record
-
   return (
-    <ActiveMatchScreen
-      matchId={matchId}
-      initialSetup={setup}
-      initialActions={actions}
-      startedAt={startedAt}
+    <MatchEndScreen
+      matchId={routeState.record.matchId}
+      setup={routeState.record.setup}
+      actions={routeState.record.actions}
+      projection={routeState.projection}
+      startedAt={routeState.record.startedAt}
       {...(typeof routeState.record.finishedAt === 'number'
         ? { finishedAt: routeState.record.finishedAt }
         : {})}
