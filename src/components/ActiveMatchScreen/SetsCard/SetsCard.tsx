@@ -40,7 +40,7 @@ export function SetsCard({ sets, currentSetIndex }: SetsCardProps) {
               </span>
               <span className={styles.setScore}>
                 <span className={styles.team1Games}>{set.games['team-1']}</span>
-                <span className={styles.divider}> - </span>
+                <span className={styles.divider}>-</span>
                 <span className={styles.team2Games}>{set.games['team-2']}</span>
               </span>
             </div>

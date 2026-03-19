@@ -29,7 +29,7 @@ describe('SetsCard', () => {
     // First set should show 0-0
     await expect.element(screen.getByTestId('set-row-0')).toBeInTheDocument()
     await expect.element(screen.getByTestId('set-row-0')).toHaveTextContent('Current')
-    await expect.element(screen.getByTestId('set-row-0')).toHaveTextContent('0 - 0')
+    await expect.element(screen.getByTestId('set-row-0')).toHaveTextContent('0-0')
   })
 
   test('renders fixed set labels from the Pencil design', async () => {
@@ -69,7 +69,7 @@ describe('SetsCard', () => {
     const screen = await render(<SetsCard sets={sets} currentSetIndex={0} />)
 
     const setRow = screen.getByTestId('set-row-0')
-    await expect.element(setRow).toHaveTextContent('0 - 0')
+    await expect.element(setRow).toHaveTextContent('0-0')
   })
 
   test('has test id', async () => {
