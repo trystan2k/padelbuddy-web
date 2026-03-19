@@ -70,7 +70,7 @@
   border: 1px solid var(--semantic-color-border-subtle);
   border-radius: var(--base-radius-12);
   box-shadow: var(--semantic-shadow-subtle);
-  z-index: 100;
+  z-index: var(--base-priority-xl);
 }
 
 .localeLabel {
