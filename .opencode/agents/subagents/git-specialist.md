@@ -110,7 +110,7 @@ GitHub (`gh`) typical commands:
 - Review comments: `gh pr view <number|url|branch> --comments`
 - Add review/comment: `gh pr review <number> --comment -b <body>`
 - Edit PR: `gh pr edit <number> --title <title> --body <body>`
-- Request Copilot review: `gh copilot-review <org>/<repo> <number>`
+- Request Copilot review: prefer `gh copilot-review <org>/<repo> <number>` when available; if that fails or is unavailable, use `gh api /repos/{owner}/{repo}/pulls/<number>/requested_reviewers -f "reviewers[]=copilot-pull-request-reviewer[bot]" --method POST`
 - Change PR status: `gh pr ready <number>` or `gh pr ready <number> --undo`
 - Close or reopen: `gh pr close <number>` / `gh pr reopen <number>`
 - Merge PR: `gh pr merge <number>`
@@ -303,12 +303,21 @@ If the project has Copilot as reviewer enabled, request Copilot review for the p
 ```bash
 set -e
 PR_NUMBER=$(gh pr view --json number --jq .number 2>/dev/null || true)
-OUTPUT=$(gh copilot-review "$ORG/$REPO" "$PR_NUMBER" 2>&1) || { echo "GH_COPILOT_REVIEW_FAILED: $OUTPUT"; exit 3; }
+OUTPUT=$(gh copilot-review "$ORG/$REPO" "$PR_NUMBER" 2>&1) || {
+  echo "GH_COPILOT_REVIEW_FAILED: $OUTPUT"
+  API_OUTPUT=$(gh api "/repos/$ORG/$REPO/pulls/$PR_NUMBER/requested_reviewers" -f "reviewers[]=copilot-pull-request-reviewer[bot]" --method POST 2>&1) || {
+    echo "GH_COPILOT_REVIEW_API_FAILED: $API_OUTPUT"
+    exit 3
+  }
+  echo "GH_COPILOT_REVIEW_API_OUTPUT:
+$API_OUTPUT"
+  exit 0
+}
 echo "GH_COPILOT_REVIEW_OUTPUT:
 $OUTPUT"
 ```
 
-If it fails with error '404 Not Found', it maybe because the PR is not completely created yet. Wait a few seconds and try again. If it keeps failing, inform the user that it needs to be requested manually.
+If `gh copilot-review` fails with `404 Not Found`, do not stop at that first error. Retry by assigning the reviewer bot directly through the GitHub API endpoint above. Only report manual follow-up if both the direct command and the API fallback fail.
 
 ### Step 4: Extract and verify PR URL
 
@@ -393,11 +402,12 @@ gh pr create --title "$TITLE" --body "$BODY" --base "$BASE" --head "$BRANCH"
 
 ## PR review
 
-1- If the project uses GitHub and the request is to ask Copilot for review, use ONLY this command:
+1- If the project uses GitHub and the request is to ask Copilot for review, first try:
    `gh copilot-review "$ORG/$REPO" "$PR_NUMBER"`
-2- If that command fails for any reason, STOP immediately and report the failure to the caller.
+2- If that command fails or returns `404`, immediately try the supported GitHub API fallback:
+   `gh api "/repos/$ORG/$REPO/pulls/$PR_NUMBER/requested_reviewers" -f "reviewers[]=copilot-pull-request-reviewer[bot]" --method POST`
 3- Do NOT post fallback comments like `@copilot review`.
-4- Do NOT attempt alternate Copilot-trigger mechanisms unless explicitly requested by the user.
+4- Only stop and report failure if both the direct command and the API fallback fail.
 5- If the project does not use GitHub, report that Copilot review request via gh is not supported.
 
 ## Any other git command

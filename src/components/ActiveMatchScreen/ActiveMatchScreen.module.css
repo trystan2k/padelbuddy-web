@@ -2,85 +2,129 @@
    Main screen layout for active match
 */
 
-.body {
-  flex: 1;
-}
-
 .scorePanel {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  gap: var(--base-space-24);
+  --app-active-match-revert-width: calc(var(--base-space-8) * 28);
+  --app-active-match-timer-top: calc(var(--base-space-8) * 30);
+  --app-active-match-info-top: calc(var(--base-space-8) * 48);
+
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
   width: 100%;
-  height: 100%;
+  min-height: var(--app-screen-shell-body-height);
 }
 
-/* Team panels */
 .team1Panel {
   display: flex;
   flex-direction: column;
-  gap: var(--base-space-12);
+  gap: var(--base-space-24);
   align-items: center;
+  width: var(--app-scoreboard-team-panel-width);
+  padding-top: var(--base-space-56);
 }
 
 .team2Panel {
   display: flex;
   flex-direction: column;
-  gap: var(--base-space-12);
+  gap: var(--base-space-24);
   align-items: center;
-}
-
-/* Center column */
-.centerColumn {
-  display: flex;
-  flex-direction: column;
-  gap: var(--base-space-16);
-  align-items: center;
-  padding-top: var(--base-space-16);
+  width: var(--app-scoreboard-team-panel-width);
+  padding-top: var(--base-space-56);
 }
 
 .finishButton {
   width: 100%;
 }
 
+.revertButton {
+  width: var(--app-active-match-revert-width);
+}
+
+.setsOverlay,
+.infoOverlay,
+.timerChip {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: var(--base-priority-s);
+}
+
+.setsOverlay {
+  top: var(--base-space-16);
+}
+
+.timerChip {
+  top: var(--app-active-match-timer-top);
+  pointer-events: none;
+  font-family: var(--semantic-typography-family-display);
+  font-size: var(--semantic-typography-size-title-sm);
+  font-weight: var(--semantic-typography-weight-strong);
+  color: var(--semantic-color-content-primary);
+}
+
+.infoOverlay {
+  top: var(--app-active-match-info-top);
+}
+
 /* Responsive adjustments */
 @media (width <= 1023px) {
   .scorePanel {
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto auto;
+    min-height: auto;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: var(--base-space-16);
   }
 
   .team1Panel {
-    grid-column: 1;
-    grid-row: 1;
+    order: 1;
   }
 
   .team2Panel {
-    grid-column: 2;
-    grid-row: 1;
+    order: 2;
   }
 
-  .centerColumn {
-    grid-column: 1 / -1;
-    grid-row: 2;
-    flex-flow: row wrap;
-    justify-content: center;
+  .team1Panel,
+  .team2Panel {
+    width: min(100%, var(--app-scoreboard-team-panel-width));
+    padding-top: 0;
+    gap: var(--base-space-12);
+  }
+
+  .setsOverlay,
+  .infoOverlay,
+  .timerChip {
+    position: static;
+    left: auto;
+    transform: none;
+  }
+
+  .setsOverlay {
+    order: 3;
+  }
+
+  .timerChip {
+    order: 4;
+  }
+
+  .infoOverlay {
+    order: 5;
   }
 }
 
 @media (width <= 767px) {
   .scorePanel {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto;
+    justify-content: stretch;
   }
 
-  .team1Panel,
-  .team2Panel,
-  .centerColumn {
-    grid-column: 1;
+  .revertButton,
+  .timerChip,
+  .setsOverlay,
+  .infoOverlay {
+    width: 100%;
   }
 
-  .centerColumn {
-    flex-direction: column;
+  .timerChip {
+    justify-content: center;
   }
 }

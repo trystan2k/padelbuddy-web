@@ -37,16 +37,15 @@ describe('TeamPanel', () => {
   test('shows serve indicator when serving', async () => {
     const screen = await render(<TeamPanel {...defaultProps} isServing={true} />)
 
-    await expect.element(screen.getByText('Serving')).toBeInTheDocument()
+    await expect.element(screen.getByTestId('serve-indicator-team-1')).toBeInTheDocument()
+    await expect.element(screen.getByTestId('serve-status-team-1')).toHaveTextContent('Serving')
   })
 
   test('hides serve indicator when not serving', async () => {
     const screen = await render(<TeamPanel {...defaultProps} isServing={false} />)
 
-    // The Serving text should not be in the document
-    const button = screen.getByRole('button')
-    const buttonText = button.element().textContent
-    expect(buttonText).not.toContain('Serving')
+    const serveIndicator = screen.container.querySelector('[data-testid="serve-indicator-team-1"]')
+    expect(serveIndicator).toBeNull()
   })
 
   test('calls onClick when clicked', async () => {
@@ -113,11 +112,21 @@ describe('TeamPanel', () => {
     expect(scoreElement).toBeTruthy()
   })
 
-  test('serve bar has accessible label when serving', async () => {
+  test('serve bar remains visual only when serving', async () => {
     const screen = await render(<TeamPanel {...defaultProps} isServing={true} />)
 
-    const serveBar = screen.container.querySelector('[aria-label="Serving"]')
+    const serveBar = screen.container.querySelector('[data-testid="serve-indicator-team-1"]')
     expect(serveBar).toBeTruthy()
+    expect(serveBar?.getAttribute('aria-hidden')).toBe('true')
+
+    const button = screen.getByRole('button')
+    const describedById = button.element().getAttribute('aria-describedby')
+    expect(describedById).toBeTruthy()
+    const describedElement = describedById
+      ? screen.container.ownerDocument.getElementById(describedById)
+      : null
+    expect(describedElement).toBeTruthy()
+    expect(describedElement?.textContent).toContain('Serving')
   })
 
   test('golden point chip has accessible label when active', async () => {

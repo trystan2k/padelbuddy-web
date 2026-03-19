@@ -1,0 +1,12 @@
+{
+  "base": {
+    "priority": {
+      "minus": { "value": "-1", "type": "priority" },
+      "s": { "value": "1", "type": "priority" },
+      "m": { "value": "2", "type": "priority" },
+      "l": { "value": "5", "type": "priority" },
+      "xl": { "value": "10", "type": "priority" },
+      "xxl": { "value": "20", "type": "priority" }
+    }
+  }
+}

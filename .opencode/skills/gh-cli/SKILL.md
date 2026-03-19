@@ -1212,7 +1212,10 @@ gh pr edit 123 --add-reviewer user1,user2
 
 # Add Copilot as Reviewer (preferred command)
 gh copilot-review "$ORG/$REPO" 123
-# (if copilot-review alias does not exist, execute this command to create it: `gh alias set copilot-review 'api --method POST --silent /repos/$1/pulls/$2/requested_reviewers -f "reviewers[]=copilot-pull-request-reviewer[bot]"' --clobber`)
+# If that fails or returns 404, use the direct reviewer-assignment API fallback:
+gh api "/repos/$ORG/$REPO/pulls/123/requested_reviewers" -f "reviewers[]=copilot-pull-request-reviewer[bot]" --method POST
+# Optional convenience alias if you want the fallback available as `gh copilot-review` locally:
+gh alias set copilot-review 'api --method POST --silent /repos/$1/pulls/$2/requested_reviewers -f "reviewers[]=copilot-pull-request-reviewer[bot]"' --clobber
 
 # Remove reviewers
 gh pr edit 123 --remove-reviewer user1

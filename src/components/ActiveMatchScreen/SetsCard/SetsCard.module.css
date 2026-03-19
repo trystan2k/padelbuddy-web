@@ -10,6 +10,9 @@
   gap: var(--base-space-8);
   width: var(--app-scoreboard-sets-overlay-width);
   padding: var(--component-card-overlay-padding-y) var(--component-card-overlay-padding-x);
+  border: 1px solid var(--component-card-overlay-border);
+  border-radius: var(--component-card-overlay-radius);
+  background-color: var(--component-card-overlay-background);
 }
 
 .label {
@@ -32,47 +35,35 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--base-space-4) 0;
+  gap: var(--base-space-12);
 }
 
 .setNumber {
   font-family: var(--semantic-typography-family-body);
-  font-size: var(--base-font-size-13);
-  font-weight: var(--base-font-weight-bold);
+  font-size: var(--semantic-typography-size-label-md);
+  font-weight: var(--base-font-weight-semibold);
   color: var(--semantic-color-content-secondary);
-  min-width: 16px;
+  line-height: var(--semantic-typography-line-height-body);
 }
 
 .setScore {
   display: flex;
   align-items: center;
-  gap: var(--base-space-4);
+  gap: var(--base-space-2);
+  margin-left: auto;
 }
 
 .team1Games,
 .team2Games {
   font-family: var(--semantic-typography-family-display);
-  font-size: var(--base-font-size-18);
-  font-weight: var(--semantic-typography-weight-strong);
+  font-size: var(--semantic-typography-size-title-md);
+  font-weight: var(--semantic-typography-weight-heading);
   color: var(--semantic-color-content-primary);
 }
 
 .divider {
+  font-family: var(--semantic-typography-family-display);
+  font-size: var(--semantic-typography-size-title-md);
   color: var(--semantic-color-content-secondary);
-  font-weight: var(--base-font-weight-medium);
-}
-
-.winnerIndicator {
-  color: var(--semantic-color-content-success);
-  font-size: var(--base-font-size-14);
-}
-
-.currentIndicator {
-  color: var(--semantic-color-content-accent-primary);
-  font-size: var(--base-font-size-12);
-}
-
-.setRow[aria-current='true'] {
-  background-color: var(--semantic-color-background-surface-muted);
-  border-radius: var(--base-radius-8);
+  font-weight: var(--semantic-typography-weight-heading);
 }

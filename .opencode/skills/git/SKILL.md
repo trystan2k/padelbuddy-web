@@ -795,14 +795,15 @@ POTENTIAL ACTIONS:
 
 ## Copilot PR Review Policy (GitHub)
 
-When the user asks to request a Copilot review on a PR, enforce this strict flow:
+When the user asks to request a Copilot review on a PR, enforce this flow:
 
-1. Use only GitHub CLI reviewer assignment:
+1. First try the preferred command:
    `gh copilot-review "$ORG/$REPO" <pr-number>`
-2. If this command fails (for example, invalid reviewer, permission issue, or CLI error), stop immediately.
-3. Report the failure back to the caller with the exact command and error.
+2. If that command fails or returns `404`, immediately try the GitHub API reviewer-assignment fallback:
+   `gh api "/repos/$ORG/$REPO/pulls/<pr-number>/requested_reviewers" -f "reviewers[]=copilot-pull-request-reviewer[bot]" --method POST`
+3. If both commands fail, report the exact commands and errors back to the caller.
 4. Do not post fallback comments (for example `@copilot review`).
-5. Do not try alternative mechanisms unless the user explicitly asks for them.
+5. Do not try any other alternative mechanisms unless the user explicitly asks for them.
 
 ## Anti-Patterns (ALL MODES)
 

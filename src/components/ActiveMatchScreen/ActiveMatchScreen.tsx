@@ -59,7 +59,7 @@ export function ActiveMatchScreen({
   const team2Name = team2Side?.playerNames.join(' & ') || 'Team 2'
 
   // Score display
-  const { scoreDisplay, activeSetIndex, servingTeam, sideSwitch, winner } = derived
+  const { scoreDisplay, activeSetIndex, servingTeam, sideSwitch } = derived
 
   // Reset dismissed flag when a new side switch prompt appears
   useEffect(() => {
@@ -140,13 +140,13 @@ export function ActiveMatchScreen({
         variant="outline"
         size="lg"
         onClick={handleFinish}
-        disabled={isLoading || !winner}
+        disabled={isLoading}
         testId="finish-button"
       >
         {t('match.actions.finishMatch')}
       </Button>
     ),
-    [handleFinish, isLoading, winner, t]
+    [handleFinish, isLoading, t]
   )
 
   return (
@@ -168,6 +168,7 @@ export function ActiveMatchScreen({
             variant="soft"
             size="sm"
             accent="primary"
+            className={styles.revertButton}
             onClick={handleRevert}
             disabled={isLoading || snapshot.actions.length === 0}
             testId="revert-button-team-1"
@@ -176,23 +177,27 @@ export function ActiveMatchScreen({
           </Button>
         </div>
 
-        {/* Center column: Sets, Info, Time */}
-        <div className={styles.centerColumn}>
+        <div className={styles.setsOverlay}>
           <SetsCard sets={state.sets} currentSetIndex={activeSetIndex} />
+        </div>
+
+        <Chip
+          readonly
+          size="sm"
+          role="timer"
+          aria-label={t('match.timer.label', { time: formattedTime })}
+          className={styles.timerChip}
+          testId="time-chip"
+        >
+          {formattedTime}
+        </Chip>
+
+        <div className={styles.infoOverlay}>
           <InfoCard
             isGoldenPoint={setup.gameMode === 'golden-point'}
             isSuperTiebreak={setup.decidingSetSuperTiebreak}
             sideSwitchPrompts={setup.sideSwitchPrompts}
           />
-          <Chip
-            readonly
-            size="sm"
-            role="timer"
-            aria-label={t('match.timer.label', { time: formattedTime })}
-            testId="time-chip"
-          >
-            {formattedTime}
-          </Chip>
         </div>
 
         {/* Team 2 Panel */}
@@ -211,6 +216,7 @@ export function ActiveMatchScreen({
             variant="soft"
             size="sm"
             accent="secondary"
+            className={styles.revertButton}
             onClick={handleRevert}
             disabled={isLoading || snapshot.actions.length === 0}
             testId="revert-button-team-2"

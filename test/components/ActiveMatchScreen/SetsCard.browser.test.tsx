@@ -28,23 +28,24 @@ describe('SetsCard', () => {
 
     // First set should show 0-0
     await expect.element(screen.getByTestId('set-row-0')).toBeInTheDocument()
-    await expect.element(screen.getByTestId('set-row-0')).toHaveTextContent('1')
+    await expect.element(screen.getByTestId('set-row-0')).toHaveTextContent('Current')
     await expect.element(screen.getByTestId('set-row-0')).toHaveTextContent('0-0')
   })
 
-  test('shows current set indicator', async () => {
+  test('renders fixed set labels from the Pencil design', async () => {
     const setup = createTestSetup()
-    const projection = projectMatch(setup, [])
+    const actions = [...winQuickSet('team-1'), ...winQuickSet('team-2')]
+    const projection = projectMatch(setup, actions)
     const sets = projection.state.sets
 
-    const screen = await render(<SetsCard sets={sets} currentSetIndex={0} />)
+    const screen = await render(<SetsCard sets={sets} currentSetIndex={2} />)
 
-    // Current set should have the indicator
-    const currentIndicator = screen.container.querySelector('[aria-label="Current set"]')
-    expect(currentIndicator).toBeTruthy()
+    await expect.element(screen.getByTestId('set-number-0')).toHaveTextContent('Set 1')
+    await expect.element(screen.getByTestId('set-number-1')).toHaveTextContent('Set 2')
+    await expect.element(screen.getByTestId('set-number-2')).toHaveTextContent('Current')
   })
 
-  test('shows completed set with winner indicator', async () => {
+  test('does not show a winner indicator for completed sets', async () => {
     const setup = createTestSetup()
     const actions = winQuickSet('team-1')
     const projection = projectMatch(setup, actions)
@@ -57,7 +58,7 @@ describe('SetsCard', () => {
     await expect.element(firstSetRow).toBeInTheDocument()
 
     const winnerIndicator = screen.container.querySelector('[aria-label="Set winner"]')
-    expect(winnerIndicator).toBeTruthy()
+    expect(winnerIndicator).toBeNull()
   })
 
   test('shows games for both teams', async () => {
@@ -94,18 +95,14 @@ describe('SetsCard', () => {
 
   test('displays set numbers correctly', async () => {
     const setup = createTestSetup()
-    const projection = projectMatch(setup, [])
+    const actions = [...winQuickSet('team-1'), ...winQuickSet('team-2')]
+    const projection = projectMatch(setup, actions)
     const sets = projection.state.sets
 
-    const screen = await render(<SetsCard sets={sets} currentSetIndex={0} />)
+    const screen = await render(<SetsCard sets={sets} currentSetIndex={2} />)
 
-    // Set numbers should be 1-indexed
-    // aria-current is on the setRow, find the set number inside it using test id
-    const currentRow = screen.container.querySelector('[aria-current="true"]')
-    const setNumberTestId = currentRow
-      ?.getAttribute('data-testid')
-      ?.replace('set-row-', 'set-number-')
-    const setNumber = setNumberTestId ? screen.getByTestId(setNumberTestId) : null
-    await expect.element(setNumber).toHaveTextContent('1')
+    await expect.element(screen.getByTestId('set-number-0')).toHaveTextContent('Set 1')
+    await expect.element(screen.getByTestId('set-number-1')).toHaveTextContent('Set 2')
+    await expect.element(screen.getByTestId('set-number-2')).toHaveTextContent('Current')
   })
 })

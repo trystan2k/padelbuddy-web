@@ -161,8 +161,8 @@
     },
     "sets": {
       "label": "Sets",
-      "winner": "Ganador del set",
-      "current": "Set actual"
+      "setLabel": "Set {{number}}",
+      "currentShort": "Actual"
     },
     "timer": {
       "label": "Tiempo de partido: {{time}}"

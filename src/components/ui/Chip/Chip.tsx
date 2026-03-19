@@ -19,7 +19,7 @@ export interface ChipProps {
   accent?: ChipAccent
   disabled?: boolean
   showDot?: boolean
-  className?: string
+  className?: string | undefined
   /** For dropdown triggers: indicates whether the dropdown is expanded */
   'aria-expanded'?: boolean
   /** For dropdown triggers: references the controlled element */

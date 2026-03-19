@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { useId } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { cn } from '@/lib/utils/cn'
@@ -34,29 +34,19 @@ export function TeamPanel({
   disabled = false
 }: TeamPanelProps) {
   const { t } = useTranslation()
+  const servingStatusId = useId()
 
   const isTeam1 = teamId === 'team-1'
   const panelClass = isTeam1 ? styles.team1Panel : styles.team2Panel
 
-  const handleKeyDown = useCallback(
-    (event: React.KeyboardEvent) => {
-      if (disabled) return
-      if (event.key === 'Enter' || event.key === ' ') {
-        event.preventDefault()
-        onClick()
-      }
-    },
-    [disabled, onClick]
-  )
-
   return (
     <button
       type="button"
-      className={cn(styles.panel, panelClass, isServing && styles.serving)}
+      className={cn(styles.panel, panelClass)}
       onClick={disabled ? undefined : onClick}
-      onKeyDown={handleKeyDown}
       disabled={disabled}
       aria-label={t('match.scorePointFor', { teamName })}
+      {...(isServing ? { 'aria-describedby': servingStatusId } : {})}
       data-testid={`team-panel-${teamId}`}
     >
       {/* Team name */}
@@ -71,11 +61,21 @@ export function TeamPanel({
         <span className={styles.score} aria-live="polite">
           {score}
         </span>
-        {/* Serve indicator bar */}
         {isServing && (
-          <div className={styles.serveBar} aria-label={t('match.serving')}>
-            <span className={styles.serveChip}>{t('match.serving')}</span>
-          </div>
+          <>
+            <div
+              className={styles.serveBar}
+              aria-hidden="true"
+              data-testid={`serve-indicator-${teamId}`}
+            />
+            <span
+              id={servingStatusId}
+              className={styles.srOnly}
+              data-testid={`serve-status-${teamId}`}
+            >
+              {t('match.serving')}
+            </span>
+          </>
         )}
       </div>
 
