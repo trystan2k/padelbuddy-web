@@ -123,7 +123,7 @@ describe('TeamPanel', () => {
     const describedById = button.element().getAttribute('aria-describedby')
     expect(describedById).toBeTruthy()
     const describedElement = describedById
-      ? screen.container.querySelector(`#${describedById}`)
+      ? screen.container.ownerDocument.getElementById(describedById)
       : null
     expect(describedElement).toBeTruthy()
     expect(describedElement?.textContent).toContain('Serving')
