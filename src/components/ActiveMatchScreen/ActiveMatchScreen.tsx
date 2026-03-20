@@ -2,12 +2,14 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 
-import { Layout } from '@/components/Layout'
+import { Layout } from '@/components/Layout/Layout'
 import { TeamPanel } from './TeamPanel'
 import { SetsCard } from './SetsCard'
 import { InfoCard } from './InfoCard'
 import { SideSwitchPrompt } from './SideSwitchPrompt'
-import { Button, Chip, TopBar } from '@/components/ui'
+import { Button } from '@/components/ui/Button'
+import { Chip } from '@/components/ui/Chip'
+import { TopBar } from '@/components/ui/TopBar'
 import { useMatchTimer } from './useMatchTimer'
 import { useMatchSession } from './useMatchSession'
 
@@ -20,6 +22,7 @@ export interface ActiveMatchScreenProps {
   initialSetup: MatchSetup
   initialActions: MatchAction[]
   startedAt: number
+  finishedAt?: number
 }
 
 /**
@@ -28,10 +31,11 @@ export interface ActiveMatchScreenProps {
  * Composed of TeamPanel, SetsCard, InfoCard, Chip (timer), Button-based match controls, SideSwitchPrompt, TopBar
  */
 export function ActiveMatchScreen({
-  matchId: _matchId,
+  matchId,
   initialSetup,
   initialActions,
-  startedAt
+  startedAt,
+  finishedAt
 }: ActiveMatchScreenProps) {
   const navigate = useNavigate()
   const { t } = useTranslation()
@@ -39,15 +43,18 @@ export function ActiveMatchScreen({
 
   // Session hook
   const { snapshot, scorePoint, undoScoreAction, isLoading } = useMatchSession({
+    matchId,
     setup: initialSetup,
     initialActions,
-    startedAt
+    startedAt,
+    ...(typeof finishedAt === 'number' ? { initialFinishedAt: finishedAt } : {})
   })
 
   // Timer hook
   const isMatchCompleted = snapshot.projection.derived.status === 'completed'
   const { formattedTime } = useMatchTimer({
-    startedAt,
+    startedAt: snapshot.startedAt,
+    ...(typeof snapshot.finishedAt === 'number' ? { finishedAt: snapshot.finishedAt } : {}),
     isMatchCompleted
   })
 
@@ -67,6 +74,18 @@ export function ActiveMatchScreen({
       setSideSwitchDismissed(false)
     }
   }, [sideSwitch.shouldPrompt])
+
+  useEffect(() => {
+    if (!isMatchCompleted) {
+      return
+    }
+
+    void navigate({
+      to: '/match/finish/$id',
+      params: { id: matchId },
+      replace: true
+    })
+  }, [isMatchCompleted, matchId, navigate])
 
   // Get score for each team
   const getTeamScore = (teamId: MatchTeamId): string => {
@@ -141,7 +160,7 @@ export function ActiveMatchScreen({
         size="lg"
         onClick={handleFinish}
         disabled={isLoading}
-        testId="finish-button"
+        data-testid="finish-button"
       >
         {t('match.actions.finishMatch')}
       </Button>
@@ -171,7 +190,7 @@ export function ActiveMatchScreen({
             className={styles.revertButton}
             onClick={handleRevert}
             disabled={isLoading || snapshot.actions.length === 0}
-            testId="revert-button-team-1"
+            data-testid="revert-button-team-1"
           >
             {t('match.actions.revertPoint')}
           </Button>
@@ -186,8 +205,8 @@ export function ActiveMatchScreen({
           size="sm"
           role="timer"
           aria-label={t('match.timer.label', { time: formattedTime })}
-          className={styles.timerChip}
-          testId="time-chip"
+          className={styles.timerChip ?? ''}
+          data-testid="time-chip"
         >
           {formattedTime}
         </Chip>
@@ -219,7 +238,7 @@ export function ActiveMatchScreen({
             className={styles.revertButton}
             onClick={handleRevert}
             disabled={isLoading || snapshot.actions.length === 0}
-            testId="revert-button-team-2"
+            data-testid="revert-button-team-2"
           >
             {t('match.actions.revertPoint')}
           </Button>

@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { useCallback, type ComponentPropsWithoutRef } from 'react'
 
 import { Input } from '@base-ui/react/input'
 
@@ -9,16 +9,13 @@ import styles from './TextInput.module.css'
 
 export type TextInputAccent = Accent
 
-export interface TextInputProps {
+export interface TextInputProps extends Omit<
+  ComponentPropsWithoutRef<'input'>,
+  'onChange' | 'value'
+> {
   value: string
   onChange: (value: string) => void
-  placeholder?: string
-  maxLength?: number
-  disabled?: boolean
   accent?: TextInputAccent
-  className?: string
-  id?: string
-  'aria-label'?: string
 }
 
 export function TextInput({
@@ -30,7 +27,8 @@ export function TextInput({
   accent,
   className,
   id,
-  'aria-label': ariaLabel
+  'aria-label': ariaLabel,
+  ...props
 }: TextInputProps) {
   const accentClass =
     accent === 'primary'
@@ -52,6 +50,7 @@ export function TextInput({
       disabled={disabled}
       className={cn(styles.input, accentClass, className)}
       aria-label={ariaLabel}
+      {...props}
     />
   )
 }

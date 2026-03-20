@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Dialog } from '@base-ui/react/dialog'
 
-import { Button } from '@/components/ui'
+import { Button } from '@/components/ui/Button'
 
 import styles from './SideSwitchPrompt.module.css'
 

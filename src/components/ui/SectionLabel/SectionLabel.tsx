@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import type { HTMLAttributes } from 'react'
 
 import { cn } from '@/lib/utils/cn'
 
@@ -7,13 +7,11 @@ import styles from './SectionLabel.module.css'
 
 export type SectionLabelAccent = Accent
 
-export interface SectionLabelProps {
-  children: ReactNode
-  className?: string
+export interface SectionLabelProps extends HTMLAttributes<HTMLParagraphElement> {
   accent?: SectionLabelAccent
 }
 
-export function SectionLabel({ children, className, accent }: SectionLabelProps) {
+export function SectionLabel({ children, className, accent, ...props }: SectionLabelProps) {
   const accentClass =
     accent === 'primary'
       ? styles.accentPrimary
@@ -21,5 +19,9 @@ export function SectionLabel({ children, className, accent }: SectionLabelProps)
         ? styles.accentSecondary
         : undefined
 
-  return <p className={cn(styles.label, accentClass, className)}>{children}</p>
+  return (
+    <p className={cn(styles.label, accentClass, className)} {...props}>
+      {children}
+    </p>
+  )
 }

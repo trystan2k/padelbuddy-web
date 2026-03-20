@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 
-import { Card } from '@/components/ui'
+import { Card } from '@/components/ui/Card'
 
 import styles from './InfoCard.module.css'
 
@@ -19,7 +19,7 @@ export function InfoCard({ isGoldenPoint, isSuperTiebreak, sideSwitchPrompts }: 
   const { t } = useTranslation()
 
   return (
-    <Card className={styles.container} testId="info-card">
+    <Card className={styles.container} data-testid="info-card">
       <span className={styles.label}>{t('match.info.title')}</span>
       <div className={styles.items}>
         <span className={styles.item}>

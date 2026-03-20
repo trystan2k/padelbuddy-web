@@ -8,9 +8,11 @@ import {
 import type { MatchAction, MatchSetup, MatchTeamId } from '@/core/match'
 
 export interface UseMatchSessionOptions {
+  matchId: string
   setup: MatchSetup
   initialActions: MatchAction[]
   startedAt: number
+  initialFinishedAt?: number
   persistence?: CurrentMatchPersistence
 }
 
@@ -26,13 +28,15 @@ export interface UseMatchSessionReturn {
  * Provides reactive snapshot updates and async operation handling.
  */
 export function useMatchSession(options: UseMatchSessionOptions): UseMatchSessionReturn {
-  const { setup, initialActions, startedAt, persistence } = options
+  const { matchId, setup, initialActions, startedAt, initialFinishedAt, persistence } = options
 
   const [session] = useState(() => {
     const sessionOptions = {
+      matchId,
       setup,
       actions: initialActions,
-      startedAt
+      startedAt,
+      ...(typeof initialFinishedAt === 'number' ? { finishedAt: initialFinishedAt } : {})
     } as const
 
     return persistence

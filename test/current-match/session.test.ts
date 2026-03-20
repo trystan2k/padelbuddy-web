@@ -11,26 +11,33 @@ import {
 import { createTestSetup, scorePoints, winQuickGame, winQuickSet } from '../core/match/test-helpers'
 
 describe('current match session', () => {
+  const testMatchId = 'test-match'
   const testStartedAt = Date.now()
+  const testFinishedAt = testStartedAt + 5 * 60 * 1000
 
   test('derives the initial projection from canonical setup and actions', () => {
     const setup = createTestSetup()
     const actions = [...winQuickGame('team-1'), ...scorePoints('team-2')]
 
-    expect(createCurrentMatchSessionSnapshot({ setup, actions, startedAt: testStartedAt })).toEqual(
-      {
+    expect(
+      createCurrentMatchSessionSnapshot({
         setup,
         actions,
-        startedAt: testStartedAt,
-        projection: projectMatch(setup, actions)
-      }
-    )
+        startedAt: testStartedAt
+      })
+    ).toEqual({
+      setup,
+      actions,
+      startedAt: testStartedAt,
+      projection: projectMatch(setup, actions)
+    })
   })
 
   test('persists score mutations after replay projects the next state', async () => {
     const setup = createTestSetup()
     const { persistence, saveCurrentMatchMock } = createPersistenceStub()
     const session = createCurrentMatchSession({
+      matchId: testMatchId,
       setup,
       actions: [],
       startedAt: testStartedAt,
@@ -40,6 +47,7 @@ describe('current match session', () => {
     const snapshot = await session.scorePoint('team-1')
 
     expect(saveCurrentMatchMock).toHaveBeenCalledWith({
+      matchId: testMatchId,
       setup,
       actions: scorePoints('team-1'),
       startedAt: testStartedAt
@@ -61,6 +69,7 @@ describe('current match session', () => {
     const completedActions = winQuickSet('team-1')
     const { persistence, saveCurrentMatchMock } = createPersistenceStub()
     const session = createCurrentMatchSession({
+      matchId: testMatchId,
       setup,
       actions: completedActions,
       startedAt: testStartedAt,
@@ -71,6 +80,7 @@ describe('current match session', () => {
     const undoneActions = undoLastScoringAction(completedActions)
 
     expect(saveCurrentMatchMock).toHaveBeenCalledWith({
+      matchId: testMatchId,
       setup,
       actions: undoneActions,
       startedAt: testStartedAt
@@ -85,6 +95,7 @@ describe('current match session', () => {
     const setup = createTestSetup()
     const { persistence, saveCurrentMatchMock } = createPersistenceStub()
     const session = createCurrentMatchSession({
+      matchId: testMatchId,
       setup,
       actions: [],
       startedAt: testStartedAt,
@@ -106,6 +117,7 @@ describe('current match session', () => {
     const completedActions = winQuickSet('team-1')
     const { persistence, saveCurrentMatchMock } = createPersistenceStub()
     const session = createCurrentMatchSession({
+      matchId: testMatchId,
       setup,
       actions: completedActions,
       startedAt: testStartedAt,
@@ -119,6 +131,33 @@ describe('current match session', () => {
     expect(snapshot.projection).toEqual(projectMatch(setup, completedActions))
   })
 
+  test('captures finishedAt when a score mutation completes the match', async () => {
+    const setup = createTestSetup({
+      format: 'best-of-1'
+    })
+    const actions = winQuickSet('team-1').slice(0, -1)
+    const { persistence, saveCurrentMatchMock } = createPersistenceStub()
+    const session = createCurrentMatchSession({
+      matchId: testMatchId,
+      setup,
+      actions,
+      startedAt: testStartedAt,
+      persistence
+    })
+
+    const snapshot = await session.scorePoint('team-1')
+
+    expect(saveCurrentMatchMock).toHaveBeenCalledWith({
+      matchId: testMatchId,
+      setup,
+      actions: [...actions, { type: 'score-point', teamId: 'team-1' }],
+      startedAt: testStartedAt,
+      finishedAt: expect.any(Number)
+    })
+    expect(snapshot.projection.derived.status).toBe('completed')
+    expect(snapshot.finishedAt).toEqual(expect.any(Number))
+  })
+
   test('persists continued matches using the uncapped setup', async () => {
     const setup = createTestSetup({
       format: 'best-of-1'
@@ -127,23 +166,36 @@ describe('current match session', () => {
     const completedProjection = projectMatch(setup, actions)
     const continuedSetup = continueMatch(setup, completedProjection.state)
     const { persistence, saveCurrentMatchMock } = createPersistenceStub()
-    const session = createCurrentMatchSession({
-      setup,
-      actions,
-      startedAt: testStartedAt,
-      persistence
-    })
+    const resumedNow = testFinishedAt + 10 * 60 * 1000
 
-    const snapshot = await session.continuePlaying()
+    const dateNowSpy = vi.spyOn(Date, 'now').mockReturnValue(resumedNow)
 
-    expect(saveCurrentMatchMock).toHaveBeenCalledWith({
-      setup: continuedSetup,
-      actions,
-      startedAt: testStartedAt
-    })
-    expect(snapshot.setup).toEqual(continuedSetup)
-    expect(snapshot.projection).toEqual(projectMatch(continuedSetup, actions))
-    expect(snapshot.projection.derived.activeSetIndex).toBe(2)
+    try {
+      const session = createCurrentMatchSession({
+        matchId: testMatchId,
+        setup,
+        actions,
+        startedAt: testStartedAt,
+        finishedAt: testFinishedAt,
+        persistence
+      })
+
+      const snapshot = await session.continuePlaying()
+
+      expect(saveCurrentMatchMock).toHaveBeenCalledWith({
+        matchId: testMatchId,
+        setup: continuedSetup,
+        actions,
+        startedAt: resumedNow - (testFinishedAt - testStartedAt)
+      })
+      expect(snapshot.setup).toEqual(continuedSetup)
+      expect(snapshot.startedAt).toBe(resumedNow - (testFinishedAt - testStartedAt))
+      expect(snapshot.finishedAt).toBeUndefined()
+      expect(snapshot.projection).toEqual(projectMatch(continuedSetup, actions))
+      expect(snapshot.projection.derived.activeSetIndex).toBe(2)
+    } finally {
+      dateNowSpy.mockRestore()
+    }
   })
 
   test('returns the existing snapshot when continue-playing is already uncapped', async () => {
@@ -154,6 +206,7 @@ describe('current match session', () => {
     const continuedSetup = continueMatch(setup, projectMatch(setup, completedActions).state)
     const { persistence, saveCurrentMatchMock } = createPersistenceStub()
     const session = createCurrentMatchSession({
+      matchId: testMatchId,
       setup: continuedSetup,
       actions: completedActions,
       startedAt: testStartedAt,
@@ -181,6 +234,7 @@ describe('current match session', () => {
     const actionsWithEndlessPoint = [...completedActions, ...scorePoints('team-2')]
     const { persistence, saveCurrentMatchMock } = createPersistenceStub()
     const session = createCurrentMatchSession({
+      matchId: testMatchId,
       setup: continuedSetup,
       actions: actionsWithEndlessPoint,
       startedAt: testStartedAt,
@@ -190,6 +244,7 @@ describe('current match session', () => {
     const snapshot = await session.undoScoreAction()
 
     expect(saveCurrentMatchMock).toHaveBeenCalledWith({
+      matchId: testMatchId,
       setup: continuedSetup,
       actions: completedActions,
       startedAt: testStartedAt
@@ -217,6 +272,7 @@ describe('current match session', () => {
 
         return {
           schemaVersion: currentMatchSchemaVersion,
+          matchId: testMatchId,
           setup,
           actions: scorePoints('team-1'),
           startedAt: testStartedAt
@@ -227,12 +283,14 @@ describe('current match session', () => {
 
         return {
           schemaVersion: currentMatchSchemaVersion,
+          matchId: testMatchId,
           setup,
           actions: scorePoints('team-1', 'team-2'),
           startedAt: testStartedAt
         }
       })
     const session = createCurrentMatchSession({
+      matchId: testMatchId,
       setup,
       actions: [],
       startedAt: testStartedAt,
@@ -250,6 +308,7 @@ describe('current match session', () => {
 
     expect(saveCurrentMatchMock).toHaveBeenCalledTimes(1)
     expect(saveCurrentMatchMock).toHaveBeenNthCalledWith(1, {
+      matchId: testMatchId,
       setup,
       actions: scorePoints('team-1'),
       startedAt: testStartedAt
@@ -261,6 +320,7 @@ describe('current match session', () => {
 
     expect(saveCurrentMatchMock).toHaveBeenCalledTimes(2)
     expect(saveCurrentMatchMock).toHaveBeenNthCalledWith(2, {
+      matchId: testMatchId,
       setup,
       actions: scorePoints('team-1', 'team-2'),
       startedAt: testStartedAt
@@ -279,12 +339,16 @@ function createPersistenceStub(): {
   persistence: CurrentMatchPersistence
   saveCurrentMatchMock: ReturnType<typeof vi.fn>
 } {
-  const saveCurrentMatchMock = vi.fn(async ({ setup, actions, startedAt }) => ({
-    schemaVersion: currentMatchSchemaVersion,
-    setup,
-    actions,
-    startedAt
-  }))
+  const saveCurrentMatchMock = vi.fn(
+    async ({ matchId = 'current-match', setup, actions, startedAt, finishedAt }) => ({
+      schemaVersion: currentMatchSchemaVersion,
+      matchId,
+      setup,
+      actions,
+      startedAt,
+      ...(typeof finishedAt === 'number' ? { finishedAt } : {})
+    })
+  )
 
   return {
     persistence: {

@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react'
 
 interface UseMatchTimerOptions {
   startedAt: number | null
+  finishedAt?: number
   isMatchCompleted: boolean
 }
 
@@ -16,7 +17,7 @@ interface UseMatchTimerReturn {
  * Calculates elapsed time from startedAt timestamp and formats it for display.
  */
 export function useMatchTimer(options: UseMatchTimerOptions): UseMatchTimerReturn {
-  const { startedAt, isMatchCompleted } = options
+  const { startedAt, finishedAt, isMatchCompleted } = options
 
   const [now, setNow] = useState(Date.now())
 
@@ -38,8 +39,10 @@ export function useMatchTimer(options: UseMatchTimerOptions): UseMatchTimerRetur
     if (startedAt === null) {
       return 0
     }
-    return Math.floor((now - startedAt) / 1000)
-  }, [now, startedAt])
+    const endTimestamp = isMatchCompleted && typeof finishedAt === 'number' ? finishedAt : now
+
+    return Math.max(0, Math.floor((endTimestamp - startedAt) / 1000))
+  }, [finishedAt, isMatchCompleted, now, startedAt])
 
   const formattedTime = useMemo(() => {
     if (startedAt === null) {

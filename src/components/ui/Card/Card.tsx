@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import type { ReactNode, HTMLAttributes } from 'react'
 
 import { cn } from '@/lib/utils/cn'
 
@@ -7,14 +7,13 @@ import styles from './Card.module.css'
 
 export type CardAccent = Accent
 
-export interface CardProps {
+export interface CardProps extends HTMLAttributes<HTMLDivElement> {
   children: ReactNode
   className?: string | undefined
   accent?: CardAccent
-  testId?: string
 }
 
-export function Card({ children, className, accent, testId }: CardProps) {
+export function Card({ children, className, accent, ...props }: CardProps) {
   const accentClass =
     accent === 'primary'
       ? styles.accentPrimary
@@ -23,7 +22,7 @@ export function Card({ children, className, accent, testId }: CardProps) {
         : undefined
 
   return (
-    <div className={cn(styles.card, accentClass, className)} data-testid={testId}>
+    <div {...props} className={cn(styles.card, accentClass, className)}>
       {children}
     </div>
   )

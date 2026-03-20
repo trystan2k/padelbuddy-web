@@ -3,10 +3,14 @@
 
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import { render } from 'vitest-browser-react'
-import type { ReactElement } from 'react'
 
 import { ActiveMatchScreen } from '@/components/ActiveMatchScreen/ActiveMatchScreen'
-import { createTestSetup, winQuickSet } from '../../core/match/test-helpers'
+import {
+  createTestSetup,
+  scorePoints,
+  winQuickGame,
+  winQuickSet
+} from '../../core/match/test-helpers'
 
 // Mock useNavigate
 const mockNavigate = vi.fn()
@@ -23,25 +27,6 @@ vi.mock('@/lib/i18n', async (importOriginal) => {
     changeLocale: vi.fn()
   }
 })
-
-// Mock Layout to avoid complex dependencies
-vi.mock('@/components/Layout', () => ({
-  Layout: ({
-    header,
-    footer,
-    children
-  }: {
-    header: ReactElement
-    footer: ReactElement
-    children: ReactElement
-  }) => (
-    <div data-testid="layout">
-      <div data-testid="header">{header}</div>
-      <div data-testid="content">{children}</div>
-      <div data-testid="footer">{footer}</div>
-    </div>
-  )
-}))
 
 describe('ActiveMatchScreen', () => {
   const defaultStartedAt = Date.now() - 5 * 60 * 1000 // 5 minutes ago
@@ -67,8 +52,7 @@ describe('ActiveMatchScreen', () => {
     )
 
     // Should render layout structure
-    await expect.element(screen.getByTestId('layout')).toBeInTheDocument()
-    await expect.element(screen.getByTestId('content')).toBeInTheDocument()
+    await expect.element(screen.getByTestId('layout-body')).toBeInTheDocument()
   })
 
   test('renders team names', async () => {
@@ -268,10 +252,13 @@ describe('ActiveMatchScreen', () => {
     await expect.element(team2Panel).toBeDisabled()
   })
 
-  test('finish button is enabled and navigates when match is completed', async () => {
+  test('navigates to the finish route when the match is completed', async () => {
     const setup = createTestSetup()
-    // Win two sets to complete the match (best of 3)
-    const actions = [...winQuickSet('team-1'), ...winQuickSet('team-1')]
+    const actions = [
+      ...winQuickSet('team-1'),
+      ...Array.from({ length: 5 }, () => winQuickGame('team-1')).flat(),
+      ...scorePoints('team-1', 'team-1', 'team-1')
+    ]
 
     const screen = await render(
       <ActiveMatchScreen
@@ -282,12 +269,15 @@ describe('ActiveMatchScreen', () => {
       />
     )
 
-    const finishButton = screen.getByTestId('finish-button')
-    await expect.element(finishButton).not.toBeDisabled()
+    await screen.getByTestId('team-panel-team-1').click()
 
-    await finishButton.click()
-
-    expect(mockNavigate).toHaveBeenCalledWith({ to: '/' })
+    await vi.waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledWith({
+        to: '/match/finish/$id',
+        params: { id: 'test-match' },
+        replace: true
+      })
+    })
   })
 
   test('info card reflects setup options', async () => {

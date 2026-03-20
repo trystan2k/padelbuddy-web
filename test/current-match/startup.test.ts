@@ -8,6 +8,7 @@ import { type CurrentMatchPersistence } from '@/lib/current-match'
 import { createTestSetup, winQuickSet } from '../core/match/test-helpers'
 
 describe('current match startup', () => {
+  const testMatchId = 'test-match'
   const testStartedAt = Date.now()
 
   test('treats completed saved matches as ready without a resume prompt', async () => {
@@ -22,6 +23,7 @@ describe('current match startup', () => {
           status: 'ok',
           record: {
             schemaVersion: currentMatchSchemaVersion,
+            matchId: testMatchId,
             setup,
             actions,
             startedAt: testStartedAt
@@ -95,6 +97,7 @@ describe('current match startup', () => {
           status: 'ok',
           record: {
             schemaVersion: currentMatchSchemaVersion,
+            matchId: testMatchId,
             setup,
             actions: [...actions],
             startedAt: testStartedAt

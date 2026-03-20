@@ -1,0 +1,28 @@
+.body {
+  min-height: var(--app-screen-shell-body-height);
+}
+
+.content {
+  display: flex;
+  min-height: 100%;
+  flex-direction: column;
+  gap: var(--base-space-16);
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--base-space-22);
+}
+
+@media (width <= 1023px) {
+  .hero {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (width <= 767px) {
+  .content {
+    gap: var(--base-space-12);
+  }
+}

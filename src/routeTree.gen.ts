@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as MatchIdRouteImport } from './routes/match.$id'
+import { Route as MatchFinishIdRouteImport } from './routes/match.finish.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -22,31 +23,40 @@ const MatchIdRoute = MatchIdRouteImport.update({
   path: '/match/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MatchFinishIdRoute = MatchFinishIdRouteImport.update({
+  id: '/match/finish/$id',
+  path: '/match/finish/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/match/$id': typeof MatchIdRoute
+  '/match/finish/$id': typeof MatchFinishIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/match/$id': typeof MatchIdRoute
+  '/match/finish/$id': typeof MatchFinishIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/match/$id': typeof MatchIdRoute
+  '/match/finish/$id': typeof MatchFinishIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/match/$id'
+  fullPaths: '/' | '/match/$id' | '/match/finish/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/match/$id'
-  id: '__root__' | '/' | '/match/$id'
+  to: '/' | '/match/$id' | '/match/finish/$id'
+  id: '__root__' | '/' | '/match/$id' | '/match/finish/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   MatchIdRoute: typeof MatchIdRoute
+  MatchFinishIdRoute: typeof MatchFinishIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -65,12 +75,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MatchIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/match/finish/$id': {
+      id: '/match/finish/$id'
+      path: '/match/finish/$id'
+      fullPath: '/match/finish/$id'
+      preLoaderRoute: typeof MatchFinishIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   MatchIdRoute: MatchIdRoute,
+  MatchFinishIdRoute: MatchFinishIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

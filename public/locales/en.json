@@ -167,6 +167,34 @@
     "timer": {
       "label": "Match time: {{time}}"
     },
+    "end": {
+      "header": {
+        "appName": "Padel Buddy",
+        "subtitle": "Match Complete"
+      },
+      "winner": {
+        "label": "Winners"
+      },
+      "summary": {
+        "title": "Set Summary",
+        "setLabel": "Set {{number}}",
+        "setScoreRow": "Set {{setNumber}}: {{teamOneName}} {{teamOneScore}}, {{teamTwoName}} {{teamTwoScore}}"
+      },
+      "stats": {
+        "matchLength": "Match length",
+        "totalGames": "Total games",
+        "durationHoursMinutes": "{{hours}}h {{minutes}}m",
+        "durationMinutes": "{{minutes}}m"
+      },
+      "actions": {
+        "newMatch": "New Match",
+        "continue": "Continue"
+      },
+      "aria": {
+        "summaryRegion": "Match result summary",
+        "statisticsRegion": "Match statistics"
+      }
+    },
     "actions": {
       "revertPoint": "Revert point",
       "finishMatch": "Finish Game"

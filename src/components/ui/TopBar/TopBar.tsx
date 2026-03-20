@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useState, type HTMLAttributes } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
@@ -15,7 +15,7 @@ import { cn } from '@/lib/utils/cn'
 
 import styles from './TopBar.module.css'
 
-export interface TopBarProps {
+export interface TopBarProps extends HTMLAttributes<HTMLDivElement> {
   /** App icon image source */
   iconSrc?: string
   /** App icon alt text (for accessibility, defaults to empty for decorative) */
@@ -30,8 +30,6 @@ export interface TopBarProps {
   currentLocale?: SupportedLocale
   /** Callback when locale changes */
   onLocaleChange?: (locale: SupportedLocale) => void
-  /** Additional CSS class */
-  className?: string
 }
 
 export function TopBar({
@@ -42,7 +40,8 @@ export function TopBar({
   showLocaleSelector = false,
   currentLocale: controlledLocale,
   onLocaleChange,
-  className
+  className,
+  ...props
 }: TopBarProps) {
   const { t, i18n } = useTranslation()
   const [showLocaleMenu, setShowLocaleMenu] = useState(false)
@@ -74,7 +73,7 @@ export function TopBar({
   const hasBranding = iconSrc || title || subtitle
 
   return (
-    <div className={cn(styles.container, className)}>
+    <div className={cn(styles.container, className)} {...props}>
       {hasBranding && (
         <div className={styles.branding}>
           <div className={styles.titleRow}>

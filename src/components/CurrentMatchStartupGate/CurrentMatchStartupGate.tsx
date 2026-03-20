@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useRef, useState, type HTMLAttributes } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Button } from '@/components/ui'
@@ -11,8 +11,7 @@ import {
 
 import styles from './CurrentMatchStartupGate.module.css'
 
-interface CurrentMatchStartupGateProps {
-  children: ReactNode
+interface CurrentMatchStartupGateProps extends HTMLAttributes<HTMLElement> {
   persistence?: CurrentMatchPersistence
 }
 
@@ -55,7 +54,11 @@ export function clearCurrentMatchStartup(
   }
 }
 
-export function CurrentMatchStartupGate({ children, persistence }: CurrentMatchStartupGateProps) {
+export function CurrentMatchStartupGate({
+  children,
+  persistence,
+  ...props
+}: CurrentMatchStartupGateProps) {
   const { t } = useTranslation()
   const [startupState, setStartupState] = useState<CurrentMatchStartupViewState>({
     status: 'loading'
@@ -169,7 +172,7 @@ export function CurrentMatchStartupGate({ children, persistence }: CurrentMatchS
 
   if (startupState.status === 'loading') {
     return (
-      <main className={styles.loadingPage}>
+      <main className={styles.loadingPage} {...props}>
         <section className={styles.loadingCard} aria-live="polite">
           <p className={styles.eyebrow}>{t('startupGate.loading.eyebrow')}</p>
           <h1 className={styles.title}>{t('startupGate.loading.title')}</h1>
@@ -181,7 +184,7 @@ export function CurrentMatchStartupGate({ children, persistence }: CurrentMatchS
 
   if (startupState.status === 'corrupt') {
     return (
-      <main className={styles.loadingPage}>
+      <main className={styles.loadingPage} {...props}>
         <section className={styles.recoveryCard} aria-live="assertive">
           <p className={styles.eyebrow}>{t('startupGate.corrupt.eyebrow')}</p>
           <h1 className={styles.title}>{t('startupGate.corrupt.title')}</h1>

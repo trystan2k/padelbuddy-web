@@ -8,6 +8,7 @@ import { getActionFromKey, createDebounce } from '@/lib/input'
 import { createTestSetup, scorePoints, winQuickGame, winQuickSet } from '../core/match/test-helpers'
 
 describe('input regression', () => {
+  const testMatchId = 'test-match'
   const testStartedAt = Date.now()
   let persistence: CurrentMatchPersistence
   // Using Mock type for vitest mock to allow .mock.calls access
@@ -17,8 +18,9 @@ describe('input regression', () => {
   beforeEach(() => {
     saveCurrentMatchMock = vi
       .fn<CurrentMatchPersistence['saveCurrentMatch']>()
-      .mockImplementation(async ({ setup, actions, startedAt }) => ({
+      .mockImplementation(async ({ matchId = testMatchId, setup, actions, startedAt }) => ({
         schemaVersion: currentMatchSchemaVersion,
+        matchId,
         setup,
         actions,
         startedAt: startedAt ?? testStartedAt
@@ -41,6 +43,7 @@ describe('input regression', () => {
 
       // Via session (input path)
       const session = createCurrentMatchSession({
+        matchId: testMatchId,
         setup,
         actions: [],
         startedAt: testStartedAt,
@@ -60,6 +63,7 @@ describe('input regression', () => {
       const setup = createTestSetup()
 
       const session = createCurrentMatchSession({
+        matchId: testMatchId,
         setup,
         actions: [],
         startedAt: testStartedAt,
@@ -85,6 +89,7 @@ describe('input regression', () => {
       ]
 
       const session = createCurrentMatchSession({
+        matchId: testMatchId,
         setup,
         actions: [],
         startedAt: testStartedAt,
@@ -107,6 +112,7 @@ describe('input regression', () => {
       const setup = createTestSetup()
 
       const session = createCurrentMatchSession({
+        matchId: testMatchId,
         setup,
         actions: [],
         startedAt: testStartedAt,
@@ -132,6 +138,7 @@ describe('input regression', () => {
       const setup = createTestSetup()
 
       const session = createCurrentMatchSession({
+        matchId: testMatchId,
         setup,
         actions: [],
         startedAt: testStartedAt,
@@ -157,6 +164,7 @@ describe('input regression', () => {
       const setup = createTestSetup()
 
       const session = createCurrentMatchSession({
+        matchId: testMatchId,
         setup,
         actions: [],
         startedAt: testStartedAt,
@@ -218,6 +226,7 @@ describe('input regression', () => {
       const debounce = createDebounce({ delay: 300 })
 
       const session = createCurrentMatchSession({
+        matchId: testMatchId,
         setup,
         actions: [],
         startedAt: testStartedAt,
@@ -250,6 +259,7 @@ describe('input regression', () => {
       const debounce = createDebounce({ delay: 300 })
 
       const session = createCurrentMatchSession({
+        matchId: testMatchId,
         setup,
         actions: [],
         startedAt: testStartedAt,
@@ -296,6 +306,7 @@ describe('input regression', () => {
       const setup = createTestSetup({ format: 'best-of-1' })
 
       const session = createCurrentMatchSession({
+        matchId: testMatchId,
         setup,
         actions: [],
         startedAt: testStartedAt,
@@ -325,6 +336,7 @@ describe('input regression', () => {
       const setup = createTestSetup({ format: 'best-of-1' })
 
       const session = createCurrentMatchSession({
+        matchId: testMatchId,
         setup,
         actions: [],
         startedAt: testStartedAt,
@@ -350,6 +362,7 @@ describe('input regression', () => {
       const setup = createTestSetup()
 
       const session = createCurrentMatchSession({
+        matchId: testMatchId,
         setup,
         actions: [],
         startedAt: testStartedAt,
@@ -383,6 +396,7 @@ describe('input regression', () => {
       const setup = createTestSetup()
 
       const session = createCurrentMatchSession({
+        matchId: testMatchId,
         setup,
         actions: [],
         startedAt: testStartedAt,

@@ -1,4 +1,4 @@
-import { useId } from 'react'
+import { useId, type ComponentPropsWithoutRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { cn } from '@/lib/utils/cn'
@@ -7,7 +7,7 @@ import type { MatchTeamId } from '@/core/match'
 
 import styles from './TeamPanel.module.css'
 
-export interface TeamPanelProps {
+export interface TeamPanelProps extends Omit<ComponentPropsWithoutRef<'button'>, 'onClick'> {
   teamId: MatchTeamId
   teamName: string
   score: string
@@ -15,7 +15,6 @@ export interface TeamPanelProps {
   isServing: boolean
   isGoldenPointActive: boolean
   onClick: () => void
-  disabled?: boolean
 }
 
 /**
@@ -31,7 +30,9 @@ export function TeamPanel({
   isServing,
   isGoldenPointActive,
   onClick,
-  disabled = false
+  disabled = false,
+  className,
+  ...props
 }: TeamPanelProps) {
   const { t } = useTranslation()
   const servingStatusId = useId()
@@ -41,8 +42,9 @@ export function TeamPanel({
 
   return (
     <button
+      {...props}
       type="button"
-      className={cn(styles.panel, panelClass)}
+      className={cn(styles.panel, panelClass, className)}
       onClick={disabled ? undefined : onClick}
       disabled={disabled}
       aria-label={t('match.scorePointFor', { teamName })}

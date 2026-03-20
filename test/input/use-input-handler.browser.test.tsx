@@ -18,6 +18,8 @@ import {
 
 import { createTestSetup } from '../core/match/test-helpers'
 
+const testMatchId = 'test-match'
+
 // Helper function at module scope to avoid eslint warning about function recreation
 const createOptions = (sessionObj: CurrentMatchSession) => ({ session: sessionObj })
 
@@ -64,8 +66,9 @@ describe('use-input-handler browser', () => {
     mockPersistence = {
       saveCurrentMatch: vi
         .fn<CurrentMatchPersistence['saveCurrentMatch']>()
-        .mockImplementation(async ({ setup, actions, startedAt }) => ({
+        .mockImplementation(async ({ matchId = testMatchId, setup, actions, startedAt }) => ({
           schemaVersion: currentMatchSchemaVersion,
+          matchId,
           setup,
           actions,
           startedAt: startedAt ?? testStartedAt
@@ -74,6 +77,7 @@ describe('use-input-handler browser', () => {
       clearCurrentMatch: vi.fn(async () => undefined)
     }
     session = createCurrentMatchSession({
+      matchId: testMatchId,
       setup: matchSetup,
       actions: [],
       startedAt: testStartedAt,
