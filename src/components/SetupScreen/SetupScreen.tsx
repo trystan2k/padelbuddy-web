@@ -6,17 +6,15 @@ import { createMatchSetup, matchFormats, type MatchFormat } from '@/core/match'
 import { saveCurrentMatch } from '@/lib/current-match'
 import { cn } from '@/lib/utils/cn'
 
-import { Layout } from '@/components/Layout'
-import {
-  Button,
-  Card,
-  Chip,
-  Divider,
-  SectionLabel,
-  TextInput,
-  Toggle,
-  TopBar
-} from '@/components/ui'
+import { Layout } from '@/components/Layout/Layout'
+import { Button } from '@/components/ui/Button'
+import { Card } from '@/components/ui/Card'
+import { Chip } from '@/components/ui/Chip'
+import { Divider } from '@/components/ui/Divider'
+import { SectionLabel } from '@/components/ui/SectionLabel'
+import { TextInput } from '@/components/ui/TextInput'
+import { Toggle } from '@/components/ui/Toggle'
+import { TopBar } from '@/components/ui/TopBar'
 
 import { useSetupForm } from './useSetupForm'
 import styles from './SetupScreen.module.css'

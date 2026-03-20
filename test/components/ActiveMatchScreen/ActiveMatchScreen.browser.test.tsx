@@ -30,7 +30,7 @@ vi.mock('@/lib/i18n', async (importOriginal) => {
 })
 
 // Mock Layout to avoid complex dependencies
-vi.mock('@/components/Layout', () => ({
+vi.mock('@/components/Layout/Layout', () => ({
   Layout: ({
     header,
     footer,

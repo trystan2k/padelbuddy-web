@@ -54,7 +54,7 @@ vi.mock('@/lib/i18n', async (importOriginal) => {
   }
 })
 
-vi.mock('@/components/Layout', () => ({
+vi.mock('@/components/Layout/Layout', () => ({
   Layout: ({
     header,
     children,

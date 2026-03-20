@@ -24,7 +24,7 @@ export interface UseInputHandlerReturn {
   scorePoint: (teamId: MatchTeamId) => Promise<void>
   undo: () => Promise<void>
   handlers: {
-    onKeyDown: (event: KeyboardEvent | React.KeyboardEvent) => void
+    onKeyDown: (event: KeyboardEvent) => void
     onTeam1Score: () => void
     onTeam2Score: () => void
     onUndo: () => void
@@ -110,7 +110,7 @@ export function useInputHandler(
   )
 
   const onKeyDown = useCallback(
-    (event: KeyboardEvent | React.KeyboardEvent) => {
+    (event: KeyboardEvent) => {
       if (!enabled) {
         return
       }

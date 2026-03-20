@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 
-import { Card } from '@/components/ui'
+import { Card } from '@/components/ui/Card'
 import type { TeamScore } from '@/core/match'
 import { cn } from '@/lib/utils/cn'
 

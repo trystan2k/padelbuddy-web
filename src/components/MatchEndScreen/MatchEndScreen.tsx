@@ -2,8 +2,8 @@ import { useCallback, useMemo, useState } from 'react'
 import { useNavigate, useRouter } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 
-import { Layout } from '@/components/Layout'
-import { TopBar } from '@/components/ui'
+import { Layout } from '@/components/Layout/Layout'
+import { TopBar } from '@/components/ui/TopBar'
 import type { MatchAction, MatchFormat, MatchProjection, MatchSetup } from '@/core/match'
 import { clearCurrentMatch, createCurrentMatchSession } from '@/lib/current-match'
 
