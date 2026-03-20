@@ -160,7 +160,7 @@ export function ActiveMatchScreen({
         size="lg"
         onClick={handleFinish}
         disabled={isLoading}
-        data-testId="finish-button"
+        data-testid="finish-button"
       >
         {t('match.actions.finishMatch')}
       </Button>
@@ -190,7 +190,7 @@ export function ActiveMatchScreen({
             className={styles.revertButton}
             onClick={handleRevert}
             disabled={isLoading || snapshot.actions.length === 0}
-            data-testId="revert-button-team-1"
+            data-testid="revert-button-team-1"
           >
             {t('match.actions.revertPoint')}
           </Button>
@@ -206,7 +206,7 @@ export function ActiveMatchScreen({
           role="timer"
           aria-label={t('match.timer.label', { time: formattedTime })}
           className={styles.timerChip ?? ''}
-          data-testId="time-chip"
+          data-testid="time-chip"
         >
           {formattedTime}
         </Chip>
@@ -238,7 +238,7 @@ export function ActiveMatchScreen({
             className={styles.revertButton}
             onClick={handleRevert}
             disabled={isLoading || snapshot.actions.length === 0}
-            data-testId="revert-button-team-2"
+            data-testid="revert-button-team-2"
           >
             {t('match.actions.revertPoint')}
           </Button>

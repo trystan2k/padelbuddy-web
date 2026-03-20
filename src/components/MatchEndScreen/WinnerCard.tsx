@@ -27,7 +27,7 @@ export function WinnerCard({
   const { t } = useTranslation()
 
   return (
-    <Card className={styles.card} data-testId="match-end-winner-card">
+    <Card className={styles.card} data-testid="match-end-winner-card">
       <div className={styles.inner}>
         <div className={styles.content}>
           <div className={styles.trophyBadge} aria-hidden="true">
@@ -51,7 +51,7 @@ export function WinnerCard({
             disabled={isStartingNewMatch}
             onClick={onNewMatch}
             size="sm"
-            data-testId="new-match-button"
+            data-testid="new-match-button"
           >
             {t('match.end.actions.newMatch')}
           </Button>
@@ -60,7 +60,7 @@ export function WinnerCard({
             disabled={isContinuingMatch}
             onClick={onContinue}
             size="sm"
-            data-testId="continue-match-button"
+            data-testid="continue-match-button"
             variant="outline"
           >
             {t('match.end.actions.continue')}

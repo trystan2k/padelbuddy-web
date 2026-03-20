@@ -17,7 +17,7 @@ export function MatchSummaryCard({ formatLabel, teamNames, setRows }: MatchSumma
   const { t } = useTranslation()
 
   return (
-    <Card className={styles.card} data-testId="match-end-summary-card">
+    <Card className={styles.card} data-testid="match-end-summary-card">
       <div className={styles.content}>
         <div className={styles.header}>
           <h2 className={styles.title}>{t('match.end.summary.title')}</h2>
