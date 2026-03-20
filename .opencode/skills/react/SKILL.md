@@ -178,3 +178,4 @@ function SearchInput({ query, onQueryChange }) {
 * **React file naming** [references/component-file-naming.md](references/component-file-naming.md)
 - **React styling conventions** [references/styling-conventions.md](references/styling-conventions.md)
 - **React barrel file imports** [references/bundle-barrel-imports.md](references/bundle-barrel-imports.md)
+- **React component interfaces** [references/component-interfaces.md](references/component-interfaces.md)
