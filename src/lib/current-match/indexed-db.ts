@@ -8,10 +8,10 @@ import {
 } from './persistence'
 import { queueCurrentMatchResetNotice } from './reset-notice'
 
-const defaultDatabaseName = 'padel-buddy-web'
-const defaultDatabaseVersion = 4
-const defaultObjectStoreName = 'current-match'
-const currentMatchRecordKey = 'current-match'
+export const defaultDatabaseName = 'padel-buddy-web'
+export const defaultDatabaseVersion = 4
+export const defaultObjectStoreName = 'current-match'
+export const currentMatchRecordKey = 'current-match'
 
 export interface CurrentMatchPersistenceOptions {
   databaseName?: string

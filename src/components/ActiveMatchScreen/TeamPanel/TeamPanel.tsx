@@ -42,6 +42,7 @@ export function TeamPanel({
 
   return (
     <button
+      {...props}
       type="button"
       className={cn(styles.panel, panelClass, className)}
       onClick={disabled ? undefined : onClick}
@@ -49,7 +50,6 @@ export function TeamPanel({
       aria-label={t('match.scorePointFor', { teamName })}
       {...(isServing ? { 'aria-describedby': servingStatusId } : {})}
       data-testid={`team-panel-${teamId}`}
-      {...props}
     >
       {/* Team name */}
       <div className={styles.teamNameSection}>

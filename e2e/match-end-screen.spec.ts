@@ -2,11 +2,13 @@ import type { Page } from '@playwright/test'
 
 import { test, expect } from './fixtures'
 
-const CURRENT_MATCH_DATABASE_NAME = 'padel-buddy-web'
-// Keep in sync with `defaultDatabaseVersion` in `src/lib/current-match/indexed-db.ts`.
-const CURRENT_MATCH_DATABASE_VERSION = 4
-// Keep in sync with `currentMatchSchemaVersion` in `src/lib/current-match/persistence.ts`.
-const CURRENT_MATCH_SCHEMA_VERSION = 4
+import { defaultDatabaseName, defaultDatabaseVersion } from '../src/lib/current-match/indexed-db'
+import { currentMatchSchemaVersion } from '../src/lib/current-match/persistence'
+
+const CURRENT_MATCH_DATABASE_NAME = defaultDatabaseName
+const CURRENT_MATCH_DATABASE_VERSION = defaultDatabaseVersion
+const CURRENT_MATCH_SCHEMA_VERSION = currentMatchSchemaVersion
+
 const SEEDED_MATCH_STARTED_AT = 1_700_000_000_000
 const SEEDED_MATCH_FINISHED_AT = SEEDED_MATCH_STARTED_AT + 5 * 60 * 1000
 
