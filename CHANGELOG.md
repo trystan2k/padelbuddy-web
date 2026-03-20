@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.10.0](https://github.com/trystan2k/padelbuddy-web/compare/v0.9.0...v0.10.0) (2026-03-20)
+
+
+### Features
+
+* add match end screen UI, view-model, tests, and translations ([2fa8d68](https://github.com/trystan2k/padelbuddy-web/commit/2fa8d68ec70bffd17b4eaaa421baa3d03e67d096))
+
+
+### Bug Fixes
+
+* align active match screen with Pencil design ([#24](https://github.com/trystan2k/padelbuddy-web/issues/24)) ([bfd7210](https://github.com/trystan2k/padelbuddy-web/commit/bfd721063bba5a6017a7f7c66f7d7b3e369c6514))
+
 ## [0.9.0](https://github.com/trystan2k/padelbuddy-web/compare/v0.8.0...v0.9.0) (2026-03-18)
 
 
