@@ -1,4 +1,4 @@
-import { useCallback, type ReactNode } from 'react'
+import { useCallback, type HTMLAttributes, type ReactNode } from 'react'
 import { Button } from '@base-ui/react/button'
 import { Toggle } from '@base-ui/react/toggle'
 
@@ -10,7 +10,7 @@ export type ChipVariant = 'toggle' | 'button'
 export type ChipSize = 'sm' | 'md'
 export type ChipAccent = 'primary' | 'secondary'
 
-export interface ChipProps {
+export interface ChipProps extends HTMLAttributes<HTMLElement> {
   children: ReactNode
   pressed?: boolean
   onPressedChange?: (pressed: boolean) => void
@@ -19,21 +19,8 @@ export interface ChipProps {
   accent?: ChipAccent
   disabled?: boolean
   showDot?: boolean
-  className?: string | undefined
-  /** For dropdown triggers: indicates whether the dropdown is expanded */
-  'aria-expanded'?: boolean
-  /** For dropdown triggers: references the controlled element */
-  'aria-controls'?: string
-  /** For dropdown triggers: declares the popup type */
-  'aria-haspopup'?: boolean | 'false' | 'true' | 'menu' | 'listbox' | 'tree' | 'grid' | 'dialog'
   /** When true, renders as a non-interactive div instead of button */
   readonly?: boolean
-  /** Custom role for readonly mode (e.g., "timer", "status") */
-  role?: string
-  /** Accessible label for readonly mode */
-  'aria-label'?: string
-  /** Test ID for testing */
-  testId?: string
 }
 
 export function Chip({
@@ -47,12 +34,8 @@ export function Chip({
   showDot = false,
   className,
   'aria-expanded': ariaExpanded,
-  'aria-controls': ariaControls,
-  'aria-haspopup': ariaHaspopup,
   readonly = false,
-  role,
-  'aria-label': ariaLabel,
-  testId
+  ...props
 }: ChipProps) {
   const sizeClass = size === 'sm' ? styles.sizeSm : styles.sizeMd
   const accentClass = accent === 'secondary' ? styles.accentSecondary : undefined
@@ -69,10 +52,8 @@ export function Chip({
   if (readonly) {
     return (
       <div
+        {...props}
         className={cn(styles.chip, sizeClass, accentClass, className)}
-        role={role}
-        aria-label={ariaLabel}
-        data-testid={testId}
         data-readonly=""
       >
         {showDot && <span className={styles.dot} aria-hidden="true" />}
@@ -84,14 +65,11 @@ export function Chip({
   if (effectiveVariant === 'button') {
     return (
       <Button
+        {...props}
         onClick={handleButtonClick}
         disabled={disabled}
         className={cn(styles.chip, sizeClass, accentClass, className)}
         aria-expanded={ariaExpanded}
-        aria-controls={ariaControls}
-        aria-haspopup={ariaHaspopup}
-        aria-label={ariaLabel}
-        data-testid={testId}
         data-pressed={pressed || undefined}
       >
         {showDot && <span className={styles.dot} aria-hidden="true" />}
@@ -102,12 +80,11 @@ export function Chip({
 
   return (
     <Toggle
+      {...props}
       pressed={pressed}
       onPressedChange={onPressedChange}
       disabled={disabled}
       className={cn(styles.chip, sizeClass, accentClass, className)}
-      aria-label={ariaLabel}
-      data-testid={testId}
     >
       {showDot && <span className={styles.dot} aria-hidden="true" />}
       {children}

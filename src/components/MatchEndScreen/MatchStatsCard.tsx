@@ -15,7 +15,7 @@ export function MatchStatsCard({ durationValue, totalGames }: MatchStatsCardProp
 
   return (
     <section aria-label={t('match.end.aria.statisticsRegion')} className={styles.region}>
-      <Card className={styles.card} testId="match-end-stats-card">
+      <Card className={styles.card} data-testId="match-end-stats-card">
         <div className={styles.inner}>
           <div className={styles.statBlock}>
             <p className={styles.statLabel}>{t('match.end.stats.matchLength')}</p>

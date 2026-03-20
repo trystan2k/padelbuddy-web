@@ -500,17 +500,6 @@ describe('Chip', () => {
       await expect.element(timer).toHaveAttribute('aria-label', 'Match timer: 10:30')
     })
 
-    test('applies data-testid', async () => {
-      const screen = await render(
-        <Chip readonly testId="time-chip">
-          Time
-        </Chip>
-      )
-
-      const chip = screen.getByTestId('time-chip')
-      await expect.element(chip).toBeInTheDocument()
-    })
-
     test('does not have interactive attributes', async () => {
       const screen = await render(<Chip readonly>Readonly</Chip>)
 

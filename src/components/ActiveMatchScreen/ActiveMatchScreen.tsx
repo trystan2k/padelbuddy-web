@@ -204,7 +204,7 @@ export function ActiveMatchScreen({
           role="timer"
           aria-label={t('match.timer.label', { time: formattedTime })}
           className={styles.timerChip ?? ''}
-          testId="time-chip"
+          data-testId="time-chip"
         >
           {formattedTime}
         </Chip>

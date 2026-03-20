@@ -19,7 +19,7 @@ export function InfoCard({ isGoldenPoint, isSuperTiebreak, sideSwitchPrompts }: 
   const { t } = useTranslation()
 
   return (
-    <Card className={styles.container} testId="info-card">
+    <Card className={styles.container} data-testId="info-card">
       <span className={styles.label}>{t('match.info.title')}</span>
       <div className={styles.items}>
         <span className={styles.item}>

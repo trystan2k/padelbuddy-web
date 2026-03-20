@@ -26,7 +26,7 @@ export function WinnerCard({
   const { t } = useTranslation()
 
   return (
-    <Card className={styles.card} testId="match-end-winner-card">
+    <Card className={styles.card} data-testId="match-end-winner-card">
       <div className={styles.inner}>
         <div className={styles.content}>
           <div className={styles.trophyBadge} aria-hidden="true">
