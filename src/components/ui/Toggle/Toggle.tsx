@@ -1,16 +1,17 @@
+import type { HTMLAttributes } from 'react'
+
 import { Switch } from '@base-ui/react/switch'
 
 import { cn } from '@/lib/utils/cn'
 
 import styles from './Toggle.module.css'
 
-export interface ToggleProps {
+export interface ToggleProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onChange'> {
   checked: boolean
   onChange: (checked: boolean) => void
   label: string
   hint?: string
   disabled?: boolean
-  className?: string
 }
 
 export function Toggle({
@@ -19,10 +20,11 @@ export function Toggle({
   label,
   hint,
   disabled = false,
-  className
+  className,
+  ...props
 }: ToggleProps) {
   return (
-    <div className={cn(styles.row, className)}>
+    <div className={cn(styles.row, className)} {...props}>
       <div className={styles.labelGroup}>
         <span className={styles.title}>{label}</span>
         {hint && <span className={styles.hint}>{hint}</span>}
