@@ -30,28 +30,31 @@ export function MatchFinishRouteContent({ matchId, matchData }: MatchFinishRoute
   const { t } = useTranslation()
   const navigate = useNavigate()
   const routeState = resolveMatchRouteState(matchId, matchData, 'finish')
+  const routeStateStatus = routeState.status
+  const redirectMatchId = routeStateStatus === 'redirect-active' ? routeState.matchId : null
+  const corruptMessage = matchData.status === 'corrupt' ? matchData.message : null
 
   useEffect(() => {
-    if (matchData.status === 'corrupt') {
-      console.error('Corrupted match data:', matchData.message)
+    if (corruptMessage !== null) {
+      console.error('Corrupted match data:', corruptMessage)
     }
 
-    if (routeState.status === 'redirect-home') {
+    if (routeStateStatus === 'redirect-home') {
       void navigate({ to: '/' })
       return
     }
 
-    if (routeState.status === 'redirect-active') {
+    if (routeStateStatus === 'redirect-active' && redirectMatchId !== null) {
       void navigate({
         to: '/match/$id',
-        params: { id: routeState.matchId },
+        params: { id: redirectMatchId },
         replace: true
       })
       return
     }
-  }, [matchData, navigate, routeState])
+  }, [corruptMessage, navigate, redirectMatchId, routeStateStatus])
 
-  if (routeState.status !== 'ready') {
+  if (routeStateStatus !== 'ready') {
     return (
       <main>
         <p>{t('common.loading')}</p>

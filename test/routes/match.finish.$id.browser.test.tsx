@@ -60,20 +60,24 @@ describe('match.finish.$id route content', () => {
   test('redirects home when the saved match is corrupt', async () => {
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined)
 
-    await render(
-      <MatchFinishRouteContent
-        matchData={{
-          status: 'corrupt',
-          message: 'bad record'
-        }}
-        matchId="match-finish"
-      />
-    )
+    try {
+      await render(
+        <MatchFinishRouteContent
+          matchData={{
+            status: 'corrupt',
+            message: 'bad record'
+          }}
+          matchId="match-finish"
+        />
+      )
 
-    await vi.waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith({ to: '/' })
-    })
-    expect(consoleErrorSpy).toHaveBeenCalledWith('Corrupted match data:', 'bad record')
+      await vi.waitFor(() => {
+        expect(mockNavigate).toHaveBeenCalledWith({ to: '/' })
+      })
+      expect(consoleErrorSpy).toHaveBeenCalledWith('Corrupted match data:', 'bad record')
+    } finally {
+      consoleErrorSpy.mockRestore()
+    }
   })
 
   test('renders the finish screen for completed matches', async () => {

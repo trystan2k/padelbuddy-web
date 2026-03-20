@@ -61,6 +61,24 @@ describe('current match persistence helpers', () => {
     })
   })
 
+  test('trims match ids when creating and decoding persisted records', () => {
+    const setup = createTestSetup()
+    const record = createCurrentMatchRecord({
+      matchId: `  ${testMatchId}  `,
+      setup,
+      actions: [],
+      startedAt: testStartedAt
+    })
+
+    expect(record.matchId).toBe(testMatchId)
+    expect(
+      parseCurrentMatchRecord({
+        ...record,
+        matchId: `  ${testMatchId}  `
+      }).matchId
+    ).toBe(testMatchId)
+  })
+
   test('persists and restores finishedAt for completed matches', () => {
     const setup = createTestSetup({
       format: 'best-of-1'
@@ -153,6 +171,21 @@ describe('current match persistence helpers', () => {
     ).toEqual({
       status: 'corrupt',
       message: 'Invalid current match action team: team-3'
+    })
+  })
+
+  test('rejects blank match ids after trimming whitespace', () => {
+    expect(
+      decodeCurrentMatchRecord({
+        schemaVersion: currentMatchSchemaVersion,
+        matchId: '   ',
+        setup: createTestSetup(),
+        actions: [],
+        startedAt: testStartedAt
+      })
+    ).toEqual({
+      status: 'corrupt',
+      message: 'Current match matchId must be a non-empty string.'
     })
   })
 

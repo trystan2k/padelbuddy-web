@@ -18,7 +18,6 @@ export interface ButtonProps extends Omit<
   variant?: ButtonVariant
   size?: ButtonSize
   accent?: ButtonAccent
-  testId?: string
 }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
@@ -30,7 +29,6 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
     variant = 'solid',
     size = 'lg',
     accent = 'success',
-    testId,
     ...buttonProps
   },
   ref
@@ -53,7 +51,6 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       type={type}
       disabled={disabled}
       className={cn(styles.button, variantClass, sizeClass, accentClass, className)}
-      data-testid={testId}
       {...buttonProps}
     >
       {children}

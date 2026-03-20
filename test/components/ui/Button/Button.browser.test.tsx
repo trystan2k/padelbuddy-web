@@ -245,30 +245,6 @@ describe('Button', () => {
     })
   })
 
-  describe('testId', () => {
-    test('renders with data-testid attribute', async () => {
-      const screen = await render(
-        <Button onClick={() => {}} testId="test-button">
-          Test Button
-        </Button>
-      )
-
-      const button = screen.getByTestId('test-button')
-      await expect.element(button).toBeInTheDocument()
-    })
-
-    test('works with all variants and testId', async () => {
-      const screen = await render(
-        <Button variant="outline" size="sm" accent="primary" onClick={() => {}} testId="custom-id">
-          Custom Button
-        </Button>
-      )
-
-      const button = screen.getByTestId('custom-id')
-      await expect.element(button).toBeInTheDocument()
-    })
-  })
-
   describe('combination tests', () => {
     test('solid + lg + success (default PrimaryButton equivalent)', async () => {
       const screen = await render(

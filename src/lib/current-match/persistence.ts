@@ -130,11 +130,17 @@ export function decodeCurrentMatchRecord(input: unknown): CurrentMatchDecodeResu
 }
 
 function parseMatchId(input: unknown): string {
-  if (typeof input !== 'string' || input.trim().length === 0) {
+  if (typeof input !== 'string') {
     throw new Error('Current match matchId must be a non-empty string.')
   }
 
-  return input
+  const matchId = input.trim()
+
+  if (matchId.length === 0) {
+    throw new Error('Current match matchId must be a non-empty string.')
+  }
+
+  return matchId
 }
 
 function parseStartedAt(input: unknown): number {

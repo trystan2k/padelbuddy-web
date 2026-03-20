@@ -50,7 +50,7 @@ export function WinnerCard({
             disabled={isStartingNewMatch}
             onClick={onNewMatch}
             size="sm"
-            testId="new-match-button"
+            data-testId="new-match-button"
           >
             {t('match.end.actions.newMatch')}
           </Button>
@@ -59,7 +59,7 @@ export function WinnerCard({
             disabled={isContinuingMatch}
             onClick={onContinue}
             size="sm"
-            testId="continue-match-button"
+            data-testId="continue-match-button"
             variant="outline"
           >
             {t('match.end.actions.continue')}

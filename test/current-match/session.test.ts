@@ -168,29 +168,34 @@ describe('current match session', () => {
     const { persistence, saveCurrentMatchMock } = createPersistenceStub()
     const resumedNow = testFinishedAt + 10 * 60 * 1000
 
-    vi.spyOn(Date, 'now').mockReturnValue(resumedNow)
-    const session = createCurrentMatchSession({
-      matchId: testMatchId,
-      setup,
-      actions,
-      startedAt: testStartedAt,
-      finishedAt: testFinishedAt,
-      persistence
-    })
+    const dateNowSpy = vi.spyOn(Date, 'now').mockReturnValue(resumedNow)
 
-    const snapshot = await session.continuePlaying()
+    try {
+      const session = createCurrentMatchSession({
+        matchId: testMatchId,
+        setup,
+        actions,
+        startedAt: testStartedAt,
+        finishedAt: testFinishedAt,
+        persistence
+      })
 
-    expect(saveCurrentMatchMock).toHaveBeenCalledWith({
-      matchId: testMatchId,
-      setup: continuedSetup,
-      actions,
-      startedAt: resumedNow - (testFinishedAt - testStartedAt)
-    })
-    expect(snapshot.setup).toEqual(continuedSetup)
-    expect(snapshot.startedAt).toBe(resumedNow - (testFinishedAt - testStartedAt))
-    expect(snapshot.finishedAt).toBeUndefined()
-    expect(snapshot.projection).toEqual(projectMatch(continuedSetup, actions))
-    expect(snapshot.projection.derived.activeSetIndex).toBe(2)
+      const snapshot = await session.continuePlaying()
+
+      expect(saveCurrentMatchMock).toHaveBeenCalledWith({
+        matchId: testMatchId,
+        setup: continuedSetup,
+        actions,
+        startedAt: resumedNow - (testFinishedAt - testStartedAt)
+      })
+      expect(snapshot.setup).toEqual(continuedSetup)
+      expect(snapshot.startedAt).toBe(resumedNow - (testFinishedAt - testStartedAt))
+      expect(snapshot.finishedAt).toBeUndefined()
+      expect(snapshot.projection).toEqual(projectMatch(continuedSetup, actions))
+      expect(snapshot.projection.derived.activeSetIndex).toBe(2)
+    } finally {
+      dateNowSpy.mockRestore()
+    }
   })
 
   test('returns the existing snapshot when continue-playing is already uncapped', async () => {

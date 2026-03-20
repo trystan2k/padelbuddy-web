@@ -158,7 +158,7 @@ export function ActiveMatchScreen({
         size="lg"
         onClick={handleFinish}
         disabled={isLoading}
-        testId="finish-button"
+        data-testId="finish-button"
       >
         {t('match.actions.finishMatch')}
       </Button>
@@ -188,7 +188,7 @@ export function ActiveMatchScreen({
             className={styles.revertButton}
             onClick={handleRevert}
             disabled={isLoading || snapshot.actions.length === 0}
-            testId="revert-button-team-1"
+            data-testId="revert-button-team-1"
           >
             {t('match.actions.revertPoint')}
           </Button>
@@ -236,7 +236,7 @@ export function ActiveMatchScreen({
             className={styles.revertButton}
             onClick={handleRevert}
             disabled={isLoading || snapshot.actions.length === 0}
-            testId="revert-button-team-2"
+            data-testId="revert-button-team-2"
           >
             {t('match.actions.revertPoint')}
           </Button>
