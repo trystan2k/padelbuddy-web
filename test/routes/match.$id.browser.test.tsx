@@ -23,16 +23,6 @@ vi.mock('@tanstack/react-router', async (importOriginal) => {
   }
 })
 
-vi.mock('@/components/ActiveMatchScreen', () => ({
-  ActiveMatchScreen: ({ matchId }: { matchId: string }) => (
-    <div data-testid="active-match-screen">active:{matchId}</div>
-  )
-}))
-
-vi.mock('@/components/MatchEndScreen', () => ({
-  MatchEndScreen: () => <div data-testid="match-end-screen-stub">completed</div>
-}))
-
 describe('match.$id route content', () => {
   const testMatchId = 'match-1'
 
@@ -59,7 +49,7 @@ describe('match.$id route content', () => {
       />
     )
 
-    await expect.element(screen.getByTestId('active-match-screen')).toBeInTheDocument()
+    await expect.element(screen.getByTestId('layout-body')).toBeInTheDocument()
   })
 
   test('redirects completed matches to the finish route', async () => {

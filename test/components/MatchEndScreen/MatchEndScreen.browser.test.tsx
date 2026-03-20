@@ -3,7 +3,6 @@
 
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import { render } from 'vitest-browser-react'
-import type { ReactElement } from 'react'
 
 import { MatchEndScreen } from '@/components/MatchEndScreen'
 import { projectMatch } from '@/core/match'
@@ -54,24 +53,6 @@ vi.mock('@/lib/i18n', async (importOriginal) => {
   }
 })
 
-vi.mock('@/components/Layout/Layout', () => ({
-  Layout: ({
-    header,
-    children,
-    footer
-  }: {
-    header: ReactElement
-    children: ReactElement
-    footer?: ReactElement
-  }) => (
-    <div data-testid="layout">
-      <div data-testid="header">{header}</div>
-      <div data-testid="content">{children}</div>
-      <div data-testid="footer">{footer}</div>
-    </div>
-  )
-}))
-
 describe('MatchEndScreen', () => {
   const currentTime = new Date('2026-03-19T13:24:00.000Z')
   const startedAt = currentTime.getTime() - 20 * 60 * 1000
@@ -119,8 +100,12 @@ describe('MatchEndScreen', () => {
     await expect
       .element(screen.getByRole('region', { name: 'Match statistics' }))
       .toBeInTheDocument()
-    await expect.element(screen.getByTestId('footer')).toHaveTextContent('Match length')
-    await expect.element(screen.getByTestId('footer')).toHaveTextContent('Total games')
+    await expect
+      .element(screen.getByTestId('match-end-stats-card'))
+      .toHaveTextContent('Match length')
+    await expect
+      .element(screen.getByTestId('match-end-stats-card'))
+      .toHaveTextContent('Total games')
     await expect.element(screen.getByTestId('match-end-total-games')).toHaveTextContent('12')
     await expect.element(screen.getByTestId('match-end-duration')).toHaveTextContent('5m')
     await expect

@@ -23,10 +23,6 @@ vi.mock('@tanstack/react-router', async (importOriginal) => {
   }
 })
 
-vi.mock('@/components/MatchEndScreen', () => ({
-  MatchEndScreen: () => <div data-testid="match-end-screen-stub">completed</div>
-}))
-
 describe('match.finish.$id route content', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -99,7 +95,7 @@ describe('match.finish.$id route content', () => {
       />
     )
 
-    await expect.element(screen.getByTestId('match-end-screen-stub')).toBeInTheDocument()
+    await expect.element(screen.getByTestId('match-end-screen')).toBeInTheDocument()
   })
 
   test('redirects in-progress matches back to the active route', async () => {

@@ -3,7 +3,6 @@
 
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import { render } from 'vitest-browser-react'
-import type { ReactElement } from 'react'
 
 import { ActiveMatchScreen } from '@/components/ActiveMatchScreen/ActiveMatchScreen'
 import {
@@ -29,25 +28,6 @@ vi.mock('@/lib/i18n', async (importOriginal) => {
   }
 })
 
-// Mock Layout to avoid complex dependencies
-vi.mock('@/components/Layout/Layout', () => ({
-  Layout: ({
-    header,
-    footer,
-    children
-  }: {
-    header: ReactElement
-    footer: ReactElement
-    children: ReactElement
-  }) => (
-    <div data-testid="layout">
-      <div data-testid="header">{header}</div>
-      <div data-testid="content">{children}</div>
-      <div data-testid="footer">{footer}</div>
-    </div>
-  )
-}))
-
 describe('ActiveMatchScreen', () => {
   const defaultStartedAt = Date.now() - 5 * 60 * 1000 // 5 minutes ago
 
@@ -72,8 +52,7 @@ describe('ActiveMatchScreen', () => {
     )
 
     // Should render layout structure
-    await expect.element(screen.getByTestId('layout')).toBeInTheDocument()
-    await expect.element(screen.getByTestId('content')).toBeInTheDocument()
+    await expect.element(screen.getByTestId('layout-body')).toBeInTheDocument()
   })
 
   test('renders team names', async () => {
