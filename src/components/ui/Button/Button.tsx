@@ -44,7 +44,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       : accent === 'secondary'
         ? styles.accentSecondary
         : accent === 'danger'
-          ? styles.danger
+          ? styles.accentDanger
           : styles.accentSuccess
 
   return (

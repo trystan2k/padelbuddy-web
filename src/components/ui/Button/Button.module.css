@@ -95,7 +95,11 @@
   background-color: var(--semantic-color-action-primary);
 }
 
-.soft.accentPrimary {
+.solid.accentDanger {
+  background-color: var(--semantic-color-action-danger);
+}
+
+.solid.accent .soft.accentPrimary {
   background-color: var(--semantic-color-background-accent-primary-subtle);
   border: 1px solid var(--semantic-color-border-accent-primary);
   color: var(--semantic-color-content-accent-primary);
@@ -112,7 +116,7 @@
   border: 1px solid var(--semantic-color-border-subtle);
 }
 
-.soft.danger {
+.soft.accentDanger {
   background-color: var(--semantic-color-background-accent-danger-subtle);
   border: 1px solid var(--semantic-color-border-accent-danger);
   color: var(--semantic-color-content-danger);
