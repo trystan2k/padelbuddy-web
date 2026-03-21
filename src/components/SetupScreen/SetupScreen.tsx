@@ -224,7 +224,6 @@ export function SetupScreen() {
               </>
             </Chip>
             <Chip
-              className={styles.setChip}
               pressed={formData.initialServer === 'team-2'}
               onPressedChange={handleTeam2ServerSelect}
             >
@@ -252,7 +251,6 @@ export function SetupScreen() {
           <div className={styles.formatRow}>
             {matchFormats.map((format) => (
               <Chip
-                className={styles.setChip}
                 key={format}
                 pressed={formData.format === format}
                 onPressedChange={createFormatClickHandler(format)}

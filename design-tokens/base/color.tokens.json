@@ -19,7 +19,8 @@
         "success": { "value": "#1FA24A", "type": "color" },
         "success-subtle": { "value": "#E0F4E6", "type": "color" },
         "highlight": { "value": "#D8EA42", "type": "color" },
-        "danger": { "value": "#D64A4A", "type": "color" }
+        "danger": { "value": "#D64A4A", "type": "color" },
+        "danger-subtle": { "value": "#FCECEC", "type": "color" }
       },
       "items": {
         "primary": {

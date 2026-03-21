@@ -187,7 +187,7 @@ export function ActiveMatchScreen({
           <Button
             variant="soft"
             size="sm"
-            accent="primary"
+            accent="danger"
             className={styles.revertButton}
             onClick={handleRevert}
             disabled={isLoading || snapshot.actions.length === 0}
@@ -235,7 +235,7 @@ export function ActiveMatchScreen({
           <Button
             variant="soft"
             size="sm"
-            accent="secondary"
+            accent="danger"
             className={styles.revertButton}
             onClick={handleRevert}
             disabled={isLoading || snapshot.actions.length === 0}

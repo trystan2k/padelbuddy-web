@@ -27,6 +27,7 @@
           "value": "{base.color.brand.secondary-subtle}",
           "type": "color"
         },
+        "accent-danger-subtle": { "value": "{base.color.brand.danger-subtle}", "type": "color" },
         "success-subtle": { "value": "{base.color.brand.success-subtle}", "type": "color" },
         "critical-subtle": { "value": "{base.color.feedback.critical-subtle}", "type": "color" },
         "critical-subtle-alt": {
@@ -47,6 +48,7 @@
         "subtle": { "value": "{base.color.border.subtle}", "type": "color" },
         "accent-primary": { "value": "{base.color.brand.primary}", "type": "color" },
         "accent-secondary": { "value": "{base.color.brand.secondary}", "type": "color" },
+        "accent-danger": { "value": "{base.color.brand.danger}", "type": "color" },
         "critical-subtle": { "value": "{base.color.border.critical-subtle}", "type": "color" },
         "critical-subtle-alt": {
           "value": "{base.color.border.critical-subtle-alt}",
@@ -56,7 +58,8 @@
       "action": {
         "primary": { "value": "{base.color.brand.success}", "type": "color" },
         "accent-primary": { "value": "{base.color.brand.primary}", "type": "color" },
-        "accent-secondary": { "value": "{base.color.brand.secondary}", "type": "color" }
+        "accent-secondary": { "value": "{base.color.brand.secondary}", "type": "color" },
+        "accent-danger": { "value": "{base.color.brand.danger}", "type": "color" }
       }
     }
   }
