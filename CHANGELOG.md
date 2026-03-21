@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.0](https://github.com/trystan2k/padelbuddy-web/compare/v0.11.0...v0.12.0) (2026-03-21)
+
+
+### Features
+
+* add items design tokens and migrate components from accent to items semantic layer ([#30](https://github.com/trystan2k/padelbuddy-web/issues/30)) ([9a3093e](https://github.com/trystan2k/padelbuddy-web/commit/9a3093e1c8e7ae0f62bd4c8d2e89f5d1ace0d580))
+
 ## [0.11.0](https://github.com/trystan2k/padelbuddy-web/compare/v0.10.0...v0.11.0) (2026-03-21)
 
 
