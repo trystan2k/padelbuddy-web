@@ -21,6 +21,7 @@
         "16": { "value": "16px", "type": "fontSizes" },
         "18": { "value": "18px", "type": "fontSizes" },
         "20": { "value": "20px", "type": "fontSizes" },
+        "22": { "value": "22px", "type": "fontSizes" },
         "24": { "value": "24px", "type": "fontSizes" },
         "26": { "value": "26px", "type": "fontSizes" },
         "28": { "value": "28px", "type": "fontSizes" },

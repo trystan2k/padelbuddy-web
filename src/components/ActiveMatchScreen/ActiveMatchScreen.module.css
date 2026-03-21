@@ -4,7 +4,6 @@
 
 .scorePanel {
   --app-active-match-revert-width: calc(var(--base-space-8) * 28);
-  --app-active-match-timer-top: calc(var(--base-space-8) * 30);
   --app-active-match-info-top: calc(var(--base-space-8) * 48);
 
   position: relative;
@@ -43,8 +42,7 @@
 }
 
 .setsOverlay,
-.infoOverlay,
-.timerChip {
+.infoOverlay {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
@@ -56,11 +54,20 @@
 }
 
 .timerChip {
-  top: var(--app-active-match-timer-top);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: max-content;
+  padding: var(--base-space-10) var(--base-space-16);
+  border: 1px solid var(--semantic-color-border-subtle);
+  border-radius: var(--base-radius-20);
+  background-color: var(--semantic-color-background-surface);
   pointer-events: none;
   font-family: var(--semantic-typography-family-display);
-  font-size: var(--semantic-typography-size-title-sm);
-  font-weight: var(--semantic-typography-weight-strong);
+  font-size: var(--semantic-typography-size-title-lg);
+  font-weight: var(--semantic-typography-weight-heading);
+  letter-spacing: -0.5px;
+  line-height: 1;
   color: var(--semantic-color-content-primary);
 }
 
@@ -93,8 +100,7 @@
   }
 
   .setsOverlay,
-  .infoOverlay,
-  .timerChip {
+  .infoOverlay {
     position: static;
     left: auto;
     transform: none;
@@ -104,12 +110,8 @@
     order: 3;
   }
 
-  .timerChip {
-    order: 4;
-  }
-
   .infoOverlay {
-    order: 5;
+    order: 4;
   }
 }
 
@@ -119,13 +121,8 @@
   }
 
   .revertButton,
-  .timerChip,
   .setsOverlay,
   .infoOverlay {
     width: 100%;
-  }
-
-  .timerChip {
-    justify-content: center;
   }
 }

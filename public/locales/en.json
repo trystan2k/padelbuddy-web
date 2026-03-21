@@ -155,13 +155,22 @@
       "superTiebreak": "Super Tiebreak",
       "superTiebreakHint": "Final set tiebreak to 10 points",
       "sideSwitch": "Side-switch Prompts",
-      "sideSwitchHint": "Prompt players for court side changes"
+      "sideSwitchHint": "Prompt players for court side changes",
+      "countdownTimer": "Countdown Timer",
+      "countdownTimerHint": "Count down from a set match duration",
+      "countdownDuration": {
+        "label": "Match duration",
+        "oneHour": "1:00 h",
+        "ninetyMinutes": "1:30 h",
+        "twoHours": "2:00 h"
+      }
     },
     "startButton": "Start Match",
     "validation": {
       "teamNamesRequired": "Both team names are required",
       "selectFormat": "Please select a match format",
-      "selectServer": "Please select the first server"
+      "selectServer": "Please select the first server",
+      "invalidCountdownDuration": "Please select a valid countdown duration"
     }
   },
   "match": {
@@ -190,7 +199,8 @@
       "currentShort": "Current"
     },
     "timer": {
-      "label": "Match time: {{time}}"
+      "label": "Current time: {{time}}",
+      "countdownLabel": "Remaining match time: {{time}}"
     },
     "end": {
       "header": {

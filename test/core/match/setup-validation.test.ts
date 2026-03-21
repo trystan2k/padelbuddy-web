@@ -7,6 +7,8 @@ const baseInput: MatchSetupInput = {
   gameMode: 'advantage',
   initialServer: 'team-1',
   decidingSetSuperTiebreak: false,
+  countdownTimerEnabled: false,
+  countdownTimerDuration: 90,
   sideSwitchPrompts: true,
   sides: [
     {
@@ -47,6 +49,19 @@ describe('match setup validation', () => {
     expect(bestOfOneFullSet.decidingSetMode).toBe('standard')
     expect(bestOfOneSuperTiebreak.decidingSetMode).toBe('super-tiebreak')
     expect(bestOfOneSuperTiebreak.setCap).toBe(1)
+  })
+
+  test('accepts every supported countdown timer duration', () => {
+    for (const countdownTimerDuration of [60, 90, 120] as const) {
+      const setup = createMatchSetup({
+        ...baseInput,
+        countdownTimerEnabled: true,
+        countdownTimerDuration
+      })
+
+      expect(setup.countdownTimerEnabled).toBe(true)
+      expect(setup.countdownTimerDuration).toBe(countdownTimerDuration)
+    }
   })
 
   test('treats best-of-1 deciding behavior as authoritative over the super-tiebreak toggle', () => {
@@ -212,7 +227,8 @@ describe('match setup validation', () => {
         JSON.stringify({
           ...baseInput,
           sideSwitchPrompts: 'true',
-          decidingSetSuperTiebreak: 1
+          decidingSetSuperTiebreak: 1,
+          countdownTimerEnabled: 'false'
         })
       )
     )
@@ -221,8 +237,24 @@ describe('match setup validation', () => {
     expect(result.success ? [] : result.issues).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ field: 'sideSwitchPrompts' }),
-        expect.objectContaining({ field: 'decidingSetSuperTiebreak' })
+        expect.objectContaining({ field: 'decidingSetSuperTiebreak' }),
+        expect.objectContaining({ field: 'countdownTimerEnabled' })
       ])
+    )
+  })
+
+  test('rejects unsupported countdown timer durations', () => {
+    const result = validateMatchSetup({
+      ...baseInput,
+      countdownTimerEnabled: true,
+      countdownTimerDuration: 75
+    })
+
+    expect(result.success).toBe(false)
+    expect(result.success ? [] : result.issues).toContainEqual(
+      expect.objectContaining({
+        field: 'countdownTimerDuration'
+      })
     )
   })
 

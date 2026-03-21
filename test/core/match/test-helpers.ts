@@ -23,6 +23,8 @@ export function createTestSetup(overrides: Partial<MatchSetupInput> = {}): Match
     gameMode: 'advantage',
     initialServer: 'team-1',
     decidingSetSuperTiebreak: false,
+    countdownTimerEnabled: false,
+    countdownTimerDuration: 90,
     sideSwitchPrompts: false,
     sides: defaultSides,
     ...overrides

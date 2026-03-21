@@ -79,10 +79,12 @@ test.describe('Setup Screen', () => {
     // Find toggle switches by their accessible name (switch role, not button)
     const goldenPointToggle = page.getByRole('switch', { name: /golden point/i })
     const sideSwitchToggle = page.getByRole('switch', { name: /side-switch prompts/i })
+    const countdownToggle = page.getByRole('switch', { name: /countdown timer/i })
 
     // Verify toggles are visible
     await expect(goldenPointToggle).toBeVisible()
     await expect(sideSwitchToggle).toBeVisible()
+    await expect(countdownToggle).toBeVisible()
 
     // Get initial state of Golden Point toggle and click to toggle it
     const goldenPointInitialState = await goldenPointToggle.getAttribute('aria-checked')
@@ -101,6 +103,16 @@ test.describe('Setup Screen', () => {
       'aria-checked',
       sideSwitchInitialState === 'true' ? 'false' : 'true'
     )
+
+    const ninetyMinuteDuration = page.getByRole('radio', { name: '1:30 h' })
+    const twoHourDuration = page.getByRole('radio', { name: '2:00 h' })
+
+    await expect(ninetyMinuteDuration).toBeDisabled()
+    await countdownToggle.click()
+    await expect(countdownToggle).toHaveAttribute('aria-checked', 'true')
+    await expect(ninetyMinuteDuration).toBeEnabled()
+    await twoHourDuration.click()
+    await expect(twoHourDuration).toHaveAttribute('aria-checked', 'true')
 
     // For best-of-3 format (default), verify Super Tiebreak option is visible
     await expect(page.getByRole('switch', { name: /super tiebreak/i })).toBeVisible()

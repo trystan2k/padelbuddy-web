@@ -18,7 +18,9 @@ describe('current match persistence helpers', () => {
 
   test('creates a versioned record from canonical setup and actions', () => {
     const setup = createTestSetup({
-      decidingSetSuperTiebreak: true
+      decidingSetSuperTiebreak: true,
+      countdownTimerEnabled: true,
+      countdownTimerDuration: 120
     })
     const actions = [...winQuickGame('team-1'), ...scorePoints('team-2', 'team-2')]
 
@@ -42,7 +44,9 @@ describe('current match persistence helpers', () => {
     const setup = createTestSetup({
       format: 'best-of-1',
       decidingSetSuperTiebreak: true,
-      bestOfOneDecidingBehavior: 'super-tiebreak'
+      bestOfOneDecidingBehavior: 'super-tiebreak',
+      countdownTimerEnabled: true,
+      countdownTimerDuration: 60
     })
 
     expect(
@@ -95,6 +99,76 @@ describe('current match persistence helpers', () => {
 
     expect(record.finishedAt).toBe(testFinishedAt)
     expect(parseCurrentMatchRecord(record).finishedAt).toBe(testFinishedAt)
+  })
+
+  test('round-trips countdown timer fields in persisted setup', () => {
+    const setup = createTestSetup({
+      countdownTimerEnabled: true,
+      countdownTimerDuration: 120
+    })
+
+    const record = createCurrentMatchRecord({
+      matchId: testMatchId,
+      setup,
+      actions: [],
+      startedAt: testStartedAt
+    })
+
+    const decodedRecord = parseCurrentMatchRecord(record)
+
+    expect(decodedRecord.setup.countdownTimerEnabled).toBe(true)
+    expect(decodedRecord.setup.countdownTimerDuration).toBe(120)
+  })
+
+  test('defaults legacy persisted setups missing countdown fields', () => {
+    const legacyRecord = {
+      schemaVersion: currentMatchSchemaVersion,
+      matchId: testMatchId,
+      setup: {
+        format: 'best-of-3',
+        gameMode: 'advantage',
+        initialServer: 'team-1',
+        decidingSetSuperTiebreak: false,
+        sideSwitchPrompts: false,
+        sides: [
+          { id: 'team-1', playerNames: ['Ana', 'Bea'] },
+          { id: 'team-2', playerNames: ['Carla', 'Dani'] }
+        ]
+      },
+      actions: [],
+      startedAt: testStartedAt
+    }
+
+    const decodedRecord = parseCurrentMatchRecord(legacyRecord)
+
+    expect(decodedRecord.setup.countdownTimerEnabled).toBe(false)
+    expect(decodedRecord.setup.countdownTimerDuration).toBe(90)
+  })
+
+  test('defaults corrupted persisted countdown duration values', () => {
+    const recordWithInvalidDuration = {
+      schemaVersion: currentMatchSchemaVersion,
+      matchId: testMatchId,
+      setup: {
+        format: 'best-of-3',
+        gameMode: 'advantage',
+        initialServer: 'team-1',
+        decidingSetSuperTiebreak: false,
+        countdownTimerEnabled: true,
+        countdownTimerDuration: 75,
+        sideSwitchPrompts: false,
+        sides: [
+          { id: 'team-1', playerNames: ['Ana', 'Bea'] },
+          { id: 'team-2', playerNames: ['Carla', 'Dani'] }
+        ]
+      },
+      actions: [],
+      startedAt: testStartedAt
+    }
+
+    const decodedRecord = parseCurrentMatchRecord(recordWithInvalidDuration)
+
+    expect(decodedRecord.setup.countdownTimerDuration).toBe(90)
   })
 
   test('classifies same-version data as ok and replays through the pure match domain', () => {

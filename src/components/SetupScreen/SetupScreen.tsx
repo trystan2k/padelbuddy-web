@@ -1,8 +1,15 @@
 import { useState, useCallback, useMemo } from 'react'
+import type { KeyboardEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from '@tanstack/react-router'
 
-import { createMatchSetup, matchFormats, type MatchFormat } from '@/core/match'
+import {
+  countdownTimerDurations,
+  createMatchSetup,
+  matchFormats,
+  type CountdownTimerDuration,
+  type MatchFormat
+} from '@/core/match'
 import { saveCurrentMatch } from '@/lib/current-match'
 import { cn } from '@/lib/utils/cn'
 import { getViewTransitionNavigationOptions } from '@/lib/utils/view-transitions'
@@ -35,6 +42,12 @@ const formatKeys: Record<MatchFormat, string> = {
   'best-of-5': 'bestOf5'
 }
 
+const countdownDurationKeys: Record<CountdownTimerDuration, string> = {
+  60: 'setup.rules.countdownDuration.oneHour',
+  90: 'setup.rules.countdownDuration.ninetyMinutes',
+  120: 'setup.rules.countdownDuration.twoHours'
+}
+
 export function SetupScreen() {
   const { t } = useTranslation()
   const navigate = useNavigate()
@@ -50,6 +63,8 @@ export function SetupScreen() {
     updateInitialServer,
     updateDecidingSetSuperTiebreak,
     updateSideSwitchPrompts,
+    updateCountdownTimerEnabled,
+    updateCountdownTimerDuration,
     isGoldenPointEnabled,
     showSuperTiebreakOption
   } = useSetupForm()
@@ -72,6 +87,8 @@ export function SetupScreen() {
         gameMode: formData.gameMode,
         initialServer: formData.initialServer,
         decidingSetSuperTiebreak: formData.decidingSetSuperTiebreak,
+        countdownTimerEnabled: formData.countdownTimerEnabled,
+        countdownTimerDuration: formData.countdownTimerDuration,
         sideSwitchPrompts: formData.sideSwitchPrompts,
         sides: [
           { id: 'team-1' as const, playerNames: [formData.team1Name] },
@@ -138,6 +155,44 @@ export function SetupScreen() {
   const handleTeam2ServerSelect = useCallback(() => {
     updateInitialServer('team-2')
   }, [updateInitialServer])
+
+  const createCountdownDurationSelectHandler = useCallback(
+    (duration: CountdownTimerDuration) => () => {
+      updateCountdownTimerDuration(duration)
+    },
+    [updateCountdownTimerDuration]
+  )
+
+  const handleCountdownDurationKeyDown = useCallback(
+    (event: KeyboardEvent<HTMLDivElement>) => {
+      if (!formData.countdownTimerEnabled) {
+        return
+      }
+
+      if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') {
+        return
+      }
+
+      event.preventDefault()
+
+      const currentIndex = countdownTimerDurations.indexOf(formData.countdownTimerDuration)
+      const nextIndex =
+        event.key === 'ArrowRight'
+          ? (currentIndex + 1) % countdownTimerDurations.length
+          : (currentIndex - 1 + countdownTimerDurations.length) % countdownTimerDurations.length
+      const nextDuration = countdownTimerDurations[nextIndex]
+
+      if (typeof nextDuration === 'undefined') {
+        return
+      }
+
+      updateCountdownTimerDuration(nextDuration)
+      event.currentTarget
+        .querySelector<HTMLButtonElement>(`[data-duration="${nextDuration}"]`)
+        ?.focus()
+    },
+    [formData.countdownTimerDuration, formData.countdownTimerEnabled, updateCountdownTimerDuration]
+  )
 
   // Handler factory for format selection (returns stable handler per format)
   const createFormatClickHandler = useCallback(
@@ -311,6 +366,70 @@ export function SetupScreen() {
               label={t('setup.rules.sideSwitch')}
               hint={t('setup.rules.sideSwitchHint')}
             />
+
+            <Divider />
+
+            <div
+              className={styles.countdownSection}
+              role="group"
+              aria-label={t('setup.rules.countdownTimer')}
+            >
+              <Toggle
+                checked={formData.countdownTimerEnabled}
+                onChange={updateCountdownTimerEnabled}
+                label={t('setup.rules.countdownTimer')}
+                hint={t('setup.rules.countdownTimerHint')}
+              />
+
+              <div
+                className={cn(
+                  styles.countdownDurationRow,
+                  !formData.countdownTimerEnabled && styles.countdownDurationRowDisabled
+                )}
+                role="radiogroup"
+                aria-label={t('setup.rules.countdownDuration.label')}
+                data-testid="countdown-duration-row"
+                onKeyDown={handleCountdownDurationKeyDown}
+              >
+                {countdownTimerDurations.map((duration) => {
+                  const isSelected = formData.countdownTimerDuration === duration
+
+                  return (
+                    <button
+                      key={duration}
+                      type="button"
+                      role="radio"
+                      aria-checked={isSelected}
+                      className={styles.countdownDurationOption}
+                      onClick={createCountdownDurationSelectHandler(duration)}
+                      disabled={!formData.countdownTimerEnabled}
+                      tabIndex={isSelected ? 0 : -1}
+                      data-duration={duration}
+                    >
+                      <span
+                        className={cn(
+                          styles.countdownDurationRadio,
+                          isSelected && styles.countdownDurationRadioSelected
+                        )}
+                        aria-hidden="true"
+                      >
+                        <span className={styles.countdownDurationRadioDot} />
+                      </span>
+                      <span
+                        className={cn(
+                          styles.countdownDurationLabel,
+                          isSelected
+                            ? styles.countdownDurationLabelSelected
+                            : styles.countdownDurationLabelUnselected
+                        )}
+                      >
+                        {t(countdownDurationKeys[duration])}
+                      </span>
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
           </Card>
         </div>
       </div>

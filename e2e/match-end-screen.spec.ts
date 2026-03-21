@@ -85,13 +85,13 @@ test.describe('Match End Screen', () => {
     await page.getByRole('button', { name: /continue/i }).click()
 
     await expect(page).toHaveURL(/\/match\/completed-match$/)
-    await expect(page.getByTestId('time-chip')).toHaveText(`${frozenMatchDurationMinutes} min`)
+    await expect(page.getByTestId('time-chip')).toHaveText(/^\d{2}:\d{2}:\d{2}$/)
     await expect(page.getByTestId('time-chip')).toBeVisible()
 
     await page.reload()
 
     await expect(page).toHaveURL(/\/match\/completed-match$/)
-    await expect(page.getByTestId('time-chip')).toHaveText(`${frozenMatchDurationMinutes} min`)
+    await expect(page.getByTestId('time-chip')).toHaveText(/^\d{2}:\d{2}:\d{2}$/)
     await expect(page.getByTestId('time-chip')).toBeVisible()
     await expect(
       page.getByRole('button', {
@@ -138,6 +138,8 @@ async function seedCompletedMatch(page: Page) {
               gameMode: 'advantage',
               initialServer: 'team-1',
               decidingSetSuperTiebreak: false,
+              countdownTimerEnabled: false,
+              countdownTimerDuration: 90,
               bestOfOneDecidingBehavior: 'full-set',
               sideSwitchPrompts: false,
               sides: [

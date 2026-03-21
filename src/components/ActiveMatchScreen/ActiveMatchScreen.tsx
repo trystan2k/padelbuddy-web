@@ -8,7 +8,6 @@ import { SetsCard } from './SetsCard'
 import { InfoCard } from './InfoCard'
 import { SideSwitchPrompt } from './SideSwitchPrompt'
 import { Button } from '@/components/ui/Button'
-import { Chip } from '@/components/ui/Chip'
 import { TopBar } from '@/components/ui/TopBar'
 import { useMatchTimer } from './useMatchTimer'
 import { useMatchSession } from './useMatchSession'
@@ -54,10 +53,13 @@ export function ActiveMatchScreen({
   // Timer hook
   const isMatchCompleted =
     snapshot.projection.derived.status === 'completed' || typeof snapshot.finishedAt === 'number'
+  const countdownEnabled = snapshot.projection.setup.countdownTimerEnabled
   const { formattedTime } = useMatchTimer({
     startedAt: snapshot.startedAt,
     ...(typeof snapshot.finishedAt === 'number' ? { finishedAt: snapshot.finishedAt } : {}),
-    isMatchCompleted
+    isMatchCompleted,
+    countdownEnabled,
+    countdownDuration: snapshot.projection.setup.countdownTimerDuration
   })
 
   // Derive data from snapshot
@@ -138,6 +140,7 @@ export function ActiveMatchScreen({
   // Show side switch prompt when needed (not dismissed)
   const shouldShowSideSwitch =
     sideSwitch.shouldPrompt && setup.sideSwitchPrompts && !sideSwitchDismissed
+  const timerLabelKey = countdownEnabled ? 'match.timer.countdownLabel' : 'match.timer.label'
 
   // Header content
   const headerContent = useMemo(
@@ -147,9 +150,18 @@ export function ActiveMatchScreen({
         iconAlt=""
         title={t('match.header.appName')}
         subtitle={t('match.header.subtitle')}
-      />
+      >
+        <div
+          role="timer"
+          aria-label={t(timerLabelKey, { time: formattedTime })}
+          className={styles.timerChip}
+          data-testid="time-chip"
+        >
+          {formattedTime}
+        </div>
+      </TopBar>
     ),
-    [t]
+    [formattedTime, t, timerLabelKey]
   )
 
   const footerContent = useMemo(
@@ -199,17 +211,6 @@ export function ActiveMatchScreen({
         <div className={styles.setsOverlay}>
           <SetsCard sets={state.sets} currentSetIndex={activeSetIndex} />
         </div>
-
-        <Chip
-          readonly
-          size="sm"
-          role="timer"
-          aria-label={t('match.timer.label', { time: formattedTime })}
-          className={styles.timerChip ?? ''}
-          data-testid="time-chip"
-        >
-          {formattedTime}
-        </Chip>
 
         <div className={styles.infoOverlay}>
           <InfoCard

@@ -11,6 +11,8 @@ describe('validateSetupForm', () => {
     gameMode: 'advantage',
     initialServer: 'team-1',
     decidingSetSuperTiebreak: false,
+    countdownTimerEnabled: false,
+    countdownTimerDuration: 90,
     sideSwitchPrompts: true
   }
 
@@ -151,5 +153,28 @@ describe('validateSetupForm', () => {
 
     expect(trueResult.isValid).toBe(true)
     expect(falseResult.isValid).toBe(true)
+  })
+
+  test('accepts supported countdown durations', () => {
+    const durations: SetupFormData['countdownTimerDuration'][] = [60, 90, 120]
+
+    durations.forEach((countdownTimerDuration) => {
+      const result = validateSetupForm({
+        ...validData,
+        countdownTimerDuration
+      })
+
+      expect(result.isValid).toBe(true)
+    })
+  })
+
+  test('rejects unsupported countdown durations', () => {
+    const result = validateSetupForm({
+      ...validData,
+      countdownTimerDuration: 75 as SetupFormData['countdownTimerDuration']
+    })
+
+    expect(result.isValid).toBe(false)
+    expect(result.errors.countdownTimerDuration).toBe('setup.validation.invalidCountdownDuration')
   })
 })

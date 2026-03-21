@@ -93,6 +93,7 @@ test.describe('Match End Screen - Continue Flow', () => {
     // Verify the timer is visible and has a value
     const timeChip = page.getByTestId('time-chip')
     await expect(timeChip).toBeVisible()
+    await expect(timeChip).toHaveText(/^\d{2}:\d{2}:\d{2}$/)
 
     // Verify the score buttons are enabled (match is playable)
     await expect(page.getByRole('button', { name: /score point for team a/i })).toBeEnabled()

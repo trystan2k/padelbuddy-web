@@ -12,9 +12,9 @@
         }
       },
       "shell": {
-        "padding-y": { "value": "{base.space.28}", "type": "spacing" },
-        "padding-x": { "value": "{base.space.32}", "type": "spacing" },
-        "section-gap": { "value": "{base.space.28}", "type": "spacing" },
+        "padding-y": { "value": "{base.space.16}", "type": "spacing" },
+        "padding-x": { "value": "{base.space.16}", "type": "spacing" },
+        "section-gap": { "value": "{base.space.16}", "type": "spacing" },
         "header-height": { "value": "{base.dimension.screen.header-height}", "type": "dimension" },
         "body-height": { "value": "{base.dimension.screen.body-height}", "type": "dimension" },
         "footer-height": { "value": "{base.dimension.screen.footer-height}", "type": "dimension" }

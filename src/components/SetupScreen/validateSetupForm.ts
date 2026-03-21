@@ -1,3 +1,5 @@
+import { countdownTimerDurations } from '@/core/match'
+
 import type { SetupFormData, FieldErrors } from './types'
 
 export function validateSetupForm(data: SetupFormData): { isValid: boolean; errors: FieldErrors } {
@@ -9,6 +11,10 @@ export function validateSetupForm(data: SetupFormData): { isValid: boolean; erro
   }
   if (!data.team2Name.trim()) {
     errors.team2Name = 'setup.validation.teamNamesRequired'
+  }
+
+  if (!countdownTimerDurations.includes(data.countdownTimerDuration)) {
+    errors.countdownTimerDuration = 'setup.validation.invalidCountdownDuration'
   }
 
   // Format is always selected by default (best-of-3), so no validation needed

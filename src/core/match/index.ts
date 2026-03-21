@@ -1,6 +1,7 @@
 export type {
   ActiveMatchSet,
   BestOfOneDecidingBehavior,
+  CountdownTimerDuration,
   CompletedMatchSet,
   MatchAction,
   MatchDerivedState,
@@ -30,7 +31,10 @@ export type {
 } from './types'
 export {
   bestOfOneDecidingBehaviors,
+  countdownTimerDurations,
   defaultBestOfOneDecidingBehavior,
+  defaultCountdownTimerDuration,
+  defaultCountdownTimerEnabled,
   defaultGameMode,
   defaultInitialServer,
   defaultMatchFormat,
