@@ -142,6 +142,7 @@ describe('ActiveMatchScreen', () => {
     )
 
     await expect.element(screen.getByTestId('time-chip')).toBeInTheDocument()
+    expect(screen.container.querySelector('[aria-haspopup="true"]')).toBeNull()
   })
 
   test('renders revert buttons', async () => {
@@ -371,7 +372,7 @@ describe('ActiveMatchScreen', () => {
     expect(servingStatus?.textContent).toBe('Serving')
   })
 
-  test('renders center overlays in set timer info order', async () => {
+  test('renders set and info overlays without locale selector actions', async () => {
     const setup = createTestSetup()
 
     const screen = await render(
@@ -383,7 +384,8 @@ describe('ActiveMatchScreen', () => {
       />
     )
 
-    // This covers DOM order only; final visual positioning is manually verified against Pencil per the plan.
+    expect(screen.container.querySelector('[aria-haspopup="true"]')).toBeNull()
+
     const overlayNodes = Array.from(
       screen.container.querySelectorAll(
         '[data-testid="sets-card"], [data-testid="time-chip"], [data-testid="info-card"]'

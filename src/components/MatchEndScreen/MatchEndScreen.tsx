@@ -130,7 +130,6 @@ export function MatchEndScreen({
         iconAlt=""
         title={t('match.end.header.appName')}
         subtitle={t('match.end.header.subtitle')}
-        showLocaleSelector
       />
     ),
     [t]

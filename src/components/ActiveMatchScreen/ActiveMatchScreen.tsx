@@ -147,7 +147,6 @@ export function ActiveMatchScreen({
         iconAlt=""
         title={t('match.header.appName')}
         subtitle={t('match.header.subtitle')}
-        showLocaleSelector
       />
     ),
     [t]

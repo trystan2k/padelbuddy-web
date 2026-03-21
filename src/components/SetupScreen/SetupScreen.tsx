@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from '@tanstack/react-router'
 
@@ -16,6 +16,7 @@ import { SectionLabel } from '@/components/ui/SectionLabel'
 import { TextInput } from '@/components/ui/TextInput'
 import { Toggle } from '@/components/ui/Toggle'
 import { TopBar } from '@/components/ui/TopBar'
+import { LocaleSelector } from '@/components/ui/LocaleSelector'
 
 import { useSetupForm } from './useSetupForm'
 import styles from './SetupScreen.module.css'
@@ -147,28 +148,35 @@ export function SetupScreen() {
   )
 
   // Header content
-  const headerContent = (
-    <TopBar
-      iconSrc="/icon.png"
-      iconAlt=""
-      title={t('app.title')}
-      subtitle={t('setup.header.subtitle')}
-      showLocaleSelector
-    />
+  const headerContent = useMemo(
+    () => (
+      <TopBar
+        iconSrc="/icon.png"
+        iconAlt=""
+        title={t('app.title')}
+        subtitle={t('setup.header.subtitle')}
+      >
+        <LocaleSelector />
+      </TopBar>
+    ),
+    [t]
   )
 
   // Footer content
-  const footerContent = (
-    <Button
-      className={styles.startButton}
-      variant="solid"
-      size="lg"
-      accent="success"
-      onClick={handleStartMatch}
-      disabled={isStarting || hasErrors}
-    >
-      {t('setup.startButton')}
-    </Button>
+  const footerContent = useMemo(
+    () => (
+      <Button
+        className={styles.startButton}
+        variant="solid"
+        size="lg"
+        accent="success"
+        onClick={handleStartMatch}
+        disabled={isStarting || hasErrors}
+      >
+        {t('setup.startButton')}
+      </Button>
+    ),
+    [handleStartMatch, isStarting, hasErrors, t]
   )
 
   return (

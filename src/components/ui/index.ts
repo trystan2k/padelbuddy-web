@@ -14,4 +14,5 @@ export { Spinner, type SpinnerProps, type SpinnerSize, type SpinnerColor } from 
 export { TextInput, type TextInputProps, type TextInputAccent } from './TextInput'
 export { Toggle, type ToggleProps } from './Toggle'
 export { TopBar, type TopBarProps } from './TopBar'
+export { LocaleSelector, type LocaleSelectorProps } from './LocaleSelector'
 export type { Accent } from './types'
