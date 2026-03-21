@@ -25,7 +25,7 @@ env:
 jobs:
   deploy_preview:
     name: Deploy release preview
-    if: github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'release-please--branches--main'
+    if: github.event.pull_request.head.repo.full_name == github.repository && startsWith(github.event.pull_request.head.ref, 'release-please--branches--main')
     runs-on: ubuntu-latest
     outputs:
       preview_url: ${{ steps.preview_url.outputs.preview_url }}
