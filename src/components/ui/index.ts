@@ -7,7 +7,7 @@ export {
   type ButtonAccent
 } from './Button'
 export { Card, type CardProps, type CardAccent } from './Card'
-export { Chip, type ChipProps, type ChipVariant, type ChipSize, type ChipAccent } from './Chip'
+export { Chip, type ChipProps, type ChipVariant, type ChipSize } from './Chip'
 export { Divider, type DividerProps } from './Divider'
 export { SectionLabel, type SectionLabelProps, type SectionLabelAccent } from './SectionLabel'
 export { Spinner, type SpinnerProps, type SpinnerSize, type SpinnerColor } from './Spinner'

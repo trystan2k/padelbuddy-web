@@ -1,7 +1,6 @@
 {
   "base": {
     "space": {
-      "0": { "value": "0px", "type": "spacing" },
       "2": { "value": "2px", "type": "spacing" },
       "4": { "value": "4px", "type": "spacing" },
       "6": { "value": "6px", "type": "spacing" },

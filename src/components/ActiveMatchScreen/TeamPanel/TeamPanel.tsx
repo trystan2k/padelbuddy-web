@@ -51,15 +51,13 @@ export function TeamPanel({
       {...(isServing ? { 'aria-describedby': servingStatusId } : {})}
       data-testid={`team-panel-${teamId}`}
     >
-      {/* Team name */}
       <div className={styles.teamNameSection}>
-        <span className={cn(styles.teamName, isTeam1 ? styles.team1Text : styles.team2Text)}>
-          {teamName}
-        </span>
+        {/* Team name */}
+        <span className={styles.teamName}>{teamName}</span>
       </div>
 
-      {/* Score display */}
       <div className={styles.scoreStack}>
+        {/* Score display */}
         <span className={styles.score} aria-live="polite">
           {score}
         </span>
@@ -81,13 +79,13 @@ export function TeamPanel({
         )}
       </div>
 
-      {/* Games label */}
       <div className={styles.bottomSection}>
         {isGoldenPointActive && (
           <span className={styles.goldenPointIndicator} aria-label={t('match.info.goldenPointOn')}>
             {t('match.info.goldenPoint')}
           </span>
         )}
+        {/* Games label */}
         <span className={styles.gamesLabel}>
           {t('match.score.games')} {games}
         </span>

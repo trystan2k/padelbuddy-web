@@ -84,11 +84,11 @@
 
 /* Apply accent colors based on variant */
 .solid.accentPrimary {
-  background-color: var(--base-color-brand-primary);
+  background-color: var(--base-color-items-primary-color);
 }
 
 .solid.accentSecondary {
-  background-color: var(--base-color-brand-secondary);
+  background-color: var(--base-color-items-secondary-color);
 }
 
 .solid.accentSuccess {
@@ -96,13 +96,15 @@
 }
 
 .soft.accentPrimary {
-  background-color: var(--base-color-feedback-critical-subtle);
-  border: 1px solid var(--base-color-border-critical-subtle);
+  background-color: var(--semantic-color-items-primary-background);
+  border: 1px solid var(--semantic-color-items-primary-border);
+  color: var(--semantic-color-items-primary-content);
 }
 
 .soft.accentSecondary {
-  background-color: var(--base-color-feedback-critical-subtle-alt);
-  border: 1px solid var(--base-color-border-critical-subtle-alt);
+  background-color: var(--semantic-color-items-secondary-background);
+  border: 1px solid var(--semantic-color-items-secondary-border);
+  color: var(--semantic-color-items-secondary-content);
 }
 
 .soft.accentSuccess {

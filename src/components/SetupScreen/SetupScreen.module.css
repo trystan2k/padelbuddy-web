@@ -48,11 +48,11 @@
 }
 
 .serverChipTextSelected.team1 {
-  color: var(--semantic-color-content-accent-primary);
+  color: var(--semantic-color-items-primary-content);
 }
 
 .serverChipTextSelected.team2 {
-  color: var(--semantic-color-content-accent-secondary);
+  color: var(--semantic-color-items-secondary-content);
 }
 
 .serverChipTextUnselected {
@@ -89,6 +89,21 @@
 
 .startButton {
   width: 100%;
+}
+
+.dot {
+  width: var(--base-space-14);
+  height: var(--base-space-14);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.dot.team1 {
+  background-color: var(--semantic-color-items-primary-content);
+}
+
+.dot.team2 {
+  background-color: var(--semantic-color-items-secondary-content);
 }
 
 /* Responsive: two columns on tablet/desktop */

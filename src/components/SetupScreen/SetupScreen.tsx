@@ -208,36 +208,39 @@ export function SetupScreen() {
             <Chip
               pressed={formData.initialServer === 'team-1'}
               onPressedChange={handleTeam1ServerSelect}
-              accent="primary"
-              showDot
             >
-              <span
-                className={cn(
-                  styles.serverChipText,
-                  formData.initialServer === 'team-1'
-                    ? cn(styles.serverChipTextSelected, styles.team1)
-                    : styles.serverChipTextUnselected
-                )}
-              >
-                {t('setup.firstServer.team1')}
-              </span>
+              <>
+                <span className={cn(styles.dot, styles.team1)} aria-hidden="true" />
+                <span
+                  className={cn(
+                    styles.serverChipText,
+                    formData.initialServer === 'team-1'
+                      ? cn(styles.serverChipTextSelected, styles.team1)
+                      : styles.serverChipTextUnselected
+                  )}
+                >
+                  {t('setup.firstServer.team1')}
+                </span>
+              </>
             </Chip>
             <Chip
+              className={styles.setChip}
               pressed={formData.initialServer === 'team-2'}
               onPressedChange={handleTeam2ServerSelect}
-              accent="secondary"
-              showDot
             >
-              <span
-                className={cn(
-                  styles.serverChipText,
-                  formData.initialServer === 'team-2'
-                    ? cn(styles.serverChipTextSelected, styles.team2)
-                    : styles.serverChipTextUnselected
-                )}
-              >
-                {t('setup.firstServer.team2')}
-              </span>
+              <>
+                <span className={cn(styles.dot, styles.team2)} aria-hidden="true" />
+                <span
+                  className={cn(
+                    styles.serverChipText,
+                    formData.initialServer === 'team-2'
+                      ? cn(styles.serverChipTextSelected, styles.team2)
+                      : styles.serverChipTextUnselected
+                  )}
+                >
+                  {t('setup.firstServer.team2')}
+                </span>
+              </>
             </Chip>
           </div>
         </div>
@@ -249,6 +252,7 @@ export function SetupScreen() {
           <div className={styles.formatRow}>
             {matchFormats.map((format) => (
               <Chip
+                className={styles.setChip}
                 key={format}
                 pressed={formData.format === format}
                 onPressedChange={createFormatClickHandler(format)}

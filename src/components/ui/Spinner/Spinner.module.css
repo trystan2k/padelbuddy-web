@@ -32,7 +32,7 @@
 }
 
 .colorSecondary {
-  color: var(--semantic-color-action-accent-secondary);
+  color: var(--semantic-color-items-secondary-content);
 }
 
 .visuallyHidden {

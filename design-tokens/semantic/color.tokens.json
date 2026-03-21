@@ -1,6 +1,18 @@
 {
   "semantic": {
     "color": {
+      "items": {
+        "primary": {
+          "content": { "value": "{base.color.items.primary.color}", "type": "color" },
+          "background": { "value": "{base.color.items.primary.bg-color}", "type": "color" },
+          "border": { "value": "{base.color.items.primary.color}", "type": "color" }
+        },
+        "secondary": {
+          "content": { "value": "{base.color.items.secondary.color}", "type": "color" },
+          "background": { "value": "{base.color.items.secondary.bg-color}", "type": "color" },
+          "border": { "value": "{base.color.items.secondary.color}", "type": "color" }
+        }
+      },
       "background": {
         "canvas": { "value": "{base.color.surface.canvas}", "type": "color" },
         "canvas-end": {

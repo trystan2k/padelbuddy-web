@@ -21,6 +21,16 @@
         "highlight": { "value": "#D8EA42", "type": "color" },
         "danger": { "value": "#D64A4A", "type": "color" }
       },
+      "items": {
+        "primary": {
+          "color": { "value": "#7C3AED", "type": "color" },
+          "bg-color": { "value": "#EDE9FE", "type": "color" }
+        },
+        "secondary": {
+          "color": { "value": "#B45309", "type": "color" },
+          "bg-color": { "value": "#FEF3C7", "type": "color" }
+        }
+      },
       "feedback": {
         "critical-subtle": { "value": "#F9E4E4", "type": "color" },
         "critical-subtle-alt": { "value": "#FBE6E0", "type": "color" }

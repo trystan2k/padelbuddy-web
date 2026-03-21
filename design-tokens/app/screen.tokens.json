@@ -21,7 +21,6 @@
       },
       "header": {
         "title-gap": { "value": "{base.space.12}", "type": "spacing" },
-        "subtitle-gap": { "value": "{base.space.2}", "type": "spacing" },
         "icon-size": { "value": "{base.dimension.screen.header-icon-size}", "type": "dimension" },
         "subtitle-indent": { "value": "{base.space.52}", "type": "spacing" }
       }
