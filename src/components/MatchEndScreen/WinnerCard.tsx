@@ -52,7 +52,7 @@ export function WinnerCard({
 
         <div className={styles.actionGroup}>
           <Button
-            className={cn(styles.actionButton, styles.primaryAction)}
+            className={cn(styles.actionButton)}
             accent="success"
             disabled={isStartingNewMatch}
             onClick={onNewMatch}
@@ -62,7 +62,7 @@ export function WinnerCard({
             {t('match.end.actions.newMatch')}
           </Button>
           <Button
-            className={cn(styles.actionButton, styles.secondaryAction)}
+            className={cn(styles.actionButton)}
             disabled={isContinuingMatch}
             onClick={onContinue}
             size="sm"

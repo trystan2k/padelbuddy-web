@@ -47,8 +47,12 @@
   font-weight: var(--semantic-typography-weight-strong);
 }
 
-.serverChipTextSelected {
+.serverChipTextSelected.team1 {
   color: var(--semantic-color-content-accent-primary);
+}
+
+.serverChipTextSelected.team2 {
+  color: var(--semantic-color-content-accent-secondary);
 }
 
 .serverChipTextUnselected {

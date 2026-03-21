@@ -145,11 +145,22 @@ function RootDocument() {
         <body>
           <main className="appStatusPage">
             <section className="appStatusCard" aria-live="polite" aria-busy="true">
-              <Spinner className="appStatusSpinner" size="lg" label="Loading Padel Buddy" />
-              <p className="appStatusEyebrow">Starting app</p>
-              <h1 className="appStatusTitle">Preparing Padel Buddy</h1>
+              <Spinner
+                className="appStatusSpinner"
+                size="lg"
+                label={t('loadingState.appInitLabel', { defaultValue: 'Loading Padel Buddy' })}
+                silent
+              />
+              <p className="appStatusEyebrow">
+                {t('loadingState.appInitEyebrow', { defaultValue: 'Starting app' })}
+              </p>
+              <h1 className="appStatusTitle">
+                {t('loadingState.appInitTitle', { defaultValue: 'Preparing Padel Buddy' })}
+              </h1>
               <p className="appStatusBody">
-                Loading translations and preparing the score tracker shell.
+                {t('loadingState.appInitBody', {
+                  defaultValue: 'Loading translations and preparing the score tracker shell.'
+                })}
               </p>
             </section>
           </main>
@@ -179,7 +190,12 @@ function RootDocument() {
           {isRoutePending ? (
             <div className={styles.routePendingOverlay} role="status" aria-live="polite">
               <div className={styles.routePendingNotice}>
-                <Spinner size="sm" color="secondary" label={t('loadingState.routeTransition')} />
+                <Spinner
+                  size="sm"
+                  color="secondary"
+                  label={t('loadingState.routeTransition')}
+                  silent
+                />
                 <p className={styles.routePendingLabel}>{t('loadingState.routeTransition')}</p>
               </div>
             </div>

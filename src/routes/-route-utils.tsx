@@ -5,7 +5,13 @@ import { Button, Spinner } from '@/components/ui'
 
 export function getErrorMessage(error: unknown): string | null {
   if (error instanceof Error && error.message.length > 0) {
-    return error.message
+    const message = error.message
+    const isTechnical =
+      /[\\]\(.*[\\]\]|IndexedDB|IDB|undefined|TypeError|SyntaxError|fetch|network/i.test(message)
+
+    if (!isTechnical) {
+      return message
+    }
   }
 
   return null
@@ -17,7 +23,7 @@ export function RouteLoadingState() {
   return (
     <main className="appStatusPage">
       <section className="appStatusCard" aria-live="polite" aria-busy="true">
-        <Spinner className="appStatusSpinner" size="lg" label={t('common.loading')} />
+        <Spinner className="appStatusSpinner" size="lg" label={t('common.loading')} silent />
         <h1 className="appStatusTitle">{t('common.loading')}</h1>
         <p className="appStatusBody">{t('loadingState.routeBody')}</p>
       </section>

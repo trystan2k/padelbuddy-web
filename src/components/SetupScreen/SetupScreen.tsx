@@ -215,7 +215,7 @@ export function SetupScreen() {
                 className={cn(
                   styles.serverChipText,
                   formData.initialServer === 'team-1'
-                    ? styles.serverChipTextSelected
+                    ? cn(styles.serverChipTextSelected, styles.team1)
                     : styles.serverChipTextUnselected
                 )}
               >
@@ -232,7 +232,7 @@ export function SetupScreen() {
                 className={cn(
                   styles.serverChipText,
                   formData.initialServer === 'team-2'
-                    ? styles.serverChipTextSelected
+                    ? cn(styles.serverChipTextSelected, styles.team2)
                     : styles.serverChipTextUnselected
                 )}
               >

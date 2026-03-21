@@ -82,17 +82,6 @@
   line-height: 1;
 }
 
-.primaryAction {
-  font-weight: var(--semantic-typography-weight-heading);
-}
-
-.secondaryAction {
-  border-color: var(--semantic-color-border-subtle);
-  background-color: var(--semantic-color-background-canvas);
-  color: var(--semantic-color-content-primary);
-  font-weight: var(--semantic-typography-weight-strong);
-}
-
 @media (width <= 1023px) {
   .card {
     min-height: auto;

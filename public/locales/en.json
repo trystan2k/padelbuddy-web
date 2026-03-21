@@ -23,6 +23,10 @@
     }
   },
   "loadingState": {
+    "appInitLabel": "Loading Padel Buddy",
+    "appInitEyebrow": "Starting app",
+    "appInitTitle": "Preparing Padel Buddy",
+    "appInitBody": "Loading translations and preparing the score tracker shell.",
     "routeBody": "Padel Buddy is restoring the latest match data and preparing the next screen.",
     "routeTransition": "Loading the next view"
   },

@@ -54,8 +54,9 @@
 
 /* Outline variant - surface background, subtle border, primary text */
 .outline {
-  background-color: var(--semantic-color-background-surface);
+  background-color: var(--semantic-color-background-canvas);
   color: var(--semantic-color-content-primary);
+  font-weight: var(--semantic-typography-weight-strong);
   border: 1px solid var(--semantic-color-border-subtle);
 }
 

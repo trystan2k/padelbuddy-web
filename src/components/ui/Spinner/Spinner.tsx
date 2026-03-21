@@ -11,10 +11,11 @@ export interface SpinnerProps extends Omit<ComponentPropsWithoutRef<'span'>, 'ch
   size?: SpinnerSize
   color?: SpinnerColor
   label?: string
+  silent?: boolean
 }
 
 export const Spinner = forwardRef<HTMLSpanElement, SpinnerProps>(function Spinner(
-  { className, size = 'md', color = 'primary', label = 'Loading', ...props },
+  { className, size = 'md', color = 'primary', label = 'Loading', silent = false, ...props },
   ref
 ) {
   const sizeClass = size === 'sm' ? styles.sizeSm : size === 'lg' ? styles.sizeLg : styles.sizeMd
@@ -24,8 +25,7 @@ export const Spinner = forwardRef<HTMLSpanElement, SpinnerProps>(function Spinne
     <span
       ref={ref}
       className={cn(styles.spinner, sizeClass, colorClass, className)}
-      role="status"
-      aria-live="polite"
+      {...(silent ? {} : { role: 'status', 'aria-live': 'polite' })}
       aria-busy="true"
       aria-label={label}
       {...props}
