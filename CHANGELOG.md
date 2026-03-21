@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.0](https://github.com/trystan2k/padelbuddy-web/compare/v0.10.0...v0.11.0) (2026-03-21)
+
+
+### Features
+
+* application integration logic ([#28](https://github.com/trystan2k/padelbuddy-web/issues/28)) ([fdf8612](https://github.com/trystan2k/padelbuddy-web/commit/fdf8612498260a986e79520633d8104f27be1e12))
+
 ## [0.10.0](https://github.com/trystan2k/padelbuddy-web/compare/v0.9.0...v0.10.0) (2026-03-20)
 
 
