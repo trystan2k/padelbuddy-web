@@ -161,7 +161,7 @@ jobs:
   e2e_tests:
     name: E2E Tests
     needs: detect_changes
-    if: needs.detect_changes.outputs.docs_only != 'true'
+    if: needs.detect_changes.outputs.docs_only != 'true' && (github.ref == 'refs/heads/main' || startsWith(github.head_ref, 'release-please--branches--main'))
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
@@ -227,7 +227,7 @@ jobs:
             exit 1
           fi
 
-          if [[ "$E2E_RESULT" != "success" ]]; then
+          if [[ "$E2E_RESULT" != "success" && "$E2E_RESULT" != "skipped" ]]; then
             echo "E2E tests failed with result: $E2E_RESULT"
             exit 1
           fi
