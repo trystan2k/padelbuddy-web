@@ -18,11 +18,11 @@
   content: '';
   position: absolute;
   top: -5%;
-  left: -10%;
-  width: 50%;
-  height: 40%;
+  right: -10%;
+  width: 34%;
+  height: 26%;
   background: radial-gradient(circle, var(--base-color-brand-highlight) 0%, transparent 70%);
-  opacity: 0.2;
+  opacity: 0.18;
   pointer-events: none;
 }
 
@@ -49,9 +49,11 @@
 
 /* Body section - main content area, grows to fill space */
 .body {
-  min-height: var(--app-screen-shell-body-height);
+  min-height: var(--app-screen-shell-min-body-height);
+  max-height: var(--app-screen-shell-max-body-height);
   display: flex;
   flex-direction: column;
+  flex-grow: 1;
 }
 
 /* Footer section - action area, pinned to bottom */

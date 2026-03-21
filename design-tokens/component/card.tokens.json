@@ -23,7 +23,7 @@
         "padding": { "value": "{base.space.24}", "type": "spacing" }
       },
       "rules": {
-        "padding": { "value": "{base.space.24}", "type": "spacing" },
+        "padding": { "value": "{base.space.16}", "type": "spacing" },
         "gap": { "value": "{base.space.18}", "type": "spacing" }
       }
     }

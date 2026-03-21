@@ -71,6 +71,7 @@ export function ActiveMatchScreen({
 
   // Score display
   const { scoreDisplay, activeSetIndex, servingTeam, sideSwitch } = derived
+  const showServingIndicator = setup.servingIndicatorEnabled
 
   // Reset dismissed flag when a new side switch prompt appears
   useEffect(() => {
@@ -191,6 +192,7 @@ export function ActiveMatchScreen({
             score={getTeamScore('team-1')}
             games={getTeamGames('team-1')}
             isServing={servingTeam === 'team-1'}
+            showServingIndicator={showServingIndicator}
             isGoldenPointActive={setup.gameMode === 'golden-point'}
             onClick={handleScoreTeam1}
             disabled={isLoading || isMatchCompleted}
@@ -228,6 +230,7 @@ export function ActiveMatchScreen({
             score={getTeamScore('team-2')}
             games={getTeamGames('team-2')}
             isServing={servingTeam === 'team-2'}
+            showServingIndicator={showServingIndicator}
             isGoldenPointActive={setup.gameMode === 'golden-point'}
             onClick={handleScoreTeam2}
             disabled={isLoading || isMatchCompleted}

@@ -3,6 +3,7 @@ import {
   createMatchSetup,
   defaultCountdownTimerDuration,
   defaultCountdownTimerEnabled,
+  defaultServingIndicatorEnabled,
   matchTeamIds,
   projectMatch,
   type MatchAction,
@@ -173,6 +174,10 @@ function parseMatchSetup(input: unknown): MatchSetup {
     gameMode: setup.gameMode,
     initialServer: setup.initialServer,
     decidingSetSuperTiebreak: setup.decidingSetSuperTiebreak,
+    servingIndicatorEnabled:
+      typeof setup.servingIndicatorEnabled === 'boolean'
+        ? setup.servingIndicatorEnabled
+        : defaultServingIndicatorEnabled,
     countdownTimerEnabled:
       typeof setup.countdownTimerEnabled === 'boolean'
         ? setup.countdownTimerEnabled

@@ -18,8 +18,10 @@
 /* Right column (options section) */
 .rightColumn {
   display: flex;
+  flex: 1;
   flex-direction: column;
   gap: var(--base-space-16);
+  min-height: 0;
 }
 
 /* Team cards */
@@ -39,6 +41,20 @@
 .serverRow {
   display: flex;
   gap: var(--base-space-14);
+}
+
+.firstServerSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--base-space-16);
+}
+
+.firstServerSectionDisabled {
+  opacity: 0.35;
+}
+
+.firstServerSectionDisabled button:disabled {
+  opacity: 1;
 }
 
 .serverChipText {
@@ -95,8 +111,10 @@
 .rulesCard {
   padding: var(--component-card-rules-padding);
   display: flex;
+  flex: 1;
   flex-direction: column;
-  gap: var(--component-card-rules-gap);
+  justify-content: space-between;
+  min-height: 0;
 }
 
 .countdownSection {
@@ -203,7 +221,7 @@
 @media (width >= 48rem) {
   .mainContent {
     flex-direction: row;
-    align-items: flex-start;
+    align-items: stretch;
   }
 
   .leftColumn {

@@ -17,6 +17,7 @@ describe('match domain public exports', () => {
       gameMode: gameModes[0],
       initialServer: 'team-1',
       decidingSetSuperTiebreak: false,
+      servingIndicatorEnabled: true,
       countdownTimerEnabled: false,
       countdownTimerDuration: defaultCountdownTimerDuration,
       sideSwitchPrompts: false,

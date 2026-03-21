@@ -120,6 +120,23 @@ describe('current match persistence helpers', () => {
     expect(decodedRecord.setup.countdownTimerDuration).toBe(120)
   })
 
+  test('round-trips serving indicator enabled in persisted setup', () => {
+    const setup = createTestSetup({
+      servingIndicatorEnabled: false
+    })
+
+    const record = createCurrentMatchRecord({
+      matchId: testMatchId,
+      setup,
+      actions: [],
+      startedAt: testStartedAt
+    })
+
+    const decodedRecord = parseCurrentMatchRecord(record)
+
+    expect(decodedRecord.setup.servingIndicatorEnabled).toBe(false)
+  })
+
   test('defaults legacy persisted setups missing countdown fields', () => {
     const legacyRecord = {
       schemaVersion: currentMatchSchemaVersion,
@@ -141,8 +158,36 @@ describe('current match persistence helpers', () => {
 
     const decodedRecord = parseCurrentMatchRecord(legacyRecord)
 
+    expect(decodedRecord.setup.servingIndicatorEnabled).toBe(true)
     expect(decodedRecord.setup.countdownTimerEnabled).toBe(false)
     expect(decodedRecord.setup.countdownTimerDuration).toBe(90)
+  })
+
+  test('defaults corrupted persisted serving indicator values', () => {
+    const recordWithInvalidServingIndicator = {
+      schemaVersion: currentMatchSchemaVersion,
+      matchId: testMatchId,
+      setup: {
+        format: 'best-of-3',
+        gameMode: 'advantage',
+        initialServer: 'team-1',
+        decidingSetSuperTiebreak: false,
+        servingIndicatorEnabled: 'false',
+        countdownTimerEnabled: false,
+        countdownTimerDuration: 90,
+        sideSwitchPrompts: false,
+        sides: [
+          { id: 'team-1', playerNames: ['Ana', 'Bea'] },
+          { id: 'team-2', playerNames: ['Carla', 'Dani'] }
+        ]
+      },
+      actions: [],
+      startedAt: testStartedAt
+    }
+
+    const decodedRecord = parseCurrentMatchRecord(recordWithInvalidServingIndicator)
+
+    expect(decodedRecord.setup.servingIndicatorEnabled).toBe(true)
   })
 
   test('defaults corrupted persisted countdown duration values', () => {

@@ -35,6 +35,7 @@ export {
   defaultBestOfOneDecidingBehavior,
   defaultCountdownTimerDuration,
   defaultCountdownTimerEnabled,
+  defaultServingIndicatorEnabled,
   defaultGameMode,
   defaultInitialServer,
   defaultMatchFormat,

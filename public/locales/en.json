@@ -156,6 +156,8 @@
       "superTiebreakHint": "Final set tiebreak to 10 points",
       "sideSwitch": "Side-switch Prompts",
       "sideSwitchHint": "Prompt players for court side changes",
+      "servingIndicator": "Serving Indicator",
+      "servingIndicatorHint": "Show who is currently serving",
       "countdownTimer": "Countdown Timer",
       "countdownTimerHint": "Count down from a set match duration",
       "countdownDuration": {

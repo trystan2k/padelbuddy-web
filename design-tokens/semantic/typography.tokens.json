@@ -20,7 +20,7 @@
         "title-sm": { "value": "{base.font.size.20}", "type": "fontSizes" },
         "title-md": { "value": "{base.font.size.24}", "type": "fontSizes" },
         "title-lg": { "value": "{base.font.size.28}", "type": "fontSizes" },
-        "title-xl": { "value": "{base.font.size.34}", "type": "fontSizes" },
+        "title-xl": { "value": "{base.font.size.32}", "type": "fontSizes" },
         "display-md": { "value": "{base.font.size.46}", "type": "fontSizes" },
         "display-score": { "value": "{base.font.size.264}", "type": "fontSizes" }
       },

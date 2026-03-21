@@ -24,6 +24,7 @@ export interface MatchSetupInput {
   gameMode: MatchGameMode
   initialServer: MatchTeamId
   decidingSetSuperTiebreak: boolean
+  servingIndicatorEnabled: boolean
   countdownTimerEnabled: boolean
   countdownTimerDuration: CountdownTimerDuration
   bestOfOneDecidingBehavior?: BestOfOneDecidingBehavior
@@ -36,6 +37,7 @@ export interface MatchSetup {
   gameMode: MatchGameMode
   initialServer: MatchTeamId
   decidingSetSuperTiebreak: boolean
+  servingIndicatorEnabled: boolean
   countdownTimerEnabled: boolean
   countdownTimerDuration: CountdownTimerDuration
   bestOfOneDecidingBehavior: BestOfOneDecidingBehavior
@@ -157,5 +159,6 @@ export const defaultMatchFormat: MatchFormat = 'best-of-3'
 export const defaultGameMode: MatchGameMode = 'advantage'
 export const defaultInitialServer: MatchTeamId = 'team-1'
 export const defaultBestOfOneDecidingBehavior: BestOfOneDecidingBehavior = 'full-set'
+export const defaultServingIndicatorEnabled = true
 export const defaultCountdownTimerEnabled = false
 export const defaultCountdownTimerDuration: CountdownTimerDuration = 90

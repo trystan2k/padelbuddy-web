@@ -64,7 +64,7 @@
   background-color: var(--semantic-color-background-surface);
   pointer-events: none;
   font-family: var(--semantic-typography-family-display);
-  font-size: var(--semantic-typography-size-title-lg);
+  font-size: var(--semantic-typography-size-title-xl);
   font-weight: var(--semantic-typography-weight-heading);
   letter-spacing: -0.5px;
   line-height: 1;

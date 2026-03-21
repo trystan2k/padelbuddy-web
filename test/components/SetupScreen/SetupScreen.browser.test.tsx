@@ -81,4 +81,40 @@ describe('SetupScreen countdown timer controls', () => {
     await expect.element(ninetyMinuteOption).toHaveAttribute('aria-checked', 'true')
     await expect.element(ninetyMinuteOption).toHaveAttribute('tabindex', '0')
   })
+
+  test('dims and disables first server controls when serving indicator is turned off', async () => {
+    const screen = await render(<SetupScreen />)
+
+    const servingIndicatorToggle = screen.getByRole('switch', { name: /serving indicator/i })
+    const firstServerSection = screen.getByTestId('first-server-section')
+    const team1ServerButton = screen.getByRole('button', { name: /^team 1$/i })
+    const team2ServerButton = screen.getByRole('button', { name: /^team 2$/i })
+
+    ;(servingIndicatorToggle.element() as HTMLElement).click()
+
+    await expect.element(servingIndicatorToggle).toHaveAttribute('aria-checked', 'false')
+    expect(getComputedStyle(firstServerSection.element()).opacity).toBe('0.35')
+    await expect.element(team1ServerButton).toBeDisabled()
+    await expect.element(team2ServerButton).toBeDisabled()
+  })
+
+  test('preserves the first server selection while the serving indicator is off', async () => {
+    const screen = await render(<SetupScreen />)
+
+    const servingIndicatorToggle = screen.getByRole('switch', { name: /serving indicator/i })
+    const team1ServerButton = screen.getByRole('button', { name: /^team 1$/i })
+    const team2ServerButton = screen.getByRole('button', { name: /^team 2$/i })
+
+    await team2ServerButton.click()
+    await expect.element(team2ServerButton).toHaveAttribute('aria-pressed', 'true')
+
+    ;(servingIndicatorToggle.element() as HTMLElement).click()
+    await expect.element(team2ServerButton).toBeDisabled()
+
+    ;(servingIndicatorToggle.element() as HTMLElement).click()
+
+    await expect.element(team2ServerButton).toBeEnabled()
+    await expect.element(team2ServerButton).toHaveAttribute('aria-pressed', 'true')
+    await expect.element(team1ServerButton).toHaveAttribute('aria-pressed', 'false')
+  })
 })

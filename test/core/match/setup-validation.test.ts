@@ -7,6 +7,7 @@ const baseInput: MatchSetupInput = {
   gameMode: 'advantage',
   initialServer: 'team-1',
   decidingSetSuperTiebreak: false,
+  servingIndicatorEnabled: true,
   countdownTimerEnabled: false,
   countdownTimerDuration: 90,
   sideSwitchPrompts: true,
@@ -62,6 +63,22 @@ describe('match setup validation', () => {
       expect(setup.countdownTimerEnabled).toBe(true)
       expect(setup.countdownTimerDuration).toBe(countdownTimerDuration)
     }
+  })
+
+  test('accepts explicit serving indicator states', () => {
+    expect(
+      createMatchSetup({
+        ...baseInput,
+        servingIndicatorEnabled: true
+      }).servingIndicatorEnabled
+    ).toBe(true)
+
+    expect(
+      createMatchSetup({
+        ...baseInput,
+        servingIndicatorEnabled: false
+      }).servingIndicatorEnabled
+    ).toBe(false)
   })
 
   test('treats best-of-1 deciding behavior as authoritative over the super-tiebreak toggle', () => {
@@ -228,6 +245,7 @@ describe('match setup validation', () => {
           ...baseInput,
           sideSwitchPrompts: 'true',
           decidingSetSuperTiebreak: 1,
+          servingIndicatorEnabled: 'true',
           countdownTimerEnabled: 'false'
         })
       )
@@ -238,6 +256,7 @@ describe('match setup validation', () => {
       expect.arrayContaining([
         expect.objectContaining({ field: 'sideSwitchPrompts' }),
         expect.objectContaining({ field: 'decidingSetSuperTiebreak' }),
+        expect.objectContaining({ field: 'servingIndicatorEnabled' }),
         expect.objectContaining({ field: 'countdownTimerEnabled' })
       ])
     )

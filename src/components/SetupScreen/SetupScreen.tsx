@@ -63,6 +63,7 @@ export function SetupScreen() {
     updateInitialServer,
     updateDecidingSetSuperTiebreak,
     updateSideSwitchPrompts,
+    updateServingIndicatorEnabled,
     updateCountdownTimerEnabled,
     updateCountdownTimerDuration,
     isGoldenPointEnabled,
@@ -87,6 +88,7 @@ export function SetupScreen() {
         gameMode: formData.gameMode,
         initialServer: formData.initialServer,
         decidingSetSuperTiebreak: formData.decidingSetSuperTiebreak,
+        servingIndicatorEnabled: formData.servingIndicatorEnabled,
         countdownTimerEnabled: formData.countdownTimerEnabled,
         countdownTimerDuration: formData.countdownTimerDuration,
         sideSwitchPrompts: formData.sideSwitchPrompts,
@@ -266,46 +268,57 @@ export function SetupScreen() {
           </Card>
 
           {/* First Server */}
-          <SectionLabel>{t('setup.firstServer.label')}</SectionLabel>
-          <div className={styles.serverRow}>
-            <Chip
-              className={cn(styles.serverChip, styles.team1)}
-              pressed={formData.initialServer === 'team-1'}
-              onPressedChange={handleTeam1ServerSelect}
-            >
-              <>
-                <span className={cn(styles.dot, styles.team1)} aria-hidden="true" />
-                <span
-                  className={cn(
-                    styles.serverChipText,
-                    formData.initialServer === 'team-1'
-                      ? cn(styles.serverChipTextSelected, styles.team1)
-                      : styles.serverChipTextUnselected
-                  )}
-                >
-                  {t('setup.firstServer.team1')}
-                </span>
-              </>
-            </Chip>
-            <Chip
-              className={cn(styles.serverChip, styles.team2)}
-              pressed={formData.initialServer === 'team-2'}
-              onPressedChange={handleTeam2ServerSelect}
-            >
-              <>
-                <span className={cn(styles.dot, styles.team2)} aria-hidden="true" />
-                <span
-                  className={cn(
-                    styles.serverChipText,
-                    formData.initialServer === 'team-2'
-                      ? cn(styles.serverChipTextSelected, styles.team2)
-                      : styles.serverChipTextUnselected
-                  )}
-                >
-                  {t('setup.firstServer.team2')}
-                </span>
-              </>
-            </Chip>
+          <div
+            className={cn(
+              styles.firstServerSection,
+              !formData.servingIndicatorEnabled && styles.firstServerSectionDisabled
+            )}
+            data-testid="first-server-section"
+            aria-disabled={!formData.servingIndicatorEnabled || undefined}
+          >
+            <SectionLabel>{t('setup.firstServer.label')}</SectionLabel>
+            <div className={styles.serverRow}>
+              <Chip
+                className={cn(styles.serverChip, styles.team1)}
+                pressed={formData.initialServer === 'team-1'}
+                onPressedChange={handleTeam1ServerSelect}
+                disabled={!formData.servingIndicatorEnabled}
+              >
+                <>
+                  <span className={cn(styles.dot, styles.team1)} aria-hidden="true" />
+                  <span
+                    className={cn(
+                      styles.serverChipText,
+                      formData.initialServer === 'team-1'
+                        ? cn(styles.serverChipTextSelected, styles.team1)
+                        : styles.serverChipTextUnselected
+                    )}
+                  >
+                    {t('setup.firstServer.team1')}
+                  </span>
+                </>
+              </Chip>
+              <Chip
+                className={cn(styles.serverChip, styles.team2)}
+                pressed={formData.initialServer === 'team-2'}
+                onPressedChange={handleTeam2ServerSelect}
+                disabled={!formData.servingIndicatorEnabled}
+              >
+                <>
+                  <span className={cn(styles.dot, styles.team2)} aria-hidden="true" />
+                  <span
+                    className={cn(
+                      styles.serverChipText,
+                      formData.initialServer === 'team-2'
+                        ? cn(styles.serverChipTextSelected, styles.team2)
+                        : styles.serverChipTextUnselected
+                    )}
+                  >
+                    {t('setup.firstServer.team2')}
+                  </span>
+                </>
+              </Chip>
+            </div>
           </div>
         </div>
 
@@ -346,25 +359,21 @@ export function SetupScreen() {
 
             <Divider />
 
-            {/* Super Tiebreak - only for best-of-3 and best-of-5 */}
-            {showSuperTiebreakOption && (
-              <>
-                <Toggle
-                  checked={formData.decidingSetSuperTiebreak}
-                  onChange={updateDecidingSetSuperTiebreak}
-                  label={t('setup.rules.superTiebreak')}
-                  hint={t('setup.rules.superTiebreakHint')}
-                />
-                <Divider />
-              </>
-            )}
-
             {/* Side Switch Prompts */}
             <Toggle
               checked={formData.sideSwitchPrompts}
               onChange={updateSideSwitchPrompts}
               label={t('setup.rules.sideSwitch')}
               hint={t('setup.rules.sideSwitchHint')}
+            />
+
+            <Divider />
+
+            <Toggle
+              checked={formData.servingIndicatorEnabled}
+              onChange={updateServingIndicatorEnabled}
+              label={t('setup.rules.servingIndicator')}
+              hint={t('setup.rules.servingIndicatorHint')}
             />
 
             <Divider />
@@ -430,6 +439,19 @@ export function SetupScreen() {
                 })}
               </div>
             </div>
+
+            {/* Super Tiebreak - only for best-of-3 and best-of-5 */}
+            {showSuperTiebreakOption && (
+              <>
+                <Divider />
+                <Toggle
+                  checked={formData.decidingSetSuperTiebreak}
+                  onChange={updateDecidingSetSuperTiebreak}
+                  label={t('setup.rules.superTiebreak')}
+                  hint={t('setup.rules.superTiebreakHint')}
+                />
+              </>
+            )}
           </Card>
         </div>
       </div>

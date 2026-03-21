@@ -156,6 +156,8 @@
       "superTiebreakHint": "Tiebreak en el set final a 10 puntos",
       "sideSwitch": "Avisos de Cambio de Lado",
       "sideSwitchHint": "Recordar a jugadores cambiar de lado",
+      "servingIndicator": "Indicador de servicio",
+      "servingIndicatorHint": "Muestra quién está sacando actualmente",
       "countdownTimer": "Temporizador regresivo",
       "countdownTimerHint": "Cuenta regresiva de tiempo fijo del partido",
       "countdownDuration": {

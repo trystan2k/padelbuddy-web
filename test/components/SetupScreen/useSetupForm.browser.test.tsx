@@ -42,6 +42,7 @@ describe('useSetupForm', () => {
     expect(capturedState!.formData.gameMode).toBe('advantage')
     expect(capturedState!.formData.initialServer).toBe('team-1')
     expect(capturedState!.formData.decidingSetSuperTiebreak).toBe(false)
+    expect(capturedState!.formData.servingIndicatorEnabled).toBe(true)
     expect(capturedState!.formData.countdownTimerEnabled).toBe(false)
     expect(capturedState!.formData.countdownTimerDuration).toBe(90)
     expect(capturedState!.formData.sideSwitchPrompts).toBe(true)
@@ -187,6 +188,22 @@ function SetupFormController({
         }}
       >
         Side Switch ON
+      </button>
+      <button
+        data-testid="update-serving-indicator-enabled"
+        onClick={() => {
+          formState.updateServingIndicatorEnabled(true)
+        }}
+      >
+        Serving Indicator ON
+      </button>
+      <button
+        data-testid="update-serving-indicator-disabled"
+        onClick={() => {
+          formState.updateServingIndicatorEnabled(false)
+        }}
+      >
+        Serving Indicator OFF
       </button>
       <button
         data-testid="update-countdown-enabled"
@@ -396,6 +413,21 @@ describe('useSetupForm interactions', () => {
     await screen.getByTestId('get-state').click()
 
     expect(formState!.errors).toEqual({})
+  })
+
+  test('updateServingIndicatorEnabled updates value to false', async () => {
+    const screen = await render(
+      <SetupFormController
+        onGetState={(s) => {
+          formState = s
+        }}
+      />
+    )
+
+    await screen.getByTestId('update-serving-indicator-disabled').click()
+    await screen.getByTestId('get-state').click()
+
+    expect(formState!.formData.servingIndicatorEnabled).toBe(false)
   })
 
   test('updateCountdownTimerEnabled updates value to true', async () => {

@@ -182,6 +182,24 @@ describe('ActiveMatchScreen', () => {
     expect(layoutBody.contains(timeChip)).toBe(false)
   })
 
+  test('hides serving indicators when serving indicator is disabled in setup', async () => {
+    const setup = createTestSetup({
+      servingIndicatorEnabled: false
+    })
+
+    const screen = await render(
+      <ActiveMatchScreen
+        matchId="test-match"
+        initialSetup={setup}
+        initialActions={[]}
+        startedAt={defaultStartedAt}
+      />
+    )
+
+    expect(screen.container.querySelector('[data-testid^="serve-indicator-"]')).toBeNull()
+    expect(screen.container.querySelector('[data-testid^="serve-status-"]')).toBeNull()
+  })
+
   test('uses the countdown timer aria-label when countdown mode is enabled', async () => {
     const setup = createTestSetup({
       countdownTimerEnabled: true,

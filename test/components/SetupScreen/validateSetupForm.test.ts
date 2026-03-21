@@ -11,6 +11,7 @@ describe('validateSetupForm', () => {
     gameMode: 'advantage',
     initialServer: 'team-1',
     decidingSetSuperTiebreak: false,
+    servingIndicatorEnabled: true,
     countdownTimerEnabled: false,
     countdownTimerDuration: 90,
     sideSwitchPrompts: true
@@ -149,6 +150,21 @@ describe('validateSetupForm', () => {
     const falseResult = validateSetupForm({
       ...validData,
       sideSwitchPrompts: false
+    })
+
+    expect(trueResult.isValid).toBe(true)
+    expect(falseResult.isValid).toBe(true)
+  })
+
+  test('accepts any boolean values for servingIndicatorEnabled', () => {
+    const trueResult = validateSetupForm({
+      ...validData,
+      servingIndicatorEnabled: true
+    })
+
+    const falseResult = validateSetupForm({
+      ...validData,
+      servingIndicatorEnabled: false
     })
 
     expect(trueResult.isValid).toBe(true)

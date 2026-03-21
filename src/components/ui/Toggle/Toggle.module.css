@@ -3,6 +3,11 @@
   align-items: center;
   gap: var(--component-toggle-gap);
   width: 100%;
+  cursor: pointer;
+}
+
+.rowDisabled {
+  cursor: default;
 }
 
 .labelGroup {

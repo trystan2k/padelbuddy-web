@@ -7,6 +7,7 @@ import {
   defaultMatchFormat,
   defaultGameMode,
   defaultInitialServer,
+  defaultServingIndicatorEnabled,
   type CountdownTimerDuration,
   type MatchFormat,
   type MatchGameMode,
@@ -31,6 +32,7 @@ export function useSetupForm() {
     gameMode: defaultGameMode,
     initialServer: defaultInitialServer,
     decidingSetSuperTiebreak: false,
+    servingIndicatorEnabled: defaultServingIndicatorEnabled,
     countdownTimerEnabled: defaultCountdownTimerEnabled,
     countdownTimerDuration: defaultCountdownTimerDuration,
     sideSwitchPrompts: true
@@ -119,6 +121,13 @@ export function useSetupForm() {
     [updateField]
   )
 
+  const updateServingIndicatorEnabled = useCallback(
+    (enabled: boolean) => {
+      updateField('servingIndicatorEnabled', enabled)
+    },
+    [updateField]
+  )
+
   const updateCountdownTimerDuration = useCallback(
     (duration: CountdownTimerDuration) => {
       updateField('countdownTimerDuration', duration)
@@ -148,6 +157,7 @@ export function useSetupForm() {
     updateInitialServer,
     updateDecidingSetSuperTiebreak,
     updateSideSwitchPrompts,
+    updateServingIndicatorEnabled,
     updateCountdownTimerEnabled,
     updateCountdownTimerDuration,
     isGoldenPointEnabled,

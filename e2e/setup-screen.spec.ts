@@ -79,11 +79,13 @@ test.describe('Setup Screen', () => {
     // Find toggle switches by their accessible name (switch role, not button)
     const goldenPointToggle = page.getByRole('switch', { name: /golden point/i })
     const sideSwitchToggle = page.getByRole('switch', { name: /side-switch prompts/i })
+    const servingIndicatorToggle = page.getByRole('switch', { name: /serving indicator/i })
     const countdownToggle = page.getByRole('switch', { name: /countdown timer/i })
 
     // Verify toggles are visible
     await expect(goldenPointToggle).toBeVisible()
     await expect(sideSwitchToggle).toBeVisible()
+    await expect(servingIndicatorToggle).toBeVisible()
     await expect(countdownToggle).toBeVisible()
 
     // Get initial state of Golden Point toggle and click to toggle it
@@ -104,6 +106,10 @@ test.describe('Setup Screen', () => {
       sideSwitchInitialState === 'true' ? 'false' : 'true'
     )
 
+    await expect(servingIndicatorToggle).toHaveAttribute('aria-checked', 'true')
+    await servingIndicatorToggle.click()
+    await expect(servingIndicatorToggle).toHaveAttribute('aria-checked', 'false')
+
     const ninetyMinuteDuration = page.getByRole('radio', { name: '1:30 h' })
     const twoHourDuration = page.getByRole('radio', { name: '2:00 h' })
 
@@ -116,6 +122,36 @@ test.describe('Setup Screen', () => {
 
     // For best-of-3 format (default), verify Super Tiebreak option is visible
     await expect(page.getByRole('switch', { name: /super tiebreak/i })).toBeVisible()
+
+    const firstServerSection = page.getByTestId('first-server-section')
+    const team1ServerButton = page.getByRole('button', { name: /^team 1$/i })
+    const team2ServerButton = page.getByRole('button', { name: /^team 2$/i })
+
+    await expect(firstServerSection).toHaveCSS('opacity', '0.35')
+    await expect(team1ServerButton).toBeDisabled()
+    await expect(team2ServerButton).toBeDisabled()
+
+    await servingIndicatorToggle.click()
+    await expect(servingIndicatorToggle).toHaveAttribute('aria-checked', 'true')
+    await expect(team1ServerButton).toBeEnabled()
+    await expect(team2ServerButton).toBeEnabled()
+  })
+
+  test('preserves first server selection while serving indicator is disabled', async ({ page }) => {
+    const servingIndicatorToggle = page.getByRole('switch', { name: /serving indicator/i })
+    const team1ServerButton = page.getByRole('button', { name: /^team 1$/i })
+    const team2ServerButton = page.getByRole('button', { name: /^team 2$/i })
+
+    await team2ServerButton.click()
+    await expect(team2ServerButton).toHaveAttribute('aria-pressed', 'true')
+
+    await servingIndicatorToggle.click()
+    await expect(team2ServerButton).toBeDisabled()
+
+    await servingIndicatorToggle.click()
+    await expect(team2ServerButton).toBeEnabled()
+    await expect(team2ServerButton).toHaveAttribute('aria-pressed', 'true')
+    await expect(team1ServerButton).toHaveAttribute('aria-pressed', 'false')
   })
 
   test('locale switching works', async ({ page }) => {
