@@ -84,28 +84,40 @@
 
 /* Apply accent colors based on variant */
 .solid.accentPrimary {
-  background-color: var(--base-color-brand-primary);
+  background-color: var(--semantic-color-action-accent-primary);
 }
 
 .solid.accentSecondary {
-  background-color: var(--base-color-brand-secondary);
+  background-color: var(--semantic-color-action-accent-secondary);
 }
 
 .solid.accentSuccess {
-  background-color: var(--base-color-brand-success);
+  background-color: var(--semantic-color-action-primary);
 }
 
-.soft.accentPrimary {
-  background-color: var(--base-color-feedback-critical-subtle);
-  border: 1px solid var(--base-color-border-critical-subtle);
+.solid.accentDanger {
+  background-color: var(--semantic-color-action-danger);
+}
+
+.solid.accent .soft.accentPrimary {
+  background-color: var(--semantic-color-background-accent-primary-subtle);
+  border: 1px solid var(--semantic-color-border-accent-primary);
+  color: var(--semantic-color-content-accent-primary);
 }
 
 .soft.accentSecondary {
-  background-color: var(--base-color-feedback-critical-subtle-alt);
-  border: 1px solid var(--base-color-border-critical-subtle-alt);
+  background-color: var(--semantic-color-background-accent-secondary-subtle);
+  border: 1px solid var(--semantic-color-border-accent-secondary);
+  color: var(--semantic-color-content-accent-secondary);
 }
 
 .soft.accentSuccess {
-  background-color: var(--base-color-brand-success-subtle);
+  background-color: var(--semantic-color-action-success-subtle);
   border: 1px solid var(--semantic-color-border-subtle);
+}
+
+.soft.accentDanger {
+  background-color: var(--semantic-color-background-accent-danger-subtle);
+  border: 1px solid var(--semantic-color-border-accent-danger);
+  color: var(--semantic-color-content-danger);
 }

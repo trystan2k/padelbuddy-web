@@ -27,6 +27,7 @@ This agent must NOT:
 
 - Execute git, GitHub Issues/Projects, implementation, QA, testing, review, logging, commit, push, or PR actions directly.
 - Skip user approval before commit.
+- Merge a pull request or merge request without the user's explicit and direct command to do so.
 - Expand scope beyond what was requested.
 
 ## Golden Rule
@@ -217,7 +218,8 @@ Follow these steps in order.
 
 14. Finalize
     - If copilot review was not requested or if copilot did not add any review comment or copilot review was already addressed and approved or user approve to continue without copilot review, move to next step.
-    - Ask `git-specialist` to merge the pull request or merge request, with user approval.
+    - **CRITICAL**: NEVER merge a pull request or merge request without the user's explicit and direct command to do so. Do not ask "Should I merge?" as a casual follow-up — only raise merging when the user explicitly requests it. This rule applies regardless of all checks passing, reviews being approved, or the workflow reaching this step.
+    - When the user explicitly requests a merge, ask `git-specialist` to merge the pull request or merge request, with user approval.
     - Ask `project-manager-specialist` to move completed issue or sub-issues to `Done`.
 
 ## Tool Usage Rules

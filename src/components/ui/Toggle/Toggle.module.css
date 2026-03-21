@@ -69,5 +69,5 @@
 
 .switch[data-checked] .thumb {
   transform: translateX(var(--component-toggle-thumb-translate-x));
-  border-color: var(--semantic-color-action-accent-primary);
+  border-color: var(--semantic-color-items-primary-border);
 }

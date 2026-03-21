@@ -206,38 +206,42 @@ export function SetupScreen() {
           <SectionLabel>{t('setup.firstServer.label')}</SectionLabel>
           <div className={styles.serverRow}>
             <Chip
+              className={cn(styles.serverChip, styles.team1)}
               pressed={formData.initialServer === 'team-1'}
               onPressedChange={handleTeam1ServerSelect}
-              accent="primary"
-              showDot
             >
-              <span
-                className={cn(
-                  styles.serverChipText,
-                  formData.initialServer === 'team-1'
-                    ? cn(styles.serverChipTextSelected, styles.team1)
-                    : styles.serverChipTextUnselected
-                )}
-              >
-                {t('setup.firstServer.team1')}
-              </span>
+              <>
+                <span className={cn(styles.dot, styles.team1)} aria-hidden="true" />
+                <span
+                  className={cn(
+                    styles.serverChipText,
+                    formData.initialServer === 'team-1'
+                      ? cn(styles.serverChipTextSelected, styles.team1)
+                      : styles.serverChipTextUnselected
+                  )}
+                >
+                  {t('setup.firstServer.team1')}
+                </span>
+              </>
             </Chip>
             <Chip
+              className={cn(styles.serverChip, styles.team2)}
               pressed={formData.initialServer === 'team-2'}
               onPressedChange={handleTeam2ServerSelect}
-              accent="secondary"
-              showDot
             >
-              <span
-                className={cn(
-                  styles.serverChipText,
-                  formData.initialServer === 'team-2'
-                    ? cn(styles.serverChipTextSelected, styles.team2)
-                    : styles.serverChipTextUnselected
-                )}
-              >
-                {t('setup.firstServer.team2')}
-              </span>
+              <>
+                <span className={cn(styles.dot, styles.team2)} aria-hidden="true" />
+                <span
+                  className={cn(
+                    styles.serverChipText,
+                    formData.initialServer === 'team-2'
+                      ? cn(styles.serverChipTextSelected, styles.team2)
+                      : styles.serverChipTextUnselected
+                  )}
+                >
+                  {t('setup.firstServer.team2')}
+                </span>
+              </>
             </Chip>
           </div>
         </div>

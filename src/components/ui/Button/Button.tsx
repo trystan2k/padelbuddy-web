@@ -7,7 +7,7 @@ import styles from './Button.module.css'
 
 export type ButtonVariant = 'solid' | 'outline' | 'soft'
 export type ButtonSize = 'sm' | 'lg'
-export type ButtonAccent = 'primary' | 'secondary' | 'success'
+export type ButtonAccent = 'primary' | 'secondary' | 'success' | 'danger'
 
 export interface ButtonProps extends Omit<
   ComponentPropsWithoutRef<'button'>,
@@ -43,7 +43,9 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       ? styles.accentPrimary
       : accent === 'secondary'
         ? styles.accentSecondary
-        : styles.accentSuccess
+        : accent === 'danger'
+          ? styles.accentDanger
+          : styles.accentSuccess
 
   return (
     <BaseButton

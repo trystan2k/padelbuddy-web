@@ -3,7 +3,7 @@
 import { describe, expect, test, vi } from 'vitest'
 import { render } from 'vitest-browser-react'
 
-import { Chip, type ChipSize, type ChipAccent } from '@/components/ui/Chip/Chip'
+import { Chip, type ChipSize } from '@/components/ui/Chip/Chip'
 
 describe('Chip', () => {
   // ===========================================
@@ -142,18 +142,6 @@ describe('Chip', () => {
       await expect.element(button).not.toHaveAttribute('aria-pressed')
     })
 
-    test('shows dot when showDot is true', async () => {
-      const screen = await render(
-        <Chip variant="button" pressed={false} onPressedChange={() => {}} showDot>
-          With Dot
-        </Chip>
-      )
-      const button = screen.getByRole('button')
-      const dot = button.element().querySelector('[aria-hidden="true"]')
-      expect(dot).toBeTruthy()
-      expect(dot?.className).toMatch(/dot/)
-    })
-
     test('respects disabled prop', async () => {
       const handleChange = vi.fn()
       const screen = await render(
@@ -179,40 +167,6 @@ describe('Chip', () => {
       )
 
       await expect.element(screen.getByText(`${size} Chip`)).toBeInTheDocument()
-    })
-  })
-
-  // ===========================================
-  // Accent tests
-  // ===========================================
-  const accents: ChipAccent[] = ['primary', 'secondary']
-  accents.forEach((accent) => {
-    test(`renders correctly with accent: ${accent}`, async () => {
-      const screen = await render(
-        <Chip accent={accent} pressed={false} onPressedChange={() => {}}>
-          {accent} Chip
-        </Chip>
-      )
-
-      await expect.element(screen.getByText(`${accent} Chip`)).toBeInTheDocument()
-    })
-
-    test(`applies secondary accent class when accent is ${accent}`, async () => {
-      const screen = await render(
-        <Chip accent={accent} pressed={true} onPressedChange={() => {}}>
-          {accent} Chip
-        </Chip>
-      )
-
-      const button = screen.getByRole('button')
-      // Check that the element's class contains the secondary accent class
-      const className = button.element().className
-      if (accent === 'secondary') {
-        expect(className).toMatch(/accentSecondary/)
-      } else {
-        // Primary accent doesn't have a specific class
-        expect(className).not.toMatch(/accentSecondary/)
-      }
     })
   })
 
@@ -265,56 +219,6 @@ describe('Chip', () => {
     await expect.element(button).toBeDisabled()
     // Since the button is disabled, onPressedChange should never be called
     expect(handleChange).not.toHaveBeenCalled()
-  })
-
-  // ===========================================
-  // showDot tests
-  // ===========================================
-  test('shows dot when showDot is true', async () => {
-    const screen = await render(
-      <Chip pressed={false} onPressedChange={() => {}} showDot>
-        With Dot
-      </Chip>
-    )
-
-    const dot = screen.getByRole('button').element().querySelector('[aria-hidden="true"]')
-    expect(dot).toBeTruthy()
-  })
-
-  test('does not show dot when showDot is false (default)', async () => {
-    const screen = await render(
-      <Chip pressed={false} onPressedChange={() => {}}>
-        No Dot
-      </Chip>
-    )
-
-    const button = screen.getByRole('button').element()
-    const dot = button.querySelector('[class*="dot"]')
-    expect(dot).toBeNull()
-  })
-
-  test('dot has primary accent color by default', async () => {
-    const screen = await render(
-      <Chip pressed={false} onPressedChange={() => {}} showDot>
-        Primary Dot
-      </Chip>
-    )
-
-    const button = screen.getByRole('button').element()
-    const dot = button.querySelector('[class*="dot"]')
-    expect(dot).toBeTruthy()
-  })
-
-  test('dot has secondary accent color when accent is secondary', async () => {
-    const screen = await render(
-      <Chip pressed={false} onPressedChange={() => {}} accent="secondary" showDot>
-        Secondary Dot
-      </Chip>
-    )
-
-    const button = screen.getByRole('button').element()
-    const dot = button.querySelector('[class*="dot"]')
-    expect(dot).toBeTruthy()
   })
 
   // ===========================================
@@ -401,29 +305,6 @@ describe('Chip', () => {
   // ===========================================
   // Combined state tests
   // ===========================================
-  test('renders pressed primary chip with dot', async () => {
-    const screen = await render(
-      <Chip pressed={true} onPressedChange={() => {}} accent="primary" showDot>
-        Selected Primary
-      </Chip>
-    )
-
-    const button = screen.getByRole('button')
-    await expect.element(button).toHaveAttribute('aria-pressed', 'true')
-    await expect.element(button).toHaveAttribute('data-pressed')
-  })
-
-  test('renders pressed secondary chip with dot', async () => {
-    const screen = await render(
-      <Chip pressed={true} onPressedChange={() => {}} accent="secondary" showDot>
-        Selected Secondary
-      </Chip>
-    )
-
-    const button = screen.getByRole('button')
-    await expect.element(button).toHaveAttribute('aria-pressed', 'true')
-    await expect.element(button).toHaveAttribute('data-pressed')
-  })
 
   test('renders disabled pressed chip', async () => {
     const screen = await render(
@@ -439,7 +320,7 @@ describe('Chip', () => {
 
   test('renders small chip with all props', async () => {
     const screen = await render(
-      <Chip size="sm" pressed={true} onPressedChange={() => {}} accent="secondary" showDot>
+      <Chip size="sm" pressed={true} onPressedChange={() => {}}>
         Small Chip
       </Chip>
     )
@@ -522,17 +403,6 @@ describe('Chip', () => {
       expect(chip.className).toMatch(/sizeSm/)
     })
 
-    test('applies accent class correctly', async () => {
-      const screen = await render(
-        <Chip readonly accent="secondary">
-          Secondary Readonly
-        </Chip>
-      )
-
-      const chip = screen.getByText('Secondary Readonly').element()
-      expect(chip.className).toMatch(/accentSecondary/)
-    })
-
     test('applies custom className', async () => {
       const screen = await render(
         <Chip readonly className="custom-class">
@@ -542,19 +412,6 @@ describe('Chip', () => {
 
       const chip = screen.getByText('Custom')
       await expect.element(chip).toHaveClass('custom-class')
-    })
-
-    test('shows dot when showDot is true', async () => {
-      const screen = await render(
-        <Chip readonly showDot>
-          With Dot
-        </Chip>
-      )
-
-      const chip = screen.getByText('With Dot').element()
-      const dot = chip.querySelector('[aria-hidden="true"]')
-      expect(dot).toBeTruthy()
-      expect(dot?.className).toMatch(/dot/)
     })
 
     test('ignores interactive props', async () => {

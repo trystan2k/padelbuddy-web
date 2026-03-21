@@ -8,7 +8,6 @@ import styles from './Chip.module.css'
 
 export type ChipVariant = 'toggle' | 'button'
 export type ChipSize = 'sm' | 'md'
-export type ChipAccent = 'primary' | 'secondary'
 
 export interface ChipProps extends HTMLAttributes<HTMLElement> {
   children: ReactNode
@@ -16,9 +15,7 @@ export interface ChipProps extends HTMLAttributes<HTMLElement> {
   onPressedChange?: (pressed: boolean) => void
   variant?: ChipVariant
   size?: ChipSize
-  accent?: ChipAccent
   disabled?: boolean
-  showDot?: boolean
   /** When true, renders as a non-interactive div instead of button */
   readonly?: boolean
 }
@@ -29,16 +26,13 @@ export function Chip({
   onPressedChange,
   variant = 'toggle',
   size = 'md',
-  accent = 'primary',
   disabled = false,
-  showDot = false,
   className,
   'aria-expanded': ariaExpanded,
   readonly = false,
   ...props
 }: ChipProps) {
   const sizeClass = size === 'sm' ? styles.sizeSm : styles.sizeMd
-  const accentClass = accent === 'secondary' ? styles.accentSecondary : undefined
 
   // When aria-expanded is defined, use Button variant for dropdown trigger behavior
   const isDropdownTrigger = ariaExpanded !== undefined
@@ -51,12 +45,7 @@ export function Chip({
   // Readonly mode: render a non-interactive div
   if (readonly) {
     return (
-      <div
-        {...props}
-        className={cn(styles.chip, sizeClass, accentClass, className)}
-        data-readonly=""
-      >
-        {showDot && <span className={styles.dot} aria-hidden="true" />}
+      <div {...props} className={cn(styles.chip, sizeClass, className)} data-readonly="">
         {children}
       </div>
     )
@@ -68,11 +57,10 @@ export function Chip({
         {...props}
         onClick={handleButtonClick}
         disabled={disabled}
-        className={cn(styles.chip, sizeClass, accentClass, className)}
+        className={cn(styles.chip, sizeClass, className)}
         aria-expanded={ariaExpanded}
         data-pressed={pressed || undefined}
       >
-        {showDot && <span className={styles.dot} aria-hidden="true" />}
         {children}
       </Button>
     )
@@ -84,9 +72,8 @@ export function Chip({
       pressed={pressed}
       onPressedChange={onPressedChange}
       disabled={disabled}
-      className={cn(styles.chip, sizeClass, accentClass, className)}
+      className={cn(styles.chip, sizeClass, className)}
     >
-      {showDot && <span className={styles.dot} aria-hidden="true" />}
       {children}
     </Toggle>
   )

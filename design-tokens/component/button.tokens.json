@@ -9,13 +9,6 @@
         "padding-x": { "value": "{base.space.24}", "type": "spacing" }
       },
       "revert": {
-        "background": { "value": "{semantic.color.background.critical-subtle}", "type": "color" },
-        "background-alt": {
-          "value": "{semantic.color.background.critical-subtle-alt}",
-          "type": "color"
-        },
-        "border": { "value": "{semantic.color.border.critical-subtle}", "type": "color" },
-        "border-alt": { "value": "{semantic.color.border.critical-subtle-alt}", "type": "color" },
         "text": { "value": "{semantic.color.content.secondary}", "type": "color" },
         "radius": { "value": "{base.radius.18}", "type": "borderRadius" },
         "padding-y": { "value": "{base.space.10}", "type": "spacing" },

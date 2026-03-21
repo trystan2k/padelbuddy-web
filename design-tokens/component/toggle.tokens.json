@@ -3,8 +3,6 @@
     "toggle": {
       "gap": { "value": "{base.space.16}", "type": "spacing" },
       "label-gap": { "value": "{base.space.4}", "type": "spacing" },
-      "width": { "value": "{base.space.48}", "type": "dimension" },
-      "height": { "value": "{base.space.48}", "type": "dimension" },
       "switch-width": { "value": "88px", "type": "dimension" },
       "switch-height": { "value": "48px", "type": "dimension" },
       "radius": { "value": "{base.radius.24}", "type": "borderRadius" },

@@ -67,11 +67,11 @@
 }
 
 .teamPrimary {
-  color: var(--semantic-color-content-accent-primary);
+  color: var(--semantic-color-items-primary-content);
 }
 
 .teamSecondary {
-  color: var(--semantic-color-content-accent-secondary);
+  color: var(--semantic-color-items-secondary-content);
 }
 
 .setRows {

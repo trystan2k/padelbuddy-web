@@ -3,6 +3,7 @@
   align-items: center;
   justify-content: center;
   transition: all 150ms ease;
+  background-color: var(--component-chip-bg-color, var(--semantic-color-background-surface));
 }
 
 /* Readonly mode - non-interactive */
@@ -12,31 +13,30 @@
 
 /* Size variants */
 .sizeSm {
-  gap: var(--component-chip-locale-gap);
-  padding: var(--component-chip-locale-padding-y) var(--component-chip-locale-padding-x);
-  border-radius: var(--component-chip-locale-radius);
+  gap: var(--component-chip-sm-gap);
+  padding: var(--component-chip-sm-padding-y) var(--component-chip-sm-padding-x);
+  border-radius: var(--component-chip-sm-radius);
   border: 1px solid var(--semantic-color-border-subtle);
-  background-color: var(--semantic-color-background-surface);
 }
 
 .sizeMd {
-  gap: var(--component-chip-selectable-gap);
-  padding: var(--component-chip-selectable-padding-y) var(--component-chip-selectable-padding-x);
-  border-radius: var(--component-chip-selectable-radius);
+  gap: var(--component-chip-md-gap);
+  padding: var(--component-chip-md-padding-y) var(--component-chip-md-padding-x);
+  border-radius: var(--component-chip-md-radius);
   border: 2px solid var(--semantic-color-border-subtle);
-  background-color: var(--semantic-color-background-surface);
   flex: 1;
 }
 
 /* Focus state */
 .chip:focus-visible {
-  outline: 2px solid var(--semantic-color-content-accent-primary);
-  outline-offset: 2px;
+  outline: none;
 }
 
-/* Hover state - scoped to sizeSm only (as LocaleChip had before) */
-.sizeSm:hover:not(:disabled, [data-disabled], [data-readonly]) {
-  border-color: var(--semantic-color-content-accent-primary);
+.chip:hover:not(:disabled, [data-disabled], [data-readonly]) {
+  border-color: var(
+    --component-chip-hover-border-color,
+    var(--semantic-color-border-accent-primary)
+  );
 }
 
 /* Disabled state */
@@ -48,25 +48,12 @@
 
 /* Pressed/Selected state - default uses primary accent */
 .chip[data-pressed] {
-  border-color: var(--semantic-color-border-accent-primary);
-  background-color: var(--semantic-color-background-accent-primary-subtle);
-}
-
-/* Secondary accent - pressed state */
-.accentSecondary[data-pressed] {
-  border-color: var(--semantic-color-border-accent-secondary);
-  background-color: var(--semantic-color-background-accent-secondary-subtle);
-}
-
-/* Dot indicator */
-.dot {
-  width: var(--component-chip-selectable-dot-size);
-  height: var(--component-chip-selectable-dot-size);
-  border-radius: 50%;
-  flex-shrink: 0;
-  background-color: var(--semantic-color-content-accent-primary);
-}
-
-.accentSecondary .dot {
-  background-color: var(--semantic-color-content-accent-secondary);
+  border-color: var(
+    --component-chip-pressed-border-color,
+    var(--semantic-color-border-accent-primary)
+  );
+  background-color: var(
+    --component-chip-pressed-bg-color,
+    var(--semantic-color-background-accent-primary-subtle)
+  );
 }
