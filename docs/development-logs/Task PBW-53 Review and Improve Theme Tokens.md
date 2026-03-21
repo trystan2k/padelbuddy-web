@@ -9,7 +9,7 @@ permalink: development-logs/task-pbw-53-review-and-improve-theme-tokens
 ## Metadata
 
 - Task ID: PBW-53
-- Date (UTC): $(date -u +%Y-%m-%dT%H:%M:%SZ)
+- Date (UTC): 2026-03-21T00:00:00Z
 - Project: padelbuddy-web
 - Branch: n/a
 - Commit: n/a

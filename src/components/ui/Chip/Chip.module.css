@@ -35,7 +35,6 @@
   outline-offset: 2px;
 }
 
-/* Hover state - scoped to sizeSm only (as LocaleChip had before) */
 .chip:hover:not(:disabled, [data-disabled], [data-readonly]) {
   border-color: var(
     --component-chip-hover-border-color,
