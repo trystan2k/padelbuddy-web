@@ -35,7 +35,7 @@
 .chip:hover:not(:disabled, [data-disabled], [data-readonly]) {
   border-color: var(
     --component-chip-hover-border-color,
-    var(--semantic-color-content-accent-primary)
+    var(--semantic-color-border-accent-primary)
   );
 }
 
