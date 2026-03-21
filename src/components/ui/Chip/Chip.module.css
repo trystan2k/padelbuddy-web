@@ -3,6 +3,7 @@
   align-items: center;
   justify-content: center;
   transition: all 150ms ease;
+  background-color: var(--component-chip-bg-color, var(--semantic-color-background-surface));
 }
 
 /* Readonly mode - non-interactive */
@@ -16,7 +17,6 @@
   padding: var(--component-chip-sm-padding-y) var(--component-chip-sm-padding-x);
   border-radius: var(--component-chip-sm-radius);
   border: 1px solid var(--semantic-color-border-subtle);
-  background-color: var(--semantic-color-background-surface);
 }
 
 .sizeMd {
@@ -24,15 +24,12 @@
   padding: var(--component-chip-md-padding-y) var(--component-chip-md-padding-x);
   border-radius: var(--component-chip-md-radius);
   border: 2px solid var(--semantic-color-border-subtle);
-  background-color: var(--semantic-color-background-surface);
   flex: 1;
 }
 
 /* Focus state */
 .chip:focus-visible {
-  outline: 2px solid
-    var(--component-chip-focus-visible-outline-color, var(--semantic-color-content-accent-primary));
-  outline-offset: 2px;
+  outline: none;
 }
 
 .chip:hover:not(:disabled, [data-disabled], [data-readonly]) {

@@ -59,6 +59,18 @@
   color: var(--semantic-color-content-secondary);
 }
 
+.serverChip.team1 {
+  --component-chip-pressed-bg-color: var(--semantic-color-items-primary-background);
+  --component-chip-hover-border-color: var(--semantic-color-items-primary-border);
+  --component-chip-pressed-border-color: var(--semantic-color-items-primary-border);
+}
+
+.serverChip.team2 {
+  --component-chip-pressed-bg-color: var(--semantic-color-items-secondary-background);
+  --component-chip-hover-border-color: var(--semantic-color-items-secondary-border);
+  --component-chip-pressed-border-color: var(--semantic-color-items-secondary-border);
+}
+
 /* Format row */
 .formatRow {
   display: flex;

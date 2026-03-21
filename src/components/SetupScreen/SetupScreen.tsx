@@ -206,6 +206,7 @@ export function SetupScreen() {
           <SectionLabel>{t('setup.firstServer.label')}</SectionLabel>
           <div className={styles.serverRow}>
             <Chip
+              className={cn(styles.serverChip, styles.team1)}
               pressed={formData.initialServer === 'team-1'}
               onPressedChange={handleTeam1ServerSelect}
             >
@@ -224,6 +225,7 @@ export function SetupScreen() {
               </>
             </Chip>
             <Chip
+              className={cn(styles.serverChip, styles.team2)}
               pressed={formData.initialServer === 'team-2'}
               onPressedChange={handleTeam2ServerSelect}
             >
