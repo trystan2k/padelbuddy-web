@@ -1,5 +1,13 @@
-import { afterEach, beforeEach, describe, expect, test } from 'vitest'
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import { render } from 'vitest-browser-react'
+
+const { mockNavigate } = vi.hoisted(() => ({
+  mockNavigate: vi.fn()
+}))
+
+vi.mock('@tanstack/react-router', () => ({
+  useNavigate: () => mockNavigate
+}))
 
 import { CurrentMatchStartupGate } from '@/components/CurrentMatchStartupGate/CurrentMatchStartupGate'
 import {
@@ -19,6 +27,7 @@ describe('CurrentMatchStartupGate browser', () => {
   let persistence: CurrentMatchPersistence
 
   beforeEach(() => {
+    mockNavigate.mockReset()
     databaseName = `padel-buddy-startup-gate-${crypto.randomUUID()}`
     persistence = createCurrentMatchPersistence({
       databaseName,
@@ -75,6 +84,14 @@ describe('CurrentMatchStartupGate browser', () => {
 
     await resumeButton.click()
 
+    expect(mockNavigate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        to: '/match/$id',
+        params: expect.objectContaining({
+          id: expect.any(String)
+        })
+      })
+    )
     expect(document.body.textContent).not.toContain('Resume saved match?')
     await expect
       .element(screen.getByRole('heading', { level: 1, name: 'Padel Buddy' }))

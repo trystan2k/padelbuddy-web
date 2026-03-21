@@ -30,6 +30,7 @@ export interface CurrentMatchSession {
   scorePoint(teamId: MatchTeamId): Promise<CurrentMatchSessionSnapshot>
   undoScoreAction(): Promise<CurrentMatchSessionSnapshot>
   continuePlaying(): Promise<CurrentMatchSessionSnapshot>
+  finishMatch(): Promise<CurrentMatchSessionSnapshot>
 }
 
 export interface CreateCurrentMatchSessionOptions extends CurrentMatchSessionInput {
@@ -98,11 +99,11 @@ export function createCurrentMatchSession(
       }),
     continuePlaying: () =>
       enqueueMutation(async () => {
-        const nextSetup = continueMatch(snapshot.setup, snapshot.projection.state)
-
-        if (nextSetup === snapshot.setup) {
+        if (typeof snapshot.finishedAt !== 'number') {
           return snapshot
         }
+
+        const nextSetup = continueMatch(snapshot.setup, snapshot.projection.state)
 
         const elapsedMilliseconds = getElapsedMilliseconds(snapshot)
 
@@ -113,6 +114,17 @@ export function createCurrentMatchSession(
             startedAt: Date.now() - elapsedMilliseconds
           })
         )
+      }),
+    finishMatch: () =>
+      enqueueMutation(async () => {
+        if (typeof snapshot.finishedAt === 'number') {
+          return snapshot
+        }
+
+        return commitSnapshot({
+          ...snapshot,
+          finishedAt: Date.now()
+        })
       })
   }
 

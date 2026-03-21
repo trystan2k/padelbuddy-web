@@ -16,6 +16,7 @@ export interface CurrentMatchStartupResumeRequiredResult {
   status: 'resume-required'
   notice: CurrentMatchResetNotice | null
   session: CurrentMatchSession
+  matchId: string
 }
 
 export interface CurrentMatchStartupCorruptResult {
@@ -67,7 +68,8 @@ export async function hydrateCurrentMatchStartup(
     return {
       status: 'resume-required',
       notice,
-      session
+      session,
+      matchId: loadResult.record.matchId
     }
   }
 

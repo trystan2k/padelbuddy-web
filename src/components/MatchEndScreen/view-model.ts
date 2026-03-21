@@ -1,4 +1,10 @@
-import type { MatchFormat, MatchProjection, MatchTeamId, TeamScore } from '@/core/match'
+import type {
+  MatchFormat,
+  MatchProjection,
+  MatchSetState,
+  MatchTeamId,
+  TeamScore
+} from '@/core/match'
 
 export interface MatchEndScreenSetRow {
   setNumber: number
@@ -6,8 +12,9 @@ export interface MatchEndScreenSetRow {
 }
 
 export interface MatchEndScreenSummary {
-  winnerTeamId: MatchTeamId
-  winnerName: string
+  winnerTeamId?: MatchTeamId
+  winnerName?: string
+  isFinishedEarly: boolean
   teamNames: TeamScore<string>
   format: MatchFormat
   setRows: MatchEndScreenSetRow[]
@@ -31,28 +38,29 @@ export function createMatchEndScreenSummary(
   options: CreateMatchEndScreenSummaryOptions
 ): MatchEndScreenSummary {
   const { projection, startedAt, finishedAt, now = Date.now() } = options
-  const winner = projection.derived.winner
-
-  if (!winner) {
-    throw new Error('Match end screen summary requires a completed match projection.')
-  }
+  const winner =
+    projection.derived.winner ?? determineWinnerFromCompletedSets(projection.state.sets)
 
   const teamNames = createTeamNames(projection)
-  const completedSets = projection.state.sets.filter((set) => set.completed)
 
   return {
-    winnerTeamId: winner.teamId,
-    winnerName: teamNames[winner.teamId],
+    ...(winner
+      ? {
+          winnerTeamId: winner.teamId,
+          winnerName: teamNames[winner.teamId]
+        }
+      : {}),
+    isFinishedEarly: !winner,
     teamNames,
     format: projection.setup.format,
-    setRows: completedSets.map((set) => ({
+    setRows: projection.state.sets.map((set) => ({
       setNumber: set.index,
       scores: {
         'team-1': set.games['team-1'],
         'team-2': set.games['team-2']
       }
     })),
-    totalGames: completedSets.reduce(
+    totalGames: projection.state.sets.reduce(
       (total, set) => total + set.games['team-1'] + set.games['team-2'],
       0
     ),
@@ -61,6 +69,38 @@ export function createMatchEndScreenSummary(
       Math.floor(((typeof finishedAt === 'number' ? finishedAt : now) - startedAt) / 1000)
     )
   }
+}
+
+function determineWinnerFromCompletedSets(sets: MatchSetState[]): { teamId: MatchTeamId } | null {
+  const completedSets = sets.filter((set) => set.completed)
+
+  if (completedSets.length === 0) {
+    return null
+  }
+
+  let team1Wins = 0
+  let team2Wins = 0
+
+  for (const set of completedSets) {
+    if (set.games['team-1'] > set.games['team-2']) {
+      team1Wins += 1
+      continue
+    }
+
+    if (set.games['team-2'] > set.games['team-1']) {
+      team2Wins += 1
+    }
+  }
+
+  if (team1Wins > team2Wins) {
+    return { teamId: 'team-1' }
+  }
+
+  if (team2Wins > team1Wins) {
+    return { teamId: 'team-2' }
+  }
+
+  return null
 }
 
 export function getMatchDurationParts(elapsedSeconds: number): MatchDurationParts {

@@ -12,15 +12,22 @@ import {
   winQuickSet
 } from '../../core/match/test-helpers'
 
-// Mock useNavigate
-const mockNavigate = vi.fn()
-vi.mock('@tanstack/react-router', () => ({
-  useNavigate: () => mockNavigate
+const { mockNavigate } = vi.hoisted(() => ({
+  mockNavigate: vi.fn()
 }))
 
-// Mock getCurrentLocale
+vi.mock('@tanstack/react-router', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@tanstack/react-router')>()
+
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate
+  }
+})
+
 vi.mock('@/lib/i18n', async (importOriginal) => {
-  const original = await importOriginal<object>()
+  const original = await importOriginal<typeof import('@/lib/i18n')>()
+
   return {
     ...original,
     getCurrentLocale: () => 'en',
@@ -215,22 +222,6 @@ describe('ActiveMatchScreen', () => {
     await expect.element(revertButton).toBeDisabled()
   })
 
-  test('finish button stays enabled when match not completed', async () => {
-    const setup = createTestSetup()
-
-    const screen = await render(
-      <ActiveMatchScreen
-        matchId="test-match"
-        initialSetup={setup}
-        initialActions={[]}
-        startedAt={defaultStartedAt}
-      />
-    )
-
-    const finishButton = screen.getByTestId('finish-button')
-    await expect.element(finishButton).not.toBeDisabled()
-  })
-
   test('team panels are disabled when match is completed', async () => {
     const setup = createTestSetup()
     // Win two sets to complete the match (best of 3)
@@ -250,6 +241,37 @@ describe('ActiveMatchScreen', () => {
 
     const team2Panel = screen.getByTestId('team-panel-team-2')
     await expect.element(team2Panel).toBeDisabled()
+  })
+
+  test('finish button stays enabled when match is not completed', async () => {
+    const setup = createTestSetup()
+
+    const screen = await render(
+      <ActiveMatchScreen
+        matchId="test-match"
+        initialSetup={setup}
+        initialActions={[]}
+        startedAt={defaultStartedAt}
+      />
+    )
+
+    await expect.element(screen.getByTestId('finish-button')).toBeEnabled()
+  })
+
+  test('finish button is disabled when match is already completed', async () => {
+    const setup = createTestSetup()
+    const actions = [...winQuickSet('team-1'), ...winQuickSet('team-1')]
+
+    const screen = await render(
+      <ActiveMatchScreen
+        matchId="test-match"
+        initialSetup={setup}
+        initialActions={actions}
+        startedAt={defaultStartedAt}
+      />
+    )
+
+    await expect.element(screen.getByTestId('finish-button')).toBeDisabled()
   })
 
   test('navigates to the finish route when the match is completed', async () => {
@@ -275,7 +297,32 @@ describe('ActiveMatchScreen', () => {
       expect(mockNavigate).toHaveBeenCalledWith({
         to: '/match/finish/$id',
         params: { id: 'test-match' },
-        replace: true
+        replace: true,
+        viewTransition: true
+      })
+    })
+  })
+
+  test('clicking finish marks the match finished and navigates to the finish route', async () => {
+    const setup = createTestSetup()
+
+    const screen = await render(
+      <ActiveMatchScreen
+        matchId="test-match"
+        initialSetup={setup}
+        initialActions={[]}
+        startedAt={defaultStartedAt}
+      />
+    )
+
+    await screen.getByTestId('finish-button').click()
+
+    await vi.waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledWith({
+        to: '/match/finish/$id',
+        params: { id: 'test-match' },
+        replace: true,
+        viewTransition: true
       })
     })
   })

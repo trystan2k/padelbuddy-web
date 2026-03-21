@@ -158,6 +158,83 @@ describe('current match session', () => {
     expect(snapshot.finishedAt).toEqual(expect.any(Number))
   })
 
+  test('persists finishedAt when the match is manually finished early', async () => {
+    const setup = createTestSetup()
+    const actions = scorePoints('team-1', 'team-2')
+    const { persistence, saveCurrentMatchMock } = createPersistenceStub()
+    const finishedNow = testStartedAt + 2 * 60 * 1000
+    const dateNowSpy = vi.spyOn(Date, 'now').mockReturnValue(finishedNow)
+
+    try {
+      const session = createCurrentMatchSession({
+        matchId: testMatchId,
+        setup,
+        actions,
+        startedAt: testStartedAt,
+        persistence
+      })
+
+      const snapshot = await session.finishMatch()
+
+      expect(saveCurrentMatchMock).toHaveBeenCalledWith({
+        matchId: testMatchId,
+        setup,
+        actions,
+        startedAt: testStartedAt,
+        finishedAt: finishedNow
+      })
+      expect(snapshot.actions).toEqual(actions)
+      expect(snapshot.projection.derived.status).toBe('in-progress')
+      expect(snapshot.finishedAt).toBe(finishedNow)
+    } finally {
+      dateNowSpy.mockRestore()
+    }
+  })
+
+  test('returns the existing snapshot when manually finishing an already finished match', async () => {
+    const setup = createTestSetup()
+    const { persistence, saveCurrentMatchMock } = createPersistenceStub()
+    const session = createCurrentMatchSession({
+      matchId: testMatchId,
+      setup,
+      actions: [],
+      startedAt: testStartedAt,
+      finishedAt: testFinishedAt,
+      persistence
+    })
+
+    const snapshot = await session.finishMatch()
+
+    expect(saveCurrentMatchMock).not.toHaveBeenCalled()
+    expect(snapshot.finishedAt).toBe(testFinishedAt)
+  })
+
+  test('returns the existing snapshot when continue-playing is requested before the match is finished', async () => {
+    const setup = createTestSetup({
+      format: 'best-of-1'
+    })
+    const actions = winQuickGame('team-1')
+    const { persistence, saveCurrentMatchMock } = createPersistenceStub()
+    const session = createCurrentMatchSession({
+      matchId: testMatchId,
+      setup,
+      actions,
+      startedAt: testStartedAt,
+      persistence
+    })
+
+    const snapshot = await session.continuePlaying()
+
+    expect(saveCurrentMatchMock).not.toHaveBeenCalled()
+    expect(snapshot).toEqual(
+      createCurrentMatchSessionSnapshot({
+        setup,
+        actions,
+        startedAt: testStartedAt
+      })
+    )
+  })
+
   test('persists continued matches using the uncapped setup', async () => {
     const setup = createTestSetup({
       format: 'best-of-1'
@@ -193,6 +270,42 @@ describe('current match session', () => {
       expect(snapshot.finishedAt).toBeUndefined()
       expect(snapshot.projection).toEqual(projectMatch(continuedSetup, actions))
       expect(snapshot.projection.derived.activeSetIndex).toBe(2)
+    } finally {
+      dateNowSpy.mockRestore()
+    }
+  })
+
+  test('continues early-finished matches without requiring a natural winner', async () => {
+    const setup = createTestSetup()
+    const actions = [...winQuickSet('team-1'), ...scorePoints('team-2')]
+    const continuedSetup = continueMatch(setup, projectMatch(setup, actions).state)
+    const { persistence, saveCurrentMatchMock } = createPersistenceStub()
+    const resumedNow = testFinishedAt + 10 * 60 * 1000
+
+    const dateNowSpy = vi.spyOn(Date, 'now').mockReturnValue(resumedNow)
+
+    try {
+      const session = createCurrentMatchSession({
+        matchId: testMatchId,
+        setup,
+        actions,
+        startedAt: testStartedAt,
+        finishedAt: testFinishedAt,
+        persistence
+      })
+
+      const snapshot = await session.continuePlaying()
+
+      expect(saveCurrentMatchMock).toHaveBeenCalledWith({
+        matchId: testMatchId,
+        setup: continuedSetup,
+        actions,
+        startedAt: resumedNow - (testFinishedAt - testStartedAt)
+      })
+      expect(snapshot.setup).toEqual(continuedSetup)
+      expect(snapshot.finishedAt).toBeUndefined()
+      expect(snapshot.projection.derived.status).toBe('in-progress')
+      expect(snapshot.projection.derived.winner).toBeNull()
     } finally {
       dateNowSpy.mockRestore()
     }

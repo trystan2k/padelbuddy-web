@@ -1,7 +1,7 @@
 ---
 description: Expert test automation agent for unit, integration, and E2E testing using stack-specific best practices and project conventions.
 mode: subagent
-model: zai-coding-plan/glm-5
+model: zai-coding-plan/glm-5-turbo
 reasoningEffort: high
 temperature: 0
 tools:

@@ -8,8 +8,9 @@ import { cn } from '@/lib/utils/cn'
 import styles from './WinnerCard.module.css'
 
 export interface WinnerCardProps {
+  winnerLabel: string
   winnerName: string
-  winnerTeamId: MatchTeamId
+  winnerTeamId?: MatchTeamId
   isStartingNewMatch: boolean
   isContinuingMatch: boolean
   onNewMatch: () => void
@@ -17,6 +18,7 @@ export interface WinnerCardProps {
 }
 
 export function WinnerCard({
+  winnerLabel,
   winnerName,
   winnerTeamId,
   isStartingNewMatch,
@@ -33,11 +35,15 @@ export function WinnerCard({
           <div className={styles.trophyBadge} aria-hidden="true">
             <TrophyIcon />
           </div>
-          <p className={styles.label}>{t('match.end.winner.label')}</p>
+          <p className={styles.label}>{winnerLabel}</p>
           <h2
             className={cn(
               styles.winnerName,
-              winnerTeamId === 'team-1' ? styles.teamPrimary : styles.teamSecondary
+              winnerTeamId === 'team-1'
+                ? styles.teamPrimary
+                : winnerTeamId === 'team-2'
+                  ? styles.teamSecondary
+                  : styles.teamNeutral
             )}
           >
             {winnerName}

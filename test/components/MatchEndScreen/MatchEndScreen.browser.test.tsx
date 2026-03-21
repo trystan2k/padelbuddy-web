@@ -45,7 +45,8 @@ vi.mock('@/lib/current-match', () => ({
 }))
 
 vi.mock('@/lib/i18n', async (importOriginal) => {
-  const original = await importOriginal<object>()
+  const original = await importOriginal<typeof import('@/lib/i18n')>()
+
   return {
     ...original,
     getCurrentLocale: () => 'en',
@@ -135,7 +136,7 @@ describe('MatchEndScreen', () => {
 
     await vi.waitFor(() => {
       expect(mockClearCurrentMatch).toHaveBeenCalledTimes(1)
-      expect(mockNavigate).toHaveBeenCalledWith({ to: '/' })
+      expect(mockNavigate).toHaveBeenCalledWith({ to: '/', viewTransition: true })
     })
   })
 
@@ -170,7 +171,8 @@ describe('MatchEndScreen', () => {
       expect(mockNavigate).toHaveBeenCalledWith({
         to: '/match/$id',
         params: { id: 'test-match' },
-        replace: true
+        replace: true,
+        viewTransition: true
       })
     })
 

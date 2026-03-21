@@ -1,7 +1,7 @@
 ---
 description: Orchestrate end-to-end task delivery from GitHub Issues intake to PR creation by delegating every action to specialist subagents.
 mode: primary
-model: zai-coding-plan/glm-5
+model: zai-coding-plan/glm-5-turbo
 textVerbosity: high
 temperature: 0
 tools:

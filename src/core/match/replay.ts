@@ -1,4 +1,4 @@
-import { deriveMatchState, getMatchWinner } from './derived-state'
+import { deriveMatchState } from './derived-state'
 import { applyMatchAction, createInitialMatchState } from './engine'
 import type { MatchAction, MatchProjection, MatchSetup, MatchState } from './types'
 
@@ -23,13 +23,9 @@ export function undoLastScoringAction(actions: MatchAction[]): MatchAction[] {
   return actions.slice(0, -1)
 }
 
-export function continueMatch(setup: MatchSetup, state: MatchState): MatchSetup {
+export function continueMatch(setup: MatchSetup, _state: MatchState): MatchSetup {
   if (setup.setCap === null) {
     return setup
-  }
-
-  if (!getMatchWinner(setup, state)) {
-    throw new Error('Only a completed official match can continue playing.')
   }
 
   return {

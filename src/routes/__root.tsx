@@ -1,11 +1,21 @@
 import '@/styles.css'
 
-import { createRootRoute, HeadContent, Outlet, Scripts } from '@tanstack/react-router'
+import {
+  createRootRoute,
+  HeadContent,
+  Outlet,
+  Scripts,
+  useRouterState,
+  type ErrorComponentProps
+} from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { NotFoundPage } from '@/components/NotFoundPage/NotFoundPage'
+import { Button, Spinner } from '@/components/ui'
 import { i18n, initializeI18n } from '@/lib/i18n'
 
+import { getErrorMessage } from './-route-utils'
 import styles from './RootDocument.module.css'
 
 export const Route = createRootRoute({
@@ -28,14 +38,64 @@ export const Route = createRootRoute({
     ]
   }),
   component: RootDocument,
+  errorComponent: RootErrorState,
   notFoundComponent: NotFoundPage
 })
+
+function RootErrorState({ error, reset }: ErrorComponentProps) {
+  const { t } = useTranslation()
+  const errorMessage = getErrorMessage(error)
+
+  return (
+    <html lang={i18n.resolvedLanguage ?? i18n.language ?? 'en'}>
+      <head>
+        <HeadContent />
+      </head>
+      <body>
+        <main className="appStatusPage">
+          <section className="appStatusCard" aria-live="assertive">
+            <p className="appStatusEyebrow">{t('error.unexpectedLabel')}</p>
+            <h1 className="appStatusTitle">{t('error.unexpectedTitle')}</h1>
+            <p className="appStatusBody">{t('error.unexpectedBody')}</p>
+            {errorMessage ? (
+              <p className="appStatusDetail" role="alert">
+                {errorMessage}
+              </p>
+            ) : null}
+            <div className="appStatusActions">
+              <Button variant="outline" size="sm" accent="secondary" onClick={reset}>
+                {t('common.retry')}
+              </Button>
+            </div>
+          </section>
+        </main>
+        <Scripts />
+      </body>
+    </html>
+  )
+}
 
 function RootDocument() {
   const [i18nReady, setI18nReady] = useState(() => i18n.isInitialized)
   const [currentLang, setCurrentLang] = useState(
     () => i18n.resolvedLanguage ?? i18n.language ?? 'en'
   )
+  const { t } = useTranslation()
+  const isRoutePending = useRouterState({
+    select: (state) => state.isLoading || state.matches.some((match) => match.status === 'pending')
+  })
+
+  useEffect(() => {
+    if (typeof document === 'undefined') {
+      return
+    }
+
+    document.body.dataset.routePending = isRoutePending ? 'true' : 'false'
+
+    return () => {
+      delete document.body.dataset.routePending
+    }
+  }, [isRoutePending])
 
   useEffect(() => {
     // If already initialized, no need to initialize again
@@ -83,9 +143,16 @@ function RootDocument() {
           <HeadContent />
         </head>
         <body>
-          <div className={styles.loadingContainer}>
-            <div className={styles.spinner} />
-          </div>
+          <main className="appStatusPage">
+            <section className="appStatusCard" aria-live="polite" aria-busy="true">
+              <Spinner className="appStatusSpinner" size="lg" label="Loading Padel Buddy" />
+              <p className="appStatusEyebrow">Starting app</p>
+              <h1 className="appStatusTitle">Preparing Padel Buddy</h1>
+              <p className="appStatusBody">
+                Loading translations and preparing the score tracker shell.
+              </p>
+            </section>
+          </main>
           <Scripts />
         </body>
       </html>
@@ -98,7 +165,26 @@ function RootDocument() {
         <HeadContent />
       </head>
       <body>
-        <Outlet />
+        <div className={styles.routeShell}>
+          <div
+            className={
+              isRoutePending
+                ? `${styles.routeViewport} ${styles.routeViewportPending}`
+                : styles.routeViewport
+            }
+            data-view-transition-root="true"
+          >
+            <Outlet />
+          </div>
+          {isRoutePending ? (
+            <div className={styles.routePendingOverlay} role="status" aria-live="polite">
+              <div className={styles.routePendingNotice}>
+                <Spinner size="sm" color="secondary" label={t('loadingState.routeTransition')} />
+                <p className={styles.routePendingLabel}>{t('loadingState.routeTransition')}</p>
+              </div>
+            </div>
+          ) : null}
+        </div>
         <Scripts />
       </body>
     </html>

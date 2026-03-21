@@ -1,9 +1,30 @@
 {
   "common": {
-    "loading": "Carregando..."
+    "loading": "Carregando...",
+    "retry": "Tentar novamente",
+    "dismiss": "Dispensar"
   },
   "error": {
-    "loadMatch": "Erro ao carregar partida"
+    "loadMatch": "Erro ao carregar partida",
+    "unexpectedLabel": "Recuperação de tela",
+    "unexpectedTitle": "Algo interrompeu esta tela.",
+    "unexpectedBody": "O Padel Buddy encontrou um problema temporário enquanto preparava esta visualização. Tente novamente para restaurar a tela.",
+    "invalidMatch": {
+      "title": "Partida não encontrada",
+      "body": "A partida que você está procurando não existe ou já foi removida."
+    },
+    "corruptMatch": {
+      "title": "Dados da partida corrompidos",
+      "body": "Não foi possível ler os dados salvos da partida. Inicie uma nova partida."
+    },
+    "noMatch": {
+      "title": "Nenhuma partida ativa",
+      "body": "Não há dados de partida disponíveis. Inicie uma nova partida."
+    }
+  },
+  "loadingState": {
+    "routeBody": "O Padel Buddy está restaurando os dados mais recentes da partida e preparando a próxima tela.",
+    "routeTransition": "Carregando a próxima tela"
   },
   "app": {
     "title": "Padel Buddy",
@@ -173,7 +194,9 @@
         "subtitle": "Partida encerrada"
       },
       "winner": {
-        "label": "Vencedores"
+        "label": "Vencedores",
+        "finishedEarlyLabel": "Partida encerrada",
+        "finishedEarlyName": "Nenhum vencedor (Empate)"
       },
       "summary": {
         "title": "Resumo dos sets",

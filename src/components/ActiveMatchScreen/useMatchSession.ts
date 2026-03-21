@@ -20,6 +20,7 @@ export interface UseMatchSessionReturn {
   snapshot: CurrentMatchSessionSnapshot
   scorePoint: (teamId: MatchTeamId) => Promise<void>
   undoScoreAction: () => Promise<void>
+  finishMatch: () => Promise<void>
   isLoading: boolean
 }
 
@@ -70,10 +71,21 @@ export function useMatchSession(options: UseMatchSessionOptions): UseMatchSessio
     }
   }, [session])
 
+  const finishMatch = useCallback(async () => {
+    setIsLoading(true)
+    try {
+      const newSnapshot = await session.finishMatch()
+      setSnapshot(newSnapshot)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [session])
+
   return {
     snapshot,
     scorePoint,
     undoScoreAction,
+    finishMatch,
     isLoading
   }
 }

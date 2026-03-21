@@ -8,7 +8,12 @@ import { currentMatchSchemaVersion } from '@/lib/current-match'
 import { MatchRouteContent } from '@/routes/match.$id'
 import { createTestSetup, winQuickSet } from '../core/match/test-helpers'
 
-const mockNavigate = vi.fn()
+const { mockNavigate, mockUseLoaderData } = vi.hoisted(() => ({
+  mockNavigate: vi.fn(),
+  mockUseLoaderData: vi.fn()
+}))
+
+const viewTransitionOptions = { viewTransition: true as const }
 
 vi.mock('@tanstack/react-router', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@tanstack/react-router')>()
@@ -17,7 +22,9 @@ vi.mock('@tanstack/react-router', async (importOriginal) => {
     ...actual,
     createFileRoute: () => (options: unknown) => ({
       options,
-      useLoaderData: vi.fn()
+      useLoaderData: mockUseLoaderData,
+      isPending: false,
+      error: false
     }),
     useNavigate: () => mockNavigate
   }
@@ -75,7 +82,8 @@ describe('match.$id route content', () => {
       expect(mockNavigate).toHaveBeenCalledWith({
         to: '/match/finish/$id',
         params: { id: 'match-2' },
-        replace: true
+        replace: true,
+        ...viewTransitionOptions
       })
     })
   })
@@ -84,7 +92,12 @@ describe('match.$id route content', () => {
     await render(<MatchRouteContent matchData={{ status: 'empty' }} matchId="match-3" />)
 
     await vi.waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith({ to: '/' })
+      expect(mockNavigate).toHaveBeenCalledWith({
+        to: '/',
+        replace: true,
+        search: { error: 'no-match' },
+        ...viewTransitionOptions
+      })
     })
   })
 
@@ -101,7 +114,12 @@ describe('match.$id route content', () => {
     )
 
     await vi.waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith({ to: '/' })
+      expect(mockNavigate).toHaveBeenCalledWith({
+        to: '/',
+        replace: true,
+        search: { error: 'no-match' },
+        ...viewTransitionOptions
+      })
     })
   })
 
@@ -117,7 +135,12 @@ describe('match.$id route content', () => {
     )
 
     await vi.waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith({ to: '/' })
+      expect(mockNavigate).toHaveBeenCalledWith({
+        to: '/',
+        replace: true,
+        search: { error: 'corrupt' },
+        ...viewTransitionOptions
+      })
     })
   })
 
@@ -141,7 +164,12 @@ describe('match.$id route content', () => {
     )
 
     await vi.waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith({ to: '/' })
+      expect(mockNavigate).toHaveBeenCalledWith({
+        to: '/',
+        replace: true,
+        search: { error: 'invalid-match' },
+        ...viewTransitionOptions
+      })
     })
   })
 })

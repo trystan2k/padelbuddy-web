@@ -65,6 +65,10 @@
   color: var(--semantic-color-content-accent-secondary);
 }
 
+.teamNeutral {
+  color: var(--semantic-color-content-primary);
+}
+
 .actionGroup {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);

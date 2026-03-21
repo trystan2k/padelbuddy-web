@@ -5,6 +5,7 @@ import { useNavigate } from '@tanstack/react-router'
 import { createMatchSetup, matchFormats, type MatchFormat } from '@/core/match'
 import { saveCurrentMatch } from '@/lib/current-match'
 import { cn } from '@/lib/utils/cn'
+import { getViewTransitionNavigationOptions } from '@/lib/utils/view-transitions'
 
 import { Layout } from '@/components/Layout/Layout'
 import { Button } from '@/components/ui/Button'
@@ -84,7 +85,11 @@ export function SetupScreen() {
       await saveCurrentMatch({ matchId, setup, actions: [], startedAt: Date.now() })
 
       // Navigate to active match route
-      await navigate({ to: '/match/$id', params: { id: matchId } })
+      await navigate({
+        to: '/match/$id',
+        params: { id: matchId },
+        ...getViewTransitionNavigationOptions()
+      })
     } catch (error) {
       console.error('Failed to start match:', error)
       setIsStarting(false)

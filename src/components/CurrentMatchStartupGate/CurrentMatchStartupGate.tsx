@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type HTMLAttributes } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from '@tanstack/react-router'
 
 import { Button } from '@/components/ui'
 import {
@@ -8,6 +9,7 @@ import {
   type CurrentMatchPersistence,
   type CurrentMatchStartupResult
 } from '@/lib/current-match'
+import { getViewTransitionNavigationOptions } from '@/lib/utils/view-transitions'
 
 import styles from './CurrentMatchStartupGate.module.css'
 
@@ -60,6 +62,7 @@ export function CurrentMatchStartupGate({
   ...props
 }: CurrentMatchStartupGateProps) {
   const { t } = useTranslation()
+  const navigate = useNavigate()
   const [startupState, setStartupState] = useState<CurrentMatchStartupViewState>({
     status: 'loading'
   })
@@ -67,6 +70,7 @@ export function CurrentMatchStartupGate({
   const [clearErrorMessage, setClearErrorMessage] = useState<string | null>(null)
   const resumeButtonRef = useRef<HTMLButtonElement | null>(null)
   const resumeDialogRef = useRef<HTMLElement | null>(null)
+  const pendingResumeMatchIdRef = useRef<string | null>(null)
 
   useEffect(() => {
     let cancelled = false
@@ -89,6 +93,22 @@ export function CurrentMatchStartupGate({
       resumeButtonRef.current?.focus()
     }
   }, [startupState])
+
+  useEffect(() => {
+    const matchId = pendingResumeMatchIdRef.current
+
+    if (matchId === null) {
+      return
+    }
+
+    pendingResumeMatchIdRef.current = null
+
+    void navigate({
+      to: '/match/$id',
+      params: { id: matchId },
+      ...getViewTransitionNavigationOptions()
+    })
+  }, [navigate, startupState])
 
   useEffect(() => {
     if (startupState.status !== 'resume-required') {
@@ -163,7 +183,13 @@ export function CurrentMatchStartupGate({
 
   const resumeSavedMatch = useCallback(() => {
     setClearErrorMessage(null)
-    setStartupState((currentState) => resumeCurrentMatchStartup(currentState))
+    setStartupState((currentState) => {
+      if (currentState.status === 'resume-required') {
+        pendingResumeMatchIdRef.current = currentState.matchId
+      }
+
+      return resumeCurrentMatchStartup(currentState)
+    })
   }, [])
 
   const handleClearSavedMatch = useCallback(() => {

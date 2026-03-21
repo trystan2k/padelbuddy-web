@@ -8,7 +8,12 @@ import { currentMatchSchemaVersion } from '@/lib/current-match'
 import { MatchFinishRouteContent } from '@/routes/match.finish.$id'
 import { createTestSetup, winQuickSet } from '../core/match/test-helpers'
 
-const mockNavigate = vi.fn()
+const { mockNavigate, mockUseLoaderData } = vi.hoisted(() => ({
+  mockNavigate: vi.fn(),
+  mockUseLoaderData: vi.fn()
+}))
+
+const viewTransitionOptions = { viewTransition: true as const }
 
 vi.mock('@tanstack/react-router', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@tanstack/react-router')>()
@@ -17,7 +22,9 @@ vi.mock('@tanstack/react-router', async (importOriginal) => {
     ...actual,
     createFileRoute: () => (options: unknown) => ({
       options,
-      useLoaderData: vi.fn()
+      useLoaderData: mockUseLoaderData,
+      isPending: false,
+      error: false
     }),
     useNavigate: () => mockNavigate
   }
@@ -32,7 +39,12 @@ describe('match.finish.$id route content', () => {
     await render(<MatchFinishRouteContent matchData={{ status: 'empty' }} matchId="match-finish" />)
 
     await vi.waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith({ to: '/' })
+      expect(mockNavigate).toHaveBeenCalledWith({
+        to: '/',
+        replace: true,
+        search: { error: 'no-match' },
+        ...viewTransitionOptions
+      })
     })
   })
 
@@ -49,7 +61,12 @@ describe('match.finish.$id route content', () => {
     )
 
     await vi.waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith({ to: '/' })
+      expect(mockNavigate).toHaveBeenCalledWith({
+        to: '/',
+        replace: true,
+        search: { error: 'no-match' },
+        ...viewTransitionOptions
+      })
     })
   })
 
@@ -68,7 +85,12 @@ describe('match.finish.$id route content', () => {
       )
 
       await vi.waitFor(() => {
-        expect(mockNavigate).toHaveBeenCalledWith({ to: '/' })
+        expect(mockNavigate).toHaveBeenCalledWith({
+          to: '/',
+          replace: true,
+          search: { error: 'corrupt' },
+          ...viewTransitionOptions
+        })
       })
       expect(consoleErrorSpy).toHaveBeenCalledWith('Corrupted match data:', 'bad record')
     } finally {
@@ -89,6 +111,29 @@ describe('match.finish.$id route content', () => {
             setup,
             actions: [...winQuickSet('team-1'), ...winQuickSet('team-1')],
             startedAt: 1_000
+          }
+        }}
+        matchId="match-finish"
+      />
+    )
+
+    await expect.element(screen.getByTestId('match-end-screen')).toBeInTheDocument()
+  })
+
+  test('renders the finish screen for manually finished matches', async () => {
+    const setup = createTestSetup()
+
+    const screen = await render(
+      <MatchFinishRouteContent
+        matchData={{
+          status: 'ok',
+          record: {
+            schemaVersion: currentMatchSchemaVersion,
+            matchId: 'match-finish',
+            setup,
+            actions: [],
+            startedAt: 1_000,
+            finishedAt: 2_000
           }
         }}
         matchId="match-finish"
@@ -121,7 +166,8 @@ describe('match.finish.$id route content', () => {
       expect(mockNavigate).toHaveBeenCalledWith({
         to: '/match/$id',
         params: { id: 'match-finish' },
-        replace: true
+        replace: true,
+        ...viewTransitionOptions
       })
     })
   })
@@ -146,7 +192,12 @@ describe('match.finish.$id route content', () => {
     )
 
     await vi.waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith({ to: '/' })
+      expect(mockNavigate).toHaveBeenCalledWith({
+        to: '/',
+        replace: true,
+        search: { error: 'invalid-match' },
+        ...viewTransitionOptions
+      })
     })
   })
 })

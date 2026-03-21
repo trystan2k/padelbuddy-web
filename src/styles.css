@@ -51,6 +51,10 @@ body {
   background: transparent;
 }
 
+body[data-route-pending='true'] {
+  cursor: progress;
+}
+
 body::before {
   content: '';
   position: fixed;
@@ -92,6 +96,123 @@ svg {
   box-shadow:
     0 0 0 3px color-mix(in srgb, var(--semantic-color-background-surface) 96%, transparent),
     0 0 0 6px color-mix(in srgb, var(--semantic-color-content-accent-secondary) 90%, black);
+}
+
+.appStatusPage {
+  min-height: 100vh;
+  padding: clamp(1rem, 0.6rem + 2vw, 2rem);
+  display: grid;
+  place-items: center;
+}
+
+.appStatusCard {
+  width: min(34rem, 100%);
+  display: grid;
+  gap: 1rem;
+  padding: clamp(1.25rem, 1rem + 2vw, 2rem);
+  border: 1px solid
+    color-mix(
+      in srgb,
+      var(--semantic-color-border-subtle) 72%,
+      var(--semantic-color-content-primary)
+    );
+  border-radius: 1.5rem;
+  background:
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--semantic-color-content-inverse) 90%, transparent),
+      color-mix(in srgb, var(--semantic-color-background-surface-muted) 82%, transparent)
+    ),
+    var(--semantic-color-background-surface-muted);
+  box-shadow: 0 1.5rem 4rem var(--base-color-common-overlay-soft);
+}
+
+.appStatusSpinner {
+  justify-self: start;
+}
+
+.appStatusEyebrow {
+  margin: 0;
+  font-size: 0.8rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: color-mix(
+    in srgb,
+    var(--semantic-color-content-accent-secondary) 72%,
+    var(--semantic-color-content-primary)
+  );
+}
+
+.appStatusTitle {
+  margin: 0;
+  font-family: var(--semantic-typography-family-display);
+  font-size: clamp(1.8rem, 1.65rem + 0.8vw, 2.2rem);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  color: var(--semantic-color-content-primary);
+}
+
+.appStatusBody,
+.appStatusDetail {
+  margin: 0;
+  color: var(--semantic-color-content-secondary);
+  line-height: 1.7;
+}
+
+.appStatusDetail {
+  font-size: 0.95rem;
+}
+
+.appStatusActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--base-space-12);
+}
+
+[data-view-transition-root='true'] {
+  view-transition-name: route-shell;
+}
+
+@supports (view-transition-name: route-shell) {
+  @media (prefers-reduced-motion: no-preference) {
+    ::view-transition-old(route-shell),
+    ::view-transition-new(route-shell) {
+      animation-duration: 220ms;
+      animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    ::view-transition-old(route-shell) {
+      animation-name: route-fade-out;
+    }
+
+    ::view-transition-new(route-shell) {
+      animation-name: route-fade-in;
+    }
+  }
+}
+
+@keyframes route-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(1rem) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes route-fade-out {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(-0.5rem) scale(0.99);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
