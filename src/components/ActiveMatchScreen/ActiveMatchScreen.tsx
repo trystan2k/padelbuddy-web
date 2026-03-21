@@ -12,6 +12,7 @@ import { Chip } from '@/components/ui/Chip'
 import { TopBar } from '@/components/ui/TopBar'
 import { useMatchTimer } from './useMatchTimer'
 import { useMatchSession } from './useMatchSession'
+import { getViewTransitionNavigationOptions } from '@/lib/utils/view-transitions'
 
 import type { MatchAction, MatchSetup, MatchTeamId } from '@/core/match'
 
@@ -42,7 +43,7 @@ export function ActiveMatchScreen({
   const [sideSwitchDismissed, setSideSwitchDismissed] = useState(false)
 
   // Session hook
-  const { snapshot, scorePoint, undoScoreAction, isLoading } = useMatchSession({
+  const { snapshot, scorePoint, undoScoreAction, finishMatch, isLoading } = useMatchSession({
     matchId,
     setup: initialSetup,
     initialActions,
@@ -51,7 +52,8 @@ export function ActiveMatchScreen({
   })
 
   // Timer hook
-  const isMatchCompleted = snapshot.projection.derived.status === 'completed'
+  const isMatchCompleted =
+    snapshot.projection.derived.status === 'completed' || typeof snapshot.finishedAt === 'number'
   const { formattedTime } = useMatchTimer({
     startedAt: snapshot.startedAt,
     ...(typeof snapshot.finishedAt === 'number' ? { finishedAt: snapshot.finishedAt } : {}),
@@ -83,7 +85,8 @@ export function ActiveMatchScreen({
     void navigate({
       to: '/match/finish/$id',
       params: { id: matchId },
-      replace: true
+      replace: true,
+      ...getViewTransitionNavigationOptions()
     })
   }, [isMatchCompleted, matchId, navigate])
 
@@ -124,10 +127,9 @@ export function ActiveMatchScreen({
   }, [isLoading, undoScoreAction])
 
   const handleFinish = useCallback(async () => {
-    if (isLoading) return
-    // For now, navigate back to home
-    await navigate({ to: '/' })
-  }, [isLoading, navigate])
+    if (isLoading || isMatchCompleted) return
+    await finishMatch()
+  }, [finishMatch, isLoading, isMatchCompleted])
 
   const handleSideSwitchClose = useCallback(() => {
     setSideSwitchDismissed(true)
@@ -151,7 +153,6 @@ export function ActiveMatchScreen({
     [t]
   )
 
-  // Footer content
   const footerContent = useMemo(
     () => (
       <Button
@@ -159,13 +160,13 @@ export function ActiveMatchScreen({
         variant="outline"
         size="lg"
         onClick={handleFinish}
-        disabled={isLoading}
+        disabled={isLoading || isMatchCompleted}
         data-testid="finish-button"
       >
         {t('match.actions.finishMatch')}
       </Button>
     ),
-    [handleFinish, isLoading, t]
+    [handleFinish, isLoading, isMatchCompleted, t]
   )
 
   return (

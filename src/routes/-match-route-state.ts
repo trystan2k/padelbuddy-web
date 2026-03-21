@@ -3,6 +3,10 @@ import type { CurrentMatchLoadResult, CurrentMatchRecord } from '@/lib/current-m
 
 export type MatchRouteMode = 'active' | 'finish'
 
+const matchRouteErrorTypes = ['invalid-match', 'no-match', 'corrupt'] as const
+
+export type MatchRouteErrorType = (typeof matchRouteErrorTypes)[number]
+
 export type MatchRouteState =
   | {
       status: 'redirect-home'
@@ -51,7 +55,11 @@ export function resolveMatchRouteState(
     }
   }
 
-  if (mode === 'finish' && projection.derived.status === 'in-progress') {
+  if (
+    mode === 'finish' &&
+    projection.derived.status === 'in-progress' &&
+    typeof matchData.record.finishedAt !== 'number'
+  ) {
     return {
       status: 'redirect-active',
       matchId
@@ -63,4 +71,35 @@ export function resolveMatchRouteState(
     record: matchData.record,
     projection
   }
+}
+
+export function determineErrorType(
+  matchId: string,
+  matchData: CurrentMatchLoadResult
+): MatchRouteErrorType {
+  if (matchData.status === 'corrupt') {
+    return 'corrupt'
+  }
+
+  if (matchData.status === 'empty' || matchData.status === 'reset-required') {
+    return 'no-match'
+  }
+
+  if (matchData.record.matchId !== matchId) {
+    return 'invalid-match'
+  }
+
+  console.error('[determineErrorType] Unexpected state.', {
+    matchId,
+    matchDataStatus: matchData.status,
+    recordMatchId: matchData.record.matchId
+  })
+
+  return 'no-match'
+}
+
+export function parseMatchRouteErrorType(value: unknown): MatchRouteErrorType | undefined {
+  if (typeof value !== 'string') return undefined
+
+  return matchRouteErrorTypes.find((errorType) => errorType === value)
 }

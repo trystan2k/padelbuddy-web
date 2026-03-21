@@ -1,14 +1,17 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useEffect } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { ActiveMatchScreen } from '@/components/ActiveMatchScreen'
 import { loadCurrentMatch, type CurrentMatchLoadResult } from '@/lib/current-match'
+import { getViewTransitionNavigationOptions } from '@/lib/utils/view-transitions'
 
-import { resolveMatchRouteState } from './-match-route-state'
+import { determineErrorType, resolveMatchRouteState } from './-match-route-state'
+import { RouteErrorState, RouteLoadingState } from './-route-utils'
 
 export const Route = createFileRoute('/match/$id')({
   component: MatchRoute,
+  pendingComponent: RouteLoadingState,
+  errorComponent: RouteErrorState,
   loader: async ({ params }) => {
     // Load match data from persistence
     // Match ID is stored for future use (sharing, history)
@@ -29,7 +32,6 @@ export interface MatchRouteContentProps {
 }
 
 export function MatchRouteContent({ matchId, matchData }: MatchRouteContentProps) {
-  const { t } = useTranslation()
   const navigate = useNavigate()
   const routeState = resolveMatchRouteState(matchId, matchData, 'active')
   const routeStateStatus = routeState.status
@@ -42,7 +44,12 @@ export function MatchRouteContent({ matchId, matchData }: MatchRouteContentProps
     }
 
     if (routeStateStatus === 'redirect-home') {
-      void navigate({ to: '/' })
+      void navigate({
+        to: '/',
+        replace: true,
+        search: { error: determineErrorType(matchId, matchData) },
+        ...getViewTransitionNavigationOptions()
+      })
       return
     }
 
@@ -50,18 +57,15 @@ export function MatchRouteContent({ matchId, matchData }: MatchRouteContentProps
       void navigate({
         to: '/match/finish/$id',
         params: { id: redirectMatchId },
-        replace: true
+        replace: true,
+        ...getViewTransitionNavigationOptions()
       })
       return
     }
-  }, [corruptMessage, navigate, redirectMatchId, routeStateStatus])
+  }, [corruptMessage, matchData, matchId, navigate, redirectMatchId, routeStateStatus])
 
   if (routeStateStatus !== 'ready') {
-    return (
-      <main>
-        <p>{t('common.loading')}</p>
-      </main>
-    )
+    return <RouteLoadingState />
   }
 
   const { setup, actions, startedAt } = routeState.record

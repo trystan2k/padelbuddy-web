@@ -1,9 +1,34 @@
 {
   "common": {
-    "loading": "Cargando..."
+    "loading": "Cargando...",
+    "retry": "Intentar de nuevo",
+    "dismiss": "Descartar"
   },
   "error": {
-    "loadMatch": "Error al cargar el partido"
+    "loadMatch": "Error al cargar el partido",
+    "unexpectedLabel": "Recuperación de vista",
+    "unexpectedTitle": "Algo interrumpió esta pantalla.",
+    "unexpectedBody": "Padel Buddy encontró un problema temporal mientras preparaba esta vista. Inténtalo de nuevo para restaurar la pantalla.",
+    "invalidMatch": {
+      "title": "Partido no encontrado",
+      "body": "El partido que buscas no existe o ya fue eliminado."
+    },
+    "corruptMatch": {
+      "title": "Datos del partido dañados",
+      "body": "No se pudieron leer los datos guardados del partido. Inicia un partido nuevo."
+    },
+    "noMatch": {
+      "title": "No hay un partido activo",
+      "body": "No hay datos de partido disponibles. Inicia un partido nuevo."
+    }
+  },
+  "loadingState": {
+    "appInitLabel": "Cargando Padel Buddy",
+    "appInitEyebrow": "Iniciando aplicación",
+    "appInitTitle": "Preparando Padel Buddy",
+    "appInitBody": "Cargando traducciones y preparando la base del rastreador de puntuación.",
+    "routeBody": "Padel Buddy está restaurando los datos más recientes del partido y preparando la siguiente pantalla.",
+    "routeTransition": "Cargando la siguiente vista"
   },
   "app": {
     "title": "Padel Buddy",
@@ -173,7 +198,9 @@
         "subtitle": "Partido terminado"
       },
       "winner": {
-        "label": "Ganadores"
+        "label": "Ganadores",
+        "finishedEarlyLabel": "Partido terminado",
+        "finishedEarlyName": "Sin ganador (Empate)"
       },
       "summary": {
         "title": "Resumen de sets",

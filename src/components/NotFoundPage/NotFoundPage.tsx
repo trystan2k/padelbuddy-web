@@ -1,6 +1,8 @@
 import { Link } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 
+import { supportsViewTransitions } from '@/lib/utils/view-transitions'
+
 import styles from './NotFoundPage.module.css'
 
 export function NotFoundPage() {
@@ -14,7 +16,7 @@ export function NotFoundPage() {
           {t('notFound.title')}
         </h1>
         <p className={styles.description}>{t('notFound.description')}</p>
-        <Link className={styles.link} to="/">
+        <Link className={styles.link} to="/" viewTransition={supportsViewTransitions()}>
           {t('notFound.backLink')}
         </Link>
       </section>

@@ -62,17 +62,23 @@ describe('replay and determinism', () => {
     })
   })
 
-  test('guards continue-playing transitions to completed capped matches', () => {
+  test('uncaps capped matches for continued play and leaves uncapped setups unchanged', () => {
     const setup = createTestSetup({
       format: 'best-of-1'
     })
     const activeState = projectMatch(setup, winQuickGame('team-1')).state
     const completedState = projectMatch(setup, winQuickSet('team-1')).state
+    const continuedActiveSetup = continueMatch(setup, activeState)
     const uncappedSetup = continueMatch(setup, completedState)
 
-    expect(() => continueMatch(setup, activeState)).toThrowError(
-      'Only a completed official match can continue playing.'
-    )
+    expect(continuedActiveSetup).toEqual({
+      ...setup,
+      setCap: null
+    })
+    expect(uncappedSetup).toEqual({
+      ...setup,
+      setCap: null
+    })
     expect(continueMatch(uncappedSetup, completedState)).toBe(uncappedSetup)
   })
 

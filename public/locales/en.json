@@ -1,9 +1,34 @@
 {
   "common": {
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "retry": "Try again",
+    "dismiss": "Dismiss"
   },
   "error": {
-    "loadMatch": "Error loading match"
+    "loadMatch": "Error loading match",
+    "unexpectedLabel": "View recovery",
+    "unexpectedTitle": "Something interrupted this screen.",
+    "unexpectedBody": "Padel Buddy hit a temporary issue while preparing this view. Try again to restore the screen.",
+    "invalidMatch": {
+      "title": "Match not found",
+      "body": "The match you're looking for doesn't exist or has been cleared."
+    },
+    "corruptMatch": {
+      "title": "Match data corrupted",
+      "body": "The saved match data couldn't be read. Please start a new match."
+    },
+    "noMatch": {
+      "title": "No active match",
+      "body": "There's no match data available. Please start a new match."
+    }
+  },
+  "loadingState": {
+    "appInitLabel": "Loading Padel Buddy",
+    "appInitEyebrow": "Starting app",
+    "appInitTitle": "Preparing Padel Buddy",
+    "appInitBody": "Loading translations and preparing the score tracker shell.",
+    "routeBody": "Padel Buddy is restoring the latest match data and preparing the next screen.",
+    "routeTransition": "Loading the next view"
   },
   "app": {
     "title": "Padel Buddy",
@@ -173,7 +198,9 @@
         "subtitle": "Match Complete"
       },
       "winner": {
-        "label": "Winners"
+        "label": "Winners",
+        "finishedEarlyLabel": "Match finished",
+        "finishedEarlyName": "No winner (Tie)"
       },
       "summary": {
         "title": "Set Summary",

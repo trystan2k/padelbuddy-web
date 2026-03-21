@@ -1,7 +1,7 @@
 ---
 description: Expert architecture review agent that evaluates task implementations for correctness, quality, best practices, and improvement opportunities using stack-specific skills.
 mode: subagent
-model: zai-coding-plan/glm-5
+model: zai-coding-plan/glm-5-turbo
 temperature: 0
 tools:
   bash: true

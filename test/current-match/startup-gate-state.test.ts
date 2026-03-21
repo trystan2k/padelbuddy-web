@@ -54,7 +54,8 @@ describe('current match startup gate state helpers', () => {
         notice: {
           reason: 'schema-version'
         },
-        session
+        session,
+        matchId: 'test-match'
       })
     ).toEqual({
       status: 'ready',
@@ -101,6 +102,7 @@ function createSessionStub(): CurrentMatchSession {
     getSnapshot: vi.fn(),
     scorePoint: vi.fn(),
     undoScoreAction: vi.fn(),
-    continuePlaying: vi.fn()
+    continuePlaying: vi.fn(),
+    finishMatch: vi.fn()
   }
 }

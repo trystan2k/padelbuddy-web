@@ -65,6 +65,10 @@
   color: var(--semantic-color-content-accent-secondary);
 }
 
+.teamNeutral {
+  color: var(--semantic-color-content-primary);
+}
+
 .actionGroup {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
@@ -76,17 +80,6 @@
   border-radius: var(--base-radius-24);
   font-size: var(--base-font-size-26);
   line-height: 1;
-}
-
-.primaryAction {
-  font-weight: var(--semantic-typography-weight-heading);
-}
-
-.secondaryAction {
-  border-color: var(--semantic-color-border-subtle);
-  background-color: var(--semantic-color-background-canvas);
-  color: var(--semantic-color-content-primary);
-  font-weight: var(--semantic-typography-weight-strong);
 }
 
 @media (width <= 1023px) {

@@ -35,7 +35,8 @@ vi.mock('@tanstack/react-router', async (importOriginal) => {
     HeadContent: () => <meta content="test-head" name="test-head" />,
     Outlet: () => <div>route outlet</div>,
     Scripts: () => <script type="application/json">scripts</script>,
-    createRootRoute: (options: unknown) => ({ options })
+    createRootRoute: (options: unknown) => ({ options }),
+    useRouterState: () => false
   }
 })
 

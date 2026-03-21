@@ -6,6 +6,7 @@ import { Layout } from '@/components/Layout/Layout'
 import { TopBar } from '@/components/ui/TopBar'
 import type { MatchAction, MatchFormat, MatchProjection, MatchSetup } from '@/core/match'
 import { clearCurrentMatch, createCurrentMatchSession } from '@/lib/current-match'
+import { getViewTransitionNavigationOptions } from '@/lib/utils/view-transitions'
 
 import { createMatchEndScreenSummary, getMatchDurationParts } from './view-model'
 import { MatchStatsCard } from './MatchStatsCard'
@@ -54,6 +55,12 @@ export function MatchEndScreen({
       }),
     [finishedAt, projection, startedAt]
   )
+  const winnerLabel = summary.isFinishedEarly
+    ? t('match.end.winner.finishedEarlyLabel')
+    : t('match.end.winner.label')
+  const winnerName = summary.isFinishedEarly
+    ? t('match.end.winner.finishedEarlyName')
+    : (summary.winnerName ?? '')
 
   const formatLabel = t(`setup.format.${formatTranslationKeys[summary.format]}`)
   const durationParts = getMatchDurationParts(summary.elapsedSeconds)
@@ -76,7 +83,7 @@ export function MatchEndScreen({
 
     try {
       await clearCurrentMatch()
-      await navigate({ to: '/' })
+      await navigate({ to: '/', ...getViewTransitionNavigationOptions() })
     } catch (error) {
       console.error('Failed to clear the current match before starting a new one.', error)
       setIsStartingNewMatch(false)
@@ -107,7 +114,8 @@ export function MatchEndScreen({
       await navigate({
         to: '/match/$id',
         params: { id: matchId },
-        replace: true
+        replace: true,
+        ...getViewTransitionNavigationOptions()
       })
     } catch (error) {
       console.error('Failed to continue the current match.', error)
@@ -138,8 +146,9 @@ export function MatchEndScreen({
       <div className={styles.content} data-testid="match-end-screen">
         <section className={styles.hero} aria-label={t('match.end.aria.summaryRegion')}>
           <WinnerCard
-            winnerName={summary.winnerName}
-            winnerTeamId={summary.winnerTeamId}
+            winnerLabel={winnerLabel}
+            winnerName={winnerName}
+            {...(summary.winnerTeamId ? { winnerTeamId: summary.winnerTeamId } : {})}
             isStartingNewMatch={isStartingNewMatch}
             isContinuingMatch={isContinuingMatch}
             onNewMatch={handleNewMatch}

@@ -1,14 +1,17 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useEffect } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import { MatchEndScreen } from '@/components/MatchEndScreen'
 import { loadCurrentMatch, type CurrentMatchLoadResult } from '@/lib/current-match'
+import { getViewTransitionNavigationOptions } from '@/lib/utils/view-transitions'
 
-import { resolveMatchRouteState } from './-match-route-state'
+import { determineErrorType, resolveMatchRouteState } from './-match-route-state'
+import { RouteErrorState, RouteLoadingState } from './-route-utils'
 
 export const Route = createFileRoute('/match/finish/$id')({
   component: MatchFinishRoute,
+  pendingComponent: RouteLoadingState,
+  errorComponent: RouteErrorState,
   loader: async ({ params }) => {
     const matchData = await loadCurrentMatch()
     return { matchId: params.id, matchData }
@@ -27,7 +30,6 @@ export interface MatchFinishRouteContentProps {
 }
 
 export function MatchFinishRouteContent({ matchId, matchData }: MatchFinishRouteContentProps) {
-  const { t } = useTranslation()
   const navigate = useNavigate()
   const routeState = resolveMatchRouteState(matchId, matchData, 'finish')
   const routeStateStatus = routeState.status
@@ -40,7 +42,12 @@ export function MatchFinishRouteContent({ matchId, matchData }: MatchFinishRoute
     }
 
     if (routeStateStatus === 'redirect-home') {
-      void navigate({ to: '/' })
+      void navigate({
+        to: '/',
+        replace: true,
+        search: { error: determineErrorType(matchId, matchData) },
+        ...getViewTransitionNavigationOptions()
+      })
       return
     }
 
@@ -48,18 +55,15 @@ export function MatchFinishRouteContent({ matchId, matchData }: MatchFinishRoute
       void navigate({
         to: '/match/$id',
         params: { id: redirectMatchId },
-        replace: true
+        replace: true,
+        ...getViewTransitionNavigationOptions()
       })
       return
     }
-  }, [corruptMessage, navigate, redirectMatchId, routeStateStatus])
+  }, [corruptMessage, matchData, matchId, navigate, redirectMatchId, routeStateStatus])
 
   if (routeStateStatus !== 'ready') {
-    return (
-      <main>
-        <p>{t('common.loading')}</p>
-      </main>
-    )
+    return <RouteLoadingState />
   }
 
   return (
