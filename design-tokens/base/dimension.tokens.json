@@ -6,7 +6,7 @@
         "tablet-landscape-min-width": { "value": "375px", "type": "dimension" },
         "header-height": { "value": "64px", "type": "dimension" },
         "min-body-height": { "value": "505px", "type": "dimension" },
-        "max-body-height": { "value": "640px", "type": "dimension" },
+        "max-body-height": { "value": "550px", "type": "dimension" },
         "footer-height": { "value": "90px", "type": "dimension" },
         "header-icon-size": { "value": "40px", "type": "dimension" }
       },

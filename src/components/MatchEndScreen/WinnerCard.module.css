@@ -1,5 +1,7 @@
 .card {
-  min-height: 31.5625rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   border-radius: var(--base-radius-32);
   border: 1px solid var(--semantic-color-border-subtle);
   background-color: var(--semantic-color-background-surface);

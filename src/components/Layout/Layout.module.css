@@ -1,7 +1,5 @@
 /* Layout shell - full viewport with background gradient */
 .layout {
-  height: 100vh;
-  height: 100dvh;
   min-height: 100vh;
   min-height: 100dvh;
   display: flex;
@@ -12,7 +10,6 @@
     var(--screen-bg-end, var(--semantic-color-background-canvas-end)) 100%
   );
   position: relative;
-  overflow: hidden;
 }
 
 .layout::before {
@@ -42,7 +39,6 @@
   min-width: var(--app-screen-tablet-landscape-min-width);
   width: 100%;
   margin: 0 auto;
-  overflow: hidden;
 }
 
 .header {
@@ -53,12 +49,11 @@
 }
 
 .body {
-  min-height: var(--app-screen-shell-min-body-height);
+  min-height: 0;
   max-height: var(--app-screen-shell-max-body-height);
   display: flex;
   flex: 1;
   flex-direction: column;
-  overflow: hidden;
 }
 
 .footer {
