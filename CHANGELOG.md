@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.15.0](https://github.com/trystan2k/padelbuddy-web/compare/v0.14.0...v0.15.0) (2026-03-22)
+
+
+### Features
+
+* align game end screen with Pencil design ([7bc99b7](https://github.com/trystan2k/padelbuddy-web/commit/7bc99b7265d3f87acd90e8a6d80647a591120f7b))
+
 ## [0.14.0](https://github.com/trystan2k/padelbuddy-web/compare/v0.13.0...v0.14.0) (2026-03-22)
 
 
