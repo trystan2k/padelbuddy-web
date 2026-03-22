@@ -1,7 +1,7 @@
 /**
- * Resolves a CSS custom property value to its computed color.
- * Reads from the element's computed style and recursively resolves
- * var() references if needed.
+ * Resolves a CSS custom property or color value to its computed color.
+ * Applies the value to a temporary element and reads the element's
+ * computed style, relying on the browser to resolve any var() references.
  */
 export function resolveCssColor(property: 'backgroundColor' | 'color', value: string): string {
   const probe = document.createElement('div')

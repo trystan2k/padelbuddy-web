@@ -71,7 +71,7 @@
 }
 
 .revertButton {
-  width: var(--component-button-revert-width);
+  width: calc(var(--base-space-8) * 28);
   padding: var(--component-button-revert-padding-y) var(--component-button-revert-padding-x);
   border-radius: var(--component-button-revert-radius);
   font-size: var(--base-font-size-18);
