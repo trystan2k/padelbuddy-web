@@ -9,9 +9,12 @@ export function resolveCssColor(property: 'backgroundColor' | 'color', value: st
   probe.style.setProperty(property === 'backgroundColor' ? 'background-color' : 'color', value)
   document.body.append(probe)
 
-  const resolvedColor = getComputedStyle(probe)[property]
-
-  probe.remove()
+  let resolvedColor: string
+  try {
+    resolvedColor = getComputedStyle(probe)[property]
+  } finally {
+    probe.remove()
+  }
 
   return resolvedColor
 }
