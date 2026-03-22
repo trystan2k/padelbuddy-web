@@ -26,7 +26,7 @@ export function SetsCard({ sets, currentSetIndex }: SetsCardProps) {
     if (setsGrid) {
       setsGrid.scroll({ top: -setsGrid.scrollHeight, behavior: 'smooth' })
     }
-  }, [currentSetIndex, sets])
+  }, [currentSetIndex, sets.length])
 
   return (
     <Card className={styles.container} data-testid="sets-card">

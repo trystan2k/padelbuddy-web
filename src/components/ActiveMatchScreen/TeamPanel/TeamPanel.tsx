@@ -1,4 +1,4 @@
-import { type ComponentPropsWithoutRef } from 'react'
+import { type ComponentPropsWithoutRef, useId } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { cn } from '@/lib/utils/cn'
@@ -28,9 +28,11 @@ export function TeamPanel({
   ...props
 }: TeamPanelProps) {
   const { t } = useTranslation()
+  const servingStatusId = useId()
+  const shouldShowServing = isServing && showServingIndicator
 
   const panelClass = teamId === 'team-1' ? styles.team1Panel : styles.team2Panel
-  const servingClass = isServing && showServingIndicator ? styles.serving : undefined
+  const servingClass = shouldShowServing ? styles.serving : undefined
 
   return (
     <button
@@ -40,12 +42,18 @@ export function TeamPanel({
       onClick={disabled ? undefined : onClick}
       disabled={disabled}
       aria-label={t('match.scorePointFor', { teamName })}
+      aria-describedby={shouldShowServing ? servingStatusId : undefined}
       data-testid={`team-panel-${teamId}`}
     >
       <span className={styles.teamName}>{teamName}</span>
       <span className={styles.score} aria-live="polite">
         {score}
       </span>
+      {shouldShowServing && (
+        <span id={servingStatusId} className={styles.srOnly}>
+          {t('match.serving')}
+        </span>
+      )}
     </button>
   )
 }

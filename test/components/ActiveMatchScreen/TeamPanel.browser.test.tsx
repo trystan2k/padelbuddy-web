@@ -5,19 +5,7 @@ import { render } from 'vitest-browser-react'
 
 import { TeamPanel } from '@/components/ActiveMatchScreen/TeamPanel/TeamPanel'
 import styles from '@/components/ActiveMatchScreen/TeamPanel/TeamPanel.module.css'
-
-function resolveCssColor(property: 'backgroundColor' | 'color', value: string): string {
-  const probe = document.createElement('div')
-
-  probe.style.setProperty(property === 'backgroundColor' ? 'background-color' : 'color', value)
-  document.body.append(probe)
-
-  const resolvedColor = getComputedStyle(probe)[property]
-
-  probe.remove()
-
-  return resolvedColor
-}
+import { resolveCssColor } from '../../utils/css'
 
 describe('TeamPanel', () => {
   const defaultProps = {

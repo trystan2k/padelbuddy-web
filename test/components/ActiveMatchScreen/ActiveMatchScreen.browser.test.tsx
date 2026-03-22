@@ -7,24 +7,12 @@ import { render } from 'vitest-browser-react'
 import { ActiveMatchScreen } from '@/components/ActiveMatchScreen/ActiveMatchScreen'
 import teamPanelStyles from '@/components/ActiveMatchScreen/TeamPanel/TeamPanel.module.css'
 import { createTestSetup, winQuickSet } from '../../core/match/test-helpers'
+import { resolveCssColor } from '../../utils/css'
 
 function formatTimeOfDay(date: Date): string {
   return [date.getHours(), date.getMinutes(), date.getSeconds()]
     .map((value) => String(value).padStart(2, '0'))
     .join(':')
-}
-
-function resolveCssColor(property: 'backgroundColor' | 'color', value: string): string {
-  const probe = document.createElement('div')
-
-  probe.style.setProperty(property === 'backgroundColor' ? 'background-color' : 'color', value)
-  document.body.append(probe)
-
-  const resolvedColor = getComputedStyle(probe)[property]
-
-  probe.remove()
-
-  return resolvedColor
 }
 
 const { mockNavigate } = vi.hoisted(() => ({

@@ -1,5 +1,6 @@
 /* Layout shell - full viewport with background gradient */
 .layout {
+  min-height: 100vh;
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
