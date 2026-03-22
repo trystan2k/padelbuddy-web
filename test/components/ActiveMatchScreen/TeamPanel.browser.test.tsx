@@ -95,11 +95,18 @@ describe('TeamPanel', () => {
   test('does not render games, serving, or golden point affordances', async () => {
     const screen = await render(<TeamPanel {...defaultProps} />)
 
-    const buttonText = screen.getByRole('button').element().textContent ?? ''
+    const button = screen.getByRole('button').element()
+    const nameElement = screen.getByText(defaultProps.teamName).element()
+    const scoreElement = screen.getByText(defaultProps.score).element()
+    // Button content should only include the team name and score, no extra affordance text
+    expect(button.contains(nameElement)).toBe(true)
+    expect(button.contains(scoreElement)).toBe(true)
+    const extraSpans = Array.from(button.querySelectorAll('span')).filter(
+      (el) => el !== nameElement && el !== scoreElement
+    )
+    expect(extraSpans.length).toBe(0)
 
-    expect(buttonText).not.toContain('Games')
-    expect(buttonText).not.toContain('GP')
-    expect(buttonText).not.toContain('Serving')
+    // No serving indicator should be rendered
     expect(screen.container.querySelector('[data-testid^="serve-indicator-"]')).toBeNull()
   })
 
