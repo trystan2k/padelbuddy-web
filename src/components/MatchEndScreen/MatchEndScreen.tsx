@@ -130,7 +130,12 @@ export function MatchEndScreen({
         iconAlt=""
         title={t('match.end.header.appName')}
         subtitle={t('match.end.header.subtitle')}
-      />
+      >
+        <button type="button" className={styles.shareButton} disabled>
+          <ShareIcon />
+          <span>{t('match.end.actions.share')}</span>
+        </button>
+      </TopBar>
     ),
     [t]
   )
@@ -141,7 +146,12 @@ export function MatchEndScreen({
   )
 
   return (
-    <Layout header={headerContent} footer={footerContent} bodyClassName={styles.body ?? ''}>
+    <Layout
+      className={styles.screen}
+      bodyClassName={styles.body ?? ''}
+      header={headerContent}
+      footer={footerContent}
+    >
       <div className={styles.content} data-testid="match-end-screen">
         <section className={styles.hero} aria-label={t('match.end.aria.summaryRegion')}>
           <WinnerCard
@@ -162,5 +172,27 @@ export function MatchEndScreen({
         </section>
       </div>
     </Layout>
+  )
+}
+
+function ShareIcon() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={styles.shareIcon}
+      aria-hidden="true"
+    >
+      <circle cx="18" cy="5" r="3" />
+      <circle cx="6" cy="12" r="3" />
+      <circle cx="18" cy="19" r="3" />
+      <path d="m8.59 13.51 6.83 3.98" />
+      <path d="m15.41 6.51-6.82 3.98" />
+    </svg>
   )
 }

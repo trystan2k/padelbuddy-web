@@ -1,19 +1,26 @@
 .card {
-  min-height: 31.5625rem;
+  min-height: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
   border-radius: var(--base-radius-32);
   border: 1px solid var(--semantic-color-border-subtle);
   background-color: var(--semantic-color-background-surface);
   padding: var(--base-space-24);
+  overflow: hidden;
   box-shadow: 0 16px 40px color-mix(in srgb, var(--semantic-color-content-primary) 7%, transparent);
 }
 
 .content,
 .setRows {
   display: flex;
+  min-height: 0;
   flex-direction: column;
 }
 
 .content {
+  height: 100%;
+  flex: 1;
   gap: var(--base-space-20);
 }
 
@@ -75,6 +82,9 @@
 }
 
 .setRows {
+  overflow: hidden auto;
+  overscroll-behavior: contain;
+  flex: 1;
   margin: 0;
   padding: 0;
   list-style: none;
