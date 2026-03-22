@@ -75,7 +75,7 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: >-
             pages deploy dist/client
-            --project-name=${{ secrets.CLOUDFLARE_PAGES_PROJECT_NAME }}
+            --project-name=${{ vars.CLOUDFLARE_PAGES_PROJECT_NAME }}
             --branch=${{ env.PREVIEW_ALIAS }}
 
       - name: Set preview URL
