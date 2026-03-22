@@ -68,6 +68,7 @@
     background-color 150ms ease,
     border-color 150ms ease,
     opacity 150ms ease;
+  cursor: pointer;
 }
 
 .revertButton {
