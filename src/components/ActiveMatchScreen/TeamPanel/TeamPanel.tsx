@@ -1,4 +1,4 @@
-import { useId, type ComponentPropsWithoutRef } from 'react'
+import { type ComponentPropsWithoutRef, useId } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { cn } from '@/lib/utils/cn'
@@ -11,26 +11,17 @@ export interface TeamPanelProps extends Omit<ComponentPropsWithoutRef<'button'>,
   teamId: MatchTeamId
   teamName: string
   score: string
-  games: number
   isServing: boolean
   showServingIndicator?: boolean
-  isGoldenPointActive: boolean
   onClick: () => void
 }
 
-/**
- * TeamPanel component - Displays team score, name, serve indicator, and games count.
- * Click on the panel scores a point for that team.
- * Follows Pencil design node IDs: ilG6v (team1), Lwif8 (team2)
- */
 export function TeamPanel({
   teamId,
   teamName,
   score,
-  games,
   isServing,
   showServingIndicator = true,
-  isGoldenPointActive,
   onClick,
   disabled = false,
   className,
@@ -38,61 +29,31 @@ export function TeamPanel({
 }: TeamPanelProps) {
   const { t } = useTranslation()
   const servingStatusId = useId()
+  const shouldShowServing = isServing && showServingIndicator
 
-  const isTeam1 = teamId === 'team-1'
-  const panelClass = isTeam1 ? styles.team1Panel : styles.team2Panel
-  const shouldShowServingIndicator = isServing && showServingIndicator
+  const panelClass = teamId === 'team-1' ? styles.team1Panel : styles.team2Panel
+  const servingClass = shouldShowServing ? styles.serving : undefined
 
   return (
     <button
       {...props}
       type="button"
-      className={cn(styles.panel, panelClass, className)}
+      className={cn(styles.panel, panelClass, servingClass, className)}
       onClick={disabled ? undefined : onClick}
       disabled={disabled}
       aria-label={t('match.scorePointFor', { teamName })}
-      {...(shouldShowServingIndicator ? { 'aria-describedby': servingStatusId } : {})}
+      aria-describedby={shouldShowServing ? servingStatusId : undefined}
       data-testid={`team-panel-${teamId}`}
     >
-      <div className={styles.teamNameSection}>
-        {/* Team name */}
-        <span className={styles.teamName}>{teamName}</span>
-      </div>
-
-      <div className={styles.scoreStack}>
-        {/* Score display */}
-        <span className={styles.score} aria-live="polite">
-          {score}
+      <span className={styles.teamName}>{teamName}</span>
+      <span className={styles.score} aria-live="polite">
+        {score}
+      </span>
+      {shouldShowServing && (
+        <span id={servingStatusId} className={styles.srOnly}>
+          {t('match.serving')}
         </span>
-        {shouldShowServingIndicator && (
-          <>
-            <div
-              className={styles.serveBar}
-              aria-hidden="true"
-              data-testid={`serve-indicator-${teamId}`}
-            />
-            <span
-              id={servingStatusId}
-              className={styles.srOnly}
-              data-testid={`serve-status-${teamId}`}
-            >
-              {t('match.serving')}
-            </span>
-          </>
-        )}
-      </div>
-
-      <div className={styles.bottomSection}>
-        {isGoldenPointActive && (
-          <span className={styles.goldenPointIndicator} aria-label={t('match.info.goldenPointOn')}>
-            {t('match.info.goldenPoint')}
-          </span>
-        )}
-        {/* Games label */}
-        <span className={styles.gamesLabel}>
-          {t('match.score.games')} {games}
-        </span>
-      </div>
+      )}
     </button>
   )
 }

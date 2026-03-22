@@ -3,17 +3,17 @@ import { useNavigate } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 
 import { Layout } from '@/components/Layout/Layout'
-import { TeamPanel } from './TeamPanel'
-import { SetsCard } from './SetsCard'
-import { InfoCard } from './InfoCard'
-import { SideSwitchPrompt } from './SideSwitchPrompt'
-import { Button } from '@/components/ui/Button'
 import { TopBar } from '@/components/ui/TopBar'
-import { useMatchTimer } from './useMatchTimer'
-import { useMatchSession } from './useMatchSession'
+import { cn } from '@/lib/utils/cn'
 import { getViewTransitionNavigationOptions } from '@/lib/utils/view-transitions'
 
 import type { MatchAction, MatchSetup, MatchTeamId } from '@/core/match'
+
+import { SetsCard } from './SetsCard'
+import { SideSwitchPrompt } from './SideSwitchPrompt'
+import { TeamPanel } from './TeamPanel'
+import { useMatchSession } from './useMatchSession'
+import { useMatchTimer } from './useMatchTimer'
 
 import styles from './ActiveMatchScreen.module.css'
 
@@ -25,11 +25,6 @@ export interface ActiveMatchScreenProps {
   finishedAt?: number
 }
 
-/**
- * ActiveMatchScreen component - Main screen for an active match.
- * Follows Pencil design node ID: VSRKf
- * Composed of TeamPanel, SetsCard, InfoCard, Chip (timer), Button-based match controls, SideSwitchPrompt, TopBar
- */
 export function ActiveMatchScreen({
   matchId,
   initialSetup,
@@ -41,7 +36,6 @@ export function ActiveMatchScreen({
   const { t } = useTranslation()
   const [sideSwitchDismissed, setSideSwitchDismissed] = useState(false)
 
-  // Session hook
   const { snapshot, scorePoint, undoScoreAction, finishMatch, isLoading } = useMatchSession({
     matchId,
     setup: initialSetup,
@@ -50,7 +44,6 @@ export function ActiveMatchScreen({
     ...(typeof finishedAt === 'number' ? { initialFinishedAt: finishedAt } : {})
   })
 
-  // Timer hook
   const isMatchCompleted =
     snapshot.projection.derived.status === 'completed' || typeof snapshot.finishedAt === 'number'
   const countdownEnabled = snapshot.projection.setup.countdownTimerEnabled
@@ -62,18 +55,15 @@ export function ActiveMatchScreen({
     countdownDuration: snapshot.projection.setup.countdownTimerDuration
   })
 
-  // Derive data from snapshot
   const { setup, state, derived } = snapshot.projection
   const team1Side = setup.sides.find((side) => side.id === 'team-1')
   const team2Side = setup.sides.find((side) => side.id === 'team-2')
   const team1Name = team1Side?.playerNames.join(' & ') || 'Team 1'
   const team2Name = team2Side?.playerNames.join(' & ') || 'Team 2'
 
-  // Score display
-  const { scoreDisplay, activeSetIndex, servingTeam, sideSwitch } = derived
+  const { scoreDisplay, activeSetIndex, sideSwitch, servingTeam } = derived
   const showServingIndicator = setup.servingIndicatorEnabled
 
-  // Reset dismissed flag when a new side switch prompt appears
   useEffect(() => {
     if (sideSwitch.shouldPrompt) {
       setSideSwitchDismissed(false)
@@ -93,7 +83,6 @@ export function ActiveMatchScreen({
     })
   }, [isMatchCompleted, matchId, navigate])
 
-  // Get score for each team
   const getTeamScore = (teamId: MatchTeamId): string => {
     if (scoreDisplay.kind === 'standard') {
       return scoreDisplay.points[teamId]
@@ -104,33 +93,35 @@ export function ActiveMatchScreen({
     return '0'
   }
 
-  // Get current games for each team from active set
-  const getTeamGames = (teamId: MatchTeamId): number => {
-    const activeSet = state.sets[activeSetIndex ?? 0]
-    if (activeSet) {
-      return activeSet.games[teamId]
-    }
-    return 0
-  }
-
-  // Handlers
   const handleScoreTeam1 = useCallback(async () => {
-    if (isLoading) return
+    if (isLoading) {
+      return
+    }
+
     await scorePoint('team-1')
   }, [isLoading, scorePoint])
 
   const handleScoreTeam2 = useCallback(async () => {
-    if (isLoading) return
+    if (isLoading) {
+      return
+    }
+
     await scorePoint('team-2')
   }, [isLoading, scorePoint])
 
   const handleRevert = useCallback(async () => {
-    if (isLoading) return
+    if (isLoading) {
+      return
+    }
+
     await undoScoreAction()
   }, [isLoading, undoScoreAction])
 
   const handleFinish = useCallback(async () => {
-    if (isLoading || isMatchCompleted) return
+    if (isLoading || isMatchCompleted) {
+      return
+    }
+
     await finishMatch()
   }, [finishMatch, isLoading, isMatchCompleted])
 
@@ -138,12 +129,11 @@ export function ActiveMatchScreen({
     setSideSwitchDismissed(true)
   }, [])
 
-  // Show side switch prompt when needed (not dismissed)
   const shouldShowSideSwitch =
     sideSwitch.shouldPrompt && setup.sideSwitchPrompts && !sideSwitchDismissed
   const timerLabelKey = countdownEnabled ? 'match.timer.countdownLabel' : 'match.timer.label'
+  const isUndoDisabled = isLoading || snapshot.actions.length === 0
 
-  // Header content
   const headerContent = useMemo(
     () => (
       <TopBar
@@ -167,89 +157,69 @@ export function ActiveMatchScreen({
 
   const footerContent = useMemo(
     () => (
-      <Button
+      <button
+        type="button"
         className={styles.finishButton}
-        variant="outline"
-        size="lg"
         onClick={handleFinish}
         disabled={isLoading || isMatchCompleted}
         data-testid="finish-button"
       >
         {t('match.actions.finishMatch')}
-      </Button>
+      </button>
     ),
     [handleFinish, isLoading, isMatchCompleted, t]
   )
 
   return (
-    <Layout header={headerContent} footer={footerContent}>
+    <Layout className={styles.gameScreen} header={headerContent} footer={footerContent}>
       <div className={styles.scorePanel}>
-        {/* Team 1 Panel */}
-        <div className={styles.team1Panel}>
+        <div className={styles.teamColumn}>
           <TeamPanel
             teamId="team-1"
             teamName={team1Name}
             score={getTeamScore('team-1')}
-            games={getTeamGames('team-1')}
             isServing={servingTeam === 'team-1'}
             showServingIndicator={showServingIndicator}
-            isGoldenPointActive={setup.gameMode === 'golden-point'}
             onClick={handleScoreTeam1}
             disabled={isLoading || isMatchCompleted}
           />
-          <Button
-            variant="soft"
-            size="sm"
-            accent="danger"
-            className={styles.revertButton}
+          <button
+            type="button"
+            className={cn(styles.revertButton, styles.revertButtonTeam1)}
             onClick={handleRevert}
-            disabled={isLoading || snapshot.actions.length === 0}
+            disabled={isUndoDisabled}
             data-testid="revert-button-team-1"
           >
             {t('match.actions.revertPoint')}
-          </Button>
+          </button>
+        </div>
+
+        <div className={styles.teamColumn}>
+          <TeamPanel
+            teamId="team-2"
+            teamName={team2Name}
+            score={getTeamScore('team-2')}
+            isServing={servingTeam === 'team-2'}
+            showServingIndicator={showServingIndicator}
+            onClick={handleScoreTeam2}
+            disabled={isLoading || isMatchCompleted}
+          />
+          <button
+            type="button"
+            className={cn(styles.revertButton, styles.revertButtonTeam2)}
+            onClick={handleRevert}
+            disabled={isUndoDisabled}
+            data-testid="revert-button-team-2"
+          >
+            {t('match.actions.revertPoint')}
+          </button>
         </div>
 
         <div className={styles.setsOverlay}>
           <SetsCard sets={state.sets} currentSetIndex={activeSetIndex} />
         </div>
-
-        <div className={styles.infoOverlay}>
-          <InfoCard
-            isGoldenPoint={setup.gameMode === 'golden-point'}
-            isSuperTiebreak={setup.decidingSetSuperTiebreak}
-            sideSwitchPrompts={setup.sideSwitchPrompts}
-          />
-        </div>
-
-        {/* Team 2 Panel */}
-        <div className={styles.team2Panel}>
-          <TeamPanel
-            teamId="team-2"
-            teamName={team2Name}
-            score={getTeamScore('team-2')}
-            games={getTeamGames('team-2')}
-            isServing={servingTeam === 'team-2'}
-            showServingIndicator={showServingIndicator}
-            isGoldenPointActive={setup.gameMode === 'golden-point'}
-            onClick={handleScoreTeam2}
-            disabled={isLoading || isMatchCompleted}
-          />
-          <Button
-            variant="soft"
-            size="sm"
-            accent="danger"
-            className={styles.revertButton}
-            onClick={handleRevert}
-            disabled={isLoading || snapshot.actions.length === 0}
-            data-testid="revert-button-team-2"
-          >
-            {t('match.actions.revertPoint')}
-          </Button>
-        </div>
       </div>
 
-      {/* Side Switch Prompt */}
       <SideSwitchPrompt
         isOpen={shouldShowSideSwitch}
         reason={sideSwitch.reason}

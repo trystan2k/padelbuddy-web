@@ -1437,7 +1437,7 @@
                   "type": "frame",
                   "id": "owlFX",
                   "name": "revertBlue",
-                  "width": 220,
+                  "width": 224,
                   "fill": "#F9E4E4",
                   "cornerRadius": 18,
                   "stroke": {
@@ -1535,7 +1535,7 @@
                   "type": "frame",
                   "id": "veV4T",
                   "name": "revertOrange",
-                  "width": 220,
+                  "width": 224,
                   "fill": "#FBE6E0",
                   "cornerRadius": 18,
                   "stroke": {

@@ -1,20 +1,21 @@
 .panel {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   align-items: center;
-  width: var(--app-scoreboard-team-panel-width);
+  justify-content: space-between;
+  width: 100%;
   height: var(--app-scoreboard-team-panel-height);
   border-radius: var(--component-card-scoreboard-team-radius);
   padding: var(--component-card-scoreboard-team-padding-top)
     var(--component-card-scoreboard-team-padding-x)
     var(--component-card-scoreboard-team-padding-bottom)
     var(--component-card-scoreboard-team-padding-x);
+  border: 2px solid;
+  background-color: var(--component-card-overlay-background);
   cursor: pointer;
   transition:
     transform 0.1s ease,
     opacity 0.1s ease;
-  border: 2px solid;
 }
 
 .panel:hover:not(:disabled) {
@@ -35,32 +36,31 @@
   outline-offset: 3px;
 }
 
-/* Team 1 specific styles */
 .team1Panel {
-  background-color: var(--semantic-color-items-primary-background);
   border-color: var(--semantic-color-items-primary-border);
 }
 
-/* Team 2 specific styles */
+.team1Panel.serving {
+  --team-serving-score-color: var(--semantic-color-items-primary-content);
+
+  background-color: var(--semantic-color-items-primary-background);
+}
+
 .team2Panel {
-  background-color: var(--semantic-color-items-secondary-background);
   border-color: var(--semantic-color-items-secondary-border);
 }
 
-/* Team name section at top */
-.teamNameSection {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.team2Panel.serving {
+  --team-serving-score-color: var(--semantic-color-items-secondary-content);
+
+  background-color: var(--semantic-color-items-secondary-background);
 }
 
-/* Team name at top */
 .teamName {
   font-family: var(--semantic-typography-family-body);
   font-size: var(--base-font-size-16);
   font-weight: var(--semantic-typography-weight-strong);
-  letter-spacing: 1.8px;
-  text-transform: uppercase;
+  letter-spacing: var(--base-font-letter-spacing-wide-xl);
   text-align: center;
 }
 
@@ -72,17 +72,11 @@
   color: var(--semantic-color-items-secondary-content);
 }
 
-/* Score stack - score and serve indicator */
-.scoreStack {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--base-space-12);
-  width: 100%;
-}
-
-/* Large score display */
 .score {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
   font-family: var(--semantic-typography-family-display);
   font-size: var(--semantic-typography-size-display-score);
   font-weight: var(--semantic-typography-weight-display);
@@ -91,13 +85,8 @@
   color: var(--semantic-color-content-primary);
 }
 
-/* Serve indicator bar */
-.serveBar {
-  width: var(--app-scoreboard-serve-indicator-width);
-  height: var(--app-scoreboard-serve-indicator-height);
-  border-radius: 999px;
-  background-color: var(--semantic-color-content-success);
-  flex-shrink: 0;
+.serving .score {
+  color: var(--team-serving-score-color);
 }
 
 .srOnly {
@@ -112,48 +101,14 @@
   border: 0;
 }
 
-.bottomSection {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--base-space-12);
-}
-
-/* Games label */
-.gamesLabel {
-  font-family: var(--semantic-typography-family-display);
-  font-size: var(--base-font-size-36);
-  font-weight: var(--semantic-typography-weight-strong);
-  color: var(--semantic-color-content-secondary);
-  text-align: center;
-}
-
-/* Golden point indicator */
-.goldenPointIndicator {
-  font-family: var(--semantic-typography-family-body);
-  font-size: var(--base-font-size-12);
-  font-weight: var(--semantic-typography-weight-strong);
-  color: var(--semantic-color-content-success);
-  background-color: var(--semantic-color-background-success-subtle);
-  padding: var(--base-space-4) var(--base-space-8);
-  border-radius: var(--base-radius-16);
-  margin-top: var(--base-space-4);
-}
-
-/* Responsive adjustments */
 @media (width <= 767px) {
   .panel {
-    width: 100%;
-    height: auto;
     min-height: 280px;
+    height: auto;
     padding: var(--base-space-16);
   }
 
   .score {
-    font-size: 180px;
-  }
-
-  .gamesLabel {
-    font-size: var(--base-font-size-28);
+    font-size: var(--semantic-typography-size-display-score);
   }
 }

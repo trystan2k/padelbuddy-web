@@ -1,14 +1,11 @@
-/* SetsCard.module.css - Following Pencil design node ID: pGBiU
-   Container: 180px width, corner radius 20px
-   Label: Inter 11px, weight 700, letter-spacing 1.2
-   Set rows: 6px gap between rows
-*/
+/* SetsCard.module.css - Following Pencil design node ID: pGBiU */
 
 .container {
   display: flex;
   flex-direction: column;
   gap: var(--base-space-8);
   width: var(--app-scoreboard-sets-overlay-width);
+  max-height: calc(var(--base-space-8) * 25);
   padding: var(--component-card-overlay-padding-y) var(--component-card-overlay-padding-x);
   border: 1px solid var(--component-card-overlay-border);
   border-radius: var(--component-card-overlay-radius);
@@ -22,12 +19,11 @@
   letter-spacing: var(--semantic-typography-letter-spacing-label-tight);
   color: var(--semantic-color-content-secondary);
   text-transform: uppercase;
-  margin-bottom: var(--base-space-8);
 }
 
 .setsGrid {
   display: flex;
-  flex-direction: column;
+  flex-direction: column-reverse;
   gap: var(--base-space-6);
   max-height: calc(var(--base-space-8) * 24);
   overflow-y: auto;
@@ -56,16 +52,18 @@
 }
 
 .team1Games,
-.team2Games {
+.team2Games,
+.divider {
   font-family: var(--semantic-typography-family-display);
-  font-size: var(--semantic-typography-size-title-md);
+  font-size: var(--semantic-typography-size-set-score);
   font-weight: var(--semantic-typography-weight-heading);
+}
+
+.team1Games,
+.team2Games {
   color: var(--semantic-color-content-primary);
 }
 
 .divider {
-  font-family: var(--semantic-typography-family-display);
-  font-size: var(--semantic-typography-size-title-md);
   color: var(--semantic-color-content-secondary);
-  font-weight: var(--semantic-typography-weight-heading);
 }

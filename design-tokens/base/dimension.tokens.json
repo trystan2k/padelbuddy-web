@@ -11,12 +11,9 @@
         "header-icon-size": { "value": "40px", "type": "dimension" }
       },
       "scoreboard": {
-        "panel-width": { "value": "452px", "type": "dimension" },
-        "panel-height": { "value": "362px", "type": "dimension" },
-        "overlay-sets-width": { "value": "180px", "type": "dimension" },
-        "overlay-court-width": { "value": "177px", "type": "dimension" },
-        "serve-indicator-width": { "value": "220px", "type": "dimension" },
-        "serve-indicator-height": { "value": "12px", "type": "dimension" }
+        "panel-height": { "value": "333px", "type": "dimension" },
+        "overlay-sets-width": { "value": "173px", "type": "dimension" },
+        "overlay-court-width": { "value": "177px", "type": "dimension" }
       }
     }
   }

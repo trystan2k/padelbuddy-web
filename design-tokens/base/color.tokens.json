@@ -8,6 +8,8 @@
       "surface": {
         "canvas": { "value": "#F4F0E7", "type": "color" },
         "canvas-end": { "value": "#E9F3DF", "type": "color" },
+        "canvas-game": { "value": "#EEF4E8", "type": "color" },
+        "canvas-game-end": { "value": "#F7F4ED", "type": "color" },
         "panel": { "value": "#FCFAF6", "type": "color" },
         "muted": { "value": "#EFE7D8", "type": "color" }
       },

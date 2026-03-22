@@ -1,32 +1,30 @@
 /* Layout shell - full viewport with background gradient */
 .layout {
   min-height: 100vh;
-  min-height: 100dvh; /* Dynamic viewport height for mobile */
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
   background: linear-gradient(
     180deg,
-    var(--semantic-color-background-canvas) 0%,
-    var(--semantic-color-background-canvas-end) 100%
+    var(--screen-bg-start, var(--semantic-color-background-canvas)) 0%,
+    var(--screen-bg-end, var(--semantic-color-background-canvas-end)) 100%
   );
   position: relative;
   overflow: hidden;
 }
 
-/* Radial gradient overlay - decorative accent */
 .layout::before {
   content: '';
   position: absolute;
-  top: -5%;
-  right: -10%;
-  width: 34%;
-  height: 26%;
+  left: calc(var(--screen-radial-x, 93%) - (var(--screen-radial-w, 34%) / 2));
+  top: calc(var(--screen-radial-y, 8%) - (var(--screen-radial-h, 26%) / 2));
+  width: var(--screen-radial-w, 34%);
+  height: var(--screen-radial-h, 26%);
   background: radial-gradient(circle, var(--base-color-brand-highlight) 0%, transparent 70%);
-  opacity: 0.18;
+  opacity: var(--screen-radial-opacity, 0.18);
   pointer-events: none;
 }
 
-/* Container - centers content and applies consistent padding */
 .container {
   flex: 1;
   display: flex;
@@ -39,7 +37,6 @@
   margin: 0 auto;
 }
 
-/* Header section - top navigation/metadata area */
 .header {
   display: flex;
   align-items: center;
@@ -47,7 +44,6 @@
   min-height: var(--app-screen-shell-header-height);
 }
 
-/* Body section - main content area, grows to fill space */
 .body {
   min-height: var(--app-screen-shell-min-body-height);
   max-height: var(--app-screen-shell-max-body-height);
@@ -56,7 +52,6 @@
   flex-grow: 1;
 }
 
-/* Footer section - action area, pinned to bottom */
 .footer {
   margin-top: auto;
   min-height: var(--app-screen-shell-footer-height);

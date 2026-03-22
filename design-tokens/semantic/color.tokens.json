@@ -20,6 +20,8 @@
           "type": "color",
           "description": "Canvas background gradient end color"
         },
+        "canvas-game": { "value": "{base.color.surface.canvas-game}", "type": "color" },
+        "canvas-game-end": { "value": "{base.color.surface.canvas-game-end}", "type": "color" },
         "surface": { "value": "{base.color.surface.panel}", "type": "color" },
         "surface-muted": { "value": "{base.color.surface.muted}", "type": "color" },
         "accent-primary-subtle": { "value": "{base.color.brand.primary-subtle}", "type": "color" },

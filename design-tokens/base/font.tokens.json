@@ -29,10 +29,12 @@
         "32": { "value": "32px", "type": "fontSizes" },
         "34": { "value": "34px", "type": "fontSizes" },
         "36": { "value": "36px", "type": "fontSizes" },
+        "40": { "value": "40px", "type": "fontSizes" },
         "46": { "value": "46px", "type": "fontSizes" },
         "64": { "value": "64px", "type": "fontSizes" },
+        "232": { "value": "232px", "type": "fontSizes" },
         "264": { "value": "264px", "type": "fontSizes" },
-        "232": { "value": "232px", "type": "fontSizes" }
+        "352": { "value": "352px", "type": "fontSizes" }
       },
       "letterSpacing": {
         "tight-xl": { "value": "-1px", "type": "letterSpacing" },
