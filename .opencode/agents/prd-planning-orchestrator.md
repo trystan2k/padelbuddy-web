@@ -1,7 +1,7 @@
 ---
 description: Analyze PRDs deeply, clarify missing requirements, propose an implementation plan, and create approved tasks.
 mode: primary
-model: openai/gpt-5.4
+model: opencode-go/minimax-m2.7
 reasoningEffort: high
 temperature: 0.1
 tools:

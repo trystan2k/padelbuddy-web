@@ -18,7 +18,9 @@
       "40": { "value": "40px", "type": "spacing" },
       "48": { "value": "48px", "type": "spacing" },
       "52": { "value": "52px", "type": "spacing" },
-      "56": { "value": "56px", "type": "spacing" }
+      "56": { "value": "56px", "type": "spacing" },
+      "60": { "value": "60px", "type": "spacing" },
+      "90": { "value": "90px", "type": "spacing" }
     }
   }
 }

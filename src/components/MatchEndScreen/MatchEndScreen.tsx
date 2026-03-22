@@ -1,17 +1,20 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import { useNavigate, useRouter } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 
 import { Layout } from '@/components/Layout/Layout'
+import { ShareScreen } from '@/components/ShareScreen'
 import { TopBar } from '@/components/ui/TopBar'
 import type { MatchAction, MatchFormat, MatchProjection, MatchSetup } from '@/core/match'
 import { clearCurrentMatch, createCurrentMatchSession } from '@/lib/current-match'
+import { cn } from '@/lib/utils/cn'
 import { getViewTransitionNavigationOptions } from '@/lib/utils/view-transitions'
 
 import { createMatchEndScreenSummary, getMatchDurationParts } from './view-model'
 import { MatchStatsCard } from './MatchStatsCard'
 import { MatchSummaryCard } from './MatchSummaryCard'
 import { WinnerCard } from './WinnerCard'
+import { useMatchEndShare } from './useMatchEndShare'
 
 import styles from './MatchEndScreen.module.css'
 
@@ -32,6 +35,13 @@ const formatTranslationKeys: Record<MatchFormat, 'bestOf1' | 'bestOf3' | 'bestOf
 
 const activeMatchRouteId = '/match/$id'
 
+const hiddenScreenStyle = {
+  position: 'fixed',
+  top: 0,
+  left: '-9999px',
+  pointerEvents: 'none'
+} as const
+
 export function MatchEndScreen({
   matchId,
   setup,
@@ -42,9 +52,11 @@ export function MatchEndScreen({
 }: MatchEndScreenProps) {
   const navigate = useNavigate()
   const router = useRouter()
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [isStartingNewMatch, setIsStartingNewMatch] = useState(false)
   const [isContinuingMatch, setIsContinuingMatch] = useState(false)
+  const [shareScreenReady, setShareScreenReady] = useState(false)
+  const captureRef = useRef<HTMLDivElement | null>(null)
 
   const summary = useMemo(
     () =>
@@ -73,6 +85,94 @@ export function MatchEndScreen({
       : t('match.end.stats.durationMinutes', {
           minutes: durationParts.minutes
         })
+
+  // Format date as DD/MM/YY from finishedAt using locale-aware formatting
+  const dateValue = useMemo(() => {
+    if (typeof finishedAt !== 'number') {
+      return ''
+    }
+    return new Intl.DateTimeFormat(i18n.language, {
+      day: '2-digit',
+      month: '2-digit',
+      year: '2-digit'
+    }).format(new Date(finishedAt))
+  }, [finishedAt, i18n.language])
+
+  // Compute ShareScreen props
+  const shareScreenProps = useMemo(() => {
+    const winnerTeamId = summary.winnerTeamId ?? 'team-1'
+    const loserTeamId = winnerTeamId === 'team-1' ? 'team-2' : 'team-1'
+    const winnerNameValue = summary.isFinishedEarly
+      ? t('match.end.winner.finishedEarlyName')
+      : (summary.winnerName ?? '')
+    const loserNameValue = summary.teamNames[loserTeamId]
+
+    return {
+      winnerName: winnerNameValue,
+      loserName: loserNameValue,
+      winnerTeamId,
+      formatLabel,
+      setRows: summary.setRows.map((row) => ({
+        setNumber: row.setNumber,
+        team1Games: row.scores['team-1'],
+        team2Games: row.scores['team-2']
+      })),
+      durationValue,
+      dateValue
+    }
+  }, [
+    durationValue,
+    dateValue,
+    formatLabel,
+    summary.isFinishedEarly,
+    summary.setRows,
+    summary.teamNames,
+    summary.winnerName,
+    summary.winnerTeamId,
+    t
+  ])
+
+  const shareText = summary.isFinishedEarly
+    ? ''
+    : t('match.end.share.text', {
+        winnerName: summary.winnerName,
+        formatLabel,
+        durationValue,
+        totalGames: summary.totalGames,
+        teamOneName: summary.teamNames['team-1'],
+        teamTwoName: summary.teamNames['team-2']
+      })
+  const finishedEarlyShareText = t('match.end.share.textFinishedEarly', {
+    formatLabel,
+    durationValue,
+    totalGames: summary.totalGames,
+    teamOneName: summary.teamNames['team-1'],
+    teamTwoName: summary.teamNames['team-2']
+  })
+  const shareActionLabel = t('match.end.actions.share')
+  const sharingActionLabel = t('match.end.actions.sharing')
+  const handleCaptureComplete = useCallback(() => {
+    setShareScreenReady(false)
+  }, [])
+
+  const labels = useMemo(
+    () => ({
+      idleActionLabel: shareActionLabel,
+      shareText,
+      finishedEarlyShareText,
+      errorMessage: t('match.end.share.error'),
+      downloadMessage: t('match.end.share.download')
+    }),
+    [finishedEarlyShareText, shareActionLabel, shareText, t]
+  )
+  const { downloadMessage, errorMessage, handleShareClick, isSharing } = useMatchEndShare({
+    captureRef,
+    matchId,
+    summary,
+    labels,
+    shareScreenReady,
+    onCaptureComplete: handleCaptureComplete
+  })
 
   const handleNewMatch = useCallback(async () => {
     if (isStartingNewMatch) {
@@ -123,6 +223,11 @@ export function MatchEndScreen({
     }
   }, [actions, finishedAt, isContinuingMatch, matchId, navigate, router, setup, startedAt])
 
+  const handleShareButtonClick = useCallback(() => {
+    handleShareClick()
+    setShareScreenReady(true)
+  }, [handleShareClick])
+
   const headerContent = useMemo(
     () => (
       <TopBar
@@ -131,13 +236,21 @@ export function MatchEndScreen({
         title={t('match.end.header.appName')}
         subtitle={t('match.end.header.subtitle')}
       >
-        <button type="button" className={styles.shareButton} disabled>
+        <button
+          type="button"
+          className={cn(styles.shareButton, isSharing && styles.shareButtonLoading)}
+          disabled={isSharing}
+          aria-busy={isSharing || undefined}
+          data-share-button="true"
+          data-share-loading={isSharing ? 'true' : 'false'}
+          onClick={handleShareButtonClick}
+        >
           <ShareIcon />
-          <span>{t('match.end.actions.share')}</span>
+          <span data-share-label="true">{isSharing ? sharingActionLabel : shareActionLabel}</span>
         </button>
       </TopBar>
     ),
-    [t]
+    [handleShareButtonClick, isSharing, shareActionLabel, sharingActionLabel, t]
   )
 
   const footerContent = useMemo(
@@ -146,32 +259,55 @@ export function MatchEndScreen({
   )
 
   return (
-    <Layout
-      className={styles.screen}
-      bodyClassName={styles.body ?? ''}
-      header={headerContent}
-      footer={footerContent}
-    >
-      <div className={styles.content} data-testid="match-end-screen">
-        <section className={styles.hero} aria-label={t('match.end.aria.summaryRegion')}>
-          <WinnerCard
-            winnerLabel={winnerLabel}
-            winnerName={winnerName}
-            {...(summary.winnerTeamId ? { winnerTeamId: summary.winnerTeamId } : {})}
-            isStartingNewMatch={isStartingNewMatch}
-            isContinuingMatch={isContinuingMatch}
-            onNewMatch={handleNewMatch}
-            onContinue={handleContinue}
-          />
+    <>
+      {/* ShareScreen is rendered off-screen when share button is clicked, then unmounted after capture */}
+      {shareScreenReady && (
+        <div aria-hidden="true" style={hiddenScreenStyle}>
+          <ShareScreen ref={captureRef} {...shareScreenProps} />
+        </div>
+      )}
 
-          <MatchSummaryCard
-            formatLabel={formatLabel}
-            teamNames={summary.teamNames}
-            setRows={summary.setRows}
-          />
-        </section>
+      <div data-testid="match-end-screen">
+        <Layout
+          className={styles.screen}
+          bodyClassName={styles.body ?? ''}
+          header={headerContent}
+          footer={footerContent}
+        >
+          <div className={styles.content}>
+            <section className={styles.hero} aria-label={t('match.end.aria.summaryRegion')}>
+              <WinnerCard
+                winnerLabel={winnerLabel}
+                winnerName={winnerName}
+                {...(summary.winnerTeamId ? { winnerTeamId: summary.winnerTeamId } : {})}
+                isStartingNewMatch={isStartingNewMatch}
+                isContinuingMatch={isContinuingMatch}
+                onNewMatch={handleNewMatch}
+                onContinue={handleContinue}
+              />
+
+              <MatchSummaryCard
+                formatLabel={formatLabel}
+                teamNames={summary.teamNames}
+                setRows={summary.setRows}
+              />
+            </section>
+          </div>
+        </Layout>
       </div>
-    </Layout>
+      {errorMessage ? (
+        <p className={cn(styles.shareStatus, styles.shareStatusError)} role="alert">
+          {errorMessage}
+        </p>
+      ) : null}
+      <p
+        className={cn(styles.shareStatus, !downloadMessage && styles.srOnly)}
+        aria-live="polite"
+        role="status"
+      >
+        {downloadMessage ?? ''}
+      </p>
+    </>
   )
 }
 

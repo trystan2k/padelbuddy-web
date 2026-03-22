@@ -8,17 +8,23 @@ import { MatchEndScreen } from '@/components/MatchEndScreen'
 import { projectMatch } from '@/core/match'
 import { createTestSetup, winQuickSet } from '../../core/match/test-helpers'
 
+const currentTime = new Date('2026-03-19T13:24:00.000Z')
+const startedAt = currentTime.getTime() - 20 * 60 * 1000
+const finishedAt = startedAt + 5 * 60 * 1000
+
 const {
   mockNavigate,
   mockClearCache,
   mockClearCurrentMatch,
   mockContinuePlaying,
-  mockCreateCurrentMatchSession
+  mockCreateCurrentMatchSession,
+  mockDomToBlob
 } = vi.hoisted(() => {
   const mockNavigateFn = vi.fn()
   const mockClearCacheFn = vi.fn()
   const mockClearCurrentMatchFn = vi.fn(async () => undefined)
   const mockContinuePlayingFn = vi.fn(async () => undefined)
+  const mockDomToBlobFn = vi.fn()
   const mockCreateCurrentMatchSessionFn = vi.fn(() => ({
     continuePlaying: mockContinuePlayingFn
   }))
@@ -28,9 +34,14 @@ const {
     mockClearCache: mockClearCacheFn,
     mockClearCurrentMatch: mockClearCurrentMatchFn,
     mockContinuePlaying: mockContinuePlayingFn,
-    mockCreateCurrentMatchSession: mockCreateCurrentMatchSessionFn
+    mockCreateCurrentMatchSession: mockCreateCurrentMatchSessionFn,
+    mockDomToBlob: mockDomToBlobFn
   }
 })
+
+vi.mock('modern-screenshot', () => ({
+  domToBlob: mockDomToBlob
+}))
 
 vi.mock('@tanstack/react-router', () => ({
   useNavigate: () => mockNavigate,
@@ -55,17 +66,47 @@ vi.mock('@/lib/i18n', async (importOriginal) => {
 })
 
 describe('MatchEndScreen', () => {
-  const currentTime = new Date('2026-03-19T13:24:00.000Z')
-  const startedAt = currentTime.getTime() - 20 * 60 * 1000
-  const finishedAt = startedAt + 5 * 60 * 1000
+  const originalNavigatorShareDescriptor = Object.getOwnPropertyDescriptor(navigator, 'share')
+  const originalNavigatorCanShareDescriptor = Object.getOwnPropertyDescriptor(navigator, 'canShare')
+  const originalCreateObjectUrl = URL.createObjectURL.bind(URL)
+  const originalRevokeObjectUrl = URL.revokeObjectURL.bind(URL)
+  let createObjectUrlMock = vi.fn(() => 'blob:match-end-screen')
+  let revokeObjectUrlMock = vi.fn()
 
   beforeEach(() => {
     vi.clearAllMocks()
     vi.useFakeTimers({ toFake: ['Date'] })
     vi.setSystemTime(currentTime)
+    mockDomToBlob.mockResolvedValue(createPngBlob())
+    createObjectUrlMock = vi.fn(() => 'blob:match-end-screen')
+    revokeObjectUrlMock = vi.fn()
+    restoreNavigatorProperty('share', originalNavigatorShareDescriptor)
+    restoreNavigatorProperty('canShare', originalNavigatorCanShareDescriptor)
+    Object.defineProperty(URL, 'createObjectURL', {
+      value: createObjectUrlMock,
+      writable: true,
+      configurable: true
+    })
+    Object.defineProperty(URL, 'revokeObjectURL', {
+      value: revokeObjectUrlMock,
+      writable: true,
+      configurable: true
+    })
   })
 
   afterEach(() => {
+    restoreNavigatorProperty('share', originalNavigatorShareDescriptor)
+    restoreNavigatorProperty('canShare', originalNavigatorCanShareDescriptor)
+    Object.defineProperty(URL, 'createObjectURL', {
+      value: originalCreateObjectUrl,
+      writable: true,
+      configurable: true
+    })
+    Object.defineProperty(URL, 'revokeObjectURL', {
+      value: originalRevokeObjectUrl,
+      writable: true,
+      configurable: true
+    })
     vi.restoreAllMocks()
     vi.useRealTimers()
   })
@@ -117,7 +158,7 @@ describe('MatchEndScreen', () => {
     expect(screen.container.querySelector('[aria-haspopup="true"]')).toBeNull()
   })
 
-  test('renders a disabled share placeholder in the header', async () => {
+  test('renders an enabled share action in the header', async () => {
     const projection = createCompletedProjection()
     const setup = createCompletedSetup()
     const actions = createCompletedActions()
@@ -136,7 +177,154 @@ describe('MatchEndScreen', () => {
     // i18n key: 'match.end.actions.share' — locale is mocked to 'en' above
     const shareButton = screen.getByRole('button', { name: 'Share' })
 
-    await expect.element(shareButton).toBeDisabled()
+    await expect.element(shareButton).toBeEnabled()
+  })
+
+  test('locks the share button while capture is in progress', async () => {
+    setShareNavigator({
+      canShare: vi.fn((_data?: ShareData) => true),
+      share: vi.fn(async (_data?: ShareData) => undefined)
+    })
+    const deferredCapture = createDeferred<Blob>()
+    mockDomToBlob.mockReturnValueOnce(deferredCapture.promise)
+
+    const screen = await renderCompletedMatchEndScreen()
+    const shareButton = screen.getByRole('button', { name: 'Share' })
+
+    await shareButton.click()
+
+    const sharingButton = screen.getByRole('button', { name: 'Sharing...' })
+
+    await expect.element(sharingButton).toBeDisabled()
+    await expect.element(sharingButton).toHaveTextContent('Sharing...')
+
+    ;(sharingButton.element() as HTMLButtonElement).click()
+
+    expect(mockDomToBlob).toHaveBeenCalledTimes(1)
+
+    deferredCapture.resolve(createPngBlob())
+
+    await vi.waitFor(() => {
+      expect(
+        (screen.getByRole('button', { name: 'Share' }).element() as HTMLButtonElement).disabled
+      ).toBe(false)
+    })
+    await expect.element(screen.getByRole('button', { name: 'Share' })).toHaveTextContent('Share')
+  })
+
+  test('shares localized text with a PNG file when file sharing is supported', async () => {
+    const share = vi.fn(async (_data?: ShareData) => undefined)
+    const canShare = vi.fn((_data?: ShareData) => true)
+    setShareNavigator({ canShare, share })
+
+    const screen = await renderCompletedMatchEndScreen()
+
+    await screen.getByRole('button', { name: 'Share' }).click()
+
+    await vi.waitFor(() => {
+      expect(canShare).toHaveBeenCalledWith({
+        files: [expect.any(File)]
+      })
+      expect(share).toHaveBeenCalledTimes(1)
+    })
+
+    const sharePayload = (share.mock.calls as [ShareData?][]).at(0)?.[0]
+    const sharedFile = sharePayload?.files?.[0]
+
+    expect(sharePayload?.text).toBe(
+      'Alvaro & Enrique won a Best of 3 Padel Buddy match in 5m across 12 games. Alvaro & Enrique vs Pablo & Thiago.'
+    )
+    expect(sharedFile).toBeInstanceOf(File)
+    expect(sharedFile?.name).toBe('padel-buddy-match-test-match.png')
+    expect(sharedFile?.type).toBe('image/png')
+  })
+
+  test('downloads a PNG when file sharing is unavailable', async () => {
+    const anchorClickSpy = vi
+      .spyOn(HTMLAnchorElement.prototype, 'click')
+      .mockImplementation(() => {})
+    const share = vi.fn(async (_data?: ShareData) => undefined)
+    const canShare = vi.fn((_data?: ShareData) => false)
+    setShareNavigator({ canShare, share })
+
+    const screen = await renderCompletedMatchEndScreen()
+
+    await screen.getByRole('button', { name: 'Share' }).click()
+
+    await vi.waitFor(() => {
+      expect(createObjectUrlMock).toHaveBeenCalledWith(expect.any(Blob))
+    })
+
+    expect(share).not.toHaveBeenCalled()
+    expect(anchorClickSpy).toHaveBeenCalledTimes(1)
+    expect(revokeObjectUrlMock).toHaveBeenCalledWith('blob:match-end-screen')
+    await expect.element(screen.getByText('Match image downloaded.')).toBeInTheDocument()
+  })
+
+  test('shows an error alert when capture fails', async () => {
+    const share = vi.fn(async (_data?: ShareData) => undefined)
+    const canShare = vi.fn((_data?: ShareData) => true)
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    setShareNavigator({ canShare, share })
+    mockDomToBlob.mockRejectedValueOnce(new Error('capture failed'))
+
+    const screen = await renderCompletedMatchEndScreen()
+
+    await screen.getByRole('button', { name: 'Share' }).click()
+
+    await vi.waitFor(() => {
+      expect(share).not.toHaveBeenCalled()
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        'Failed to share the match end screen.',
+        expect.any(Error)
+      )
+    })
+    await expect
+      .element(screen.getByRole('alert'))
+      .toHaveTextContent('Unable to share this match right now.')
+  })
+
+  test('shares the finished-early copy instead of the raw i18n key', async () => {
+    const share = vi.fn(async (_data?: ShareData) => undefined)
+    const canShare = vi.fn((_data?: ShareData) => true)
+    setShareNavigator({ canShare, share })
+
+    const screen = await renderFinishedEarlyMatchEndScreen()
+
+    await screen.getByRole('button', { name: 'Share' }).click()
+
+    await vi.waitFor(() => {
+      expect(share).toHaveBeenCalledTimes(1)
+    })
+
+    const sharePayload = (share.mock.calls as [ShareData?][]).at(0)?.[0]
+
+    expect(sharePayload?.text).toBe(
+      'The Best of 3 Padel Buddy match between Alvaro & Enrique and Pablo & Thiago finished early after 5m and 0 games.'
+    )
+    expect(sharePayload?.text).not.toContain('match.end.share.textFinishedEarly')
+  })
+
+  test('handles share-sheet cancellation without surfacing an error', async () => {
+    setShareNavigator({
+      canShare: vi.fn((_data?: ShareData) => true),
+      share: vi.fn(async (_data?: ShareData) => {
+        throw new DOMException('Share cancelled', 'AbortError')
+      })
+    })
+
+    const screen = await renderCompletedMatchEndScreen()
+    const shareButton = screen.getByRole('button', { name: 'Share' })
+
+    await shareButton.click()
+
+    await vi.waitFor(() => {
+      expect((shareButton.element() as HTMLButtonElement).disabled).toBe(false)
+    })
+
+    await expect.element(screen.getByRole('button', { name: 'Share' })).toBeEnabled()
+    expect(screen.container.textContent).not.toContain('Match image downloaded.')
+    expect(createObjectUrlMock).not.toHaveBeenCalled()
   })
 
   test('starts a new match by clearing persistence and navigating home', async () => {
@@ -287,4 +475,80 @@ function createCompletedSetup() {
       { id: 'team-2', playerNames: ['Pablo', 'Thiago'] }
     ]
   })
+}
+
+async function renderCompletedMatchEndScreen() {
+  return render(
+    <MatchEndScreen
+      matchId="test-match"
+      setup={createCompletedSetup()}
+      actions={createCompletedActions()}
+      projection={createCompletedProjection()}
+      startedAt={startedAt}
+      finishedAt={finishedAt}
+    />
+  )
+}
+
+async function renderFinishedEarlyMatchEndScreen() {
+  return render(
+    <MatchEndScreen
+      matchId="test-match"
+      setup={createCompletedSetup()}
+      actions={[]}
+      projection={projectMatch(createCompletedSetup(), [])}
+      startedAt={startedAt}
+      finishedAt={finishedAt}
+    />
+  )
+}
+
+function createPngBlob() {
+  return new Blob(['share-image'], { type: 'image/png' })
+}
+
+function createDeferred<T>() {
+  let resolve!: (value: T | PromiseLike<T>) => void
+  let reject!: (reason?: unknown) => void
+  const promise = new Promise<T>((promiseResolve, promiseReject) => {
+    resolve = promiseResolve
+    reject = promiseReject
+  })
+
+  return {
+    promise,
+    resolve,
+    reject
+  }
+}
+
+function setShareNavigator({
+  canShare,
+  share
+}: {
+  canShare?: ((data?: ShareData) => boolean) | undefined
+  share?: ((data?: ShareData) => Promise<void>) | undefined
+}) {
+  Object.defineProperty(navigator, 'canShare', {
+    value: canShare,
+    writable: true,
+    configurable: true
+  })
+  Object.defineProperty(navigator, 'share', {
+    value: share,
+    writable: true,
+    configurable: true
+  })
+}
+
+function restoreNavigatorProperty(
+  propertyName: 'canShare' | 'share',
+  descriptor: PropertyDescriptor | undefined
+) {
+  if (descriptor) {
+    Object.defineProperty(navigator, propertyName, descriptor)
+    return
+  }
+
+  delete (navigator as Navigator & Partial<Record<'canShare' | 'share', unknown>>)[propertyName]
 }
