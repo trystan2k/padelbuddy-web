@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.13.0](https://github.com/trystan2k/padelbuddy-web/compare/v0.12.0...v0.13.0) (2026-03-22)
+
+
+### Features
+
+* review and improve components ([#32](https://github.com/trystan2k/padelbuddy-web/issues/32)) ([5dbe4ca](https://github.com/trystan2k/padelbuddy-web/commit/5dbe4ca4a1c7437e60a6d67254bc6eee05e73b38))
+
 ## [0.12.0](https://github.com/trystan2k/padelbuddy-web/compare/v0.11.0...v0.12.0) (2026-03-21)
 
 
