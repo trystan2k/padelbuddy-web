@@ -48,6 +48,16 @@ describe('TeamPanel', () => {
     expect(serveIndicator).toBeNull()
   })
 
+  test('hides serve indicator when serving indicator visibility is disabled', async () => {
+    const screen = await render(
+      <TeamPanel {...defaultProps} isServing={true} showServingIndicator={false} />
+    )
+
+    expect(screen.container.querySelector('[data-testid="serve-indicator-team-1"]')).toBeNull()
+    expect(screen.container.querySelector('[data-testid="serve-status-team-1"]')).toBeNull()
+    await expect.element(screen.getByRole('button')).not.toHaveAttribute('aria-describedby')
+  })
+
   test('calls onClick when clicked', async () => {
     const handleClick = vi.fn()
     const screen = await render(<TeamPanel {...defaultProps} onClick={handleClick} />)

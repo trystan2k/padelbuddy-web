@@ -1,12 +1,21 @@
 import {
+  countdownTimerDurations,
   createMatchSetup,
+  defaultCountdownTimerDuration,
+  defaultCountdownTimerEnabled,
+  defaultServingIndicatorEnabled,
   matchTeamIds,
   projectMatch,
   type MatchAction,
+  type CountdownTimerDuration,
   type MatchProjection,
   type MatchSetup,
   type MatchTeamId
 } from '@/core/match'
+
+function isCountdownTimerDuration(value: unknown): value is CountdownTimerDuration {
+  return countdownTimerDurations.some((duration) => duration === value)
+}
 
 export const currentMatchSchemaVersion = 4 as const
 const defaultCurrentMatchId = 'current-match'
@@ -165,6 +174,17 @@ function parseMatchSetup(input: unknown): MatchSetup {
     gameMode: setup.gameMode,
     initialServer: setup.initialServer,
     decidingSetSuperTiebreak: setup.decidingSetSuperTiebreak,
+    servingIndicatorEnabled:
+      typeof setup.servingIndicatorEnabled === 'boolean'
+        ? setup.servingIndicatorEnabled
+        : defaultServingIndicatorEnabled,
+    countdownTimerEnabled:
+      typeof setup.countdownTimerEnabled === 'boolean'
+        ? setup.countdownTimerEnabled
+        : defaultCountdownTimerEnabled,
+    countdownTimerDuration: isCountdownTimerDuration(setup.countdownTimerDuration)
+      ? setup.countdownTimerDuration
+      : defaultCountdownTimerDuration,
     sideSwitchPrompts: setup.sideSwitchPrompts,
     sides: setup.sides
   }

@@ -2,31 +2,36 @@
 
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import { render } from 'vitest-browser-react'
-import { useEffect, useState } from 'react'
 
 import { useMatchTimer } from '@/components/ActiveMatchScreen/useMatchTimer'
+import type { CountdownTimerDuration } from '@/core/match'
 
-// Test component to render the hook output
+function formatTimeOfDay(date: Date): string {
+  return [date.getHours(), date.getMinutes(), date.getSeconds()]
+    .map((value) => String(value).padStart(2, '0'))
+    .join(':')
+}
+
 function TimerTestComponent({
   startedAt,
   finishedAt,
   isMatchCompleted,
-  onStateChange
+  countdownEnabled,
+  countdownDuration
 }: {
   startedAt: number | null
   finishedAt?: number
   isMatchCompleted: boolean
-  onStateChange?: (state: ReturnType<typeof useMatchTimer>) => void
+  countdownEnabled: boolean
+  countdownDuration: CountdownTimerDuration
 }) {
   const state = useMatchTimer({
     startedAt,
     ...(typeof finishedAt === 'number' ? { finishedAt } : {}),
-    isMatchCompleted
+    isMatchCompleted,
+    countdownEnabled,
+    countdownDuration
   })
-
-  useEffect(() => {
-    onStateChange?.(state)
-  }, [state, onStateChange])
 
   return (
     <div>
@@ -40,6 +45,7 @@ function TimerTestComponent({
 describe('useMatchTimer', () => {
   beforeEach(() => {
     vi.useFakeTimers()
+    vi.setSystemTime(new Date('2026-03-21T12:00:00.000Z'))
   })
 
   afterEach(() => {
@@ -47,217 +53,121 @@ describe('useMatchTimer', () => {
     vi.restoreAllMocks()
   })
 
-  test('returns 0 elapsed seconds when startedAt is null', async () => {
-    const screen = await render(<TimerTestComponent startedAt={null} isMatchCompleted={false} />)
-
-    await expect.element(screen.getByTestId('elapsedSeconds')).toHaveTextContent('0')
-    await expect.element(screen.getByTestId('formattedTime')).toHaveTextContent('0 min')
-    await expect.element(screen.getByTestId('isRunning')).toHaveTextContent('false')
-  })
-
-  test('returns elapsed time from startedAt', async () => {
-    const startedAt = Date.now() - 5 * 60 * 1000 // 5 minutes ago
-
-    const screen = await render(
-      <TimerTestComponent startedAt={startedAt} isMatchCompleted={false} />
-    )
-
-    await expect.element(screen.getByTestId('elapsedSeconds')).toHaveTextContent('300')
-    await expect.element(screen.getByTestId('formattedTime')).toHaveTextContent('5 min')
-    await expect.element(screen.getByTestId('isRunning')).toHaveTextContent('true')
-  })
-
-  test('formats minutes correctly', async () => {
-    const startedAt = Date.now() - 15 * 60 * 1000 // 15 minutes ago
-
-    const screen = await render(
-      <TimerTestComponent startedAt={startedAt} isMatchCompleted={false} />
-    )
-
-    await expect.element(screen.getByTestId('formattedTime')).toHaveTextContent('15 min')
-  })
-
-  test('formats hours and minutes correctly', async () => {
-    const startedAt = Date.now() - 90 * 60 * 1000 // 1 hour 30 minutes ago
-
-    const screen = await render(
-      <TimerTestComponent startedAt={startedAt} isMatchCompleted={false} />
-    )
-
-    await expect.element(screen.getByTestId('formattedTime')).toHaveTextContent('1h 30m')
-  })
-
-  test('formats 1 hour exactly', async () => {
-    const startedAt = Date.now() - 60 * 60 * 1000 // 1 hour ago
-
-    const screen = await render(
-      <TimerTestComponent startedAt={startedAt} isMatchCompleted={false} />
-    )
-
-    await expect.element(screen.getByTestId('formattedTime')).toHaveTextContent('1h 0m')
-  })
-
-  test('isRunning is false when match is completed', async () => {
-    const startedAt = Date.now() - 5 * 60 * 1000
-    const finishedAt = startedAt + 5 * 60 * 1000
-
-    const screen = await render(
-      <TimerTestComponent startedAt={startedAt} finishedAt={finishedAt} isMatchCompleted={true} />
-    )
-
-    await expect.element(screen.getByTestId('isRunning')).toHaveTextContent('false')
-  })
-
-  test('isRunning is false when startedAt is null', async () => {
-    const screen = await render(<TimerTestComponent startedAt={null} isMatchCompleted={false} />)
-
-    await expect.element(screen.getByTestId('isRunning')).toHaveTextContent('false')
-  })
-
-  test('handles zero elapsed time correctly', async () => {
-    const startedAt = Date.now()
-
-    const screen = await render(
-      <TimerTestComponent startedAt={startedAt} isMatchCompleted={false} />
-    )
-
-    await expect.element(screen.getByTestId('elapsedSeconds')).toHaveTextContent('0')
-    await expect.element(screen.getByTestId('formattedTime')).toHaveTextContent('0 min')
-  })
-
-  test('handles large elapsed times', async () => {
-    const startedAt = Date.now() - 125 * 60 * 1000 // 2 hours 5 minutes
-
-    const screen = await render(
-      <TimerTestComponent startedAt={startedAt} isMatchCompleted={false} />
-    )
-
-    await expect.element(screen.getByTestId('elapsedSeconds')).toHaveTextContent('7500')
-    await expect.element(screen.getByTestId('formattedTime')).toHaveTextContent('2h 5m')
-  })
-
-  test('stops updating when match is completed', async () => {
-    const startedAt = Date.now()
-    const completedAfter = startedAt + 60 * 1000
-    const onStateChange = vi.fn()
+  test('shows the current time of day when countdown is disabled', async () => {
+    const startedAt = Date.now() - (1 * 60 * 60 + 5 * 60 + 9) * 1000
 
     const screen = await render(
       <TimerTestComponent
         startedAt={startedAt}
         isMatchCompleted={false}
-        onStateChange={onStateChange}
+        countdownEnabled={false}
+        countdownDuration={90}
       />
     )
 
-    // Advance time
-    await vi.advanceTimersByTimeAsync(60 * 1000)
-
-    // Check the timer is running
+    await expect.element(screen.getByTestId('elapsedSeconds')).toHaveTextContent('3909')
+    await expect
+      .element(screen.getByTestId('formattedTime'))
+      .toHaveTextContent(formatTimeOfDay(new Date(Date.now())))
     await expect.element(screen.getByTestId('isRunning')).toHaveTextContent('true')
-    await expect.element(screen.getByTestId('elapsedSeconds')).toHaveTextContent('60')
+  })
 
-    // Rerender with match completed
-    void screen.rerender(
+  test('formats countdown time as HH:MM:SS', async () => {
+    const startedAt = Date.now() - (46 * 60 + 48) * 1000
+
+    const screen = await render(
       <TimerTestComponent
         startedAt={startedAt}
-        finishedAt={completedAfter}
-        isMatchCompleted={true}
-        onStateChange={onStateChange}
+        isMatchCompleted={false}
+        countdownEnabled={true}
+        countdownDuration={60}
       />
     )
 
-    await expect.element(screen.getByTestId('isRunning')).toHaveTextContent('false')
-
-    // Advance time more - elapsed should stay the same
-    await vi.advanceTimersByTimeAsync(60 * 1000)
-
-    // Should still be 60 seconds (stopped when completed)
-    await expect.element(screen.getByTestId('elapsedSeconds')).toHaveTextContent('60')
-  })
-})
-
-describe('useMatchTimer - dynamic state component', () => {
-  // Component that can change isMatchCompleted dynamically
-  function DynamicTimerComponent({
-    initialStartedAt,
-    initialFinishedAt,
-    initialIsCompleted
-  }: {
-    initialStartedAt: number
-    initialFinishedAt?: number
-    initialIsCompleted: boolean
-  }) {
-    const [isMatchCompleted, setIsMatchCompleted] = useState(initialIsCompleted)
-    const state = useMatchTimer({
-      startedAt: initialStartedAt,
-      ...(typeof initialFinishedAt === 'number' ? { finishedAt: initialFinishedAt } : {}),
-      isMatchCompleted
-    })
-
-    return (
-      <div>
-        <span data-testid="elapsedSeconds">{state.elapsedSeconds}</span>
-        <span data-testid="formattedTime">{state.formattedTime}</span>
-        <span data-testid="isRunning">{state.isRunning.toString()}</span>
-        <button
-          type="button"
-          data-testid="completeButton"
-          onClick={() => setIsMatchCompleted(true)}
-        >
-          Complete
-        </button>
-      </div>
-    )
-  }
-
-  beforeEach(() => {
-    vi.useFakeTimers()
-  })
-
-  afterEach(() => {
-    vi.useRealTimers()
-    vi.restoreAllMocks()
-  })
-
-  test('timer stops when match is completed via button', async () => {
-    const startedAt = Date.now()
-
-    const screen = await render(
-      <DynamicTimerComponent initialStartedAt={startedAt} initialIsCompleted={false} />
-    )
-
-    // Advance time
-    await vi.advanceTimersByTimeAsync(30 * 1000)
-
-    await expect.element(screen.getByTestId('elapsedSeconds')).toHaveTextContent('30')
+    await expect
+      .element(screen.getByTestId('formattedTime'))
+      .toHaveTextContent(/^\d{2}:\d{2}:\d{2}$/)
     await expect.element(screen.getByTestId('isRunning')).toHaveTextContent('true')
-
-    // Complete the match
-    await screen.getByTestId('completeButton').click()
-
-    await expect.element(screen.getByTestId('isRunning')).toHaveTextContent('false')
-
-    // Advance time more
-    await vi.advanceTimersByTimeAsync(30 * 1000)
-
-    // Elapsed should still be 30 (stopped)
-    await expect.element(screen.getByTestId('elapsedSeconds')).toHaveTextContent('30')
   })
 
-  test('uses finishedAt to keep the completed duration frozen', async () => {
-    const startedAt = Date.now() - 20 * 60 * 1000
-    const finishedAt = startedAt + 5 * 60 * 1000
+  test('freezes countdown at 00:00:00 when it expires', async () => {
+    const startedAt = Date.now() - 90 * 60 * 1000
 
     const screen = await render(
-      <TimerTestComponent startedAt={startedAt} finishedAt={finishedAt} isMatchCompleted />
+      <TimerTestComponent
+        startedAt={startedAt}
+        isMatchCompleted={false}
+        countdownEnabled={true}
+        countdownDuration={90}
+      />
     )
 
-    await expect.element(screen.getByTestId('elapsedSeconds')).toHaveTextContent('300')
-    await expect.element(screen.getByTestId('formattedTime')).toHaveTextContent('5 min')
+    await expect.element(screen.getByTestId('formattedTime')).toHaveTextContent('00:00:00')
+    await expect.element(screen.getByTestId('isRunning')).toHaveTextContent('false')
+
+    await vi.advanceTimersByTimeAsync(30 * 1000)
+
+    await expect.element(screen.getByTestId('formattedTime')).toHaveTextContent('00:00:00')
+    await expect.element(screen.getByTestId('isRunning')).toHaveTextContent('false')
+  })
+
+  test('uses the live clock when countdown reaches zero between interval ticks', async () => {
+    const startedAt = Date.now() - (90 * 60 * 1000 + 250)
+
+    const screen = await render(
+      <TimerTestComponent
+        startedAt={startedAt}
+        isMatchCompleted={false}
+        countdownEnabled={true}
+        countdownDuration={90}
+      />
+    )
+
+    await expect.element(screen.getByTestId('formattedTime')).toHaveTextContent('00:00:00')
+    await expect.element(screen.getByTestId('isRunning')).toHaveTextContent('false')
+  })
+
+  test('keeps the live clock running after the match is completed', async () => {
+    const startedAt = Date.now() - 30 * 60 * 1000
+    const finishedAt = startedAt + (5 * 60 + 7) * 1000
+
+    const screen = await render(
+      <TimerTestComponent
+        startedAt={startedAt}
+        finishedAt={finishedAt}
+        isMatchCompleted={true}
+        countdownEnabled={false}
+        countdownDuration={90}
+      />
+    )
+
+    await expect.element(screen.getByTestId('elapsedSeconds')).toHaveTextContent('307')
+    await expect
+      .element(screen.getByTestId('formattedTime'))
+      .toHaveTextContent(formatTimeOfDay(new Date(Date.now())))
+    await expect.element(screen.getByTestId('isRunning')).toHaveTextContent('false')
 
     await vi.advanceTimersByTimeAsync(60 * 1000)
 
-    await expect.element(screen.getByTestId('elapsedSeconds')).toHaveTextContent('300')
-    await expect.element(screen.getByTestId('formattedTime')).toHaveTextContent('5 min')
+    await expect
+      .element(screen.getByTestId('formattedTime'))
+      .toHaveTextContent(formatTimeOfDay(new Date(Date.now())))
+  })
+
+  test('shows the current time of day when countdown is disabled and startedAt is null', async () => {
+    const screen = await render(
+      <TimerTestComponent
+        startedAt={null}
+        isMatchCompleted={false}
+        countdownEnabled={false}
+        countdownDuration={90}
+      />
+    )
+
+    await expect.element(screen.getByTestId('elapsedSeconds')).toHaveTextContent('0')
+    await expect
+      .element(screen.getByTestId('formattedTime'))
+      .toHaveTextContent(formatTimeOfDay(new Date(Date.now())))
+    await expect.element(screen.getByTestId('isRunning')).toHaveTextContent('false')
   })
 })

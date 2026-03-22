@@ -12,6 +12,12 @@ import {
   winQuickSet
 } from '../../core/match/test-helpers'
 
+function formatTimeOfDay(date: Date): string {
+  return [date.getHours(), date.getMinutes(), date.getSeconds()]
+    .map((value) => String(value).padStart(2, '0'))
+    .join(':')
+}
+
 const { mockNavigate } = vi.hoisted(() => ({
   mockNavigate: vi.fn()
 }))
@@ -43,6 +49,7 @@ describe('ActiveMatchScreen', () => {
   })
 
   afterEach(() => {
+    vi.useRealTimers()
     vi.restoreAllMocks()
   })
 
@@ -130,6 +137,9 @@ describe('ActiveMatchScreen', () => {
   })
 
   test('renders time chip', async () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2026-03-21T12:00:00.000Z'))
+
     const setup = createTestSetup()
 
     const screen = await render(
@@ -142,6 +152,73 @@ describe('ActiveMatchScreen', () => {
     )
 
     await expect.element(screen.getByTestId('time-chip')).toBeInTheDocument()
+    await expect
+      .element(screen.getByTestId('time-chip'))
+      .toHaveTextContent(formatTimeOfDay(new Date(Date.now())))
+    expect(screen.container.querySelector('[aria-haspopup="true"]')).toBeNull()
+  })
+
+  test('renders the timer in the top bar instead of the score panel body', async () => {
+    const setup = createTestSetup({
+      countdownTimerEnabled: true,
+      countdownTimerDuration: 60
+    })
+    const startedAt = Date.now() - (46 * 60 + 48) * 1000
+
+    const screen = await render(
+      <ActiveMatchScreen
+        matchId="test-match"
+        initialSetup={setup}
+        initialActions={[]}
+        startedAt={startedAt}
+      />
+    )
+
+    const timeChip = screen.getByTestId('time-chip').element()
+    const layoutBody = screen.getByTestId('layout-body').element()
+
+    await expect.element(screen.getByTestId('time-chip')).toHaveTextContent(/^\d{2}:\d{2}:\d{2}$/)
+    expect(timeChip.closest('header')).toBeTruthy()
+    expect(layoutBody.contains(timeChip)).toBe(false)
+  })
+
+  test('hides serving indicators when serving indicator is disabled in setup', async () => {
+    const setup = createTestSetup({
+      servingIndicatorEnabled: false
+    })
+
+    const screen = await render(
+      <ActiveMatchScreen
+        matchId="test-match"
+        initialSetup={setup}
+        initialActions={[]}
+        startedAt={defaultStartedAt}
+      />
+    )
+
+    expect(screen.container.querySelector('[data-testid^="serve-indicator-"]')).toBeNull()
+    expect(screen.container.querySelector('[data-testid^="serve-status-"]')).toBeNull()
+  })
+
+  test('uses the countdown timer aria-label when countdown mode is enabled', async () => {
+    const setup = createTestSetup({
+      countdownTimerEnabled: true,
+      countdownTimerDuration: 60
+    })
+    const startedAt = Date.now() - 5 * 60 * 1000
+
+    const screen = await render(
+      <ActiveMatchScreen
+        matchId="test-match"
+        initialSetup={setup}
+        initialActions={[]}
+        startedAt={startedAt}
+      />
+    )
+
+    expect(screen.getByTestId('time-chip').element().getAttribute('aria-label')).toMatch(
+      /^Remaining match time: 00:5[45]:\d{2}$/
+    )
   })
 
   test('renders revert buttons', async () => {
@@ -371,7 +448,7 @@ describe('ActiveMatchScreen', () => {
     expect(servingStatus?.textContent).toBe('Serving')
   })
 
-  test('renders center overlays in set timer info order', async () => {
+  test('renders set and info overlays without the timer overlay or locale selector actions', async () => {
     const setup = createTestSetup()
 
     const screen = await render(
@@ -383,13 +460,14 @@ describe('ActiveMatchScreen', () => {
       />
     )
 
-    // This covers DOM order only; final visual positioning is manually verified against Pencil per the plan.
+    expect(screen.container.querySelector('[aria-haspopup="true"]')).toBeNull()
+
+    const layoutBody = screen.getByTestId('layout-body').element()
     const overlayNodes = Array.from(
-      screen.container.querySelectorAll(
-        '[data-testid="sets-card"], [data-testid="time-chip"], [data-testid="info-card"]'
-      )
+      layoutBody.querySelectorAll('[data-testid="sets-card"], [data-testid="info-card"]')
     ).map((node) => node.getAttribute('data-testid'))
 
-    expect(overlayNodes).toEqual(['sets-card', 'time-chip', 'info-card'])
+    expect(overlayNodes).toEqual(['sets-card', 'info-card'])
+    expect(layoutBody.contains(screen.getByTestId('time-chip').element())).toBe(false)
   })
 })

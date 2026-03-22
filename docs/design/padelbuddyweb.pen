@@ -9,6 +9,7 @@
       "name": "Setup Screen",
       "clip": true,
       "width": 1024,
+      "height": 768,
       "fill": [
         {
           "type": "gradient",
@@ -56,11 +57,8 @@
         }
       ],
       "layout": "vertical",
-      "gap": 28,
-      "padding": [
-        28,
-        32
-      ],
+      "gap": 16,
+      "padding": 16,
       "children": [
         {
           "type": "frame",
@@ -171,15 +169,17 @@
           "id": "c8Yv3",
           "name": "main",
           "width": "fill_container",
-          "height": 628,
-          "gap": 24,
+          "height": "fill_container",
+          "layout": "none",
           "children": [
             {
               "type": "frame",
               "id": "GUQr7",
+              "x": 0,
+              "y": 0,
               "name": "left",
-              "width": "fill_container",
-              "height": "fill_container",
+              "width": 435,
+              "height": "fill_container(550)",
               "layout": "vertical",
               "gap": 16,
               "children": [
@@ -366,9 +366,11 @@
             {
               "type": "frame",
               "id": "rmbpt",
+              "x": 459,
+              "y": 0,
               "name": "right",
-              "width": "fill_container",
-              "height": 628,
+              "width": "fill_container(533)",
+              "height": "fill_container(550)",
               "layout": "vertical",
               "gap": 16,
               "children": [
@@ -486,17 +488,19 @@
                   "type": "frame",
                   "id": "ulAHi",
                   "name": "rulesCard",
+                  "clip": true,
                   "width": "fill_container",
-                  "height": 517,
+                  "height": "fill_container",
                   "fill": "$bg-panel",
-                  "cornerRadius": 26,
+                  "cornerRadius": 24,
                   "stroke": {
-                    "thickness": 1,
+                    "thickness": 2,
                     "fill": "$line-soft"
                   },
                   "layout": "vertical",
-                  "gap": 18,
-                  "padding": 24,
+                  "gap": 10,
+                  "padding": 16,
+                  "justifyContent": "space_between",
                   "children": [
                     {
                       "type": "frame",
@@ -569,43 +573,46 @@
                     },
                     {
                       "type": "rectangle",
-                      "id": "cBIv0",
-                      "name": "ruleDivider",
-                      "fill": "$line-soft",
+                      "id": "VOGOL",
+                      "name": "divSI",
+                      "fill": "#D7CFBF",
                       "width": "fill_container",
                       "height": 1
                     },
                     {
                       "type": "frame",
-                      "id": "nmN8R",
-                      "name": "superRow",
+                      "id": "6csPb",
+                      "name": "rowSI",
                       "width": "fill_container",
+                      "height": 55,
                       "justifyContent": "space_between",
                       "alignItems": "center",
                       "children": [
                         {
                           "type": "frame",
-                          "id": "EXqpt",
-                          "name": "superTextWrap",
+                          "id": "G8Yza",
+                          "name": "labelSI",
+                          "height": 53,
                           "layout": "vertical",
                           "gap": 4,
+                          "justifyContent": "center",
                           "children": [
                             {
                               "type": "text",
-                              "id": "xQrhB",
-                              "name": "superTitle",
+                              "id": "sSB1T",
+                              "name": "titleSI",
                               "fill": "$ink-strong",
-                              "content": "Super Tiebreak",
+                              "content": "Serving Indicator",
                               "fontFamily": "Outfit",
                               "fontSize": 26,
                               "fontWeight": "700"
                             },
                             {
                               "type": "text",
-                              "id": "ZsQVC",
-                              "name": "superNote",
-                              "fill": "$ink-mid",
-                              "content": "Final set tiebreak to 10 points",
+                              "id": "pJ86A",
+                              "name": "subtitleSI",
+                              "fill": "#5E6B7D",
+                              "content": "Show who is currently serving",
                               "fontFamily": "Inter",
                               "fontSize": 15,
                               "fontWeight": "500"
@@ -614,27 +621,31 @@
                         },
                         {
                           "type": "frame",
-                          "id": "MbgUt",
-                          "name": "superSwitch",
+                          "id": "QiDtE",
+                          "name": "switchOuter",
                           "width": 88,
                           "height": 48,
-                          "fill": "#2F7CF6",
+                          "fill": "$bg-subtle",
                           "cornerRadius": 24,
                           "stroke": {
                             "thickness": 1,
-                            "fill": "#2F7CF6"
+                            "fill": "$line-soft"
                           },
                           "layout": "none",
                           "children": [
                             {
                               "type": "ellipse",
-                              "id": "Kpj2V",
-                              "x": 46,
+                              "id": "mUI43",
+                              "x": 6,
                               "y": 6,
-                              "name": "superKnob",
+                              "name": "switchKnob",
                               "fill": "$bg-panel",
                               "width": 36,
-                              "height": 36
+                              "height": 36,
+                              "stroke": {
+                                "thickness": 1,
+                                "fill": "$line-soft"
+                              }
                             }
                           ]
                         }
@@ -642,8 +653,8 @@
                     },
                     {
                       "type": "rectangle",
-                      "id": "czE0q",
-                      "name": "extraDivider",
+                      "id": "9lH8S",
+                      "name": "timerDivider",
                       "fill": "$line-soft",
                       "width": "fill_container",
                       "height": 1
@@ -653,6 +664,7 @@
                       "id": "J9n5u",
                       "name": "sideRow",
                       "width": "fill_container",
+                      "height": 55,
                       "justifyContent": "space_between",
                       "alignItems": "center",
                       "children": [
@@ -719,86 +731,7 @@
                     },
                     {
                       "type": "rectangle",
-                      "id": "VOGOL",
-                      "name": "divSI",
-                      "fill": "#D7CFBF",
-                      "width": 420,
-                      "height": 1
-                    },
-                    {
-                      "type": "frame",
-                      "id": "6csPb",
-                      "name": "rowSI",
-                      "width": 420,
-                      "height": 55,
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "frame",
-                          "id": "G8Yza",
-                          "name": "labelSI",
-                          "width": 275,
-                          "height": 55,
-                          "layout": "vertical",
-                          "gap": 4,
-                          "justifyContent": "center",
-                          "children": [
-                            {
-                              "type": "text",
-                              "id": "sSB1T",
-                              "name": "titleSI",
-                              "fill": "#13233B",
-                              "content": "Serving Indicator",
-                              "fontFamily": "Inter",
-                              "fontSize": 26,
-                              "fontWeight": "700"
-                            },
-                            {
-                              "type": "text",
-                              "id": "pJ86A",
-                              "name": "subtitleSI",
-                              "fill": "#5E6B7D",
-                              "content": "Show who is currently serving",
-                              "fontFamily": "Inter",
-                              "fontSize": 15,
-                              "fontWeight": "500"
-                            }
-                          ]
-                        },
-                        {
-                          "type": "frame",
-                          "id": "QiDtE",
-                          "layoutPosition": "absolute",
-                          "x": 332,
-                          "y": 3,
-                          "name": "switchOuter",
-                          "width": 88,
-                          "height": 48,
-                          "fill": "#EFE7D8",
-                          "cornerRadius": 24,
-                          "stroke": {
-                            "thickness": 1,
-                            "fill": "#D7CFBF"
-                          },
-                          "layout": "none",
-                          "children": [
-                            {
-                              "type": "ellipse",
-                              "id": "mUI43",
-                              "x": 6,
-                              "y": 6,
-                              "name": "switchKnob",
-                              "fill": "#FCFAF6",
-                              "width": 36,
-                              "height": 36
-                            }
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      "type": "rectangle",
-                      "id": "9lH8S",
+                      "id": "Ilg29",
                       "name": "timerDivider",
                       "fill": "$line-soft",
                       "width": "fill_container",
@@ -806,22 +739,23 @@
                     },
                     {
                       "type": "frame",
-                      "id": "B4VsT",
+                      "id": "CtIeu",
                       "name": "timerRow",
                       "width": "fill_container",
+                      "height": 55,
                       "justifyContent": "space_between",
                       "alignItems": "center",
                       "children": [
                         {
                           "type": "frame",
-                          "id": "Anec5",
+                          "id": "UrKJu",
                           "name": "timerTextWrap",
                           "layout": "vertical",
                           "gap": 4,
                           "children": [
                             {
                               "type": "text",
-                              "id": "7JKS2",
+                              "id": "rSfiK",
                               "name": "timerTitle",
                               "fill": "$ink-strong",
                               "content": "Countdown Timer",
@@ -831,7 +765,7 @@
                             },
                             {
                               "type": "text",
-                              "id": "NkZUg",
+                              "id": "Q6W0d",
                               "name": "timerNote",
                               "fill": "$ink-mid",
                               "content": "Count down from a set match duration",
@@ -843,7 +777,7 @@
                         },
                         {
                           "type": "frame",
-                          "id": "gSmRh",
+                          "id": "OK8zO",
                           "name": "timerSwitch",
                           "width": 88,
                           "height": 48,
@@ -857,7 +791,7 @@
                           "children": [
                             {
                               "type": "ellipse",
-                              "id": "OwDxB",
+                              "id": "1so2s",
                               "x": 46,
                               "y": 6,
                               "name": "timerKnob",
@@ -871,25 +805,27 @@
                     },
                     {
                       "type": "frame",
-                      "id": "stBQZ",
+                      "id": "ILn6L",
                       "name": "durationRow",
                       "width": "fill_container",
+                      "height": 28,
                       "gap": 28,
+                      "justifyContent": "space_around",
                       "alignItems": "center",
                       "children": [
                         {
                           "type": "frame",
-                          "id": "lu0z9",
+                          "id": "jLvoO",
                           "name": "radio1h",
                           "gap": 10,
                           "alignItems": "center",
                           "children": [
                             {
                               "type": "frame",
-                              "id": "s7C78",
+                              "id": "JdOqM",
                               "name": "r1Outer",
                               "width": 26,
-                              "height": 26,
+                              "height": 28,
                               "fill": "$bg-subtle",
                               "cornerRadius": 13,
                               "stroke": {
@@ -901,7 +837,7 @@
                             },
                             {
                               "type": "text",
-                              "id": "QgHLk",
+                              "id": "MkyLw",
                               "name": "r1Label",
                               "fill": "$ink-mid",
                               "content": "1:00 h",
@@ -913,17 +849,17 @@
                         },
                         {
                           "type": "frame",
-                          "id": "nVZNG",
+                          "id": "errHR",
                           "name": "radio130h",
                           "gap": 10,
                           "alignItems": "center",
                           "children": [
                             {
                               "type": "frame",
-                              "id": "KxS2u",
+                              "id": "cDlfo",
                               "name": "r2Outer",
                               "width": 26,
-                              "height": 26,
+                              "height": 28,
                               "fill": "#E6F0FF",
                               "cornerRadius": 13,
                               "stroke": {
@@ -935,7 +871,7 @@
                               "children": [
                                 {
                                   "type": "ellipse",
-                                  "id": "PieAk",
+                                  "id": "lnFJu",
                                   "name": "r2Inner",
                                   "fill": "#2F7CF6",
                                   "width": 12,
@@ -945,9 +881,9 @@
                             },
                             {
                               "type": "text",
-                              "id": "Q5SFp",
+                              "id": "M1Z64",
                               "name": "r2Label",
-                              "fill": "#2F7CF6",
+                              "fill": "$ink-mid",
                               "content": "1:30 h",
                               "fontFamily": "Outfit",
                               "fontSize": 22,
@@ -957,17 +893,17 @@
                         },
                         {
                           "type": "frame",
-                          "id": "tZsUK",
+                          "id": "qSmcC",
                           "name": "radio2h",
                           "gap": 10,
                           "alignItems": "center",
                           "children": [
                             {
                               "type": "frame",
-                              "id": "XHP2w",
+                              "id": "f6zP0",
                               "name": "r3Outer",
                               "width": 26,
-                              "height": 26,
+                              "height": 28,
                               "fill": "$bg-subtle",
                               "cornerRadius": 13,
                               "stroke": {
@@ -979,13 +915,91 @@
                             },
                             {
                               "type": "text",
-                              "id": "yzCFu",
+                              "id": "udxnJ",
                               "name": "r3Label",
                               "fill": "$ink-mid",
                               "content": "2:00 h",
                               "fontFamily": "Outfit",
                               "fontSize": 22,
                               "fontWeight": "700"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "rectangle",
+                      "id": "Bhjoa",
+                      "name": "superDivider",
+                      "fill": "$line-soft",
+                      "width": "fill_container",
+                      "height": 1
+                    },
+                    {
+                      "type": "frame",
+                      "id": "rEZSI",
+                      "name": "superRow",
+                      "width": "fill_container",
+                      "height": 55,
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "S3yeN",
+                          "name": "superTextWrap",
+                          "layout": "vertical",
+                          "gap": 4,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "Efr8Y",
+                              "name": "superTitle",
+                              "fill": "$ink-strong",
+                              "content": "Super Tiebreak",
+                              "fontFamily": "Outfit",
+                              "fontSize": 26,
+                              "fontWeight": "700"
+                            },
+                            {
+                              "type": "text",
+                              "id": "EBYiB",
+                              "name": "superNote",
+                              "fill": "$ink-mid",
+                              "content": "Final set tiebreak to 10 points",
+                              "fontFamily": "Inter",
+                              "fontSize": 15,
+                              "fontWeight": "500"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "TyRNJ",
+                          "name": "superSwitch",
+                          "width": 88,
+                          "height": 48,
+                          "fill": "$bg-subtle",
+                          "cornerRadius": 24,
+                          "stroke": {
+                            "thickness": 1,
+                            "fill": "$line-soft"
+                          },
+                          "layout": "none",
+                          "children": [
+                            {
+                              "type": "ellipse",
+                              "id": "vrx9E",
+                              "x": 6,
+                              "y": 6,
+                              "name": "superKnob",
+                              "fill": "$bg-panel",
+                              "width": 36,
+                              "height": 36,
+                              "stroke": {
+                                "thickness": 1,
+                                "fill": "$line-soft"
+                              }
                             }
                           ]
                         }
@@ -1044,7 +1058,7 @@
       "name": "Game Screen",
       "clip": true,
       "width": 1024,
-      "height": 771,
+      "height": 768,
       "fill": [
         {
           "type": "gradient",
@@ -1092,11 +1106,8 @@
         }
       ],
       "layout": "vertical",
-      "gap": 28,
-      "padding": [
-        28,
-        32
-      ],
+      "gap": 16,
+      "padding": 16,
       "children": [
         {
           "type": "frame",
@@ -1194,7 +1205,7 @@
                   "id": "iv9Fu",
                   "name": "clockTime",
                   "fill": "$ink-strong",
-                  "content": "00:13:12",
+                  "content": "10:13:12",
                   "fontFamily": "Outfit",
                   "fontSize": 32,
                   "fontWeight": "800",
@@ -1209,224 +1220,31 @@
           "id": "bHNKX",
           "name": "scorePanel",
           "width": "fill_container",
-          "height": 505,
-          "layout": "none",
+          "height": "fill_container",
+          "gap": 16,
           "children": [
             {
               "type": "frame",
-              "id": "ilG6v",
-              "x": 0,
-              "y": 0,
-              "name": "team1Panel",
-              "width": 452,
-              "height": 418,
-              "fill": "#fcfaf6",
-              "cornerRadius": 36,
-              "stroke": {
-                "thickness": 2,
-                "fill": "#7C3AED"
-              },
-              "layout": "vertical",
-              "padding": [
-                14,
-                18,
-                16,
-                18
-              ],
-              "justifyContent": "space_between",
-              "alignItems": "center",
-              "children": [
-                {
-                  "type": "frame",
-                  "id": "ThzXR",
-                  "name": "team1Top",
-                  "layout": "vertical",
-                  "gap": 6,
-                  "alignItems": "center",
-                  "children": [
-                    {
-                      "type": "text",
-                      "id": "UHWxu",
-                      "name": "team1Tag",
-                      "fill": "#7C3AED",
-                      "content": "Alvaro y Enrique",
-                      "fontFamily": "Inter",
-                      "fontSize": 16,
-                      "fontWeight": "700",
-                      "letterSpacing": 1.8
-                    }
-                  ]
-                },
-                {
-                  "type": "frame",
-                  "id": "ZcM3m",
-                  "name": "team1ScoreStack",
-                  "layout": "vertical",
-                  "gap": 12,
-                  "alignItems": "center",
-                  "children": [
-                    {
-                      "type": "text",
-                      "id": "TeLJp",
-                      "name": "team1Score",
-                      "fill": "$ink-strong",
-                      "content": "40",
-                      "lineHeight": 0.85,
-                      "fontFamily": "Outfit",
-                      "fontSize": 344,
-                      "fontWeight": "900",
-                      "letterSpacing": -10
-                    }
-                  ]
-                },
-                {
-                  "type": "frame",
-                  "id": "yD9e1",
-                  "name": "team1Bottom",
-                  "justifyContent": "center",
-                  "alignItems": "center",
-                  "children": [
-                    {
-                      "type": "frame",
-                      "id": "Ff8KX",
-                      "x": 0,
-                      "y": 0,
-                      "name": "team1Serve",
-                      "enabled": false,
-                      "fill": "$accent-green-soft",
-                      "cornerRadius": 16,
-                      "padding": [
-                        8,
-                        14
-                      ],
-                      "children": [
-                        {
-                          "type": "text",
-                          "id": "Iyduo",
-                          "name": "team1ServeText",
-                          "fill": "$accent-green",
-                          "content": "Serving",
-                          "fontFamily": "Inter",
-                          "fontSize": 18,
-                          "fontWeight": "700"
-                        }
-                      ]
-                    },
-                    {
-                      "type": "text",
-                      "id": "btaaG",
-                      "name": "team1GameLabel",
-                      "fill": "$ink-mid",
-                      "content": "Games 4",
-                      "fontFamily": "Outfit",
-                      "fontSize": 36,
-                      "fontWeight": "700"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "frame",
-              "id": "Lwif8",
-              "x": 508,
-              "y": 0,
-              "name": "team2Panel",
-              "width": 452,
-              "height": 418,
-              "fill": "#fcfaf6",
-              "cornerRadius": 36,
-              "stroke": {
-                "thickness": 2,
-                "fill": "#B45309"
-              },
-              "layout": "vertical",
-              "padding": [
-                14,
-                18,
-                16,
-                18
-              ],
-              "justifyContent": "space_between",
-              "alignItems": "center",
-              "children": [
-                {
-                  "type": "frame",
-                  "id": "f6HBO",
-                  "name": "team2Top",
-                  "layout": "vertical",
-                  "gap": 6,
-                  "alignItems": "center",
-                  "children": [
-                    {
-                      "type": "text",
-                      "id": "keCQa",
-                      "name": "team2Tag",
-                      "fill": "#B45309",
-                      "content": "Pablo y Thiago",
-                      "fontFamily": "Inter",
-                      "fontSize": 16,
-                      "fontWeight": "700",
-                      "letterSpacing": 1.8
-                    }
-                  ]
-                },
-                {
-                  "type": "text",
-                  "id": "mWdSe",
-                  "name": "team2Score",
-                  "fill": "$ink-strong",
-                  "content": "15",
-                  "lineHeight": 0.85,
-                  "fontFamily": "Outfit",
-                  "fontSize": 344,
-                  "fontWeight": "900",
-                  "letterSpacing": -10
-                },
-                {
-                  "type": "frame",
-                  "id": "EGp8u",
-                  "name": "team2Bottom",
-                  "gap": 10,
-                  "alignItems": "center",
-                  "children": [
-                    {
-                      "type": "text",
-                      "id": "Gzf32",
-                      "name": "team2GameLabel",
-                      "fill": "$ink-mid",
-                      "content": "Games 1",
-                      "fontFamily": "Outfit",
-                      "fontSize": 36,
-                      "fontWeight": "700"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "frame",
               "id": "pGBiU",
-              "x": 393,
-              "y": 298,
+              "layoutPosition": "absolute",
+              "x": 409,
+              "y": 348,
               "name": "setsCard",
               "width": 173,
+              "height": 202,
               "fill": "$bg-panel",
               "cornerRadius": 20,
               "stroke": {
                 "thickness": 1,
                 "fill": "$line-soft"
               },
-              "layout": "vertical",
-              "gap": 8,
-              "padding": [
-                12,
-                14
-              ],
+              "layout": "none",
               "children": [
                 {
                   "type": "text",
                   "id": "FLyP0",
+                  "x": 14,
+                  "y": 12,
                   "name": "setsLabel",
                   "fill": "$ink-mid",
                   "content": "Sets",
@@ -1438,8 +1256,10 @@
                 {
                   "type": "frame",
                   "id": "7wSG1",
+                  "x": 14,
+                  "y": 33,
                   "name": "setsGrid",
-                  "width": "fill_container",
+                  "width": "fill_container(145)",
                   "layout": "vertical",
                   "gap": 6,
                   "children": [
@@ -1539,65 +1359,207 @@
             },
             {
               "type": "frame",
-              "id": "owlFX",
-              "x": 116,
-              "y": 442,
-              "name": "revertBlue",
-              "width": 220,
-              "fill": "#F9E4E4",
-              "cornerRadius": 18,
-              "stroke": {
-                "thickness": 1,
-                "fill": "#D6B4B4"
-              },
-              "padding": [
-                10,
-                16
-              ],
-              "justifyContent": "center",
+              "id": "sm6QD",
+              "name": "team1ScorePanel",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 16,
               "alignItems": "center",
               "children": [
                 {
-                  "type": "text",
-                  "id": "XLHgV",
-                  "name": "revertBlueText",
-                  "fill": "$ink-mid",
-                  "content": "Revert point",
-                  "fontFamily": "Outfit",
-                  "fontSize": 18,
-                  "fontWeight": "700"
+                  "type": "frame",
+                  "id": "ilG6v",
+                  "name": "team1Panel",
+                  "width": "fill_container",
+                  "height": 333,
+                  "fill": "#fcfaf6",
+                  "cornerRadius": 36,
+                  "stroke": {
+                    "thickness": 2,
+                    "fill": "#7C3AED"
+                  },
+                  "layout": "vertical",
+                  "padding": [
+                    14,
+                    18,
+                    16,
+                    18
+                  ],
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "ThzXR",
+                      "name": "team1Top",
+                      "layout": "vertical",
+                      "gap": 6,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "UHWxu",
+                          "name": "team1Tag",
+                          "fill": "#7C3AED",
+                          "content": "Alvaro y Enrique",
+                          "fontFamily": "Inter",
+                          "fontSize": 16,
+                          "fontWeight": "700",
+                          "letterSpacing": 1.8
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "ZcM3m",
+                      "name": "team1ScoreStack",
+                      "layout": "vertical",
+                      "gap": 12,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "TeLJp",
+                          "name": "team1Score",
+                          "fill": "$ink-strong",
+                          "content": "40",
+                          "lineHeight": 0.85,
+                          "fontFamily": "Outfit",
+                          "fontSize": 352,
+                          "fontWeight": "900",
+                          "letterSpacing": -10
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "owlFX",
+                  "name": "revertBlue",
+                  "width": 220,
+                  "fill": "#F9E4E4",
+                  "cornerRadius": 18,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "#D6B4B4"
+                  },
+                  "padding": [
+                    10,
+                    16
+                  ],
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "XLHgV",
+                      "name": "revertBlueText",
+                      "fill": "#d64a4ab3",
+                      "content": "Revert point",
+                      "fontFamily": "Outfit",
+                      "fontSize": 18,
+                      "fontWeight": "700"
+                    }
+                  ]
                 }
               ]
             },
             {
               "type": "frame",
-              "id": "veV4T",
-              "x": 624,
-              "y": 442,
-              "name": "revertOrange",
-              "width": 220,
-              "fill": "#FBE6E0",
-              "cornerRadius": 18,
-              "stroke": {
-                "thickness": 1,
-                "fill": "#E3B8AA"
-              },
-              "padding": [
-                10,
-                16
-              ],
-              "justifyContent": "center",
+              "id": "aGIcg",
+              "name": "team2ScorePadel",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 16,
               "alignItems": "center",
               "children": [
                 {
-                  "type": "text",
-                  "id": "maMxa",
-                  "name": "revertOrangeText",
-                  "fill": "$ink-mid",
-                  "content": "Revert point",
-                  "fontFamily": "Outfit",
-                  "fontSize": 18,
-                  "fontWeight": "700"
+                  "type": "frame",
+                  "id": "Lwif8",
+                  "name": "team2Panel",
+                  "width": "fill_container",
+                  "height": 333,
+                  "fill": "#fcfaf6",
+                  "cornerRadius": 36,
+                  "stroke": {
+                    "thickness": 2,
+                    "fill": "#B45309"
+                  },
+                  "layout": "vertical",
+                  "padding": [
+                    14,
+                    18,
+                    16,
+                    18
+                  ],
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "f6HBO",
+                      "name": "team2Top",
+                      "layout": "vertical",
+                      "gap": 6,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "keCQa",
+                          "name": "team2Tag",
+                          "fill": "#B45309",
+                          "content": "Pablo y Thiago",
+                          "fontFamily": "Inter",
+                          "fontSize": 16,
+                          "fontWeight": "700",
+                          "letterSpacing": 1.8
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "mWdSe",
+                      "name": "team2Score",
+                      "fill": "$ink-strong",
+                      "content": "15",
+                      "lineHeight": 0.85,
+                      "fontFamily": "Outfit",
+                      "fontSize": 352,
+                      "fontWeight": "900",
+                      "letterSpacing": -10
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "veV4T",
+                  "name": "revertOrange",
+                  "width": 220,
+                  "fill": "#FBE6E0",
+                  "cornerRadius": 18,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "#E3B8AA"
+                  },
+                  "padding": [
+                    10,
+                    16
+                  ],
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "maMxa",
+                      "name": "revertOrangeText",
+                      "fill": "#d64a4ab3",
+                      "content": "Revert point",
+                      "fontFamily": "Outfit",
+                      "fontSize": 18,
+                      "fontWeight": "700"
+                    }
+                  ]
                 }
               ]
             }
@@ -1655,7 +1617,7 @@
       "name": "Game End Screen",
       "clip": true,
       "width": 1024,
-      "height": 771,
+      "height": 768,
       "fill": [
         {
           "type": "gradient",
@@ -1703,11 +1665,8 @@
         }
       ],
       "layout": "vertical",
-      "gap": 28,
-      "padding": [
-        28,
-        32
-      ],
+      "gap": 16,
+      "padding": 16,
       "children": [
         {
           "type": "frame",
@@ -1787,12 +1746,13 @@
               "type": "frame",
               "id": "8t96m",
               "name": "endBadge",
-              "fill": "$bg-panel",
+              "fill": "$accent-green",
               "cornerRadius": 20,
               "stroke": {
-                "thickness": 1,
-                "fill": "$line-soft"
+                "thickness": 0,
+                "fill": "$accent-green"
               },
+              "gap": 8,
               "padding": [
                 10,
                 16
@@ -1801,15 +1761,23 @@
               "alignItems": "center",
               "children": [
                 {
+                  "type": "icon_font",
+                  "id": "t2DU3",
+                  "width": 18,
+                  "height": 18,
+                  "iconFontName": "share-2",
+                  "iconFontFamily": "lucide",
+                  "fill": "#FFFFFF"
+                },
+                {
                   "type": "text",
-                  "id": "Ozf4H",
-                  "name": "endBadgeText",
-                  "fill": "$ink-strong",
-                  "content": "🇺🇸 English",
+                  "id": "ok9ZH",
+                  "name": "shareText",
+                  "fill": "#FFFFFF",
+                  "content": "Share",
                   "fontFamily": "Inter",
-                  "fontSize": 15,
-                  "fontWeight": "700",
-                  "letterSpacing": 0.2
+                  "fontSize": 14,
+                  "fontWeight": "600"
                 }
               ]
             }
@@ -1820,7 +1788,7 @@
           "id": "4Wtrj",
           "name": "hero",
           "width": "fill_container",
-          "height": 505,
+          "height": "fill_container",
           "gap": 22,
           "children": [
             {
@@ -2321,6 +2289,7 @@
       "name": "Setup Screen – Timer Off",
       "clip": true,
       "width": 1024,
+      "height": 768,
       "fill": [
         {
           "type": "gradient",
@@ -2368,11 +2337,8 @@
         }
       ],
       "layout": "vertical",
-      "gap": 28,
-      "padding": [
-        28,
-        32
-      ],
+      "gap": 16,
+      "padding": 16,
       "children": [
         {
           "type": "frame",
@@ -2483,14 +2449,14 @@
           "id": "TGuVS",
           "name": "main",
           "width": "fill_container",
-          "height": 628,
+          "height": "fill_container",
           "gap": 24,
           "children": [
             {
               "type": "frame",
               "id": "M2toW",
               "name": "left",
-              "width": "fill_container",
+              "width": 435,
               "height": "fill_container",
               "layout": "vertical",
               "gap": 16,
@@ -2577,7 +2543,7 @@
                   "type": "text",
                   "id": "5C4YQ",
                   "name": "serveLabel",
-                  "opacity": 0.3,
+                  "opacity": 0.35,
                   "fill": "$ink-strong",
                   "content": "FIRST SERVER",
                   "fontFamily": "Inter",
@@ -2589,7 +2555,7 @@
                   "type": "frame",
                   "id": "dM4wo",
                   "name": "serveRow",
-                  "opacity": 0.3,
+                  "opacity": 0.35,
                   "width": "fill_container",
                   "gap": 14,
                   "children": [
@@ -2680,7 +2646,7 @@
               "id": "rXhAs",
               "name": "right",
               "width": "fill_container",
-              "height": 628,
+              "height": "fill_container",
               "layout": "vertical",
               "gap": 16,
               "children": [
@@ -2798,17 +2764,19 @@
                   "type": "frame",
                   "id": "GRfm5",
                   "name": "rulesCard",
+                  "clip": true,
                   "width": "fill_container",
-                  "height": 517,
+                  "height": "fill_container",
                   "fill": "$bg-panel",
-                  "cornerRadius": 26,
+                  "cornerRadius": 24,
                   "stroke": {
-                    "thickness": 1,
+                    "thickness": 2,
                     "fill": "$line-soft"
                   },
                   "layout": "vertical",
-                  "gap": 18,
-                  "padding": 24,
+                  "gap": 10,
+                  "padding": 16,
+                  "justifyContent": "space_between",
                   "children": [
                     {
                       "type": "frame",
@@ -2864,9 +2832,10 @@
                             {
                               "type": "ellipse",
                               "id": "o9fy8",
-                              "x": 6,
-                              "y": 6,
+                              "x": 5.9995374138015904,
+                              "y": 6.0004625980868695,
                               "name": "goldenKnob",
+                              "rotation": 0.0014724765227311126,
                               "fill": "$bg-panel",
                               "width": 36,
                               "height": 36,
@@ -2881,43 +2850,43 @@
                     },
                     {
                       "type": "rectangle",
-                      "id": "hrf9Z",
-                      "name": "ruleDivider",
-                      "fill": "$line-soft",
+                      "id": "okWWo",
+                      "name": "divTO",
+                      "fill": "#D7CFBF",
                       "width": "fill_container",
                       "height": 1
                     },
                     {
                       "type": "frame",
-                      "id": "a66Cj",
-                      "name": "superRow",
+                      "id": "5TWIk",
+                      "name": "rowTO",
                       "width": "fill_container",
                       "justifyContent": "space_between",
                       "alignItems": "center",
                       "children": [
                         {
                           "type": "frame",
-                          "id": "fzPLY",
-                          "name": "superTextWrap",
+                          "id": "L3TZT",
+                          "name": "labelTO",
                           "layout": "vertical",
                           "gap": 4,
                           "children": [
                             {
                               "type": "text",
-                              "id": "F6k0U",
-                              "name": "superTitle",
+                              "id": "TUS9L",
+                              "name": "titleTO",
                               "fill": "$ink-strong",
-                              "content": "Super Tiebreak",
+                              "content": "Serving Indicator",
                               "fontFamily": "Outfit",
                               "fontSize": 26,
                               "fontWeight": "700"
                             },
                             {
                               "type": "text",
-                              "id": "Ryw8z",
-                              "name": "superNote",
-                              "fill": "$ink-mid",
-                              "content": "Final set tiebreak to 10 points",
+                              "id": "7lsQC",
+                              "name": "subtitleTO",
+                              "fill": "#5E6B7D",
+                              "content": "Show who is currently serving",
                               "fontFamily": "Inter",
                               "fontSize": 15,
                               "fontWeight": "500"
@@ -2926,27 +2895,31 @@
                         },
                         {
                           "type": "frame",
-                          "id": "NWOSD",
-                          "name": "superSwitch",
+                          "id": "vYgq7",
+                          "name": "swOuter",
                           "width": 88,
                           "height": 48,
-                          "fill": "#2F7CF6",
+                          "fill": "$bg-subtle",
                           "cornerRadius": 24,
                           "stroke": {
                             "thickness": 1,
-                            "fill": "#2F7CF6"
+                            "fill": "$line-soft"
                           },
                           "layout": "none",
                           "children": [
                             {
                               "type": "ellipse",
-                              "id": "h5ZoR",
-                              "x": 46,
+                              "id": "4dmTO",
+                              "x": 6,
                               "y": 6,
-                              "name": "superKnob",
+                              "name": "swKnob",
                               "fill": "$bg-panel",
                               "width": 36,
-                              "height": 36
+                              "height": 36,
+                              "stroke": {
+                                "thickness": 1,
+                                "fill": "$line-soft"
+                              }
                             }
                           ]
                         }
@@ -2954,8 +2927,8 @@
                     },
                     {
                       "type": "rectangle",
-                      "id": "0dyxu",
-                      "name": "extraDivider",
+                      "id": "n7tAZ",
+                      "name": "timerDivider",
                       "fill": "$line-soft",
                       "width": "fill_container",
                       "height": 1
@@ -3031,86 +3004,7 @@
                     },
                     {
                       "type": "rectangle",
-                      "id": "okWWo",
-                      "name": "divTO",
-                      "fill": "#D7CFBF",
-                      "width": 420,
-                      "height": 1
-                    },
-                    {
-                      "type": "frame",
-                      "id": "5TWIk",
-                      "name": "rowTO",
-                      "width": 420,
-                      "height": 55,
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "frame",
-                          "id": "L3TZT",
-                          "name": "labelTO",
-                          "width": 275,
-                          "height": 55,
-                          "layout": "vertical",
-                          "gap": 4,
-                          "justifyContent": "center",
-                          "children": [
-                            {
-                              "type": "text",
-                              "id": "TUS9L",
-                              "name": "titleTO",
-                              "fill": "#13233B",
-                              "content": "Serving Indicator",
-                              "fontFamily": "Inter",
-                              "fontSize": 26,
-                              "fontWeight": "700"
-                            },
-                            {
-                              "type": "text",
-                              "id": "7lsQC",
-                              "name": "subtitleTO",
-                              "fill": "#5E6B7D",
-                              "content": "Show who is currently serving",
-                              "fontFamily": "Inter",
-                              "fontSize": 15,
-                              "fontWeight": "500"
-                            }
-                          ]
-                        },
-                        {
-                          "type": "frame",
-                          "id": "vYgq7",
-                          "layoutPosition": "absolute",
-                          "x": 332,
-                          "y": 3,
-                          "name": "swOuter",
-                          "width": 88,
-                          "height": 48,
-                          "fill": "#EFE7D8",
-                          "cornerRadius": 24,
-                          "stroke": {
-                            "thickness": 1,
-                            "fill": "#D7CFBF"
-                          },
-                          "layout": "none",
-                          "children": [
-                            {
-                              "type": "ellipse",
-                              "id": "4dmTO",
-                              "x": 6,
-                              "y": 6,
-                              "name": "swKnob",
-                              "fill": "#FCFAF6",
-                              "width": 36,
-                              "height": 36
-                            }
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      "type": "rectangle",
-                      "id": "n7tAZ",
+                      "id": "h3eYg",
                       "name": "timerDivider",
                       "fill": "$line-soft",
                       "width": "fill_container",
@@ -3118,7 +3012,7 @@
                     },
                     {
                       "type": "frame",
-                      "id": "f3f8Z",
+                      "id": "wEzY3",
                       "name": "timerRow",
                       "width": "fill_container",
                       "justifyContent": "space_between",
@@ -3126,14 +3020,14 @@
                       "children": [
                         {
                           "type": "frame",
-                          "id": "bC1fO",
+                          "id": "UV10T",
                           "name": "timerTextWrap",
                           "layout": "vertical",
                           "gap": 4,
                           "children": [
                             {
                               "type": "text",
-                              "id": "Tyhi2",
+                              "id": "rCZ6o",
                               "name": "timerTitle",
                               "fill": "$ink-strong",
                               "content": "Countdown Timer",
@@ -3143,7 +3037,7 @@
                             },
                             {
                               "type": "text",
-                              "id": "JkKCi",
+                              "id": "uSZcB",
                               "name": "timerNote",
                               "fill": "$ink-mid",
                               "content": "Count down from a set match duration",
@@ -3155,7 +3049,7 @@
                         },
                         {
                           "type": "frame",
-                          "id": "60Ih8",
+                          "id": "8j7no",
                           "name": "timerSwitch",
                           "width": 88,
                           "height": 48,
@@ -3169,13 +3063,17 @@
                           "children": [
                             {
                               "type": "ellipse",
-                              "id": "rowHF",
+                              "id": "SWPSA",
                               "x": 6,
                               "y": 6,
                               "name": "timerKnob",
                               "fill": "$bg-panel",
                               "width": 36,
-                              "height": 36
+                              "height": 36,
+                              "stroke": {
+                                "thickness": 1,
+                                "fill": "$line-soft"
+                              }
                             }
                           ]
                         }
@@ -3183,26 +3081,27 @@
                     },
                     {
                       "type": "frame",
-                      "id": "lKdUH",
+                      "id": "xPIA7",
                       "name": "durationRow",
                       "opacity": 0.35,
                       "width": "fill_container",
                       "gap": 28,
+                      "justifyContent": "space_around",
                       "alignItems": "center",
                       "children": [
                         {
                           "type": "frame",
-                          "id": "LOAPq",
+                          "id": "OaJ9Q",
                           "name": "radio1h",
                           "gap": 10,
                           "alignItems": "center",
                           "children": [
                             {
                               "type": "frame",
-                              "id": "A09OJ",
+                              "id": "zCRX5",
                               "name": "r1Outer",
                               "width": 26,
-                              "height": 26,
+                              "height": 28,
                               "fill": "$bg-subtle",
                               "cornerRadius": 13,
                               "stroke": {
@@ -3214,7 +3113,7 @@
                             },
                             {
                               "type": "text",
-                              "id": "ZSzgK",
+                              "id": "AD2tv",
                               "name": "r1Label",
                               "fill": "$ink-mid",
                               "content": "1:00 h",
@@ -3226,61 +3125,17 @@
                         },
                         {
                           "type": "frame",
-                          "id": "DAwdY",
+                          "id": "e6QWP",
                           "name": "radio130h",
                           "gap": 10,
                           "alignItems": "center",
                           "children": [
                             {
                               "type": "frame",
-                              "id": "gq7tj",
+                              "id": "LRDKN",
                               "name": "r2Outer",
                               "width": 26,
-                              "height": 26,
-                              "fill": "#E6F0FF",
-                              "cornerRadius": 13,
-                              "stroke": {
-                                "thickness": 1.5,
-                                "fill": "#2F7CF6"
-                              },
-                              "justifyContent": "center",
-                              "alignItems": "center",
-                              "children": [
-                                {
-                                  "type": "ellipse",
-                                  "id": "EMEX6",
-                                  "name": "r2Inner",
-                                  "fill": "#2F7CF6",
-                                  "width": 12,
-                                  "height": 12
-                                }
-                              ]
-                            },
-                            {
-                              "type": "text",
-                              "id": "KTY6c",
-                              "name": "r2Label",
-                              "fill": "#2F7CF6",
-                              "content": "1:30 h",
-                              "fontFamily": "Outfit",
-                              "fontSize": 22,
-                              "fontWeight": "700"
-                            }
-                          ]
-                        },
-                        {
-                          "type": "frame",
-                          "id": "49RAa",
-                          "name": "radio2h",
-                          "gap": 10,
-                          "alignItems": "center",
-                          "children": [
-                            {
-                              "type": "frame",
-                              "id": "uaYb4",
-                              "name": "r3Outer",
-                              "width": 26,
-                              "height": 26,
+                              "height": 28,
                               "fill": "$bg-subtle",
                               "cornerRadius": 13,
                               "stroke": {
@@ -3292,13 +3147,124 @@
                             },
                             {
                               "type": "text",
-                              "id": "HWND1",
+                              "id": "mb0cE",
+                              "name": "r2Label",
+                              "fill": "$ink-mid",
+                              "content": "1:30 h",
+                              "fontFamily": "Outfit",
+                              "fontSize": 22,
+                              "fontWeight": "700"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "M6uBT",
+                          "name": "radio2h",
+                          "gap": 10,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "YqByl",
+                              "name": "r3Outer",
+                              "width": 26,
+                              "height": 28,
+                              "fill": "$bg-subtle",
+                              "cornerRadius": 13,
+                              "stroke": {
+                                "thickness": 1.5,
+                                "fill": "$line-soft"
+                              },
+                              "justifyContent": "center",
+                              "alignItems": "center"
+                            },
+                            {
+                              "type": "text",
+                              "id": "JtHSO",
                               "name": "r3Label",
                               "fill": "$ink-mid",
                               "content": "2:00 h",
                               "fontFamily": "Outfit",
                               "fontSize": 22,
                               "fontWeight": "700"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "rectangle",
+                      "id": "TM9g4",
+                      "name": "superDivider",
+                      "fill": "$line-soft",
+                      "width": "fill_container",
+                      "height": 1
+                    },
+                    {
+                      "type": "frame",
+                      "id": "ynee9",
+                      "name": "superRow",
+                      "width": "fill_container",
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "8chLV",
+                          "name": "superTextWrap",
+                          "layout": "vertical",
+                          "gap": 4,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "SQw16",
+                              "name": "superTitle",
+                              "fill": "$ink-strong",
+                              "content": "Super Tiebreak",
+                              "fontFamily": "Outfit",
+                              "fontSize": 26,
+                              "fontWeight": "700"
+                            },
+                            {
+                              "type": "text",
+                              "id": "1d8RB",
+                              "name": "superNote",
+                              "fill": "$ink-mid",
+                              "content": "Final set tiebreak to 10 points",
+                              "fontFamily": "Inter",
+                              "fontSize": 15,
+                              "fontWeight": "500"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "AKgRh",
+                          "name": "superSwitch",
+                          "width": 88,
+                          "height": 48,
+                          "fill": "$bg-subtle",
+                          "cornerRadius": 24,
+                          "stroke": {
+                            "thickness": 1,
+                            "fill": "$line-soft"
+                          },
+                          "layout": "none",
+                          "children": [
+                            {
+                              "type": "ellipse",
+                              "id": "Oirqu",
+                              "x": 6,
+                              "y": 6,
+                              "name": "superKnob",
+                              "fill": "$bg-panel",
+                              "width": 36,
+                              "height": 36,
+                              "stroke": {
+                                "thickness": 1,
+                                "fill": "$line-soft"
+                              }
                             }
                           ]
                         }
@@ -3353,10 +3319,11 @@
       "type": "frame",
       "id": "MP4MO",
       "x": 0,
-      "y": 2030,
+      "y": 1999,
       "name": "Setup Screen – Serving Indicator On",
       "clip": true,
       "width": 1024,
+      "height": 768,
       "fill": [
         {
           "type": "gradient",
@@ -3404,11 +3371,8 @@
         }
       ],
       "layout": "vertical",
-      "gap": 28,
-      "padding": [
-        28,
-        32
-      ],
+      "gap": 16,
+      "padding": 16,
       "children": [
         {
           "type": "frame",
@@ -3519,14 +3483,14 @@
           "id": "sPYKx",
           "name": "main",
           "width": "fill_container",
-          "height": 628,
+          "height": "fill_container",
           "gap": 24,
           "children": [
             {
               "type": "frame",
               "id": "Xosci",
               "name": "left",
-              "width": "fill_container",
+              "width": 435,
               "height": "fill_container",
               "layout": "vertical",
               "gap": 16,
@@ -3714,7 +3678,7 @@
               "id": "le22U",
               "name": "right",
               "width": "fill_container",
-              "height": 628,
+              "height": "fill_container",
               "layout": "vertical",
               "gap": 16,
               "children": [
@@ -3832,17 +3796,19 @@
                   "type": "frame",
                   "id": "uHsBS",
                   "name": "rulesCard",
+                  "clip": true,
                   "width": "fill_container",
-                  "height": 517,
+                  "height": "fill_container",
                   "fill": "$bg-panel",
-                  "cornerRadius": 26,
+                  "cornerRadius": 24,
                   "stroke": {
-                    "thickness": 1,
+                    "thickness": 2,
                     "fill": "$line-soft"
                   },
                   "layout": "vertical",
-                  "gap": 18,
-                  "padding": 24,
+                  "gap": 10,
+                  "padding": 16,
+                  "justifyContent": "space_between",
                   "children": [
                     {
                       "type": "frame",
@@ -3915,43 +3881,44 @@
                     },
                     {
                       "type": "rectangle",
-                      "id": "TQBCs",
-                      "name": "ruleDivider",
-                      "fill": "$line-soft",
+                      "id": "yu4JF",
+                      "name": "divSI",
+                      "fill": "#D7CFBF",
                       "width": "fill_container",
                       "height": 1
                     },
                     {
                       "type": "frame",
-                      "id": "ppoFA",
-                      "name": "superRow",
+                      "id": "52XWV",
+                      "name": "rowSI",
                       "width": "fill_container",
                       "justifyContent": "space_between",
                       "alignItems": "center",
                       "children": [
                         {
                           "type": "frame",
-                          "id": "YKOZj",
-                          "name": "superTextWrap",
+                          "id": "l22qQ",
+                          "name": "labelSI",
                           "layout": "vertical",
                           "gap": 4,
+                          "justifyContent": "center",
                           "children": [
                             {
                               "type": "text",
-                              "id": "7hxDB",
-                              "name": "superTitle",
+                              "id": "uPuns",
+                              "name": "titleSI",
                               "fill": "$ink-strong",
-                              "content": "Super Tiebreak",
+                              "content": "Serving Indicator",
                               "fontFamily": "Outfit",
                               "fontSize": 26,
                               "fontWeight": "700"
                             },
                             {
                               "type": "text",
-                              "id": "Lbv41",
-                              "name": "superNote",
-                              "fill": "$ink-mid",
-                              "content": "Final set tiebreak to 10 points",
+                              "id": "OLArA",
+                              "name": "subtitleSI",
+                              "fill": "#5E6B7D",
+                              "content": "Show who is currently serving",
                               "fontFamily": "Inter",
                               "fontSize": 15,
                               "fontWeight": "500"
@@ -3960,27 +3927,31 @@
                         },
                         {
                           "type": "frame",
-                          "id": "bzI5b",
-                          "name": "superSwitch",
+                          "id": "3MDTj",
+                          "name": "switchOuter",
                           "width": 88,
                           "height": 48,
-                          "fill": "#2F7CF6",
+                          "fill": "#2f7cf6",
                           "cornerRadius": 24,
                           "stroke": {
                             "thickness": 1,
-                            "fill": "#2F7CF6"
+                            "fill": "$line-soft"
                           },
                           "layout": "none",
                           "children": [
                             {
                               "type": "ellipse",
-                              "id": "ZVuSd",
+                              "id": "zFWAt",
                               "x": 46,
                               "y": 6,
-                              "name": "superKnob",
+                              "name": "switchKnob",
                               "fill": "$bg-panel",
                               "width": 36,
-                              "height": 36
+                              "height": 36,
+                              "stroke": {
+                                "thickness": 1,
+                                "fill": "$line-soft"
+                              }
                             }
                           ]
                         }
@@ -3988,8 +3959,8 @@
                     },
                     {
                       "type": "rectangle",
-                      "id": "qFeJS",
-                      "name": "extraDivider",
+                      "id": "fVqBt",
+                      "name": "timerDivider",
                       "fill": "$line-soft",
                       "width": "fill_container",
                       "height": 1
@@ -4065,86 +4036,7 @@
                     },
                     {
                       "type": "rectangle",
-                      "id": "yu4JF",
-                      "name": "divSI",
-                      "fill": "#D7CFBF",
-                      "width": 420,
-                      "height": 1
-                    },
-                    {
-                      "type": "frame",
-                      "id": "52XWV",
-                      "name": "rowSI",
-                      "width": 420,
-                      "height": 55,
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "frame",
-                          "id": "l22qQ",
-                          "name": "labelSI",
-                          "width": 275,
-                          "height": 55,
-                          "layout": "vertical",
-                          "gap": 4,
-                          "justifyContent": "center",
-                          "children": [
-                            {
-                              "type": "text",
-                              "id": "uPuns",
-                              "name": "titleSI",
-                              "fill": "#13233B",
-                              "content": "Serving Indicator",
-                              "fontFamily": "Inter",
-                              "fontSize": 26,
-                              "fontWeight": "700"
-                            },
-                            {
-                              "type": "text",
-                              "id": "OLArA",
-                              "name": "subtitleSI",
-                              "fill": "#5E6B7D",
-                              "content": "Show who is currently serving",
-                              "fontFamily": "Inter",
-                              "fontSize": 15,
-                              "fontWeight": "500"
-                            }
-                          ]
-                        },
-                        {
-                          "type": "frame",
-                          "id": "3MDTj",
-                          "layoutPosition": "absolute",
-                          "x": 332,
-                          "y": 3,
-                          "name": "switchOuter",
-                          "width": 88,
-                          "height": 48,
-                          "fill": "#2F7CF6",
-                          "cornerRadius": 24,
-                          "stroke": {
-                            "thickness": 1,
-                            "fill": "#2F7CF6"
-                          },
-                          "layout": "none",
-                          "children": [
-                            {
-                              "type": "ellipse",
-                              "id": "zFWAt",
-                              "x": 46,
-                              "y": 6,
-                              "name": "switchKnob",
-                              "fill": "#FCFAF6",
-                              "width": 36,
-                              "height": 36
-                            }
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      "type": "rectangle",
-                      "id": "fVqBt",
+                      "id": "SitXA",
                       "name": "timerDivider",
                       "fill": "$line-soft",
                       "width": "fill_container",
@@ -4152,7 +4044,7 @@
                     },
                     {
                       "type": "frame",
-                      "id": "15R2K",
+                      "id": "QuWGr",
                       "name": "timerRow",
                       "width": "fill_container",
                       "justifyContent": "space_between",
@@ -4160,14 +4052,14 @@
                       "children": [
                         {
                           "type": "frame",
-                          "id": "H9s0b",
+                          "id": "9RLwj",
                           "name": "timerTextWrap",
                           "layout": "vertical",
                           "gap": 4,
                           "children": [
                             {
                               "type": "text",
-                              "id": "a9MvA",
+                              "id": "rnu3a",
                               "name": "timerTitle",
                               "fill": "$ink-strong",
                               "content": "Countdown Timer",
@@ -4177,7 +4069,7 @@
                             },
                             {
                               "type": "text",
-                              "id": "F3PoW",
+                              "id": "KJojr",
                               "name": "timerNote",
                               "fill": "$ink-mid",
                               "content": "Count down from a set match duration",
@@ -4189,7 +4081,7 @@
                         },
                         {
                           "type": "frame",
-                          "id": "hRut0",
+                          "id": "GO67t",
                           "name": "timerSwitch",
                           "width": 88,
                           "height": 48,
@@ -4203,7 +4095,7 @@
                           "children": [
                             {
                               "type": "ellipse",
-                              "id": "KXb8r",
+                              "id": "sdPMR",
                               "x": 46,
                               "y": 6,
                               "name": "timerKnob",
@@ -4217,25 +4109,26 @@
                     },
                     {
                       "type": "frame",
-                      "id": "dJry0",
+                      "id": "NqU2k",
                       "name": "durationRow",
                       "width": "fill_container",
                       "gap": 28,
+                      "justifyContent": "space_around",
                       "alignItems": "center",
                       "children": [
                         {
                           "type": "frame",
-                          "id": "RhbGs",
+                          "id": "NQWGn",
                           "name": "radio1h",
                           "gap": 10,
                           "alignItems": "center",
                           "children": [
                             {
                               "type": "frame",
-                              "id": "65sqY",
+                              "id": "4YBMP",
                               "name": "r1Outer",
                               "width": 26,
-                              "height": 26,
+                              "height": 28,
                               "fill": "$bg-subtle",
                               "cornerRadius": 13,
                               "stroke": {
@@ -4247,7 +4140,7 @@
                             },
                             {
                               "type": "text",
-                              "id": "cUEj6",
+                              "id": "B2gYK",
                               "name": "r1Label",
                               "fill": "$ink-mid",
                               "content": "1:00 h",
@@ -4259,17 +4152,17 @@
                         },
                         {
                           "type": "frame",
-                          "id": "QNu5e",
+                          "id": "BM5Ci",
                           "name": "radio130h",
                           "gap": 10,
                           "alignItems": "center",
                           "children": [
                             {
                               "type": "frame",
-                              "id": "u6jET",
+                              "id": "uLBgG",
                               "name": "r2Outer",
                               "width": 26,
-                              "height": 26,
+                              "height": 28,
                               "fill": "#E6F0FF",
                               "cornerRadius": 13,
                               "stroke": {
@@ -4281,7 +4174,7 @@
                               "children": [
                                 {
                                   "type": "ellipse",
-                                  "id": "8Euuf",
+                                  "id": "oeoyg",
                                   "name": "r2Inner",
                                   "fill": "#2F7CF6",
                                   "width": 12,
@@ -4291,9 +4184,9 @@
                             },
                             {
                               "type": "text",
-                              "id": "PEnyx",
+                              "id": "vGV6T",
                               "name": "r2Label",
-                              "fill": "#2F7CF6",
+                              "fill": "$ink-mid",
                               "content": "1:30 h",
                               "fontFamily": "Outfit",
                               "fontSize": 22,
@@ -4303,17 +4196,17 @@
                         },
                         {
                           "type": "frame",
-                          "id": "pJ9ST",
+                          "id": "uUD4k",
                           "name": "radio2h",
                           "gap": 10,
                           "alignItems": "center",
                           "children": [
                             {
                               "type": "frame",
-                              "id": "BzMmX",
+                              "id": "bXlAp",
                               "name": "r3Outer",
                               "width": 26,
-                              "height": 26,
+                              "height": 28,
                               "fill": "$bg-subtle",
                               "cornerRadius": 13,
                               "stroke": {
@@ -4325,13 +4218,90 @@
                             },
                             {
                               "type": "text",
-                              "id": "n8NaL",
+                              "id": "PfNLO",
                               "name": "r3Label",
                               "fill": "$ink-mid",
                               "content": "2:00 h",
                               "fontFamily": "Outfit",
                               "fontSize": 22,
                               "fontWeight": "700"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "rectangle",
+                      "id": "efimL",
+                      "name": "superDivider",
+                      "fill": "$line-soft",
+                      "width": "fill_container",
+                      "height": 1
+                    },
+                    {
+                      "type": "frame",
+                      "id": "3Ux0w",
+                      "name": "superRow",
+                      "width": "fill_container",
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "fqW88",
+                          "name": "superTextWrap",
+                          "layout": "vertical",
+                          "gap": 4,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "w11E2",
+                              "name": "superTitle",
+                              "fill": "$ink-strong",
+                              "content": "Super Tiebreak",
+                              "fontFamily": "Outfit",
+                              "fontSize": 26,
+                              "fontWeight": "700"
+                            },
+                            {
+                              "type": "text",
+                              "id": "2PhCn",
+                              "name": "superNote",
+                              "fill": "$ink-mid",
+                              "content": "Final set tiebreak to 10 points",
+                              "fontFamily": "Inter",
+                              "fontSize": 15,
+                              "fontWeight": "500"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "jbkTt",
+                          "name": "superSwitch",
+                          "width": 88,
+                          "height": 48,
+                          "fill": "$bg-subtle",
+                          "cornerRadius": 24,
+                          "stroke": {
+                            "thickness": 1,
+                            "fill": "$line-soft"
+                          },
+                          "layout": "none",
+                          "children": [
+                            {
+                              "type": "ellipse",
+                              "id": "HXR3O",
+                              "x": 6,
+                              "y": 6,
+                              "name": "superKnob",
+                              "fill": "$bg-panel",
+                              "width": 36,
+                              "height": 36,
+                              "stroke": {
+                                "thickness": 1,
+                                "fill": "$line-soft"
+                              }
                             }
                           ]
                         }
@@ -4463,6 +4433,10 @@
     "items.secondary-bg": {
       "type": "color",
       "value": "#FEF3C7"
+    },
+    "danger": {
+      "type": "color",
+      "value": "#d64a4a"
     }
   }
 }

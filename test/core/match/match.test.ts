@@ -2,6 +2,8 @@ import { describe, expect, test } from 'vitest'
 
 import {
   createMatchSetup,
+  countdownTimerDurations,
+  defaultCountdownTimerDuration,
   defaultMatchFormat,
   gameModes,
   matchFormats,
@@ -15,6 +17,9 @@ describe('match domain public exports', () => {
       gameMode: gameModes[0],
       initialServer: 'team-1',
       decidingSetSuperTiebreak: false,
+      servingIndicatorEnabled: true,
+      countdownTimerEnabled: false,
+      countdownTimerDuration: defaultCountdownTimerDuration,
       sideSwitchPrompts: false,
       sides: [
         {
@@ -29,6 +34,8 @@ describe('match domain public exports', () => {
     })
 
     expect(matchFormats).toEqual(['best-of-1', 'best-of-3', 'best-of-5'])
+    expect(countdownTimerDurations).toEqual([60, 90, 120])
+    expect(defaultCountdownTimerDuration).toBe(90)
     expect(defaultMatchFormat).toBe('best-of-3')
     expect(projectMatch(setup, []).derived.status).toBe('in-progress')
   })

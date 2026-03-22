@@ -34,12 +34,19 @@ test.describe('Match End Screen - Continue Flow', () => {
     await sideSwitchToggle.click()
     await expect(sideSwitchToggle).toHaveAttribute('aria-checked', 'false')
 
+    const servingIndicatorToggle = page.getByRole('switch', { name: /serving indicator/i })
+    await expect(servingIndicatorToggle).toHaveAttribute('aria-checked', 'true')
+    await servingIndicatorToggle.click()
+    await expect(servingIndicatorToggle).toHaveAttribute('aria-checked', 'false')
+
     // Start the match
     const startButton = page.getByRole('button', { name: /start match/i })
     await startButton.click()
 
     // Wait for navigation to the active match route
     await expect(page).toHaveURL(/\/match\//)
+    await expect(page.getByTestId('serve-indicator-team-1')).toHaveCount(0)
+    await expect(page.getByTestId('serve-indicator-team-2')).toHaveCount(0)
 
     // ── Step 2: Play Set 1 — Team A wins 6-0 ────────────────────────────
     const teamAPanel = page.getByTestId('team-panel-team-1')
@@ -93,6 +100,7 @@ test.describe('Match End Screen - Continue Flow', () => {
     // Verify the timer is visible and has a value
     const timeChip = page.getByTestId('time-chip')
     await expect(timeChip).toBeVisible()
+    await expect(timeChip).toHaveText(/^\d{2}:\d{2}:\d{2}$/)
 
     // Verify the score buttons are enabled (match is playable)
     await expect(page.getByRole('button', { name: /score point for team a/i })).toBeEnabled()

@@ -1,8 +1,15 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useMemo } from 'react'
+import type { KeyboardEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from '@tanstack/react-router'
 
-import { createMatchSetup, matchFormats, type MatchFormat } from '@/core/match'
+import {
+  countdownTimerDurations,
+  createMatchSetup,
+  matchFormats,
+  type CountdownTimerDuration,
+  type MatchFormat
+} from '@/core/match'
 import { saveCurrentMatch } from '@/lib/current-match'
 import { cn } from '@/lib/utils/cn'
 import { getViewTransitionNavigationOptions } from '@/lib/utils/view-transitions'
@@ -16,6 +23,7 @@ import { SectionLabel } from '@/components/ui/SectionLabel'
 import { TextInput } from '@/components/ui/TextInput'
 import { Toggle } from '@/components/ui/Toggle'
 import { TopBar } from '@/components/ui/TopBar'
+import { LocaleSelector } from '@/components/ui/LocaleSelector'
 
 import { useSetupForm } from './useSetupForm'
 import styles from './SetupScreen.module.css'
@@ -34,6 +42,12 @@ const formatKeys: Record<MatchFormat, string> = {
   'best-of-5': 'bestOf5'
 }
 
+const countdownDurationKeys: Record<CountdownTimerDuration, string> = {
+  60: 'setup.rules.countdownDuration.oneHour',
+  90: 'setup.rules.countdownDuration.ninetyMinutes',
+  120: 'setup.rules.countdownDuration.twoHours'
+}
+
 export function SetupScreen() {
   const { t } = useTranslation()
   const navigate = useNavigate()
@@ -49,6 +63,9 @@ export function SetupScreen() {
     updateInitialServer,
     updateDecidingSetSuperTiebreak,
     updateSideSwitchPrompts,
+    updateServingIndicatorEnabled,
+    updateCountdownTimerEnabled,
+    updateCountdownTimerDuration,
     isGoldenPointEnabled,
     showSuperTiebreakOption
   } = useSetupForm()
@@ -71,6 +88,9 @@ export function SetupScreen() {
         gameMode: formData.gameMode,
         initialServer: formData.initialServer,
         decidingSetSuperTiebreak: formData.decidingSetSuperTiebreak,
+        servingIndicatorEnabled: formData.servingIndicatorEnabled,
+        countdownTimerEnabled: formData.countdownTimerEnabled,
+        countdownTimerDuration: formData.countdownTimerDuration,
         sideSwitchPrompts: formData.sideSwitchPrompts,
         sides: [
           { id: 'team-1' as const, playerNames: [formData.team1Name] },
@@ -138,6 +158,44 @@ export function SetupScreen() {
     updateInitialServer('team-2')
   }, [updateInitialServer])
 
+  const createCountdownDurationSelectHandler = useCallback(
+    (duration: CountdownTimerDuration) => () => {
+      updateCountdownTimerDuration(duration)
+    },
+    [updateCountdownTimerDuration]
+  )
+
+  const handleCountdownDurationKeyDown = useCallback(
+    (event: KeyboardEvent<HTMLDivElement>) => {
+      if (!formData.countdownTimerEnabled) {
+        return
+      }
+
+      if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') {
+        return
+      }
+
+      event.preventDefault()
+
+      const currentIndex = countdownTimerDurations.indexOf(formData.countdownTimerDuration)
+      const nextIndex =
+        event.key === 'ArrowRight'
+          ? (currentIndex + 1) % countdownTimerDurations.length
+          : (currentIndex - 1 + countdownTimerDurations.length) % countdownTimerDurations.length
+      const nextDuration = countdownTimerDurations[nextIndex]
+
+      if (typeof nextDuration === 'undefined') {
+        return
+      }
+
+      updateCountdownTimerDuration(nextDuration)
+      event.currentTarget
+        .querySelector<HTMLButtonElement>(`[data-duration="${nextDuration}"]`)
+        ?.focus()
+    },
+    [formData.countdownTimerDuration, formData.countdownTimerEnabled, updateCountdownTimerDuration]
+  )
+
   // Handler factory for format selection (returns stable handler per format)
   const createFormatClickHandler = useCallback(
     (format: MatchFormat) => () => {
@@ -147,28 +205,35 @@ export function SetupScreen() {
   )
 
   // Header content
-  const headerContent = (
-    <TopBar
-      iconSrc="/icon.png"
-      iconAlt=""
-      title={t('app.title')}
-      subtitle={t('setup.header.subtitle')}
-      showLocaleSelector
-    />
+  const headerContent = useMemo(
+    () => (
+      <TopBar
+        iconSrc="/icon.png"
+        iconAlt=""
+        title={t('app.title')}
+        subtitle={t('setup.header.subtitle')}
+      >
+        <LocaleSelector />
+      </TopBar>
+    ),
+    [t]
   )
 
   // Footer content
-  const footerContent = (
-    <Button
-      className={styles.startButton}
-      variant="solid"
-      size="lg"
-      accent="success"
-      onClick={handleStartMatch}
-      disabled={isStarting || hasErrors}
-    >
-      {t('setup.startButton')}
-    </Button>
+  const footerContent = useMemo(
+    () => (
+      <Button
+        className={styles.startButton}
+        variant="solid"
+        size="lg"
+        accent="success"
+        onClick={handleStartMatch}
+        disabled={isStarting || hasErrors}
+      >
+        {t('setup.startButton')}
+      </Button>
+    ),
+    [handleStartMatch, isStarting, hasErrors, t]
   )
 
   return (
@@ -203,46 +268,57 @@ export function SetupScreen() {
           </Card>
 
           {/* First Server */}
-          <SectionLabel>{t('setup.firstServer.label')}</SectionLabel>
-          <div className={styles.serverRow}>
-            <Chip
-              className={cn(styles.serverChip, styles.team1)}
-              pressed={formData.initialServer === 'team-1'}
-              onPressedChange={handleTeam1ServerSelect}
-            >
-              <>
-                <span className={cn(styles.dot, styles.team1)} aria-hidden="true" />
-                <span
-                  className={cn(
-                    styles.serverChipText,
-                    formData.initialServer === 'team-1'
-                      ? cn(styles.serverChipTextSelected, styles.team1)
-                      : styles.serverChipTextUnselected
-                  )}
-                >
-                  {t('setup.firstServer.team1')}
-                </span>
-              </>
-            </Chip>
-            <Chip
-              className={cn(styles.serverChip, styles.team2)}
-              pressed={formData.initialServer === 'team-2'}
-              onPressedChange={handleTeam2ServerSelect}
-            >
-              <>
-                <span className={cn(styles.dot, styles.team2)} aria-hidden="true" />
-                <span
-                  className={cn(
-                    styles.serverChipText,
-                    formData.initialServer === 'team-2'
-                      ? cn(styles.serverChipTextSelected, styles.team2)
-                      : styles.serverChipTextUnselected
-                  )}
-                >
-                  {t('setup.firstServer.team2')}
-                </span>
-              </>
-            </Chip>
+          <div
+            className={cn(
+              styles.firstServerSection,
+              !formData.servingIndicatorEnabled && styles.firstServerSectionDisabled
+            )}
+            data-testid="first-server-section"
+            aria-disabled={!formData.servingIndicatorEnabled || undefined}
+          >
+            <SectionLabel>{t('setup.firstServer.label')}</SectionLabel>
+            <div className={styles.serverRow}>
+              <Chip
+                className={cn(styles.serverChip, styles.team1)}
+                pressed={formData.initialServer === 'team-1'}
+                onPressedChange={handleTeam1ServerSelect}
+                disabled={!formData.servingIndicatorEnabled}
+              >
+                <>
+                  <span className={cn(styles.dot, styles.team1)} aria-hidden="true" />
+                  <span
+                    className={cn(
+                      styles.serverChipText,
+                      formData.initialServer === 'team-1'
+                        ? cn(styles.serverChipTextSelected, styles.team1)
+                        : styles.serverChipTextUnselected
+                    )}
+                  >
+                    {t('setup.firstServer.team1')}
+                  </span>
+                </>
+              </Chip>
+              <Chip
+                className={cn(styles.serverChip, styles.team2)}
+                pressed={formData.initialServer === 'team-2'}
+                onPressedChange={handleTeam2ServerSelect}
+                disabled={!formData.servingIndicatorEnabled}
+              >
+                <>
+                  <span className={cn(styles.dot, styles.team2)} aria-hidden="true" />
+                  <span
+                    className={cn(
+                      styles.serverChipText,
+                      formData.initialServer === 'team-2'
+                        ? cn(styles.serverChipTextSelected, styles.team2)
+                        : styles.serverChipTextUnselected
+                    )}
+                  >
+                    {t('setup.firstServer.team2')}
+                  </span>
+                </>
+              </Chip>
+            </div>
           </div>
         </div>
 
@@ -283,19 +359,6 @@ export function SetupScreen() {
 
             <Divider />
 
-            {/* Super Tiebreak - only for best-of-3 and best-of-5 */}
-            {showSuperTiebreakOption && (
-              <>
-                <Toggle
-                  checked={formData.decidingSetSuperTiebreak}
-                  onChange={updateDecidingSetSuperTiebreak}
-                  label={t('setup.rules.superTiebreak')}
-                  hint={t('setup.rules.superTiebreakHint')}
-                />
-                <Divider />
-              </>
-            )}
-
             {/* Side Switch Prompts */}
             <Toggle
               checked={formData.sideSwitchPrompts}
@@ -303,6 +366,92 @@ export function SetupScreen() {
               label={t('setup.rules.sideSwitch')}
               hint={t('setup.rules.sideSwitchHint')}
             />
+
+            <Divider />
+
+            <Toggle
+              checked={formData.servingIndicatorEnabled}
+              onChange={updateServingIndicatorEnabled}
+              label={t('setup.rules.servingIndicator')}
+              hint={t('setup.rules.servingIndicatorHint')}
+            />
+
+            <Divider />
+
+            <div
+              className={styles.countdownSection}
+              role="group"
+              aria-label={t('setup.rules.countdownTimer')}
+            >
+              <Toggle
+                checked={formData.countdownTimerEnabled}
+                onChange={updateCountdownTimerEnabled}
+                label={t('setup.rules.countdownTimer')}
+                hint={t('setup.rules.countdownTimerHint')}
+              />
+
+              <div
+                className={cn(
+                  styles.countdownDurationRow,
+                  !formData.countdownTimerEnabled && styles.countdownDurationRowDisabled
+                )}
+                role="radiogroup"
+                aria-label={t('setup.rules.countdownDuration.label')}
+                data-testid="countdown-duration-row"
+                onKeyDown={handleCountdownDurationKeyDown}
+              >
+                {countdownTimerDurations.map((duration) => {
+                  const isSelected = formData.countdownTimerDuration === duration
+
+                  return (
+                    <button
+                      key={duration}
+                      type="button"
+                      role="radio"
+                      aria-checked={isSelected}
+                      className={styles.countdownDurationOption}
+                      onClick={createCountdownDurationSelectHandler(duration)}
+                      disabled={!formData.countdownTimerEnabled}
+                      tabIndex={isSelected ? 0 : -1}
+                      data-duration={duration}
+                    >
+                      <span
+                        className={cn(
+                          styles.countdownDurationRadio,
+                          isSelected && styles.countdownDurationRadioSelected
+                        )}
+                        aria-hidden="true"
+                      >
+                        <span className={styles.countdownDurationRadioDot} />
+                      </span>
+                      <span
+                        className={cn(
+                          styles.countdownDurationLabel,
+                          isSelected
+                            ? styles.countdownDurationLabelSelected
+                            : styles.countdownDurationLabelUnselected
+                        )}
+                      >
+                        {t(countdownDurationKeys[duration])}
+                      </span>
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+
+            {/* Super Tiebreak - only for best-of-3 and best-of-5 */}
+            {showSuperTiebreakOption && (
+              <>
+                <Divider />
+                <Toggle
+                  checked={formData.decidingSetSuperTiebreak}
+                  onChange={updateDecidingSetSuperTiebreak}
+                  label={t('setup.rules.superTiebreak')}
+                  hint={t('setup.rules.superTiebreakHint')}
+                />
+              </>
+            )}
           </Card>
         </div>
       </div>

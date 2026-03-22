@@ -114,6 +114,7 @@ describe('MatchEndScreen', () => {
       .toBeInTheDocument()
     await expect.element(screen.getByTestId('new-match-button')).toBeInTheDocument()
     await expect.element(screen.getByTestId('continue-match-button')).toBeInTheDocument()
+    expect(screen.container.querySelector('[aria-haspopup="true"]')).toBeNull()
   })
 
   test('starts a new match by clearing persistence and navigating home', async () => {

@@ -1,10 +1,12 @@
 import {
   bestOfOneDecidingBehaviors,
+  countdownTimerDurations,
   defaultBestOfOneDecidingBehavior,
   gameModes,
   matchFormats,
   matchTeamIds,
   type BestOfOneDecidingBehavior,
+  type CountdownTimerDuration,
   type MatchFormat,
   type MatchGameMode,
   type MatchSetMode,
@@ -80,6 +82,12 @@ function isPlayerNames(value: unknown): value is string[] {
 function isBestOfOneDecidingBehavior(value: unknown): value is BestOfOneDecidingBehavior {
   return (
     typeof value === 'string' && bestOfOneDecidingBehaviors.some((candidate) => candidate === value)
+  )
+}
+
+function isCountdownTimerDuration(value: unknown): value is CountdownTimerDuration {
+  return (
+    typeof value === 'number' && countdownTimerDurations.some((candidate) => candidate === value)
   )
 }
 
@@ -216,6 +224,9 @@ export function validateMatchSetup(input: unknown): MatchSetupValidationResult {
   const gameModeValue = input.gameMode
   const initialServerValue = input.initialServer
   const decidingSetSuperTiebreakValue = input.decidingSetSuperTiebreak
+  const servingIndicatorEnabledValue = input.servingIndicatorEnabled
+  const countdownTimerEnabledValue = input.countdownTimerEnabled
+  const countdownTimerDurationValue = input.countdownTimerDuration
   const bestOfOneDecidingBehaviorValue = input.bestOfOneDecidingBehavior
   const sideSwitchPromptsValue = input.sideSwitchPrompts
   const sidesValue = input.sides
@@ -224,6 +235,9 @@ export function validateMatchSetup(input: unknown): MatchSetupValidationResult {
   let gameMode: MatchGameMode | null = null
   let initialServer: MatchTeamId | null = null
   let decidingSetSuperTiebreak: boolean | null = null
+  let servingIndicatorEnabled: boolean | null = null
+  let countdownTimerEnabled: boolean | null = null
+  let countdownTimerDuration: CountdownTimerDuration | null = null
   let sideSwitchPrompts: boolean | null = null
   let bestOfOneDecidingBehavior: BestOfOneDecidingBehavior | undefined
 
@@ -254,6 +268,33 @@ export function validateMatchSetup(input: unknown): MatchSetupValidationResult {
     sideSwitchPrompts = sideSwitchPromptsValue
   } else {
     issues.push(createIssue('sideSwitchPrompts', 'Side-switch prompts must be a boolean value.'))
+  }
+
+  if (typeof countdownTimerEnabledValue === 'boolean') {
+    countdownTimerEnabled = countdownTimerEnabledValue
+  } else {
+    issues.push(
+      createIssue('countdownTimerEnabled', 'Countdown timer enabled must be a boolean value.')
+    )
+  }
+
+  if (typeof servingIndicatorEnabledValue === 'boolean') {
+    servingIndicatorEnabled = servingIndicatorEnabledValue
+  } else {
+    issues.push(
+      createIssue('servingIndicatorEnabled', 'Serving indicator enabled must be a boolean value.')
+    )
+  }
+
+  if (isCountdownTimerDuration(countdownTimerDurationValue)) {
+    countdownTimerDuration = countdownTimerDurationValue
+  } else {
+    issues.push(
+      createIssue(
+        'countdownTimerDuration',
+        `Unsupported countdown timer duration: ${describeValue(countdownTimerDurationValue)}`
+      )
+    )
   }
 
   if (typeof decidingSetSuperTiebreakValue === 'boolean') {
@@ -316,6 +357,9 @@ export function validateMatchSetup(input: unknown): MatchSetupValidationResult {
     gameMode === null ||
     initialServer === null ||
     decidingSetSuperTiebreak === null ||
+    servingIndicatorEnabled === null ||
+    countdownTimerEnabled === null ||
+    countdownTimerDuration === null ||
     sideSwitchPrompts === null ||
     normalizedSides === null
   ) {
@@ -346,6 +390,9 @@ export function validateMatchSetup(input: unknown): MatchSetupValidationResult {
       gameMode,
       initialServer,
       decidingSetSuperTiebreak,
+      servingIndicatorEnabled,
+      countdownTimerEnabled,
+      countdownTimerDuration,
       bestOfOneDecidingBehavior: normalizedBestOfOneDecidingBehavior,
       sideSwitchPrompts,
       sides: normalizedSides,

@@ -154,14 +154,25 @@
       "goldenPointHint": "Sem vantagem no deuce",
       "superTiebreak": "Super Tiebreak",
       "superTiebreakHint": "Tiebreak no set final até 10 pontos",
-      "sideSwitch": "Lembretes de Troca de Lado",
-      "sideSwitchHint": "Lembrar jogadores de trocar de lado"
+      "sideSwitch": "Avisos de Troca de Lado",
+      "sideSwitchHint": "Lembrar jogadores de trocar de lado",
+      "servingIndicator": "Indicador de saque",
+      "servingIndicatorHint": "Mostra quem está sacando no momento",
+      "countdownTimer": "Cronômetro regressivo",
+      "countdownTimerHint": "Faz a contagem regressiva de tempo fixa da partida",
+      "countdownDuration": {
+        "label": "Duração da partida",
+        "oneHour": "1:00 h",
+        "ninetyMinutes": "1:30 h",
+        "twoHours": "2:00 h"
+      }
     },
     "startButton": "Iniciar Partida",
     "validation": {
       "teamNamesRequired": "Ambos os nomes dos times são obrigatórios",
       "selectFormat": "Por favor, selecione um formato de partida",
-      "selectServer": "Por favor, selecione o primeiro sacador"
+      "selectServer": "Por favor, selecione o primeiro sacador",
+      "invalidCountdownDuration": "Por favor, selecione uma duração válida para o cronômetro"
     }
   },
   "match": {
@@ -190,7 +201,8 @@
       "currentShort": "Atual"
     },
     "timer": {
-      "label": "Tempo de partida: {{time}}"
+      "label": "Hora atual: {{time}}",
+      "countdownLabel": "Tempo restante da partida: {{time}}"
     },
     "end": {
       "header": {

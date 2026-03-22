@@ -42,6 +42,9 @@ describe('useSetupForm', () => {
     expect(capturedState!.formData.gameMode).toBe('advantage')
     expect(capturedState!.formData.initialServer).toBe('team-1')
     expect(capturedState!.formData.decidingSetSuperTiebreak).toBe(false)
+    expect(capturedState!.formData.servingIndicatorEnabled).toBe(true)
+    expect(capturedState!.formData.countdownTimerEnabled).toBe(false)
+    expect(capturedState!.formData.countdownTimerDuration).toBe(90)
     expect(capturedState!.formData.sideSwitchPrompts).toBe(true)
   })
 
@@ -185,6 +188,54 @@ function SetupFormController({
         }}
       >
         Side Switch ON
+      </button>
+      <button
+        data-testid="update-serving-indicator-enabled"
+        onClick={() => {
+          formState.updateServingIndicatorEnabled(true)
+        }}
+      >
+        Serving Indicator ON
+      </button>
+      <button
+        data-testid="update-serving-indicator-disabled"
+        onClick={() => {
+          formState.updateServingIndicatorEnabled(false)
+        }}
+      >
+        Serving Indicator OFF
+      </button>
+      <button
+        data-testid="update-countdown-enabled"
+        onClick={() => {
+          formState.updateCountdownTimerEnabled(true)
+        }}
+      >
+        Countdown ON
+      </button>
+      <button
+        data-testid="update-countdown-disabled"
+        onClick={() => {
+          formState.updateCountdownTimerEnabled(false)
+        }}
+      >
+        Countdown OFF
+      </button>
+      <button
+        data-testid="update-countdown-duration-60"
+        onClick={() => {
+          formState.updateCountdownTimerDuration(60)
+        }}
+      >
+        Countdown 60
+      </button>
+      <button
+        data-testid="update-countdown-duration-120"
+        onClick={() => {
+          formState.updateCountdownTimerDuration(120)
+        }}
+      >
+        Countdown 120
       </button>
       <button
         data-testid="validate"
@@ -362,6 +413,51 @@ describe('useSetupForm interactions', () => {
     await screen.getByTestId('get-state').click()
 
     expect(formState!.errors).toEqual({})
+  })
+
+  test('updateServingIndicatorEnabled updates value to false', async () => {
+    const screen = await render(
+      <SetupFormController
+        onGetState={(s) => {
+          formState = s
+        }}
+      />
+    )
+
+    await screen.getByTestId('update-serving-indicator-disabled').click()
+    await screen.getByTestId('get-state').click()
+
+    expect(formState!.formData.servingIndicatorEnabled).toBe(false)
+  })
+
+  test('updateCountdownTimerEnabled updates value to true', async () => {
+    const screen = await render(
+      <SetupFormController
+        onGetState={(s) => {
+          formState = s
+        }}
+      />
+    )
+
+    await screen.getByTestId('update-countdown-enabled').click()
+    await screen.getByTestId('get-state').click()
+
+    expect(formState!.formData.countdownTimerEnabled).toBe(true)
+  })
+
+  test('updateCountdownTimerDuration updates value', async () => {
+    const screen = await render(
+      <SetupFormController
+        onGetState={(s) => {
+          formState = s
+        }}
+      />
+    )
+
+    await screen.getByTestId('update-countdown-duration-120').click()
+    await screen.getByTestId('get-state').click()
+
+    expect(formState!.formData.countdownTimerDuration).toBe(120)
   })
 
   test('validate returns false when team1Name is empty', async () => {

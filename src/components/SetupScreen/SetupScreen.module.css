@@ -18,8 +18,10 @@
 /* Right column (options section) */
 .rightColumn {
   display: flex;
+  flex: 1;
   flex-direction: column;
   gap: var(--base-space-16);
+  min-height: 0;
 }
 
 /* Team cards */
@@ -39,6 +41,20 @@
 .serverRow {
   display: flex;
   gap: var(--base-space-14);
+}
+
+.firstServerSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--base-space-16);
+}
+
+.firstServerSectionDisabled {
+  opacity: 0.35;
+}
+
+.firstServerSectionDisabled button:disabled {
+  opacity: 1;
 }
 
 .serverChipText {
@@ -95,8 +111,90 @@
 .rulesCard {
   padding: var(--component-card-rules-padding);
   display: flex;
+  flex: 1;
   flex-direction: column;
-  gap: var(--component-card-rules-gap);
+  justify-content: space-between;
+  min-height: 0;
+}
+
+.countdownSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--base-space-16);
+}
+
+.countdownDurationRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  flex-wrap: wrap;
+}
+
+.countdownDurationRowDisabled {
+  opacity: 0.35;
+}
+
+.countdownDurationOption {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--base-space-10);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+}
+
+.countdownDurationOption:not(:disabled) {
+  cursor: pointer;
+}
+
+.countdownDurationOption:focus-visible {
+  outline: none;
+  border-radius: var(--base-radius-54);
+}
+
+.countdownDurationRadio {
+  width: var(--base-space-28);
+  height: var(--base-space-28);
+  border-radius: 50%;
+  border: 1.5px solid var(--semantic-color-border-subtle);
+  background-color: var(--semantic-color-background-surface-muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.countdownDurationRadioSelected {
+  border-color: var(--semantic-color-action-accent-primary);
+  background-color: var(--semantic-color-background-accent-primary-subtle);
+}
+
+.countdownDurationRadioDot {
+  width: var(--base-space-12);
+  height: var(--base-space-12);
+  border-radius: 50%;
+  background-color: var(--semantic-color-action-accent-primary);
+  opacity: 0;
+}
+
+.countdownDurationRadioSelected .countdownDurationRadioDot {
+  opacity: 1;
+}
+
+.countdownDurationLabel {
+  font-family: var(--semantic-typography-family-display);
+  font-size: var(--base-font-size-20);
+  font-weight: var(--semantic-typography-weight-strong);
+}
+
+.countdownDurationLabelSelected {
+  color: var(--semantic-color-content-accent-primary);
+}
+
+.countdownDurationLabelUnselected {
+  color: var(--semantic-color-content-secondary);
 }
 
 .startButton {
@@ -122,11 +220,14 @@
 @media (width >= 48rem) {
   .mainContent {
     flex-direction: row;
-    align-items: flex-start;
+    align-items: stretch;
   }
 
-  .leftColumn,
+  .leftColumn {
+    flex: 0.9;
+  }
+
   .rightColumn {
-    flex: 1;
+    flex: 1.1;
   }
 }

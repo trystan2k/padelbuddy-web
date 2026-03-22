@@ -2,9 +2,13 @@ import { useState, useCallback, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
+  defaultCountdownTimerDuration,
+  defaultCountdownTimerEnabled,
   defaultMatchFormat,
   defaultGameMode,
   defaultInitialServer,
+  defaultServingIndicatorEnabled,
+  type CountdownTimerDuration,
   type MatchFormat,
   type MatchGameMode,
   type MatchTeamId
@@ -28,6 +32,9 @@ export function useSetupForm() {
     gameMode: defaultGameMode,
     initialServer: defaultInitialServer,
     decidingSetSuperTiebreak: false,
+    servingIndicatorEnabled: defaultServingIndicatorEnabled,
+    countdownTimerEnabled: defaultCountdownTimerEnabled,
+    countdownTimerDuration: defaultCountdownTimerDuration,
     sideSwitchPrompts: true
   })
 
@@ -107,6 +114,27 @@ export function useSetupForm() {
     [updateField]
   )
 
+  const updateCountdownTimerEnabled = useCallback(
+    (enabled: boolean) => {
+      updateField('countdownTimerEnabled', enabled)
+    },
+    [updateField]
+  )
+
+  const updateServingIndicatorEnabled = useCallback(
+    (enabled: boolean) => {
+      updateField('servingIndicatorEnabled', enabled)
+    },
+    [updateField]
+  )
+
+  const updateCountdownTimerDuration = useCallback(
+    (duration: CountdownTimerDuration) => {
+      updateField('countdownTimerDuration', duration)
+    },
+    [updateField]
+  )
+
   const validate = useCallback(() => {
     const result = validateSetupForm(formData)
     setErrors(result.errors)
@@ -129,6 +157,9 @@ export function useSetupForm() {
     updateInitialServer,
     updateDecidingSetSuperTiebreak,
     updateSideSwitchPrompts,
+    updateServingIndicatorEnabled,
+    updateCountdownTimerEnabled,
+    updateCountdownTimerDuration,
     isGoldenPointEnabled,
     showSuperTiebreakOption
   }

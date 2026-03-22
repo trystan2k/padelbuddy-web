@@ -3,12 +3,14 @@ export const gameModes = ['advantage', 'golden-point'] as const
 export const matchTeamIds = ['team-1', 'team-2'] as const
 export const bestOfOneDecidingBehaviors = ['full-set', 'super-tiebreak'] as const
 export const setModes = ['standard', 'super-tiebreak'] as const
+export const countdownTimerDurations = [60, 90, 120] as const
 
 export type MatchFormat = (typeof matchFormats)[number]
 export type MatchGameMode = (typeof gameModes)[number]
 export type MatchTeamId = (typeof matchTeamIds)[number]
 export type BestOfOneDecidingBehavior = (typeof bestOfOneDecidingBehaviors)[number]
 export type MatchSetMode = (typeof setModes)[number]
+export type CountdownTimerDuration = (typeof countdownTimerDurations)[number]
 
 export type TeamScore<T> = Record<MatchTeamId, T>
 
@@ -22,6 +24,9 @@ export interface MatchSetupInput {
   gameMode: MatchGameMode
   initialServer: MatchTeamId
   decidingSetSuperTiebreak: boolean
+  servingIndicatorEnabled: boolean
+  countdownTimerEnabled: boolean
+  countdownTimerDuration: CountdownTimerDuration
   bestOfOneDecidingBehavior?: BestOfOneDecidingBehavior
   sideSwitchPrompts: boolean
   sides: [MatchSide, MatchSide] | MatchSide[]
@@ -32,6 +37,9 @@ export interface MatchSetup {
   gameMode: MatchGameMode
   initialServer: MatchTeamId
   decidingSetSuperTiebreak: boolean
+  servingIndicatorEnabled: boolean
+  countdownTimerEnabled: boolean
+  countdownTimerDuration: CountdownTimerDuration
   bestOfOneDecidingBehavior: BestOfOneDecidingBehavior
   sideSwitchPrompts: boolean
   sides: [MatchSide, MatchSide]
@@ -151,3 +159,6 @@ export const defaultMatchFormat: MatchFormat = 'best-of-3'
 export const defaultGameMode: MatchGameMode = 'advantage'
 export const defaultInitialServer: MatchTeamId = 'team-1'
 export const defaultBestOfOneDecidingBehavior: BestOfOneDecidingBehavior = 'full-set'
+export const defaultServingIndicatorEnabled = true
+export const defaultCountdownTimerEnabled = false
+export const defaultCountdownTimerDuration: CountdownTimerDuration = 90

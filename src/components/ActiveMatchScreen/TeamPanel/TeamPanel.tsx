@@ -13,6 +13,7 @@ export interface TeamPanelProps extends Omit<ComponentPropsWithoutRef<'button'>,
   score: string
   games: number
   isServing: boolean
+  showServingIndicator?: boolean
   isGoldenPointActive: boolean
   onClick: () => void
 }
@@ -28,6 +29,7 @@ export function TeamPanel({
   score,
   games,
   isServing,
+  showServingIndicator = true,
   isGoldenPointActive,
   onClick,
   disabled = false,
@@ -39,6 +41,7 @@ export function TeamPanel({
 
   const isTeam1 = teamId === 'team-1'
   const panelClass = isTeam1 ? styles.team1Panel : styles.team2Panel
+  const shouldShowServingIndicator = isServing && showServingIndicator
 
   return (
     <button
@@ -48,7 +51,7 @@ export function TeamPanel({
       onClick={disabled ? undefined : onClick}
       disabled={disabled}
       aria-label={t('match.scorePointFor', { teamName })}
-      {...(isServing ? { 'aria-describedby': servingStatusId } : {})}
+      {...(shouldShowServingIndicator ? { 'aria-describedby': servingStatusId } : {})}
       data-testid={`team-panel-${teamId}`}
     >
       <div className={styles.teamNameSection}>
@@ -61,7 +64,7 @@ export function TeamPanel({
         <span className={styles.score} aria-live="polite">
           {score}
         </span>
-        {isServing && (
+        {shouldShowServingIndicator && (
           <>
             <div
               className={styles.serveBar}
