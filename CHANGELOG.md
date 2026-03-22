@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.14.0](https://github.com/trystan2k/padelbuddy-web/compare/v0.13.0...v0.14.0) (2026-03-22)
+
+
+### Features
+
+* align active game screen layout with Pencil design ([b3db55b](https://github.com/trystan2k/padelbuddy-web/commit/b3db55b9794f8e071922aaa740b1b1e1de1e3b56))
+
 ## [0.13.0](https://github.com/trystan2k/padelbuddy-web/compare/v0.12.0...v0.13.0) (2026-03-22)
 
 
