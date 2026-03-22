@@ -24,9 +24,8 @@
 
 /* Focus ring handled by accent colors */
 .input:focus-visible {
-  outline: 2px solid var(--semantic-color-border-subtle);
-  outline-offset: 2px;
-  border-radius: 4px;
+  outline: none;
+  border-radius: var(--base-radius-4);
 }
 
 .input.accentPrimary:focus-visible {

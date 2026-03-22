@@ -1,6 +1,8 @@
 {
   "base": {
     "radius": {
+      "4": { "value": "4px", "type": "borderRadius" },
+      "8": { "value": "8px", "type": "borderRadius" },
       "16": { "value": "16px", "type": "borderRadius" },
       "18": { "value": "18px", "type": "borderRadius" },
       "20": { "value": "20px", "type": "borderRadius" },

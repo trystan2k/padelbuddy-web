@@ -46,7 +46,7 @@ export function TopBar({
         </div>
       )}
 
-      {children ? <div className={styles.actions}>{children}</div> : null}
+      {children != null ? <div className={styles.actions}>{children}</div> : null}
     </div>
   )
 }

@@ -1,4 +1,4 @@
-import { useCallback, type HTMLAttributes, type KeyboardEvent, type MouseEvent } from 'react'
+import { useCallback, type ButtonHTMLAttributes, type MouseEvent } from 'react'
 
 import { Switch } from '@base-ui/react/switch'
 
@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils/cn'
 
 import styles from './Toggle.module.css'
 
-export interface ToggleProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onChange'> {
+export interface ToggleProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'onChange'> {
   checked: boolean
   onChange: (checked: boolean) => void
   label: string
@@ -34,23 +34,11 @@ export function Toggle({
   }, [checked, disabled, onChange])
 
   const handleRowClick = useCallback(
-    (event: MouseEvent<HTMLDivElement>) => {
+    (event: MouseEvent<HTMLButtonElement>) => {
       toggle()
       onClick?.(event)
     },
     [onClick, toggle]
-  )
-
-  const handleRowKeyDown = useCallback(
-    (event: KeyboardEvent<HTMLDivElement>) => {
-      if (event.key === 'Enter' || event.key === ' ') {
-        event.preventDefault()
-        toggle()
-      }
-
-      onKeyDown?.(event)
-    },
-    [onKeyDown, toggle]
   )
 
   const handleSwitchClick = useCallback((event: { stopPropagation: () => void }) => {
@@ -58,11 +46,12 @@ export function Toggle({
   }, [])
 
   return (
-    <div
+    <button
+      type="button"
       className={cn(styles.row, disabled && styles.rowDisabled, className)}
       onClick={handleRowClick}
-      onKeyDown={handleRowKeyDown}
-      role="presentation"
+      onKeyDown={onKeyDown}
+      disabled={disabled}
       {...props}
     >
       <div className={styles.labelGroup}>
@@ -76,9 +65,10 @@ export function Toggle({
         className={styles.switch}
         aria-label={label}
         onClick={handleSwitchClick}
+        tabIndex={-1}
       >
         <Switch.Thumb className={styles.thumb} />
       </Switch.Root>
-    </div>
+    </button>
   )
 }

@@ -78,13 +78,15 @@ export function useMatchTimer(options: UseMatchTimerOptions): UseMatchTimerRetur
 
   const displayedSeconds = !countdownEnabled
     ? elapsedSeconds
-    : Math.max(
-        0,
-        Math.floor(
-          ((countdownEndTimestamp ?? liveReferenceTimestamp) - liveReferenceTimestamp) /
-            millisecondsPerSecond
+    : isMatchCompleted && typeof finishedAt !== 'number'
+      ? 0
+      : Math.max(
+          0,
+          Math.floor(
+            ((countdownEndTimestamp ?? liveReferenceTimestamp) - liveReferenceTimestamp) /
+              millisecondsPerSecond
+          )
         )
-      )
 
   const formattedTime = countdownEnabled ? formatClockTime(displayedSeconds) : formatTimeOfDay(now)
 

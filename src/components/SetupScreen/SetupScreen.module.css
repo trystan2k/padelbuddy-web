@@ -150,9 +150,8 @@
 }
 
 .countdownDurationOption:focus-visible {
-  outline: 2px solid var(--semantic-color-content-accent-primary);
-  outline-offset: 6px;
-  border-radius: 999px;
+  outline: none;
+  border-radius: var(--base-radius-54);
 }
 
 .countdownDurationRadio {
