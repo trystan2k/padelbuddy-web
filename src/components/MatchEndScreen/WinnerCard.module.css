@@ -1,5 +1,7 @@
 .card {
-  min-height: 31.5625rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   border-radius: var(--base-radius-32);
   border: 1px solid var(--semantic-color-border-subtle);
   background-color: var(--semantic-color-background-surface);
@@ -25,17 +27,17 @@
 
 .trophyBadge {
   display: flex;
-  width: 8.5rem;
-  height: 8.5rem;
+  width: calc(var(--base-space-8) * 14);
+  height: calc(var(--base-space-8) * 14);
   align-items: center;
   justify-content: center;
-  border-radius: 999px;
+  border-radius: var(--base-radius-54);
   background-color: var(--semantic-color-background-success-subtle);
 }
 
 .trophyIcon {
-  width: 4.75rem;
-  height: 4.75rem;
+  width: calc(var(--base-space-8) * 7);
+  height: calc(var(--base-space-8) * 7);
   color: var(--semantic-color-content-success);
 }
 
@@ -76,10 +78,38 @@
 }
 
 .actionButton {
-  min-height: 4.125rem;
+  display: grid;
+  gap: var(--base-space-8);
+}
+
+.actionButton.newMatchButton,
+.actionButton.continueButton {
+  padding: var(--base-space-20) var(--base-space-24);
   border-radius: var(--base-radius-24);
+  font-family: var(--semantic-typography-family-display);
   font-size: var(--base-font-size-26);
   line-height: 1;
+}
+
+.actionButton.newMatchButton {
+  background-color: var(--semantic-color-action-primary);
+  color: var(--semantic-color-content-inverse);
+  font-weight: var(--base-font-weight-extrabold);
+}
+
+.actionButton.continueButton {
+  border: 1px solid var(--semantic-color-border-subtle);
+  background-color: var(--semantic-color-background-canvas);
+  color: var(--semantic-color-content-primary);
+  font-weight: var(--base-font-weight-bold);
+}
+
+.actionButton.continueButton:hover:not(:disabled) {
+  background-color: var(--semantic-color-background-canvas);
+}
+
+.actionButton.continueButton:active:not(:disabled) {
+  transform: none;
 }
 
 @media (width <= 1023px) {

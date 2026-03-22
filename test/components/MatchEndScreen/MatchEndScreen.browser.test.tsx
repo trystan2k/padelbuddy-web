@@ -117,6 +117,28 @@ describe('MatchEndScreen', () => {
     expect(screen.container.querySelector('[aria-haspopup="true"]')).toBeNull()
   })
 
+  test('renders a disabled share placeholder in the header', async () => {
+    const projection = createCompletedProjection()
+    const setup = createCompletedSetup()
+    const actions = createCompletedActions()
+
+    const screen = await render(
+      <MatchEndScreen
+        matchId="test-match"
+        setup={setup}
+        actions={actions}
+        projection={projection}
+        startedAt={startedAt}
+        finishedAt={finishedAt}
+      />
+    )
+
+    // i18n key: 'match.end.actions.share' — locale is mocked to 'en' above
+    const shareButton = screen.getByRole('button', { name: 'Share' })
+
+    await expect.element(shareButton).toBeDisabled()
+  })
+
   test('starts a new match by clearing persistence and navigating home', async () => {
     const projection = createCompletedProjection()
     const setup = createCompletedSetup()

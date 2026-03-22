@@ -226,6 +226,7 @@
         "durationMinutes": "{{minutes}}min"
       },
       "actions": {
+        "share": "Compartilhar",
         "newMatch": "Nova partida",
         "continue": "Continuar"
       },

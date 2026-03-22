@@ -10,7 +10,6 @@
     var(--screen-bg-end, var(--semantic-color-background-canvas-end)) 100%
   );
   position: relative;
-  overflow: hidden;
 }
 
 .layout::before {
@@ -20,13 +19,18 @@
   top: calc(var(--screen-radial-y, 8%) - (var(--screen-radial-h, 26%) / 2));
   width: var(--screen-radial-w, 34%);
   height: var(--screen-radial-h, 26%);
-  background: radial-gradient(circle, var(--base-color-brand-highlight) 0%, transparent 70%);
+  background: radial-gradient(
+    circle,
+    var(--screen-radial-color, var(--base-color-brand-highlight)) 0%,
+    transparent 70%
+  );
   opacity: var(--screen-radial-opacity, 0.18);
   pointer-events: none;
 }
 
 .container {
   flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   gap: var(--app-screen-shell-section-gap);
@@ -45,11 +49,11 @@
 }
 
 .body {
-  min-height: var(--app-screen-shell-min-body-height);
+  min-height: 0;
   max-height: var(--app-screen-shell-max-body-height);
   display: flex;
+  flex: 1;
   flex-direction: column;
-  flex-grow: 1;
 }
 
 .footer {

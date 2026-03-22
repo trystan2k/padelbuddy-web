@@ -226,6 +226,7 @@
         "durationMinutes": "{{minutes}}m"
       },
       "actions": {
+        "share": "Share",
         "newMatch": "New Match",
         "continue": "Continue"
       },
