@@ -12,7 +12,8 @@
         "text": { "value": "{semantic.color.content.secondary}", "type": "color" },
         "radius": { "value": "{base.radius.18}", "type": "borderRadius" },
         "padding-y": { "value": "{base.space.10}", "type": "spacing" },
-        "padding-x": { "value": "{base.space.16}", "type": "spacing" }
+        "padding-x": { "value": "{base.space.16}", "type": "spacing" },
+        "width": { "value": "220px", "type": "dimension" }
       }
     }
   }

@@ -22,7 +22,8 @@
         "title-lg": { "value": "{base.font.size.28}", "type": "fontSizes" },
         "title-xl": { "value": "{base.font.size.32}", "type": "fontSizes" },
         "display-md": { "value": "{base.font.size.46}", "type": "fontSizes" },
-        "display-score": { "value": "{base.font.size.264}", "type": "fontSizes" }
+        "display-score": { "value": "{base.font.size.352}", "type": "fontSizes" },
+        "set-score": { "value": "{base.font.size.40}", "type": "fontSizes" }
       },
       "letterSpacing": {
         "label": { "value": "{base.font.letterSpacing.wide-lg}", "type": "letterSpacing" },

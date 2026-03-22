@@ -4,6 +4,7 @@ import type { MatchSetState } from '@/core/match'
 import { Card } from '@/components/ui/Card'
 
 import styles from './SetsCard.module.css'
+import { useEffect, useRef } from 'react'
 
 export interface SetsCardProps {
   sets: MatchSetState[]
@@ -18,10 +19,19 @@ export interface SetsCardProps {
 export function SetsCard({ sets, currentSetIndex }: SetsCardProps) {
   const { t } = useTranslation()
 
+  const setsGridRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const setsGrid = setsGridRef.current
+    if (setsGrid) {
+      setsGrid.scroll({ top: -setsGrid.scrollHeight, behavior: 'smooth' })
+    }
+  }, [currentSetIndex, sets])
+
   return (
     <Card className={styles.container} data-testid="sets-card">
       <span className={styles.label}>{t('match.sets.label')}</span>
-      <div className={styles.setsGrid}>
+      <div className={styles.setsGrid} ref={setsGridRef}>
         {sets.map((set, index) => {
           const isCurrent = index === currentSetIndex
           const setLabel = isCurrent

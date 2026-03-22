@@ -1,56 +1,40 @@
-/* ActiveMatchScreen - Following Pencil design node ID: VSRKf
-   Main screen layout for active match
-*/
+/* ActiveMatchScreen - Following Pencil design node ID: VSRKf */
+
+.gameScreen {
+  --screen-bg-start: var(--semantic-color-background-canvas-game);
+  --screen-bg-end: var(--semantic-color-background-canvas-game-end);
+  --screen-radial-x: 85%;
+  --screen-radial-y: 8%;
+  --screen-radial-w: 34%;
+  --screen-radial-h: 26%;
+  --screen-radial-opacity: 0.18;
+}
 
 .scorePanel {
-  --app-active-match-revert-width: calc(var(--base-space-8) * 28);
-  --app-active-match-info-top: calc(var(--base-space-8) * 48);
-
   position: relative;
   display: flex;
-  justify-content: space-between;
   align-items: flex-start;
+  gap: var(--base-space-16);
   width: 100%;
-  min-height: var(--app-screen-shell-body-height);
+  min-height: var(--app-screen-shell-min-body-height);
+  flex: 1;
 }
 
-.team1Panel {
+.teamColumn {
   display: flex;
+  flex: 1;
+  min-width: 0;
   flex-direction: column;
-  gap: var(--base-space-24);
   align-items: center;
-  width: var(--app-scoreboard-team-panel-width);
-  padding-top: var(--base-space-56);
-}
-
-.team2Panel {
-  display: flex;
-  flex-direction: column;
-  gap: var(--base-space-24);
-  align-items: center;
-  width: var(--app-scoreboard-team-panel-width);
-  padding-top: var(--base-space-56);
-}
-
-.finishButton {
-  width: 100%;
-}
-
-.revertButton {
-  width: var(--app-active-match-revert-width);
-  opacity: 0.7;
-}
-
-.setsOverlay,
-.infoOverlay {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: var(--base-priority-s);
+  gap: var(--base-space-16);
 }
 
 .setsOverlay {
-  top: var(--base-space-16);
+  position: absolute;
+  top: calc(var(--base-space-8) * 44);
+  left: 50%;
+  z-index: var(--base-priority-s);
+  transform: translateX(-50%);
 }
 
 .timerChip {
@@ -66,63 +50,108 @@
   font-family: var(--semantic-typography-family-display);
   font-size: var(--semantic-typography-size-title-xl);
   font-weight: var(--semantic-typography-weight-heading);
-  letter-spacing: -0.5px;
+  letter-spacing: var(--semantic-typography-letter-spacing-heading);
   line-height: 1;
   color: var(--semantic-color-content-primary);
 }
 
-.infoOverlay {
-  top: var(--app-active-match-info-top);
+.revertButton,
+.finishButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  font-family: var(--semantic-typography-family-display);
+  text-align: center;
+  transition:
+    transform 150ms ease,
+    background-color 150ms ease,
+    border-color 150ms ease,
+    opacity 150ms ease;
 }
 
-/* Responsive adjustments */
+.revertButton {
+  width: var(--component-button-revert-width);
+  padding: var(--component-button-revert-padding-y) var(--component-button-revert-padding-x);
+  border-radius: var(--component-button-revert-radius);
+  font-size: var(--base-font-size-18);
+  font-weight: var(--semantic-typography-weight-strong);
+}
+
+.revertButtonTeam1 {
+  background-color: var(--semantic-color-background-critical-subtle);
+  border-color: var(--semantic-color-border-critical-subtle);
+  color: color-mix(in srgb, var(--semantic-color-content-danger) 70%, transparent);
+}
+
+.revertButtonTeam2 {
+  background-color: var(--semantic-color-background-critical-subtle-alt);
+  border-color: var(--semantic-color-border-critical-subtle-alt);
+  color: color-mix(in srgb, var(--semantic-color-items-secondary-content) 70%, transparent);
+}
+
+.finishButton {
+  width: 100%;
+  padding: var(--base-space-20) var(--base-space-24);
+  border-radius: var(--base-radius-28);
+  background-color: var(--semantic-color-background-canvas);
+  border-color: var(--semantic-color-border-subtle);
+  color: var(--semantic-color-content-primary);
+  font-size: var(--base-font-size-34);
+  font-weight: var(--semantic-typography-weight-heading);
+  letter-spacing: var(--semantic-typography-letter-spacing-display);
+}
+
+.revertButton:hover:not(:disabled),
+.finishButton:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.revertButton:active:not(:disabled),
+.finishButton:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.revertButton:focus-visible,
+.finishButton:focus-visible {
+  outline: 3px solid var(--semantic-color-content-primary);
+  outline-offset: 3px;
+}
+
+.revertButton:disabled,
+.finishButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
 @media (width <= 1023px) {
   .scorePanel {
     min-height: auto;
     flex-wrap: wrap;
     justify-content: center;
-    gap: var(--base-space-16);
   }
 
-  .team1Panel {
-    order: 1;
-  }
-
-  .team2Panel {
-    order: 2;
-  }
-
-  .team1Panel,
-  .team2Panel {
-    width: min(100%, var(--app-scoreboard-team-panel-width));
+  .teamColumn {
+    flex-basis: 100%;
     padding-top: 0;
     gap: var(--base-space-12);
   }
 
-  .setsOverlay,
-  .infoOverlay {
-    position: static;
-    left: auto;
-    transform: none;
-  }
-
   .setsOverlay {
-    order: 3;
-  }
-
-  .infoOverlay {
-    order: 4;
+    position: static;
+    width: 100%;
+    transform: none;
   }
 }
 
 @media (width <= 767px) {
   .scorePanel {
-    justify-content: stretch;
+    gap: var(--base-space-12);
   }
 
   .revertButton,
-  .setsOverlay,
-  .infoOverlay {
+  .finishButton,
+  .setsOverlay {
     width: 100%;
   }
 }

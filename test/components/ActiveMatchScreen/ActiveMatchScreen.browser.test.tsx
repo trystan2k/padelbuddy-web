@@ -5,17 +5,26 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import { render } from 'vitest-browser-react'
 
 import { ActiveMatchScreen } from '@/components/ActiveMatchScreen/ActiveMatchScreen'
-import {
-  createTestSetup,
-  scorePoints,
-  winQuickGame,
-  winQuickSet
-} from '../../core/match/test-helpers'
+import teamPanelStyles from '@/components/ActiveMatchScreen/TeamPanel/TeamPanel.module.css'
+import { createTestSetup, winQuickSet } from '../../core/match/test-helpers'
 
 function formatTimeOfDay(date: Date): string {
   return [date.getHours(), date.getMinutes(), date.getSeconds()]
     .map((value) => String(value).padStart(2, '0'))
     .join(':')
+}
+
+function resolveCssColor(property: 'backgroundColor' | 'color', value: string): string {
+  const probe = document.createElement('div')
+
+  probe.style.setProperty(property === 'backgroundColor' ? 'background-color' : 'color', value)
+  document.body.append(probe)
+
+  const resolvedColor = getComputedStyle(probe)[property]
+
+  probe.remove()
+
+  return resolvedColor
 }
 
 const { mockNavigate } = vi.hoisted(() => ({
@@ -42,7 +51,7 @@ vi.mock('@/lib/i18n', async (importOriginal) => {
 })
 
 describe('ActiveMatchScreen', () => {
-  const defaultStartedAt = Date.now() - 5 * 60 * 1000 // 5 minutes ago
+  const defaultStartedAt = Date.now() - 5 * 60 * 1000
 
   beforeEach(() => {
     vi.clearAllMocks()
@@ -65,7 +74,6 @@ describe('ActiveMatchScreen', () => {
       />
     )
 
-    // Should render layout structure
     await expect.element(screen.getByTestId('layout-body')).toBeInTheDocument()
   })
 
@@ -106,7 +114,7 @@ describe('ActiveMatchScreen', () => {
     await expect.element(screen.getByTestId('team-panel-team-2')).toBeInTheDocument()
   })
 
-  test('renders sets card', async () => {
+  test('renders sets card without the info card overlay', async () => {
     const setup = createTestSetup()
 
     const screen = await render(
@@ -119,21 +127,7 @@ describe('ActiveMatchScreen', () => {
     )
 
     await expect.element(screen.getByTestId('sets-card')).toBeInTheDocument()
-  })
-
-  test('renders info card', async () => {
-    const setup = createTestSetup()
-
-    const screen = await render(
-      <ActiveMatchScreen
-        matchId="test-match"
-        initialSetup={setup}
-        initialActions={[]}
-        startedAt={defaultStartedAt}
-      />
-    )
-
-    await expect.element(screen.getByTestId('info-card')).toBeInTheDocument()
+    expect(screen.container.querySelector('[data-testid="info-card"]')).toBeNull()
   })
 
   test('renders time chip', async () => {
@@ -182,7 +176,39 @@ describe('ActiveMatchScreen', () => {
     expect(layoutBody.contains(timeChip)).toBe(false)
   })
 
-  test('hides serving indicators when serving indicator is disabled in setup', async () => {
+  test('highlights the serving team panel when the serving indicator is enabled', async () => {
+    const setup = createTestSetup({
+      servingIndicatorEnabled: true
+    })
+
+    const screen = await render(
+      <ActiveMatchScreen
+        matchId="test-match"
+        initialSetup={setup}
+        initialActions={[]}
+        startedAt={defaultStartedAt}
+      />
+    )
+
+    const team1Panel = screen.getByTestId('team-panel-team-1')
+    const team1Score = team1Panel.element().querySelector('[aria-live="polite"]')
+
+    expect(team1Score).toBeTruthy()
+    await expect.element(team1Panel).toHaveClass(teamPanelStyles.serving!)
+    expect(getComputedStyle(team1Panel.element()).backgroundColor).toBe(
+      resolveCssColor('backgroundColor', 'var(--semantic-color-items-primary-background)')
+    )
+    expect(getComputedStyle(team1Score as Element).color).toBe(
+      resolveCssColor('color', 'var(--semantic-color-items-primary-content)')
+    )
+    await expect
+      .element(screen.getByTestId('team-panel-team-2'))
+      .not.toHaveClass(teamPanelStyles.serving!)
+    expect(screen.container.querySelector('[data-testid^="serve-indicator-"]')).toBeNull()
+    expect(screen.container.querySelector('[data-testid^="serve-status-"]')).toBeNull()
+  })
+
+  test('does not highlight team panels when the serving indicator is disabled', async () => {
     const setup = createTestSetup({
       servingIndicatorEnabled: false
     })
@@ -196,8 +222,12 @@ describe('ActiveMatchScreen', () => {
       />
     )
 
-    expect(screen.container.querySelector('[data-testid^="serve-indicator-"]')).toBeNull()
-    expect(screen.container.querySelector('[data-testid^="serve-status-"]')).toBeNull()
+    await expect
+      .element(screen.getByTestId('team-panel-team-1'))
+      .not.toHaveClass(teamPanelStyles.serving!)
+    await expect
+      .element(screen.getByTestId('team-panel-team-2'))
+      .not.toHaveClass(teamPanelStyles.serving!)
   })
 
   test('uses the countdown timer aria-label when countdown mode is enabled', async () => {
@@ -252,6 +282,21 @@ describe('ActiveMatchScreen', () => {
     await expect.element(screen.getByTestId('finish-button')).toBeInTheDocument()
   })
 
+  test('finish button stays enabled when match is not completed', async () => {
+    const setup = createTestSetup()
+
+    const screen = await render(
+      <ActiveMatchScreen
+        matchId="test-match"
+        initialSetup={setup}
+        initialActions={[]}
+        startedAt={defaultStartedAt}
+      />
+    )
+
+    await expect.element(screen.getByTestId('finish-button')).toBeEnabled()
+  })
+
   test('scoring updates team score', async () => {
     const setup = createTestSetup()
 
@@ -264,16 +309,12 @@ describe('ActiveMatchScreen', () => {
       />
     )
 
-    // Check the initial score is in the aria-live element (which should be "0" for initial state)
     const team1Panel = screen.getByTestId('team-panel-team-1')
     const scoreElement = team1Panel.element().querySelector('[aria-live="polite"]')
     expect(scoreElement?.textContent).toBe('0')
 
-    // Score for team 1 - use fireEvent to bypass actionability checks
-    const button = team1Panel.element() as HTMLButtonElement
-    button.click()
+    ;(team1Panel.element() as HTMLButtonElement).click()
 
-    // Wait for the score to update
     await vi.waitFor(() => {
       const newScoreElement = screen
         .getByTestId('team-panel-team-1')
@@ -295,32 +336,10 @@ describe('ActiveMatchScreen', () => {
       />
     )
 
-    const revertButton = screen.getByTestId('revert-button-team-1')
-    await expect.element(revertButton).toBeDisabled()
+    await expect.element(screen.getByTestId('revert-button-team-1')).toBeDisabled()
   })
 
-  test('team panels are disabled when match is completed', async () => {
-    const setup = createTestSetup()
-    // Win two sets to complete the match (best of 3)
-    const actions = [...winQuickSet('team-1'), ...winQuickSet('team-1')]
-
-    const screen = await render(
-      <ActiveMatchScreen
-        matchId="test-match"
-        initialSetup={setup}
-        initialActions={actions}
-        startedAt={defaultStartedAt}
-      />
-    )
-
-    const team1Panel = screen.getByTestId('team-panel-team-1')
-    await expect.element(team1Panel).toBeDisabled()
-
-    const team2Panel = screen.getByTestId('team-panel-team-2')
-    await expect.element(team2Panel).toBeDisabled()
-  })
-
-  test('finish button stays enabled when match is not completed', async () => {
+  test('revert button removes the last point for both team controls', async () => {
     const setup = createTestSetup()
 
     const screen = await render(
@@ -332,34 +351,32 @@ describe('ActiveMatchScreen', () => {
       />
     )
 
-    await expect.element(screen.getByTestId('finish-button')).toBeEnabled()
-  })
+    await screen.getByTestId('team-panel-team-1').click()
 
-  test('finish button is disabled when match is already completed', async () => {
-    const setup = createTestSetup()
-    const actions = [...winQuickSet('team-1'), ...winQuickSet('team-1')]
+    await vi.waitFor(() => {
+      const scoreElement = screen
+        .getByTestId('team-panel-team-1')
+        .element()
+        .querySelector('[aria-live="polite"]')
+      return expect(scoreElement?.textContent).toBe('15')
+    })
 
-    const screen = await render(
-      <ActiveMatchScreen
-        matchId="test-match"
-        initialSetup={setup}
-        initialActions={actions}
-        startedAt={defaultStartedAt}
-      />
-    )
+    await screen.getByTestId('revert-button-team-2').click()
 
-    await expect.element(screen.getByTestId('finish-button')).toBeDisabled()
+    await vi.waitFor(() => {
+      const scoreElement = screen
+        .getByTestId('team-panel-team-1')
+        .element()
+        .querySelector('[aria-live="polite"]')
+      return expect(scoreElement?.textContent).toBe('0')
+    })
   })
 
   test('navigates to the finish route when the match is completed', async () => {
     const setup = createTestSetup()
-    const actions = [
-      ...winQuickSet('team-1'),
-      ...Array.from({ length: 5 }, () => winQuickGame('team-1')).flat(),
-      ...scorePoints('team-1', 'team-1', 'team-1')
-    ]
+    const actions = [...winQuickSet('team-1'), ...winQuickSet('team-1')]
 
-    const screen = await render(
+    await render(
       <ActiveMatchScreen
         matchId="test-match"
         initialSetup={setup}
@@ -368,15 +385,14 @@ describe('ActiveMatchScreen', () => {
       />
     )
 
-    await screen.getByTestId('team-panel-team-1').click()
-
     await vi.waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith({
-        to: '/match/finish/$id',
-        params: { id: 'test-match' },
-        replace: true,
-        viewTransition: true
-      })
+      expect(mockNavigate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          to: '/match/finish/$id',
+          params: { id: 'test-match' },
+          replace: true
+        })
+      )
     })
   })
 
@@ -395,79 +411,46 @@ describe('ActiveMatchScreen', () => {
     await screen.getByTestId('finish-button').click()
 
     await vi.waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith({
-        to: '/match/finish/$id',
-        params: { id: 'test-match' },
-        replace: true,
-        viewTransition: true
-      })
+      expect(mockNavigate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          to: '/match/finish/$id',
+          params: { id: 'test-match' },
+          replace: true
+        })
+      )
     })
   })
 
-  test('info card reflects setup options', async () => {
-    const setup = createTestSetup({
-      gameMode: 'golden-point',
-      decidingSetSuperTiebreak: true,
-      sideSwitchPrompts: true
-    })
-
-    const screen = await render(
-      <ActiveMatchScreen
-        matchId="test-match"
-        initialSetup={setup}
-        initialActions={[]}
-        startedAt={defaultStartedAt}
-      />
-    )
-
-    await expect.element(screen.getByText('Golden point on')).toBeInTheDocument()
-    await expect.element(screen.getByText('Super tiebreak on')).toBeInTheDocument()
-    await expect.element(screen.getByText('Side-switch prompts: on')).toBeInTheDocument()
-  })
-
-  test('shows serving indicator for initial server', async () => {
-    const setup = createTestSetup({ initialServer: 'team-1' })
-
-    const screen = await render(
-      <ActiveMatchScreen
-        matchId="test-match"
-        initialSetup={setup}
-        initialActions={[]}
-        startedAt={defaultStartedAt}
-      />
-    )
-
-    // Team 1 should be serving
-    const team1Panel = screen.getByTestId('team-panel-team-1')
-    const servingIndicator = team1Panel
-      .element()
-      .querySelector('[data-testid="serve-indicator-team-1"]')
-    expect(servingIndicator).toBeTruthy()
-
-    const servingStatus = team1Panel.element().querySelector('[data-testid="serve-status-team-1"]')
-    expect(servingStatus?.textContent).toBe('Serving')
-  })
-
-  test('renders set and info overlays without the timer overlay or locale selector actions', async () => {
+  test('team panels are disabled when match is completed', async () => {
     const setup = createTestSetup()
+    const actions = [...winQuickSet('team-1'), ...winQuickSet('team-1')]
 
     const screen = await render(
       <ActiveMatchScreen
         matchId="test-match"
         initialSetup={setup}
-        initialActions={[]}
+        initialActions={actions}
         startedAt={defaultStartedAt}
       />
     )
 
-    expect(screen.container.querySelector('[aria-haspopup="true"]')).toBeNull()
+    await expect.element(screen.getByTestId('team-panel-team-1')).toBeDisabled()
+    await expect.element(screen.getByTestId('team-panel-team-2')).toBeDisabled()
+  })
 
-    const layoutBody = screen.getByTestId('layout-body').element()
-    const overlayNodes = Array.from(
-      layoutBody.querySelectorAll('[data-testid="sets-card"], [data-testid="info-card"]')
-    ).map((node) => node.getAttribute('data-testid'))
+  test('finish button is disabled when match is already completed', async () => {
+    const setup = createTestSetup()
+    const actions = [...winQuickSet('team-1'), ...winQuickSet('team-1')]
 
-    expect(overlayNodes).toEqual(['sets-card', 'info-card'])
-    expect(layoutBody.contains(screen.getByTestId('time-chip').element())).toBe(false)
+    const screen = await render(
+      <ActiveMatchScreen
+        matchId="test-match"
+        initialSetup={setup}
+        initialActions={actions}
+        startedAt={defaultStartedAt}
+      />
+    )
+
+    await expect.element(screen.getByTestId('finish-button')).toBeDisabled()
   })
 })

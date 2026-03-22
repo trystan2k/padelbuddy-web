@@ -4,15 +4,27 @@ import { describe, expect, test, vi } from 'vitest'
 import { render } from 'vitest-browser-react'
 
 import { TeamPanel } from '@/components/ActiveMatchScreen/TeamPanel/TeamPanel'
+import styles from '@/components/ActiveMatchScreen/TeamPanel/TeamPanel.module.css'
+
+function resolveCssColor(property: 'backgroundColor' | 'color', value: string): string {
+  const probe = document.createElement('div')
+
+  probe.style.setProperty(property === 'backgroundColor' ? 'background-color' : 'color', value)
+  document.body.append(probe)
+
+  const resolvedColor = getComputedStyle(probe)[property]
+
+  probe.remove()
+
+  return resolvedColor
+}
 
 describe('TeamPanel', () => {
   const defaultProps = {
     teamId: 'team-1' as const,
     teamName: 'Team Alpha',
     score: '15',
-    games: 2,
-    isServing: true,
-    isGoldenPointActive: false,
+    isServing: false,
     onClick: vi.fn()
   }
 
@@ -28,36 +40,6 @@ describe('TeamPanel', () => {
     await expect.element(screen.getByRole('button')).toHaveTextContent('40')
   })
 
-  test('renders games count', async () => {
-    const screen = await render(<TeamPanel {...defaultProps} games={4} />)
-
-    await expect.element(screen.getByText('Games 4')).toBeInTheDocument()
-  })
-
-  test('shows serve indicator when serving', async () => {
-    const screen = await render(<TeamPanel {...defaultProps} isServing={true} />)
-
-    await expect.element(screen.getByTestId('serve-indicator-team-1')).toBeInTheDocument()
-    await expect.element(screen.getByTestId('serve-status-team-1')).toHaveTextContent('Serving')
-  })
-
-  test('hides serve indicator when not serving', async () => {
-    const screen = await render(<TeamPanel {...defaultProps} isServing={false} />)
-
-    const serveIndicator = screen.container.querySelector('[data-testid="serve-indicator-team-1"]')
-    expect(serveIndicator).toBeNull()
-  })
-
-  test('hides serve indicator when serving indicator visibility is disabled', async () => {
-    const screen = await render(
-      <TeamPanel {...defaultProps} isServing={true} showServingIndicator={false} />
-    )
-
-    expect(screen.container.querySelector('[data-testid="serve-indicator-team-1"]')).toBeNull()
-    expect(screen.container.querySelector('[data-testid="serve-status-team-1"]')).toBeNull()
-    await expect.element(screen.getByRole('button')).not.toHaveAttribute('aria-describedby')
-  })
-
   test('calls onClick when clicked', async () => {
     const handleClick = vi.fn()
     const screen = await render(<TeamPanel {...defaultProps} onClick={handleClick} />)
@@ -70,30 +52,13 @@ describe('TeamPanel', () => {
   test('is disabled when disabled prop is true', async () => {
     const screen = await render(<TeamPanel {...defaultProps} disabled={true} />)
 
-    const button = screen.getByRole('button')
-    await expect.element(button).toBeDisabled()
+    await expect.element(screen.getByRole('button')).toBeDisabled()
   })
 
   test('is enabled when disabled prop is false', async () => {
     const screen = await render(<TeamPanel {...defaultProps} disabled={false} />)
 
-    const button = screen.getByRole('button')
-    await expect.element(button).not.toBeDisabled()
-  })
-
-  test('shows golden point chip when active', async () => {
-    const screen = await render(<TeamPanel {...defaultProps} isGoldenPointActive={true} />)
-
-    await expect.element(screen.getByText('GP')).toBeInTheDocument()
-  })
-
-  test('hides golden point chip when not active', async () => {
-    const screen = await render(<TeamPanel {...defaultProps} isGoldenPointActive={false} />)
-
-    // GP text should not be in the document
-    const button = screen.getByRole('button')
-    const buttonText = button.element().textContent
-    expect(buttonText).not.toContain('GP')
+    await expect.element(screen.getByRole('button')).not.toBeDisabled()
   })
 
   test('renders for team-1 with correct test id', async () => {
@@ -111,56 +76,54 @@ describe('TeamPanel', () => {
   test('has accessible label for scoring', async () => {
     const screen = await render(<TeamPanel {...defaultProps} teamName="The Champions" />)
 
-    const button = screen.getByRole('button')
-    await expect.element(button).toHaveAttribute('aria-label', 'Score point for The Champions')
+    await expect
+      .element(screen.getByRole('button'))
+      .toHaveAttribute('aria-label', 'Score point for The Champions')
   })
 
   test('score has aria-live for accessibility', async () => {
     const screen = await render(<TeamPanel {...defaultProps} />)
 
-    const scoreElement = screen.container.querySelector('[aria-live="polite"]')
-    expect(scoreElement).toBeTruthy()
+    expect(screen.container.querySelector('[aria-live="polite"]')).toBeTruthy()
   })
 
-  test('serve bar remains visual only when serving', async () => {
-    const screen = await render(<TeamPanel {...defaultProps} isServing={true} />)
+  test('applies serving styles when the serving indicator is enabled', async () => {
+    const screen = await render(
+      <TeamPanel {...defaultProps} isServing={true} showServingIndicator={true} />
+    )
 
-    const serveBar = screen.container.querySelector('[data-testid="serve-indicator-team-1"]')
-    expect(serveBar).toBeTruthy()
-    expect(serveBar?.getAttribute('aria-hidden')).toBe('true')
+    const panel = screen.getByRole('button')
+    const score = screen.getByText('15')
 
-    const button = screen.getByRole('button')
-    const describedById = button.element().getAttribute('aria-describedby')
-    expect(describedById).toBeTruthy()
-    const describedElement = describedById
-      ? screen.container.ownerDocument.getElementById(describedById)
-      : null
-    expect(describedElement).toBeTruthy()
-    expect(describedElement?.textContent).toContain('Serving')
+    await expect.element(panel).toHaveClass(styles.serving!)
+    expect(getComputedStyle(panel.element()).backgroundColor).toBe(
+      resolveCssColor('backgroundColor', 'var(--semantic-color-items-primary-background)')
+    )
+    expect(getComputedStyle(score.element()).color).toBe(
+      resolveCssColor('color', 'var(--semantic-color-items-primary-content)')
+    )
   })
 
-  test('golden point chip has accessible label when active', async () => {
-    const screen = await render(<TeamPanel {...defaultProps} isGoldenPointActive={true} />)
+  test('does not render games, serving, or golden point affordances', async () => {
+    const screen = await render(<TeamPanel {...defaultProps} />)
 
-    const chip = screen.container.querySelector('[aria-label="Golden point on"]')
-    expect(chip).toBeTruthy()
+    const buttonText = screen.getByRole('button').element().textContent ?? ''
+
+    expect(buttonText).not.toContain('Games')
+    expect(buttonText).not.toContain('GP')
+    expect(buttonText).not.toContain('Serving')
+    expect(screen.container.querySelector('[data-testid^="serve-indicator-"]')).toBeNull()
   })
 
   test('has type button', async () => {
     const screen = await render(<TeamPanel {...defaultProps} />)
 
-    const button = screen.getByRole('button')
-    await expect.element(button).toHaveAttribute('type', 'button')
+    await expect.element(screen.getByRole('button')).toHaveAttribute('type', 'button')
   })
 
   test('disabled state prevents click handler in browser', async () => {
     const screen = await render(<TeamPanel {...defaultProps} disabled={true} />)
 
-    // Verify button is disabled
-    const button = screen.getByRole('button')
-    await expect.element(button).toBeDisabled()
-
-    // In browser tests, clicking disabled buttons doesn't fire the event
-    // This test confirms the disabled state is properly applied
+    await expect.element(screen.getByRole('button')).toBeDisabled()
   })
 })
