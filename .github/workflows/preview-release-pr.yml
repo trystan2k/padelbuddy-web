@@ -1,16 +1,13 @@
 name: Preview Release PR
 
 on:
-  pull_request:
-    branches:
-      - main
+  workflow_run:
+    workflows: ['CI']
     types:
-      - opened
-      - reopened
-      - synchronize
+      - completed
 
 concurrency:
-  group: preview-release-pr-${{ github.event.pull_request.number }}
+  group: preview-release-pr-${{ github.event.workflow_run.head_branch }}
   cancel-in-progress: true
 
 permissions:
@@ -25,7 +22,7 @@ env:
 jobs:
   deploy_preview:
     name: Deploy release preview
-    if: github.event.pull_request.head.repo.full_name == github.repository && startsWith(github.event.pull_request.head.ref, 'release-please--branches--main')
+    if: github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_repository.full_name == github.repository && startsWith(github.event.workflow_run.head_branch, 'release-please--branches--main')
     runs-on: ubuntu-latest
     outputs:
       preview_url: ${{ steps.preview_url.outputs.preview_url }}
@@ -33,7 +30,7 @@ jobs:
       - name: Check out release PR head
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ github.event.workflow_run.head_sha }}
 
       - name: Set up pnpm
         uses: pnpm/action-setup@v4
@@ -48,21 +45,6 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-
-      - name: Install Playwright Chromium
-        run: pnpm exec playwright install --with-deps chromium
-
-      - name: Type check
-        run: pnpm typecheck
-
-      - name: Lint
-        run: pnpm lint
-
-      - name: Check formatting
-        run: pnpm format:check
-
-      - name: Run tests
-        run: pnpm test
 
       - name: Build application
         run: pnpm build
@@ -88,7 +70,9 @@ jobs:
 
       - name: Comment preview URL on the release PR
         uses: marocchino/sticky-pull-request-comment@v2
+        if: github.event.workflow_run.pull_requests[0] != null
         with:
+          number: ${{ github.event.workflow_run.pull_requests[0].number }}
           header: release-preview
           message: |
             Cloudflare Pages preview refreshed for the Release Please PR.
