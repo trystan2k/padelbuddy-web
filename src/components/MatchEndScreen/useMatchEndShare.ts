@@ -2,12 +2,9 @@ import { useCallback, useEffect, useRef, useState, type RefObject } from 'react'
 
 import type { MatchEndScreenSummary } from './view-model'
 
-const shareButtonSelector = '[data-share-button="true"]'
-const shareLabelSelector = '[data-share-label="true"]'
 const statusMessageTimeoutMs = 4000
 
 interface MatchEndShareLabels {
-  idleActionLabel: string
   shareText: string
   finishedEarlyShareText: string
   errorMessage: string
@@ -84,7 +81,7 @@ export function useMatchEndShare({
           return
         }
 
-        const imageBlob = await captureMatchEndScreen(captureNode, labels.idleActionLabel)
+        const imageBlob = await captureMatchEndScreen(captureNode)
         const filename = createShareFilename(matchId)
         const shareFile = new File([imageBlob], filename, {
           type: imageBlob.type || 'image/png'
@@ -185,26 +182,11 @@ function createShareFilename(matchId: string): string {
   return `padel-buddy-match-${matchId}.png`
 }
 
-async function captureMatchEndScreen(node: HTMLElement, idleActionLabel: string): Promise<Blob> {
+async function captureMatchEndScreen(node: HTMLElement): Promise<Blob> {
   const { domToBlob } = await import('modern-screenshot')
 
   return domToBlob(node, {
-    scale: Math.max(1, window.devicePixelRatio || 1),
-    onCloneNode(cloned) {
-      if (!(cloned instanceof HTMLElement)) {
-        return
-      }
-
-      if (cloned.matches(shareButtonSelector)) {
-        cloned.dataset.shareLoading = 'false'
-        cloned.removeAttribute('disabled')
-        cloned.removeAttribute('aria-busy')
-      }
-
-      if (cloned.matches(shareLabelSelector)) {
-        cloned.textContent = idleActionLabel
-      }
-    }
+    scale: Math.max(1, window.devicePixelRatio || 1)
   })
 }
 

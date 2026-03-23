@@ -157,13 +157,12 @@ export function MatchEndScreen({
 
   const labels = useMemo(
     () => ({
-      idleActionLabel: shareActionLabel,
       shareText,
       finishedEarlyShareText,
       errorMessage: t('match.end.share.error'),
       downloadMessage: t('match.end.share.download')
     }),
-    [finishedEarlyShareText, shareActionLabel, shareText, t]
+    [finishedEarlyShareText, shareText, t]
   )
   const { downloadMessage, errorMessage, handleShareClick, isSharing } = useMatchEndShare({
     captureRef,
