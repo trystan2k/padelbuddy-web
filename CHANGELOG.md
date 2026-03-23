@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.16.0](https://github.com/trystan2k/padelbuddy-web/compare/v0.15.0...v0.16.0) (2026-03-23)
+
+
+### Features
+
+* add share functionality on match end screen ([a3c907e](https://github.com/trystan2k/padelbuddy-web/commit/a3c907e65aa0c82fc4dfbaffcb38145fef2c821c))
+
 ## [0.15.0](https://github.com/trystan2k/padelbuddy-web/compare/v0.14.0...v0.15.0) (2026-03-22)
 
 
