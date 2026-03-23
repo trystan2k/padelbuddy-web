@@ -8,13 +8,14 @@
   flex-direction: column;
   width: 414px;
   height: auto;
+  padding: var(--base-space-16);
+  gap: var(--base-space-16);
 }
 
 .content {
   display: flex;
   flex-direction: column;
   gap: var(--base-space-16);
-  padding: var(--base-space-16);
   position: relative;
   z-index: 1;
 }

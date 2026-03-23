@@ -123,3 +123,83 @@
     gap: var(--base-space-12);
   }
 }
+
+/* ─── Debug Share Preview ─────────────────────────────────────────── */
+
+.debugShareButton {
+  /* Hidden by default — inspect element, remove display:none to reveal */
+  display: none;
+  position: fixed;
+  bottom: var(--base-space-16);
+  right: var(--base-space-16);
+  z-index: 9999;
+  width: var(--base-space-32);
+  height: var(--base-space-32);
+  border: none;
+  border-radius: var(--base-radius-12);
+  background-color: var(--semantic-color-action-primary);
+  color: var(--semantic-color-content-inverse);
+  font-family: var(--semantic-typography-family-body);
+  font-size: var(--base-font-size-14);
+  font-weight: var(--semantic-typography-weight-strong);
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+.debugShareButton:hover {
+  opacity: 1;
+}
+
+.debugModalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: var(--base-space-32);
+  background-color: rgb(0 0 0 / 60%);
+  backdrop-filter: blur(4px);
+  overflow: auto;
+}
+
+.debugModalContent {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--base-radius-24);
+  overflow: hidden;
+  box-shadow: 0 2rem 4rem var(--base-color-common-overlay-soft);
+}
+
+.debugModalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--base-space-12) var(--base-space-16);
+  background-color: var(--semantic-color-content-primary);
+  color: var(--semantic-color-content-inverse);
+  font-family: var(--semantic-typography-family-body);
+  font-size: var(--base-font-size-13);
+  font-weight: var(--semantic-typography-weight-strong);
+  gap: var(--base-space-16);
+}
+
+.debugModalClose {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--base-space-24);
+  height: var(--base-space-24);
+  border: none;
+  border-radius: var(--base-radius-8);
+  background-color: transparent;
+  color: var(--semantic-color-content-inverse);
+  cursor: pointer;
+  font-size: var(--base-font-size-14);
+  opacity: 0.7;
+}
+
+.debugModalClose:hover {
+  opacity: 1;
+}

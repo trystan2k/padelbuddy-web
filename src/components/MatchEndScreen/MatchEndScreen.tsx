@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useRouter } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 
@@ -56,6 +56,7 @@ export function MatchEndScreen({
   const [isStartingNewMatch, setIsStartingNewMatch] = useState(false)
   const [isContinuingMatch, setIsContinuingMatch] = useState(false)
   const [shareScreenReady, setShareScreenReady] = useState(false)
+  const [debugShareOpen, setDebugShareOpen] = useState(false)
   const captureRef = useRef<HTMLDivElement | null>(null)
 
   const summary = useMemo(
@@ -153,6 +154,28 @@ export function MatchEndScreen({
   const sharingActionLabel = t('match.end.actions.sharing')
   const handleCaptureComplete = useCallback(() => {
     setShareScreenReady(false)
+  }, [])
+
+  // Close debug modal on Escape
+  useEffect(() => {
+    if (!debugShareOpen) {
+      return
+    }
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setDebugShareOpen(false)
+      }
+    }
+    document.addEventListener('keydown', handler)
+    return () => document.removeEventListener('keydown', handler)
+  }, [debugShareOpen])
+
+  const handleDebugShareClose = useCallback(() => {
+    setDebugShareOpen(false)
+  }, [])
+
+  const handleDebugShareOpen = useCallback(() => {
+    setDebugShareOpen(true)
   }, [])
 
   const labels = useMemo(
@@ -306,6 +329,49 @@ export function MatchEndScreen({
       >
         {downloadMessage ?? ''}
       </p>
+
+      {/* Debug share preview — hidden by default, revealed by inspecting and removing display:none */}
+      <button
+        type="button"
+        className={styles.debugShareButton}
+        data-debug-share-button
+        onClick={handleDebugShareOpen}
+        aria-hidden="true"
+        tabIndex={-1}
+      >
+        S
+      </button>
+
+      {/* Debug modal */}
+      {debugShareOpen && (
+        <div
+          className={styles.debugModalOverlay}
+          onClick={handleDebugShareClose}
+          onKeyDown={handleDebugShareClose}
+          role="presentation"
+          tabIndex={-1}
+        >
+          <div
+            className={styles.debugModalContent}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Share screen debug preview"
+          >
+            <div className={styles.debugModalHeader}>
+              <span>DEBUG — ShareScreen Preview</span>
+              <button
+                type="button"
+                className={styles.debugModalClose}
+                onClick={handleDebugShareClose}
+                aria-label="Close debug modal"
+              >
+                ✕
+              </button>
+            </div>
+            <ShareScreen {...shareScreenProps} />
+          </div>
+        </div>
+      )}
     </>
   )
 }
