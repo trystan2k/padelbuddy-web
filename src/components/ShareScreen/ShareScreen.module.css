@@ -14,14 +14,6 @@
   --share-radial-h: 34%;
   --share-radial-opacity: 0.14;
 
-  /* Accent green tokens (from Pencil, not in semantic system yet) */
-  --accent-green: #1fa24a;
-  --accent-green-soft: #e0f4e6;
-
-  /* Custom font tokens (from Pencil) */
-  --font-body: var(--semantic-typography-family-body);
-  --font-display: var(--semantic-typography-family-display);
-
   display: flex;
   flex-direction: column;
   width: 414px;
@@ -74,17 +66,17 @@
   align-items: center;
   width: var(--base-space-90);
   height: var(--base-space-90);
-  background-color: var(--accent-green-soft);
+  background-color: var(--semantic-color-background-success-subtle);
   border-radius: var(--base-radius-48);
 }
 
 .trophyIcon {
-  color: var(--accent-green);
+  color: var(--semantic-color-action-primary);
 }
 
 .winnersLabel {
   color: var(--semantic-color-content-secondary);
-  font-family: var(--font-body);
+  font-family: var(--semantic-typography-family-body);
   font-size: var(--base-font-size-11);
   font-weight: var(--semantic-typography-weight-strong);
   letter-spacing: 2px;
@@ -93,7 +85,7 @@
 
 .winnerName {
   color: var(--semantic-color-items-primary-content);
-  font-family: var(--font-display);
+  font-family: var(--semantic-typography-family-display);
   font-size: var(--base-font-size-46);
   font-weight: var(--semantic-typography-weight-heading);
   letter-spacing: -1px;
@@ -109,14 +101,14 @@
 
 .vsLabel {
   color: var(--semantic-color-content-secondary);
-  font-family: var(--font-body);
+  font-family: var(--semantic-typography-family-body);
   font-size: var(--base-font-size-18);
   font-weight: var(--semantic-typography-weight-strong);
 }
 
 .loserName {
   color: var(--semantic-color-items-secondary-content);
-  font-family: var(--font-display);
+  font-family: var(--semantic-typography-family-display);
   font-size: var(--base-font-size-18);
   font-weight: var(--semantic-typography-weight-strong);
 }
@@ -140,7 +132,7 @@
 
 .scoreTitle {
   color: var(--semantic-color-content-primary);
-  font-family: var(--font-display);
+  font-family: var(--semantic-typography-family-display);
   font-size: var(--base-font-size-32);
   font-weight: var(--semantic-typography-weight-heading);
 }
@@ -151,7 +143,7 @@
   border: 1px solid var(--semantic-color-border-subtle);
   border-radius: var(--base-radius-18);
   color: var(--semantic-color-content-primary);
-  font-family: var(--font-body);
+  font-family: var(--semantic-typography-family-body);
   font-size: var(--base-font-size-13);
   font-weight: var(--semantic-typography-weight-strong);
   letter-spacing: 1.2px;
@@ -165,14 +157,14 @@
 
 .teamAHeader {
   color: var(--semantic-color-items-primary-content);
-  font-family: var(--font-body);
+  font-family: var(--semantic-typography-family-body);
   font-size: var(--base-font-size-18);
   font-weight: var(--semantic-typography-weight-strong);
 }
 
 .teamBHeader {
   color: var(--semantic-color-items-secondary-content);
-  font-family: var(--font-body);
+  font-family: var(--semantic-typography-family-body);
   font-size: var(--base-font-size-18);
   font-weight: var(--semantic-typography-weight-strong);
 }
@@ -191,28 +183,28 @@
 
 .setLabel {
   color: var(--semantic-color-content-secondary);
-  font-family: var(--font-body);
+  font-family: var(--semantic-typography-family-body);
   font-size: var(--base-font-size-18);
   font-weight: 600;
 }
 
 .winnerScore {
   color: var(--semantic-color-items-primary-content);
-  font-family: var(--font-display);
+  font-family: var(--semantic-typography-family-display);
   font-size: 46px;
   font-weight: 900;
 }
 
 .loserScore {
   color: var(--semantic-color-items-secondary-content);
-  font-family: var(--font-display);
+  font-family: var(--semantic-typography-family-display);
   font-size: 46px;
   font-weight: 900;
 }
 
 .setDash {
   color: var(--semantic-color-content-secondary);
-  font-family: var(--font-display);
+  font-family: var(--semantic-typography-family-display);
   font-size: 34px;
   font-weight: 700;
 }
@@ -236,7 +228,7 @@
 
 .statLabel {
   color: var(--semantic-color-content-secondary);
-  font-family: var(--font-body);
+  font-family: var(--semantic-typography-family-body);
   font-size: var(--base-font-size-14);
   font-weight: var(--semantic-typography-weight-strong);
   letter-spacing: 1.6px;
@@ -245,7 +237,7 @@
 
 .statValue {
   color: var(--semantic-color-content-primary);
-  font-family: var(--font-display);
+  font-family: var(--semantic-typography-family-display);
   font-size: 34px;
   font-weight: 800;
 }
