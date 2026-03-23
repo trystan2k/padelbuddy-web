@@ -1,4 +1,4 @@
-import { forwardRef, type ComponentPropsWithoutRef, type ReactNode } from 'react'
+import { type ComponentPropsWithoutRef, type ReactNode, type Ref } from 'react'
 import { Button as BaseButton } from '@base-ui/react/button'
 
 import { cn } from '@/lib/utils/cn'
@@ -13,6 +13,7 @@ export interface ButtonProps extends Omit<
   ComponentPropsWithoutRef<'button'>,
   'children' | 'className'
 > {
+  ref?: Ref<HTMLButtonElement>
   children: ReactNode
   className?: string | undefined
   variant?: ButtonVariant
@@ -20,19 +21,17 @@ export interface ButtonProps extends Omit<
   accent?: ButtonAccent
 }
 
-export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
-  {
-    children,
-    disabled = false,
-    type = 'button',
-    className,
-    variant = 'solid',
-    size = 'lg',
-    accent = 'success',
-    ...buttonProps
-  },
-  ref
-) {
+export function Button({
+  children,
+  disabled = false,
+  type = 'button',
+  className,
+  variant = 'solid',
+  size = 'lg',
+  accent = 'success',
+  ref,
+  ...buttonProps
+}: ButtonProps) {
   const variantClass =
     variant === 'solid' ? styles.solid : variant === 'outline' ? styles.outline : styles.soft
 
@@ -58,4 +57,4 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       {children}
     </BaseButton>
   )
-})
+}
