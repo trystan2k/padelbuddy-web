@@ -1,7 +1,7 @@
 ---
 description: Create execution plans from task intake using structured deep-thinking, simplicity-first design, and explicit validation checkpoints.
 mode: subagent
-model: openai/gpt-5.4
+model: opencode-go/minimax-m2.7
 reasoningEffort: xhigh
 textVerbosity: high
 temperature: 0.1

@@ -35,13 +35,14 @@
     "complete-check": "pnpm typecheck && pnpm lint:fix && pnpm format && pnpm test && pnpm test:e2e && pnpm build"
   },
   "dependencies": {
-    "@base-ui/react": "~1.2.0",
+    "@base-ui/react": "~1.3.0",
     "@fontsource/inter": "~5.2.8",
     "@fontsource/outfit": "~5.2.8",
     "@tanstack/react-router": "~1.166.3",
     "@tanstack/react-start": "~1.166.3",
     "i18next": "~25.8.18",
     "i18next-http-backend": "~3.0.2",
+    "modern-screenshot": "~4.6.8",
     "react": "~19.2.4",
     "react-dom": "~19.2.4",
     "react-i18next": "~16.5.8"

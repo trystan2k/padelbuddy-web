@@ -1,4 +1,4 @@
-import { forwardRef, type ComponentPropsWithoutRef } from 'react'
+import { type ComponentPropsWithoutRef, type Ref } from 'react'
 
 import { cn } from '@/lib/utils/cn'
 
@@ -8,16 +8,22 @@ export type SpinnerSize = 'sm' | 'md' | 'lg'
 export type SpinnerColor = 'primary' | 'secondary'
 
 export interface SpinnerProps extends Omit<ComponentPropsWithoutRef<'span'>, 'children'> {
+  ref?: Ref<HTMLSpanElement>
   size?: SpinnerSize
   color?: SpinnerColor
   label?: string
   silent?: boolean
 }
 
-export const Spinner = forwardRef<HTMLSpanElement, SpinnerProps>(function Spinner(
-  { className, size = 'md', color = 'primary', label = 'Loading', silent = false, ...props },
-  ref
-) {
+export function Spinner({
+  className,
+  size = 'md',
+  color = 'primary',
+  label = 'Loading',
+  silent = false,
+  ref,
+  ...props
+}: SpinnerProps) {
   const sizeClass = size === 'sm' ? styles.sizeSm : size === 'lg' ? styles.sizeLg : styles.sizeMd
   const colorClass = color === 'secondary' ? styles.colorSecondary : styles.colorPrimary
 
@@ -34,4 +40,4 @@ export const Spinner = forwardRef<HTMLSpanElement, SpinnerProps>(function Spinne
       <span className={styles.visuallyHidden}>{label}</span>
     </span>
   )
-})
+}

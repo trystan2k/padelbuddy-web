@@ -1,31 +1,9 @@
-/* Layout shell - full viewport with background gradient */
+/* Layout shell - flex column layout. */
 .layout {
-  min-height: 100vh;
-  min-height: 100dvh;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(
-    180deg,
-    var(--screen-bg-start, var(--semantic-color-background-canvas)) 0%,
-    var(--screen-bg-end, var(--semantic-color-background-canvas-end)) 100%
-  );
-  position: relative;
-}
-
-.layout::before {
-  content: '';
-  position: absolute;
-  left: calc(var(--screen-radial-x, 93%) - (var(--screen-radial-w, 34%) / 2));
-  top: calc(var(--screen-radial-y, 8%) - (var(--screen-radial-h, 26%) / 2));
-  width: var(--screen-radial-w, 34%);
-  height: var(--screen-radial-h, 26%);
-  background: radial-gradient(
-    circle,
-    var(--screen-radial-color, var(--base-color-brand-highlight)) 0%,
-    transparent 70%
-  );
-  opacity: var(--screen-radial-opacity, 0.18);
-  pointer-events: none;
+  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 .container {

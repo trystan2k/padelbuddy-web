@@ -1,18 +1,3 @@
-.screen {
-  height: 100vh;
-  height: 100dvh;
-  overflow: hidden;
-
-  --screen-bg-start: var(--semantic-color-background-canvas);
-  --screen-bg-end: var(--semantic-color-background-canvas-game);
-  --screen-radial-color: var(--semantic-color-background-accent-primary-subtle);
-  --screen-radial-x: 16%;
-  --screen-radial-y: 10%;
-  --screen-radial-w: 42%;
-  --screen-radial-h: 34%;
-  --screen-radial-opacity: 0.14;
-}
-
 .body,
 .content {
   display: flex;
@@ -28,6 +13,39 @@
 .content {
   height: 100%;
   gap: var(--base-space-16);
+}
+
+.shareStatus {
+  display: inline-flex;
+  min-height: calc(var(--base-space-8) * 5);
+  align-items: center;
+  align-self: flex-start;
+  padding: var(--base-space-8) var(--base-space-12);
+  border: 1px solid var(--semantic-color-border-subtle);
+  border-radius: var(--base-radius-16);
+  background-color: var(--semantic-color-background-surface);
+  color: var(--semantic-color-content-primary);
+  font-family: var(--semantic-typography-family-body);
+  font-size: var(--base-font-size-14);
+  font-weight: var(--base-font-weight-medium);
+  line-height: 1.2;
+}
+
+.shareStatusError {
+  border-color: var(--semantic-color-border-accent-danger);
+  background-color: var(--semantic-color-background-accent-danger-subtle);
+  color: var(--semantic-color-content-danger);
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  margin: -1px;
+  white-space: nowrap;
+  border: 0;
 }
 
 .hero {
@@ -53,6 +71,7 @@
 
 .shareButton {
   display: inline-flex;
+  min-width: calc(var(--base-space-8) * 17);
   align-items: center;
   justify-content: center;
   gap: var(--base-space-8);
@@ -61,15 +80,36 @@
   border-radius: var(--base-radius-20);
   background-color: var(--semantic-color-action-primary);
   color: var(--semantic-color-content-inverse);
-  cursor: default;
+  cursor: pointer;
   font-family: var(--semantic-typography-family-body);
   font-size: var(--base-font-size-14);
   font-weight: var(--base-font-weight-semibold);
   line-height: 1;
+  transition:
+    transform 150ms ease,
+    opacity 150ms ease,
+    filter 150ms ease;
+}
+
+.shareButton:hover:not(:disabled) {
+  filter: brightness(1.06);
+}
+
+.shareButton:focus-visible {
+  outline: 2px solid var(--semantic-color-content-inverse);
+  outline-offset: 2px;
+}
+
+.shareButton:active:not(:disabled) {
+  transform: translateY(1px);
 }
 
 .shareButton:disabled {
-  opacity: 1;
+  opacity: 0.9;
+}
+
+.shareButton[data-share-loading='true'] {
+  cursor: progress;
 }
 
 .shareIcon {
@@ -82,4 +122,84 @@
   .content {
     gap: var(--base-space-12);
   }
+}
+
+/* ─── Debug Share Preview ─────────────────────────────────────────── */
+
+.debugShareButton {
+  /* Hidden by default — inspect element, remove display:none to reveal */
+  display: none;
+  position: fixed;
+  bottom: var(--base-space-16);
+  right: var(--base-space-16);
+  z-index: 9999;
+  width: var(--base-space-32);
+  height: var(--base-space-32);
+  border: none;
+  border-radius: var(--base-radius-12);
+  background-color: var(--semantic-color-action-primary);
+  color: var(--semantic-color-content-inverse);
+  font-family: var(--semantic-typography-family-body);
+  font-size: var(--base-font-size-14);
+  font-weight: var(--semantic-typography-weight-strong);
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+.debugShareButton:hover {
+  opacity: 1;
+}
+
+.debugModalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: var(--base-space-32);
+  background-color: rgb(0 0 0 / 60%);
+  backdrop-filter: blur(4px);
+  overflow: auto;
+}
+
+.debugModalContent {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--base-radius-24);
+  overflow: hidden;
+  box-shadow: 0 2rem 4rem var(--base-color-common-overlay-soft);
+}
+
+.debugModalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--base-space-12) var(--base-space-16);
+  background-color: var(--semantic-color-content-primary);
+  color: var(--semantic-color-content-inverse);
+  font-family: var(--semantic-typography-family-body);
+  font-size: var(--base-font-size-13);
+  font-weight: var(--semantic-typography-weight-strong);
+  gap: var(--base-space-16);
+}
+
+.debugModalClose {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--base-space-24);
+  height: var(--base-space-24);
+  border: none;
+  border-radius: var(--base-radius-8);
+  background-color: transparent;
+  color: var(--semantic-color-content-inverse);
+  cursor: pointer;
+  font-size: var(--base-font-size-14);
+  opacity: 0.7;
+}
+
+.debugModalClose:hover {
+  opacity: 1;
 }

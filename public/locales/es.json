@@ -123,6 +123,23 @@
       "all": "iguales"
     }
   },
+  "share": {
+    "topbar": {
+      "appName": "Padel Buddy",
+      "badge": "PARTIDO TERMINADO"
+    },
+    "result": {
+      "winners": "GANADORES"
+    },
+    "score": {
+      "title": "Resultado Final",
+      "set": "Set {{number}}"
+    },
+    "stats": {
+      "duration": "DURACIÓN",
+      "date": "FECHA"
+    }
+  },
   "setup": {
     "header": {
       "appName": "Padel Buddy",
@@ -227,8 +244,15 @@
       },
       "actions": {
         "share": "Compartir",
+        "sharing": "Compartiendo...",
         "newMatch": "Nuevo partido",
         "continue": "Continuar"
+      },
+      "share": {
+        "text": "{{winnerName}} ganó un partido {{formatLabel}} de Padel Buddy en {{durationValue}} y {{totalGames}} juegos. {{teamOneName}} vs {{teamTwoName}}.",
+        "error": "No se puede compartir este partido ahora mismo.",
+        "download": "La imagen del partido se descargó.",
+        "textFinishedEarly": "El partido {{formatLabel}} de Padel Buddy entre {{teamOneName}} y {{teamTwoName}} terminó antes de tiempo tras {{durationValue}} y {{totalGames}} juegos."
       },
       "aria": {
         "summaryRegion": "Resumen del resultado del partido",

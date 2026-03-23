@@ -1,8 +1,10 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useRouter } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 
 import { Layout } from '@/components/Layout/Layout'
+import { ShareScreen } from '@/components/ShareScreen'
+import { useToast } from '@/components/ui'
 import { TopBar } from '@/components/ui/TopBar'
 import type { MatchAction, MatchFormat, MatchProjection, MatchSetup } from '@/core/match'
 import { clearCurrentMatch, createCurrentMatchSession } from '@/lib/current-match'
@@ -12,6 +14,7 @@ import { createMatchEndScreenSummary, getMatchDurationParts } from './view-model
 import { MatchStatsCard } from './MatchStatsCard'
 import { MatchSummaryCard } from './MatchSummaryCard'
 import { WinnerCard } from './WinnerCard'
+import { useMatchEndShare } from './useMatchEndShare'
 
 import styles from './MatchEndScreen.module.css'
 
@@ -32,6 +35,13 @@ const formatTranslationKeys: Record<MatchFormat, 'bestOf1' | 'bestOf3' | 'bestOf
 
 const activeMatchRouteId = '/match/$id'
 
+const hiddenScreenStyle = {
+  position: 'fixed',
+  top: 0,
+  left: '-9999px',
+  pointerEvents: 'none'
+} as const
+
 export function MatchEndScreen({
   matchId,
   setup,
@@ -42,9 +52,12 @@ export function MatchEndScreen({
 }: MatchEndScreenProps) {
   const navigate = useNavigate()
   const router = useRouter()
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [isStartingNewMatch, setIsStartingNewMatch] = useState(false)
   const [isContinuingMatch, setIsContinuingMatch] = useState(false)
+  const [shareScreenReady, setShareScreenReady] = useState(false)
+  const [debugShareOpen, setDebugShareOpen] = useState(false)
+  const captureRef = useRef<HTMLDivElement | null>(null)
 
   const summary = useMemo(
     () =>
@@ -73,6 +86,126 @@ export function MatchEndScreen({
       : t('match.end.stats.durationMinutes', {
           minutes: durationParts.minutes
         })
+
+  // Formats date using locale-aware Intl.DateTimeFormat
+  const dateValue = useMemo(() => {
+    if (typeof finishedAt !== 'number') {
+      return ''
+    }
+    return new Intl.DateTimeFormat(i18n.language, {
+      day: '2-digit',
+      month: '2-digit',
+      year: '2-digit'
+    }).format(new Date(finishedAt))
+  }, [finishedAt, i18n.language])
+
+  // Compute ShareScreen props
+  const shareScreenProps = useMemo(() => {
+    const winnerNameValue = summary.isFinishedEarly
+      ? t('match.end.winner.finishedEarlyName')
+      : (summary.winnerName ?? '')
+
+    return {
+      winnerName: winnerNameValue,
+      team1Name: summary.teamNames['team-1'],
+      team2Name: summary.teamNames['team-2'],
+      formatLabel,
+      setRows: summary.setRows.map((row) => ({
+        setNumber: row.setNumber,
+        team1Games: row.scores['team-1'],
+        team2Games: row.scores['team-2']
+      })),
+      durationValue,
+      dateValue
+    }
+  }, [
+    durationValue,
+    dateValue,
+    formatLabel,
+    summary.isFinishedEarly,
+    summary.setRows,
+    summary.teamNames,
+    summary.winnerName,
+    t
+  ])
+
+  const shareText = summary.isFinishedEarly
+    ? ''
+    : t('match.end.share.text', {
+        winnerName: summary.winnerName,
+        formatLabel,
+        durationValue,
+        totalGames: summary.totalGames,
+        teamOneName: summary.teamNames['team-1'],
+        teamTwoName: summary.teamNames['team-2']
+      })
+  const finishedEarlyShareText = t('match.end.share.textFinishedEarly', {
+    formatLabel,
+    durationValue,
+    totalGames: summary.totalGames,
+    teamOneName: summary.teamNames['team-1'],
+    teamTwoName: summary.teamNames['team-2']
+  })
+  const shareActionLabel = t('match.end.actions.share')
+  const sharingActionLabel = t('match.end.actions.sharing')
+  const handleCaptureComplete = useCallback(() => {
+    setShareScreenReady(false)
+  }, [])
+
+  // Close debug modal on Escape
+  useEffect(() => {
+    if (!debugShareOpen) {
+      return
+    }
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setDebugShareOpen(false)
+      }
+    }
+    document.addEventListener('keydown', handler)
+    return () => document.removeEventListener('keydown', handler)
+  }, [debugShareOpen])
+
+  const handleDebugShareClose = useCallback(() => {
+    setDebugShareOpen(false)
+  }, [])
+
+  const handleDebugShareOpen = useCallback(() => {
+    setDebugShareOpen(true)
+  }, [])
+
+  const labels = useMemo(
+    () => ({
+      shareText,
+      finishedEarlyShareText,
+      errorMessage: t('match.end.share.error'),
+      downloadMessage: t('match.end.share.download')
+    }),
+    [finishedEarlyShareText, shareText, t]
+  )
+  const { downloadMessage, errorMessage, handleShareClick, isSharing } = useMatchEndShare({
+    captureRef,
+    finishedAt: finishedAt ?? Date.now(),
+    summary,
+    labels,
+    shareScreenReady,
+    onCaptureComplete: handleCaptureComplete
+  })
+
+  const { addErrorToast, addInfoToast } = useToast()
+
+  // Trigger toasts when error/download messages appear
+  useEffect(() => {
+    if (errorMessage) {
+      addErrorToast(errorMessage, { timeout: 5000 })
+    }
+  }, [addErrorToast, errorMessage])
+
+  useEffect(() => {
+    if (downloadMessage) {
+      addInfoToast(downloadMessage, { timeout: 4000 })
+    }
+  }, [addInfoToast, downloadMessage])
 
   const handleNewMatch = useCallback(async () => {
     if (isStartingNewMatch) {
@@ -123,6 +256,11 @@ export function MatchEndScreen({
     }
   }, [actions, finishedAt, isContinuingMatch, matchId, navigate, router, setup, startedAt])
 
+  const handleShareButtonClick = useCallback(() => {
+    handleShareClick()
+    setShareScreenReady(true)
+  }, [handleShareClick])
+
   const headerContent = useMemo(
     () => (
       <TopBar
@@ -131,13 +269,21 @@ export function MatchEndScreen({
         title={t('match.end.header.appName')}
         subtitle={t('match.end.header.subtitle')}
       >
-        <button type="button" className={styles.shareButton} disabled>
+        <button
+          type="button"
+          className={styles.shareButton}
+          disabled={isSharing}
+          aria-busy={isSharing || undefined}
+          data-share-button="true"
+          data-share-loading={isSharing ? 'true' : 'false'}
+          onClick={handleShareButtonClick}
+        >
           <ShareIcon />
-          <span>{t('match.end.actions.share')}</span>
+          <span data-share-label="true">{isSharing ? sharingActionLabel : shareActionLabel}</span>
         </button>
       </TopBar>
     ),
-    [t]
+    [handleShareButtonClick, isSharing, shareActionLabel, sharingActionLabel, t]
   )
 
   const footerContent = useMemo(
@@ -146,32 +292,80 @@ export function MatchEndScreen({
   )
 
   return (
-    <Layout
-      className={styles.screen}
-      bodyClassName={styles.body ?? ''}
-      header={headerContent}
-      footer={footerContent}
-    >
-      <div className={styles.content} data-testid="match-end-screen">
-        <section className={styles.hero} aria-label={t('match.end.aria.summaryRegion')}>
-          <WinnerCard
-            winnerLabel={winnerLabel}
-            winnerName={winnerName}
-            {...(summary.winnerTeamId ? { winnerTeamId: summary.winnerTeamId } : {})}
-            isStartingNewMatch={isStartingNewMatch}
-            isContinuingMatch={isContinuingMatch}
-            onNewMatch={handleNewMatch}
-            onContinue={handleContinue}
-          />
+    <>
+      {/* ShareScreen is rendered off-screen when share button is clicked, then unmounted after capture */}
+      {shareScreenReady && (
+        <div aria-hidden="true" style={hiddenScreenStyle}>
+          <ShareScreen ref={captureRef} {...shareScreenProps} />
+        </div>
+      )}
 
-          <MatchSummaryCard
-            formatLabel={formatLabel}
-            teamNames={summary.teamNames}
-            setRows={summary.setRows}
-          />
-        </section>
+      <div data-testid="match-end-screen">
+        <Layout bodyClassName={styles.body ?? ''} header={headerContent} footer={footerContent}>
+          <div className={styles.content}>
+            <section className={styles.hero} aria-label={t('match.end.aria.summaryRegion')}>
+              <WinnerCard
+                winnerLabel={winnerLabel}
+                winnerName={winnerName}
+                {...(summary.winnerTeamId ? { winnerTeamId: summary.winnerTeamId } : {})}
+                isStartingNewMatch={isStartingNewMatch}
+                isContinuingMatch={isContinuingMatch}
+                onNewMatch={handleNewMatch}
+                onContinue={handleContinue}
+              />
+
+              <MatchSummaryCard
+                formatLabel={formatLabel}
+                teamNames={summary.teamNames}
+                setRows={summary.setRows}
+              />
+            </section>
+          </div>
+        </Layout>
       </div>
-    </Layout>
+      {/* Debug share preview — hidden by default, revealed by inspecting and removing display:none */}
+      <button
+        type="button"
+        className={styles.debugShareButton}
+        data-debug-share-button
+        onClick={handleDebugShareOpen}
+        aria-hidden="true"
+        tabIndex={-1}
+      >
+        S
+      </button>
+
+      {/* Debug modal */}
+      {debugShareOpen && (
+        <div
+          className={styles.debugModalOverlay}
+          onClick={handleDebugShareClose}
+          onKeyDown={handleDebugShareClose}
+          role="presentation"
+          tabIndex={-1}
+        >
+          <div
+            className={styles.debugModalContent}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Share screen debug preview"
+          >
+            <div className={styles.debugModalHeader}>
+              <span>DEBUG — ShareScreen Preview</span>
+              <button
+                type="button"
+                className={styles.debugModalClose}
+                onClick={handleDebugShareClose}
+                aria-label="Close debug modal"
+              >
+                ✕
+              </button>
+            </div>
+            <ShareScreen {...shareScreenProps} />
+          </div>
+        </div>
+      )}
+    </>
   )
 }
 

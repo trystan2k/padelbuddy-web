@@ -12,6 +12,7 @@
       "28": { "value": "28px", "type": "borderRadius" },
       "32": { "value": "32px", "type": "borderRadius" },
       "36": { "value": "36px", "type": "borderRadius" },
+      "48": { "value": "48px", "type": "borderRadius" },
       "54": { "value": "54px", "type": "borderRadius" }
     }
   }

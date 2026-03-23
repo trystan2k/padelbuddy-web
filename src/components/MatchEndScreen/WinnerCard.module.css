@@ -6,7 +6,6 @@
   border: 1px solid var(--semantic-color-border-subtle);
   background-color: var(--semantic-color-background-surface);
   padding: var(--base-space-24);
-  box-shadow: 0 16px 40px color-mix(in srgb, var(--semantic-color-content-primary) 7%, transparent);
 }
 
 .inner,
