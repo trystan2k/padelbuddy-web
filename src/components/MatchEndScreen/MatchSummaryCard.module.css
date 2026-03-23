@@ -8,7 +8,6 @@
   background-color: var(--semantic-color-background-surface);
   padding: var(--base-space-24);
   overflow: hidden;
-  box-shadow: 0 16px 40px color-mix(in srgb, var(--semantic-color-content-primary) 7%, transparent);
 }
 
 .content,

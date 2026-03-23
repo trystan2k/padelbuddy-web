@@ -5,8 +5,8 @@ import { ShareScreen } from '@/components/ShareScreen'
 describe('ShareScreen', () => {
   const defaultProps = {
     winnerName: 'Alvaro y Enrique',
-    loserName: 'Pablo y Thiago',
-    winnerTeamId: 'team-1' as const,
+    team1Name: 'Alvaro y Enrique',
+    team2Name: 'Pablo y Thiago',
     formatLabel: 'Best of 3',
     setRows: [
       { setNumber: 1, team1Games: 6, team2Games: 4 },
@@ -21,7 +21,12 @@ describe('ShareScreen', () => {
     await expect.element(screen.getByText('Alvaro y Enrique').first()).toBeInTheDocument()
   })
 
-  it('renders loser name', async () => {
+  it('renders team 1 name', async () => {
+    const screen = await render(<ShareScreen {...defaultProps} />)
+    await expect.element(screen.getByText('Alvaro y Enrique').first()).toBeInTheDocument()
+  })
+
+  it('renders team 2 name', async () => {
     const screen = await render(<ShareScreen {...defaultProps} />)
     await expect.element(screen.getByText('Pablo y Thiago').first()).toBeInTheDocument()
   })

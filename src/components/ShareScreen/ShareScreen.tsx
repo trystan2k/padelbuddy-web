@@ -1,4 +1,3 @@
-import type { MatchTeamId } from '@/core/match'
 import { useTranslation } from 'react-i18next'
 
 import { TopBar } from '@/components/ui/TopBar'
@@ -9,8 +8,8 @@ import { cn } from '@/lib/utils/cn'
 export interface ShareScreenProps {
   ref?: import('react').Ref<HTMLDivElement>
   winnerName: string
-  loserName: string
-  winnerTeamId: MatchTeamId
+  team1Name: string
+  team2Name: string
   formatLabel: string
   setRows: Array<{
     setNumber: number
@@ -24,16 +23,14 @@ export interface ShareScreenProps {
 export function ShareScreen({
   ref,
   winnerName,
-  loserName,
-  winnerTeamId,
+  team1Name,
+  team2Name,
   formatLabel,
   setRows,
   durationValue,
   dateValue
 }: ShareScreenProps) {
   const { t } = useTranslation()
-
-  const winnerIsTeam1 = winnerTeamId === 'team-1'
 
   const matchCompleteBadge = t('share.topbar.badge')
 
@@ -59,10 +56,6 @@ export function ShareScreen({
           </div>
           <span className={styles.winnersLabel}>{t('share.result.winners')}</span>
           <span className={styles.winnerName}>{winnerName}</span>
-          <div className={styles.loserRow}>
-            <span className={styles.vsLabel}>{t('share.result.vs')}</span>
-            <span className={styles.loserName}>{loserName}</span>
-          </div>
         </div>
 
         {/* Score Card */}
@@ -73,29 +66,21 @@ export function ShareScreen({
           </div>
 
           <div className={styles.teamHeaders}>
-            <span className={winnerIsTeam1 ? styles.teamAHeader : styles.teamBHeader}>
-              {winnerName}
-            </span>
-            <span className={!winnerIsTeam1 ? styles.teamAHeader : styles.teamBHeader}>
-              {loserName}
-            </span>
+            <span className={styles.teamAHeader}>{team1Name}</span>
+            <span className={styles.teamBHeader}>{team2Name}</span>
           </div>
 
           <div className={styles.scoreRows}>
-            {setRows.map((row) => {
-              const col1Score = winnerIsTeam1 ? row.team1Games : row.team2Games
-              const col2Score = winnerIsTeam1 ? row.team2Games : row.team1Games
-              return (
-                <div key={row.setNumber} className={styles.setRow}>
-                  <span className={styles.setLabel}>
-                    {t('share.score.set', { number: row.setNumber })}
-                  </span>
-                  <span className={styles.winnerScore}>{col1Score}</span>
-                  <span className={styles.setDash}>-</span>
-                  <span className={styles.loserScore}>{col2Score}</span>
-                </div>
-              )
-            })}
+            {setRows.map((row) => (
+              <div key={row.setNumber} className={styles.setRow}>
+                <span className={styles.setLabel}>
+                  {t('share.score.set', { number: row.setNumber })}
+                </span>
+                <span className={styles.winnerScore}>{row.team1Games}</span>
+                <span className={styles.setDash}>-</span>
+                <span className={styles.loserScore}>{row.team2Games}</span>
+              </div>
+            ))}
           </div>
         </div>
 

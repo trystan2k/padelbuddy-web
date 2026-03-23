@@ -10,6 +10,12 @@
   height: auto;
   padding: var(--base-space-16);
   gap: var(--base-space-16);
+  background: linear-gradient(
+    180deg,
+    var(--semantic-color-background-canvas) 0%,
+    var(--semantic-color-background-canvas-end) 100%
+  );
+  position: relative;
 }
 
 .content {
@@ -63,26 +69,6 @@
   letter-spacing: -1px;
   line-height: 1;
   text-align: center;
-}
-
-.loserRow {
-  display: flex;
-  align-items: center;
-  gap: var(--base-space-8);
-}
-
-.vsLabel {
-  color: var(--semantic-color-content-secondary);
-  font-family: var(--semantic-typography-family-body);
-  font-size: var(--base-font-size-18);
-  font-weight: var(--semantic-typography-weight-strong);
-}
-
-.loserName {
-  color: var(--semantic-color-items-secondary-content);
-  font-family: var(--semantic-typography-family-display);
-  font-size: var(--base-font-size-18);
-  font-weight: var(--semantic-typography-weight-strong);
 }
 
 /* Score Card */

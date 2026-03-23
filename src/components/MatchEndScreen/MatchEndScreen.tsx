@@ -4,10 +4,10 @@ import { useTranslation } from 'react-i18next'
 
 import { Layout } from '@/components/Layout/Layout'
 import { ShareScreen } from '@/components/ShareScreen'
+import { useToast } from '@/components/ui'
 import { TopBar } from '@/components/ui/TopBar'
 import type { MatchAction, MatchFormat, MatchProjection, MatchSetup } from '@/core/match'
 import { clearCurrentMatch, createCurrentMatchSession } from '@/lib/current-match'
-import { cn } from '@/lib/utils/cn'
 import { getViewTransitionNavigationOptions } from '@/lib/utils/view-transitions'
 
 import { createMatchEndScreenSummary, getMatchDurationParts } from './view-model'
@@ -101,17 +101,14 @@ export function MatchEndScreen({
 
   // Compute ShareScreen props
   const shareScreenProps = useMemo(() => {
-    const winnerTeamId = summary.winnerTeamId ?? 'team-1'
-    const loserTeamId = winnerTeamId === 'team-1' ? 'team-2' : 'team-1'
     const winnerNameValue = summary.isFinishedEarly
       ? t('match.end.winner.finishedEarlyName')
       : (summary.winnerName ?? '')
-    const loserNameValue = summary.teamNames[loserTeamId]
 
     return {
       winnerName: winnerNameValue,
-      loserName: loserNameValue,
-      winnerTeamId,
+      team1Name: summary.teamNames['team-1'],
+      team2Name: summary.teamNames['team-2'],
       formatLabel,
       setRows: summary.setRows.map((row) => ({
         setNumber: row.setNumber,
@@ -129,7 +126,6 @@ export function MatchEndScreen({
     summary.setRows,
     summary.teamNames,
     summary.winnerName,
-    summary.winnerTeamId,
     t
   ])
 
@@ -196,6 +192,21 @@ export function MatchEndScreen({
     onCaptureComplete: handleCaptureComplete
   })
 
+  const { addErrorToast, addInfoToast } = useToast()
+
+  // Trigger toasts when error/download messages appear
+  useEffect(() => {
+    if (errorMessage) {
+      addErrorToast(errorMessage, { timeout: 5000 })
+    }
+  }, [addErrorToast, errorMessage])
+
+  useEffect(() => {
+    if (downloadMessage) {
+      addInfoToast(downloadMessage, { timeout: 4000 })
+    }
+  }, [addInfoToast, downloadMessage])
+
   const handleNewMatch = useCallback(async () => {
     if (isStartingNewMatch) {
       return
@@ -260,7 +271,7 @@ export function MatchEndScreen({
       >
         <button
           type="button"
-          className={cn(styles.shareButton)}
+          className={styles.shareButton}
           disabled={isSharing}
           aria-busy={isSharing || undefined}
           data-share-button="true"
@@ -290,12 +301,7 @@ export function MatchEndScreen({
       )}
 
       <div data-testid="match-end-screen">
-        <Layout
-          className="screen"
-          bodyClassName={styles.body ?? ''}
-          header={headerContent}
-          footer={footerContent}
-        >
+        <Layout bodyClassName={styles.body ?? ''} header={headerContent} footer={footerContent}>
           <div className={styles.content}>
             <section className={styles.hero} aria-label={t('match.end.aria.summaryRegion')}>
               <WinnerCard
@@ -317,19 +323,6 @@ export function MatchEndScreen({
           </div>
         </Layout>
       </div>
-      {errorMessage ? (
-        <p className={cn(styles.shareStatus, styles.shareStatusError)} role="alert">
-          {errorMessage}
-        </p>
-      ) : null}
-      <p
-        className={cn(styles.shareStatus, !downloadMessage && styles.srOnly)}
-        aria-live="polite"
-        role="status"
-      >
-        {downloadMessage ?? ''}
-      </p>
-
       {/* Debug share preview — hidden by default, revealed by inspecting and removing display:none */}
       <button
         type="button"

@@ -12,7 +12,7 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { NotFoundPage } from '@/components/NotFoundPage/NotFoundPage'
-import { Button, Spinner } from '@/components/ui'
+import { Button, Spinner, ToastProvider } from '@/components/ui'
 import { i18n, initializeI18n } from '@/lib/i18n'
 
 import { getErrorMessage } from './-route-utils'
@@ -176,31 +176,33 @@ function RootDocument() {
         <HeadContent />
       </head>
       <body>
-        <div className={styles.routeShell}>
-          <div
-            className={
-              isRoutePending
-                ? `${styles.routeViewport} ${styles.routeViewportPending}`
-                : styles.routeViewport
-            }
-            data-view-transition-root="true"
-          >
-            <Outlet />
-          </div>
-          {isRoutePending ? (
-            <div className={styles.routePendingOverlay} role="status" aria-live="polite">
-              <div className={styles.routePendingNotice}>
-                <Spinner
-                  size="sm"
-                  color="secondary"
-                  label={t('loadingState.routeTransition')}
-                  silent
-                />
-                <p className={styles.routePendingLabel}>{t('loadingState.routeTransition')}</p>
-              </div>
+        <ToastProvider>
+          <div className={styles.routeShell}>
+            <div
+              className={
+                isRoutePending
+                  ? `${styles.routeViewport} ${styles.routeViewportPending}`
+                  : styles.routeViewport
+              }
+              data-view-transition-root="true"
+            >
+              <Outlet />
             </div>
-          ) : null}
-        </div>
+            {isRoutePending ? (
+              <div className={styles.routePendingOverlay} role="status" aria-live="polite">
+                <div className={styles.routePendingNotice}>
+                  <Spinner
+                    size="sm"
+                    color="secondary"
+                    label={t('loadingState.routeTransition')}
+                    silent
+                  />
+                  <p className={styles.routePendingLabel}>{t('loadingState.routeTransition')}</p>
+                </div>
+              </div>
+            ) : null}
+          </div>
+        </ToastProvider>
         <Scripts />
       </body>
     </html>

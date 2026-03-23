@@ -171,7 +171,7 @@ export function ActiveMatchScreen({
   )
 
   return (
-    <Layout className="screen" header={headerContent} footer={footerContent}>
+    <Layout header={headerContent} footer={footerContent}>
       <div className={styles.scorePanel}>
         <div className={styles.teamColumn}>
           <TeamPanel

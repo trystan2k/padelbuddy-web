@@ -1,4 +1,4 @@
-/* Layout shell - flex column layout. Background is handled by global .screen class. */
+/* Layout shell - flex column layout. */
 .layout {
   display: flex;
   flex-direction: column;

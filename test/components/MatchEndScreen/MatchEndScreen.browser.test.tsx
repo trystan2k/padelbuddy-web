@@ -12,6 +12,19 @@ const currentTime = new Date('2026-03-19T13:24:00.000Z')
 const startedAt = currentTime.getTime() - 20 * 60 * 1000
 const finishedAt = startedAt + 5 * 60 * 1000
 
+// Mock useToast to track toast calls without rendering portal
+const mockAddInfoToast = vi.fn()
+const mockAddErrorToast = vi.fn()
+vi.mock('@/components/ui/Toast/useToast', () => ({
+  useToast: () => ({
+    addInfoToast: mockAddInfoToast,
+    addErrorToast: mockAddErrorToast
+  }),
+  ToastProvider: ({ children }: { children: React.ReactNode }) => children,
+  globalToastManager: { add: vi.fn(), subscribe: vi.fn(), unsubscribe: vi.fn() },
+  useToastManager: () => ({ toasts: [] })
+}))
+
 const {
   mockNavigate,
   mockClearCache,
@@ -263,7 +276,10 @@ describe('MatchEndScreen', () => {
     expect(share).not.toHaveBeenCalled()
     expect(anchorClickSpy).toHaveBeenCalledTimes(1)
     expect(revokeObjectUrlMock).toHaveBeenCalledWith('blob:match-end-screen')
-    await expect.element(screen.getByText('Match image downloaded.')).toBeInTheDocument()
+    // Toast is triggered via useToast - verify mock was called
+    await vi.waitFor(() => {
+      expect(mockAddInfoToast).toHaveBeenCalledWith('Match image downloaded.', expect.any(Object))
+    })
   })
 
   test('shows an error alert when capture fails', async () => {
@@ -284,9 +300,13 @@ describe('MatchEndScreen', () => {
         expect.any(Error)
       )
     })
-    await expect
-      .element(screen.getByRole('alert'))
-      .toHaveTextContent('Unable to share this match right now.')
+    // Toast is triggered via useToast - verify mock was called
+    await vi.waitFor(() => {
+      expect(mockAddErrorToast).toHaveBeenCalledWith(
+        'Unable to share this match right now.',
+        expect.any(Object)
+      )
+    })
   })
 
   test('shares the finished-early copy instead of the raw i18n key', async () => {
