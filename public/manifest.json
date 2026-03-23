@@ -1,0 +1,29 @@
+{
+  "name": "Padel Buddy",
+  "short_name": "Padel Buddy",
+  "description": "Match tracking app for padel matches",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#2F7CF6",
+  "background_color": "#FFFFFF",
+  "lang": "en",
+  "dir": "ltr",
+  "id": "padel-buddy-web",
+  "categories": ["sports", "games"],
+  "icons": [
+    {
+      "src": "/icon.png",
+      "sizes": "124x124",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon.png",
+      "sizes": "124x124",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
