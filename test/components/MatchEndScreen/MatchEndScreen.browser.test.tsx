@@ -200,7 +200,12 @@ describe('MatchEndScreen', () => {
 
     ;(sharingButton.element() as HTMLButtonElement).click()
 
-    expect(mockDomToBlob).toHaveBeenCalledTimes(1)
+    // Wait for async performCapture() flow: React re-render → useEffect →
+    // performCapture() → 2× requestAnimationFrame → domToBlob call.
+    // Without vi.waitFor this is racy — passes on fast machines, fails on slow ones.
+    await vi.waitFor(() => {
+      expect(mockDomToBlob).toHaveBeenCalledTimes(1)
+    })
 
     deferredCapture.resolve(createPngBlob())
 
