@@ -1,18 +1,3 @@
-.screen {
-  height: 100vh;
-  height: 100dvh;
-  overflow: hidden;
-
-  --screen-bg-start: var(--semantic-color-background-canvas);
-  --screen-bg-end: var(--semantic-color-background-canvas-game);
-  --screen-radial-color: var(--semantic-color-background-accent-primary-subtle);
-  --screen-radial-x: 16%;
-  --screen-radial-y: 10%;
-  --screen-radial-w: 42%;
-  --screen-radial-h: 34%;
-  --screen-radial-opacity: 0.14;
-}
-
 .body,
 .content {
   display: flex;

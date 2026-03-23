@@ -1,15 +1,5 @@
 /* ActiveMatchScreen - Following Pencil design node ID: VSRKf */
 
-.gameScreen {
-  --screen-bg-start: var(--semantic-color-background-canvas-game);
-  --screen-bg-end: var(--semantic-color-background-canvas-game-end);
-  --screen-radial-x: 85%;
-  --screen-radial-y: 8%;
-  --screen-radial-w: 34%;
-  --screen-radial-h: 26%;
-  --screen-radial-opacity: 0.18;
-}
-
 .scorePanel {
   position: relative;
   display: flex;

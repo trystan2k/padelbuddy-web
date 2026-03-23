@@ -98,6 +98,34 @@ svg {
     0 0 0 6px color-mix(in srgb, var(--semantic-color-content-accent-secondary) 90%, black);
 }
 
+/* Global screen background — shared linear gradient + radial overlay.
+   Does not set min-height; Layout provides that for full-viewport screens.
+   ShareScreen also uses this class for its background (it overrides sizing via CSS Module). */
+.screen {
+  background: linear-gradient(
+    180deg,
+    var(--semantic-color-background-canvas) 0%,
+    var(--semantic-color-background-canvas-end) 100%
+  );
+  position: relative;
+}
+
+.screen::before {
+  content: '';
+  position: absolute;
+  left: calc(93% - 17%);
+  top: calc(8% - 13%);
+  width: 34%;
+  height: 26%;
+  background: radial-gradient(
+    ellipse 34% 26% at 93% 8%,
+    var(--base-color-brand-highlight) 0%,
+    transparent 70%
+  );
+  opacity: 0.18;
+  pointer-events: none;
+}
+
 .appStatusPage {
   min-height: 100vh;
   padding: clamp(1rem, 0.6rem + 2vw, 2rem);

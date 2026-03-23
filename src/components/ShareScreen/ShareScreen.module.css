@@ -1,42 +1,13 @@
 /* ShareScreen - Dedicated story card for social sharing
    Width: 414px, Height: auto (content-driven)
-   Background: gradient from canvas to canvas-game with radial overlay
+   Background and position come from global .screen (styles.css).
+   This class only sets dimensions and flex layout.
 */
-
-/* Custom tokens for ShareScreen (from Pencil design) */
-.screen {
-  --share-bg-start: var(--semantic-color-background-canvas);
-  --share-bg-end: #eef4e8;
-  --share-radial-color: var(--team-one-soft, #e6f0ff);
-  --share-radial-x: 16%;
-  --share-radial-y: 10%;
-  --share-radial-w: 42%;
-  --share-radial-h: 34%;
-  --share-radial-opacity: 0.14;
-
+.shareScreen {
   display: flex;
   flex-direction: column;
   width: 414px;
   height: auto;
-  background: linear-gradient(180deg, var(--share-bg-start) 0%, var(--share-bg-end) 100%);
-  position: relative;
-}
-
-.screen::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: radial-gradient(
-    ellipse var(--share-radial-w) var(--share-radial-h) at var(--share-radial-x)
-      var(--share-radial-y),
-    var(--share-radial-color) 0%,
-    transparent 100%
-  );
-  opacity: var(--share-radial-opacity);
-  pointer-events: none;
 }
 
 .content {

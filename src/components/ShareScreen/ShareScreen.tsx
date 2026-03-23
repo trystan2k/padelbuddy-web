@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { TopBar } from '@/components/ui/TopBar'
 
 import styles from './ShareScreen.module.css'
+import { cn } from '@/lib/utils/cn'
 
 export interface ShareScreenProps {
   ref?: import('react').Ref<HTMLDivElement>
@@ -37,7 +38,12 @@ export function ShareScreen({
   const matchCompleteBadge = t('share.topbar.badge')
 
   return (
-    <div ref={ref} className={styles.screen} aria-hidden="true" data-share-screen>
+    <div
+      ref={ref}
+      className={cn('screen', styles.shareScreen)}
+      aria-hidden="true"
+      data-share-screen
+    >
       <TopBar
         iconSrc="/icon.png"
         iconAlt=""

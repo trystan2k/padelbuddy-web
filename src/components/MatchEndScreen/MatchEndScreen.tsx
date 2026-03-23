@@ -268,7 +268,7 @@ export function MatchEndScreen({
 
       <div data-testid="match-end-screen">
         <Layout
-          className={styles.screen}
+          className="screen"
           bodyClassName={styles.body ?? ''}
           header={headerContent}
           footer={footerContent}
