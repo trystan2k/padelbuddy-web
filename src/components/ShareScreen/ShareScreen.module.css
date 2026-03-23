@@ -47,19 +47,6 @@
   pointer-events: none;
 }
 
-.matchCompleteBadge {
-  padding: var(--base-space-6) var(--base-space-12);
-  border-radius: var(--base-radius-18);
-  background-color: var(--semantic-color-background-surface);
-  border: 1px solid var(--semantic-color-border-subtle);
-  color: var(--semantic-color-content-primary);
-  font-family: var(--font-body);
-  font-size: var(--base-font-size-13);
-  font-weight: var(--semantic-typography-weight-strong);
-  letter-spacing: var(--base-font-letter-spacing-wide-sm);
-  text-transform: uppercase;
-}
-
 .content {
   display: flex;
   flex-direction: column;

@@ -58,6 +58,6 @@ Implement share functionality on Match End Screen — capture a branded ShareScr
 
 ## Risks and Follow-ups
 
-- ShareScreen has no dedicated tests yet (coverage gaps for the new component)
+- ShareScreen now has an initial dedicated browser test (`test/components/ShareScreen/ShareScreen.browser.test.tsx`), but coverage for the new component may still be incomplete
 - modern-screenshot worker mode not implemented yet (using domToBlob direct path)
 - react-i18next NO_I18NEXT_INSTANCE warnings in tests — pre-existing, not introduced by this PR

@@ -238,7 +238,7 @@ export function MatchEndScreen({
       >
         <button
           type="button"
-          className={cn(styles.shareButton, isSharing && styles.shareButtonLoading)}
+          className={cn(styles.shareButton)}
           disabled={isSharing}
           aria-busy={isSharing || undefined}
           data-share-button="true"
