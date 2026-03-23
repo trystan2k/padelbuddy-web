@@ -64,9 +64,8 @@ jobs:
         id: preview_url
         shell: bash
         env:
-          PROJECT_NAME: ${{ secrets.CLOUDFLARE_PAGES_PROJECT_NAME }}
-          PREVIEW_ALIAS: ${{ env.PREVIEW_ALIAS }}
-        run: echo "preview_url=https://${PREVIEW_ALIAS}.${PROJECT_NAME}.pages.dev" >> "$GITHUB_OUTPUT"
+          PREVIEW_URL: ${{ steps.deploy.outputs.deployment-url }}
+        run: echo "preview_url=$PREVIEW_URL" >> "$GITHUB_OUTPUT"
 
       - name: Comment preview URL on the release PR
         uses: marocchino/sticky-pull-request-comment@v2
