@@ -240,7 +240,7 @@ describe('MatchEndScreen', () => {
       'Alvaro & Enrique won a Best of 3 Padel Buddy match in 5m across 12 games. Alvaro & Enrique vs Pablo & Thiago.'
     )
     expect(sharedFile).toBeInstanceOf(File)
-    expect(sharedFile?.name).toBe('padel-buddy-match-test-match.png')
+    expect(sharedFile?.name).toBe('padel-buddy-match-202603191309.png')
     expect(sharedFile?.type).toBe('image/png')
   })
 

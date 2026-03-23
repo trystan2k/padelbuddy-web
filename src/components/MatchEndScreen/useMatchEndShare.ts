@@ -13,7 +13,7 @@ interface MatchEndShareLabels {
 
 interface UseMatchEndShareOptions {
   captureRef: RefObject<HTMLDivElement | null>
-  matchId: string
+  finishedAt: number
   summary: MatchEndScreenSummary
   labels: MatchEndShareLabels
   shareScreenReady: boolean
@@ -34,7 +34,7 @@ type ShareNavigator = Navigator & {
 
 export function useMatchEndShare({
   captureRef,
-  matchId,
+  finishedAt,
   summary,
   labels,
   shareScreenReady,
@@ -82,7 +82,7 @@ export function useMatchEndShare({
         }
 
         const imageBlob = await captureMatchEndScreen(captureNode)
-        const filename = createShareFilename(matchId)
+        const filename = createShareFilename(finishedAt)
         const shareFile = new File([imageBlob], filename, {
           type: imageBlob.type || 'image/png'
         })
@@ -122,7 +122,7 @@ export function useMatchEndShare({
     return () => {
       cancelled = true
     }
-  }, [captureRef, labels, matchId, onCaptureComplete, shareScreenReady, summary.isFinishedEarly])
+  }, [captureRef, labels, finishedAt, onCaptureComplete, shareScreenReady, summary.isFinishedEarly])
 
   useEffect(() => {
     if (!errorMessage) {
@@ -178,8 +178,15 @@ export function useMatchEndShare({
   }
 }
 
-function createShareFilename(matchId: string): string {
-  return `padel-buddy-match-${matchId}.png`
+function createShareFilename(finishedAt: number): string {
+  const d = new Date(finishedAt)
+  const year = d.getUTCFullYear()
+  const month = String(d.getUTCMonth() + 1).padStart(2, '0')
+  const day = String(d.getUTCDate()).padStart(2, '0')
+  const hours = String(d.getUTCHours()).padStart(2, '0')
+  const minutes = String(d.getUTCMinutes()).padStart(2, '0')
+  const formatted = `${year}${month}${day}${hours}${minutes}`
+  return `padel-buddy-match-${formatted}.png`
 }
 
 async function captureMatchEndScreen(node: HTMLElement): Promise<Blob> {
@@ -197,9 +204,19 @@ async function shareMatchImage(
 ): Promise<boolean> {
   if (
     typeof navigatorObject.share !== 'function' ||
-    typeof navigatorObject.canShare !== 'function' ||
-    !navigatorObject.canShare({ files: [shareFile] })
+    typeof navigatorObject.canShare !== 'function'
   ) {
+    return false
+  }
+
+  let canShareFiles = false
+  try {
+    canShareFiles = navigatorObject.canShare({ files: [shareFile] })
+  } catch {
+    canShareFiles = false
+  }
+
+  if (!canShareFiles) {
     return false
   }
 

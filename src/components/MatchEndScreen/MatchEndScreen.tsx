@@ -166,7 +166,7 @@ export function MatchEndScreen({
   )
   const { downloadMessage, errorMessage, handleShareClick, isSharing } = useMatchEndShare({
     captureRef,
-    matchId,
+    finishedAt: finishedAt ?? Date.now(),
     summary,
     labels,
     shareScreenReady,
