@@ -86,7 +86,7 @@ export function MatchEndScreen({
           minutes: durationParts.minutes
         })
 
-  // Format date as DD/MM/YY from finishedAt using locale-aware formatting
+  // Formats date using locale-aware Intl.DateTimeFormat
   const dateValue = useMemo(() => {
     if (typeof finishedAt !== 'number') {
       return ''

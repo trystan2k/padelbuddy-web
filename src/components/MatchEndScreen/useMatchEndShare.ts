@@ -246,7 +246,8 @@ function downloadImage(blob: Blob, filename: string): void {
   document.body.appendChild(anchor)
   anchor.click()
   document.body.removeChild(anchor)
-  URL.revokeObjectURL(objectUrl)
+  // Revoke after a zero-delay timeout to ensure the browser has finished consuming the URL
+  setTimeout(() => URL.revokeObjectURL(objectUrl), 0)
 }
 
 function isAbortError(error: unknown): boolean {
