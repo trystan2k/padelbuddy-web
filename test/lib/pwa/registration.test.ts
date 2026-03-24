@@ -65,6 +65,7 @@ describe('PWA registration module', () => {
   })
 
   afterEach(() => {
+    vi.restoreAllMocks()
     vi.useRealTimers()
     vi.unstubAllGlobals()
   })

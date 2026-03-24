@@ -102,14 +102,12 @@ self.addEventListener('fetch', (event) => {
           // Clone the response before caching
           const responseToCache = networkResponse.clone()
 
-          caches
-            .open(CACHE_NAME)
-            .then((cache) => {
+          // Tie cache write to fetch event lifetime so it completes reliably
+          event.waitUntil(
+            caches.open(CACHE_NAME).then((cache) => {
               return cache.put(event.request, responseToCache)
             })
-            .catch((err) => {
-              console.warn('[SW] Failed to cache response:', err)
-            })
+          )
 
           return networkResponse
         })

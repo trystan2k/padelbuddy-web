@@ -24,13 +24,21 @@ export function DebugPwa() {
   const [isClearing, setIsClearing] = useState(false)
 
   useEffect(() => {
-    const fetchState = async () => {
-      const state = await getSWState()
-      setSwState(state)
+    let isFetching = false
 
-      if (state.registered) {
-        const version = await getSWVersion()
-        setCacheInfo(version)
+    const fetchState = async () => {
+      if (isFetching) return
+      isFetching = true
+      try {
+        const state = await getSWState()
+        setSwState(state)
+
+        if (state.registered) {
+          const version = await getSWVersion()
+          setCacheInfo(version)
+        }
+      } finally {
+        isFetching = false
       }
     }
 
