@@ -36,7 +36,8 @@ export async function registerSW(): Promise<ServiceWorkerRegistration | null> {
 
     // Handle updates
     registration.addEventListener('updatefound', () => {
-      const newWorker = registration?.installing
+      const reg = registration
+      const newWorker = reg?.installing
       if (newWorker) {
         newWorker.addEventListener('statechange', () => {
           if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
@@ -84,7 +85,21 @@ export async function getSWState(): Promise<SWRegistrationState> {
 
   try {
     const registrations = await navigator.serviceWorker.getRegistrations()
-    const reg = registrations[0]
+    const expectedScope = typeof location !== 'undefined' ? location.origin + '/' : undefined
+
+    let reg: ServiceWorkerRegistration | undefined
+
+    if (expectedScope) {
+      reg = registrations.find((r) => r.scope === expectedScope)
+    }
+
+    if (!reg) {
+      reg = registrations.find((r) => r.active?.scriptURL?.endsWith('/sw.js'))
+    }
+
+    if (!reg) {
+      reg = registrations[0]
+    }
 
     if (!reg) {
       return { supported: true, registered: false, ready: false }
@@ -109,6 +124,10 @@ export async function getSWState(): Promise<SWRegistrationState> {
  * Send a message to the service worker
  */
 export function sendSWMessage(message: SWMessage, timeoutMs = 5000): Promise<unknown> {
+  if (!isServiceWorkerSupported()) {
+    return Promise.reject(new Error('Service workers not supported'))
+  }
+
   return new Promise((resolve, reject) => {
     if (!navigator.serviceWorker.controller) {
       reject(new Error('No active service worker'))
@@ -118,6 +137,7 @@ export function sendSWMessage(message: SWMessage, timeoutMs = 5000): Promise<unk
     const channel = new MessageChannel()
     const timer = setTimeout(() => {
       channel.port1.close()
+      channel.port2.close()
       reject(new Error(`SW message '${message.type}' timed out after ${timeoutMs}ms`))
     }, timeoutMs)
 

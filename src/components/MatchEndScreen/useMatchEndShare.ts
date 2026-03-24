@@ -245,8 +245,8 @@ function downloadImage(blob: Blob, filename: string): void {
   document.body.appendChild(anchor)
   anchor.click()
   document.body.removeChild(anchor)
-  // Revoke after a microtask to ensure the browser has finished consuming the URL
-  void Promise.resolve().then(() => URL.revokeObjectURL(objectUrl))
+  // Revoke after a macrotask to ensure the browser has finished consuming the URL
+  setTimeout(() => URL.revokeObjectURL(objectUrl), 0)
 }
 
 function isAbortError(error: unknown): boolean {
