@@ -608,7 +608,7 @@ describe('PWA registration module', () => {
 
       const cachePromise = clearSWCache()
       const port2 = getPort2FromCall(controllerPostMessage!)
-      respondViaPort(port2, { cleared: true })
+      respondViaPort(port2, { success: true })
 
       await vi.advanceTimersByTimeAsync(0)
 
@@ -636,7 +636,7 @@ describe('PWA registration module', () => {
       )
 
       const port2 = getPort2FromCall(controllerPostMessage!)
-      respondViaPort(port2, { cleared: true })
+      respondViaPort(port2, { success: true })
       await vi.advanceTimersByTimeAsync(0)
       await cachePromise
     })

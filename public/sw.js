@@ -73,6 +73,12 @@ self.addEventListener('fetch', (event) => {
   // Only cache static assets - defensive check to prevent API calls from being cached
   // if the app ever adds them in the future
   const url = new URL(event.request.url)
+
+  // Guard: only handle same-origin requests to avoid caching cross-origin assets
+  if (url.origin !== self.location.origin) {
+    return
+  }
+
   if (!isStaticAsset(url)) {
     return
   }
@@ -124,19 +130,24 @@ self.addEventListener('message', (event) => {
   }
 
   if (event.data && event.data.type === 'GET_VERSION') {
-    event.ports[0].postMessage({ version: SW_VERSION, cacheName: CACHE_NAME })
+    if (event.ports[0]) {
+      event.ports[0].postMessage({ version: SW_VERSION, cacheName: CACHE_NAME })
+    }
   }
 
   if (event.data && event.data.type === 'CLEAR_CACHE') {
+    if (!event.ports[0]) {
+      return // Can't respond, but don't crash
+    }
     void caches
       .delete(CACHE_NAME)
       .then(() => {
-        event.ports[0].postMessage({ success: true })
+        event.ports[0]?.postMessage({ success: true })
         return undefined
       })
       .catch((err) => {
         console.warn('[SW] Failed to clear cache:', err)
-        event.ports[0].postMessage({ success: false, error: String(err) })
+        event.ports[0]?.postMessage({ success: false, error: String(err) })
         return undefined
       })
   }

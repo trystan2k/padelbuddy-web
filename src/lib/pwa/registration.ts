@@ -193,8 +193,12 @@ export async function getSWVersion(): Promise<{ version: string; cacheName: stri
  */
 export async function clearSWCache(): Promise<boolean> {
   try {
-    await sendSWMessage({ type: 'CLEAR_CACHE' })
-    return true
+    const raw = await sendSWMessage({ type: 'CLEAR_CACHE' })
+    // Validate response shape - only return true if success is explicitly true
+    if (raw !== null && typeof raw === 'object' && 'success' in raw && raw.success === true) {
+      return true
+    }
+    return false
   } catch {
     return false
   }
