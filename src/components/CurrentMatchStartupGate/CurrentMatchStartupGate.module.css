@@ -35,6 +35,14 @@
   padding: clamp(1.25rem, 1rem + 2vw, 2rem);
 }
 
+.promptCard {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: var(--base-priority-xxxl);
+  transform: translate(-50%, -50%);
+}
+
 .eyebrow,
 .noticeTitle {
   margin: 0;
@@ -90,15 +98,12 @@
   gap: 0.35rem;
 }
 
+/* Uses shared CSS variables from styles.css */
 .promptBackdrop {
   position: fixed;
   inset: 0;
-  z-index: var(--base-priority-xxl);
-  display: grid;
-  place-items: center;
-  padding: 1rem;
-  background: color-mix(in srgb, var(--semantic-color-content-primary) 52%, transparent);
-  backdrop-filter: blur(8px);
+  z-index: var(--overlay-z-index);
+  background: var(--overlay-background);
 }
 
 .promptActions {

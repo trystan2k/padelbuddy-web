@@ -6,7 +6,8 @@
       "m": { "value": "2", "type": "priority" },
       "l": { "value": "5", "type": "priority" },
       "xl": { "value": "10", "type": "priority" },
-      "xxl": { "value": "20", "type": "priority" }
+      "xxl": { "value": "20", "type": "priority" },
+      "xxxl": { "value": "100", "type": "priority" }
     }
   }
 }

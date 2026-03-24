@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type HTMLAttributes } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from '@tanstack/react-router'
+import { Dialog } from '@base-ui/react/dialog'
 
 import { Button } from '@/components/ui'
 import {
@@ -15,6 +16,7 @@ import styles from './CurrentMatchStartupGate.module.css'
 
 interface CurrentMatchStartupGateProps extends HTMLAttributes<HTMLElement> {
   persistence?: CurrentMatchPersistence
+  portalContainer?: HTMLElement | null
 }
 
 export type CurrentMatchStartupViewState = { status: 'loading' } | CurrentMatchStartupResult
@@ -59,6 +61,7 @@ export function clearCurrentMatchStartup(
 export function CurrentMatchStartupGate({
   children,
   persistence,
+  portalContainer,
   ...props
 }: CurrentMatchStartupGateProps) {
   const { t } = useTranslation()
@@ -68,8 +71,6 @@ export function CurrentMatchStartupGate({
   })
   const [isClearing, setIsClearing] = useState(false)
   const [clearErrorMessage, setClearErrorMessage] = useState<string | null>(null)
-  const resumeButtonRef = useRef<HTMLButtonElement | null>(null)
-  const resumeDialogRef = useRef<HTMLElement | null>(null)
   const pendingResumeMatchIdRef = useRef<string | null>(null)
 
   useEffect(() => {
@@ -89,12 +90,6 @@ export function CurrentMatchStartupGate({
   }, [persistence])
 
   useEffect(() => {
-    if (startupState.status === 'resume-required') {
-      resumeButtonRef.current?.focus()
-    }
-  }, [startupState])
-
-  useEffect(() => {
     const matchId = pendingResumeMatchIdRef.current
 
     if (matchId === null) {
@@ -109,57 +104,6 @@ export function CurrentMatchStartupGate({
       ...getViewTransitionNavigationOptions()
     })
   }, [navigate, startupState])
-
-  useEffect(() => {
-    if (startupState.status !== 'resume-required') {
-      return
-    }
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== 'Tab') {
-        return
-      }
-
-      const dialog = resumeDialogRef.current
-
-      if (!dialog) {
-        return
-      }
-
-      const focusableElements = getDialogFocusableElements(dialog)
-
-      if (focusableElements.length === 0) {
-        event.preventDefault()
-
-        return
-      }
-
-      const activeElement =
-        document.activeElement instanceof HTMLElement ? document.activeElement : null
-      const currentIndex = activeElement ? focusableElements.indexOf(activeElement) : -1
-
-      event.preventDefault()
-
-      if (event.shiftKey) {
-        const previousIndex = currentIndex <= 0 ? focusableElements.length - 1 : currentIndex - 1
-
-        focusableElements[previousIndex]?.focus()
-
-        return
-      }
-
-      const nextIndex =
-        currentIndex === -1 || currentIndex === focusableElements.length - 1 ? 0 : currentIndex + 1
-
-      focusableElements[nextIndex]?.focus()
-    }
-
-    document.addEventListener('keydown', handleKeyDown)
-
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown)
-    }
-  }, [startupState.status])
 
   const dismissNotice = useCallback(() => {
     setStartupState((currentState) => dismissCurrentMatchStartupNotice(currentState))
@@ -195,6 +139,85 @@ export function CurrentMatchStartupGate({
   const handleClearSavedMatch = useCallback(() => {
     void clearSavedMatch()
   }, [clearSavedMatch])
+
+  const handleDialogOpenChange = useCallback(
+    (open: boolean) => {
+      if (!open) {
+        handleClearSavedMatch()
+      }
+    },
+    [handleClearSavedMatch]
+  )
+
+  const renderBackdrop = useCallback(
+    (backdropProps: HTMLAttributes<HTMLElement>) => (
+      <div {...backdropProps} className={styles.promptBackdrop} />
+    ),
+    []
+  )
+
+  const renderTitle = useCallback(
+    (titleProps: HTMLAttributes<HTMLElement>) => (
+      <h2 {...titleProps} id="resume-match-heading" className={styles.promptTitle}>
+        {t('startupGate.resume.title')}
+      </h2>
+    ),
+    [t]
+  )
+
+  const renderDescription = useCallback(
+    (descProps: HTMLAttributes<HTMLElement>) => (
+      <p {...descProps} id="resume-match-description" className={styles.body}>
+        {t('startupGate.resume.body')}
+      </p>
+    ),
+    [t]
+  )
+
+  const renderPopup = useCallback(
+    (popupProps: HTMLAttributes<HTMLElement>) => (
+      <div
+        {...popupProps}
+        role="dialog"
+        aria-describedby="resume-match-description"
+        aria-labelledby="resume-match-heading"
+        aria-modal="true"
+        className={styles.promptCard}
+      >
+        <p className={styles.eyebrow}>{t('startupGate.resume.eyebrow')}</p>
+        <Dialog.Title render={renderTitle} />
+        <Dialog.Description render={renderDescription} />
+        {clearErrorMessage ? (
+          <p className={styles.detail} role="alert">
+            {clearErrorMessage}
+          </p>
+        ) : null}
+        <div className={styles.promptActions}>
+          <Button
+            variant="solid"
+            size="sm"
+            accent="secondary"
+            disabled={isClearing}
+            onClick={resumeSavedMatch}
+          >
+            {t('startupGate.resume.resumeButton')}
+          </Button>
+          <Button variant="outline" size="sm" disabled={isClearing} onClick={handleClearSavedMatch}>
+            {t('startupGate.resume.discardButton')}
+          </Button>
+        </div>
+      </div>
+    ),
+    [
+      clearErrorMessage,
+      isClearing,
+      resumeSavedMatch,
+      handleClearSavedMatch,
+      t,
+      renderTitle,
+      renderDescription
+    ]
+  )
 
   if (startupState.status === 'loading') {
     return (
@@ -251,59 +274,15 @@ export function CurrentMatchStartupGate({
 
       {children}
 
-      {startupState.status === 'resume-required' ? (
-        <div className={styles.promptBackdrop}>
-          <section
-            aria-describedby="resume-match-description"
-            aria-labelledby="resume-match-heading"
-            aria-modal="true"
-            className={styles.promptCard}
-            ref={resumeDialogRef}
-            role="dialog"
-          >
-            <p className={styles.eyebrow}>{t('startupGate.resume.eyebrow')}</p>
-            <h2 className={styles.promptTitle} id="resume-match-heading">
-              {t('startupGate.resume.title')}
-            </h2>
-            <p className={styles.body} id="resume-match-description">
-              {t('startupGate.resume.body')}
-            </p>
-            {clearErrorMessage ? (
-              <p className={styles.detail} role="alert">
-                {clearErrorMessage}
-              </p>
-            ) : null}
-            <div className={styles.promptActions}>
-              <Button
-                variant="solid"
-                size="sm"
-                accent="secondary"
-                disabled={isClearing}
-                onClick={resumeSavedMatch}
-                ref={resumeButtonRef}
-              >
-                {t('startupGate.resume.resumeButton')}
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={isClearing}
-                onClick={handleClearSavedMatch}
-              >
-                {t('startupGate.resume.discardButton')}
-              </Button>
-            </div>
-          </section>
-        </div>
-      ) : null}
-    </>
-  )
-}
+      {startupState.status === 'resume-required' && (
+        <Dialog.Root open={true} onOpenChange={handleDialogOpenChange}>
+          <Dialog.Portal container={portalContainer}>
+            <Dialog.Backdrop render={renderBackdrop} />
 
-function getDialogFocusableElements(dialog: HTMLElement): HTMLElement[] {
-  return Array.from(
-    dialog.querySelectorAll<HTMLElement>(
-      'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
-    )
+            <Dialog.Popup render={renderPopup} />
+          </Dialog.Portal>
+        </Dialog.Root>
+      )}
+    </>
   )
 }
