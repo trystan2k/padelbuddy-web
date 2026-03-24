@@ -1,0 +1,87 @@
+.container {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  width: 18rem;
+  padding: 1rem;
+  border-radius: 1rem;
+  border: 1px solid
+    color-mix(in srgb, var(--semantic-color-border-accent-secondary) 50%, transparent);
+  background: var(--semantic-color-background-surface);
+  box-shadow: 0 0.5rem 2rem color-mix(in srgb, var(--base-color-common-black) 15%, transparent);
+  font-size: 0.8rem;
+  z-index: 9999;
+}
+
+.title {
+  margin: 0 0 0.75rem;
+  font-family: var(--semantic-typography-family-display);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--semantic-color-content-primary);
+  letter-spacing: -0.02em;
+}
+
+.list {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.3rem 0.75rem;
+  margin: 0 0 1rem;
+  padding: 0;
+}
+
+.term {
+  color: var(--semantic-color-content-secondary);
+  font-weight: 500;
+}
+
+.value {
+  margin: 0;
+  color: var(--semantic-color-content-primary);
+  font-family: var(--semantic-typography-family-mono);
+  font-size: 0.75rem;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.button {
+  flex: 1;
+  min-height: 2rem;
+  padding: 0.4rem 0.75rem;
+  border: 1px solid var(--semantic-color-border-accent-primary);
+  border-radius: 0.5rem;
+  background: var(--semantic-color-background-surface);
+  color: var(--semantic-color-content-accent-primary);
+  font-size: 0.7rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    transform 100ms ease;
+}
+
+.button:hover:not(:disabled) {
+  background: var(--semantic-color-background-accent-primary-subtle);
+  transform: translateY(-1px);
+}
+
+.button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.buttonDanger {
+  border-color: var(--semantic-color-border-accent-danger);
+  color: var(--semantic-color-content-danger);
+}
+
+.buttonDanger:hover:not(:disabled) {
+  background: var(--semantic-color-background-accent-danger-subtle);
+}

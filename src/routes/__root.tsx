@@ -11,9 +11,11 @@ import {
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { DebugPwa } from '@/components/DebugPwa'
 import { NotFoundPage } from '@/components/NotFoundPage/NotFoundPage'
 import { Button, Spinner, ToastProvider } from '@/components/ui'
 import { i18n, initializeI18n } from '@/lib/i18n'
+import { registerSW } from '@/lib/pwa'
 
 import { getErrorMessage } from './-route-utils'
 import styles from './RootDocument.module.css'
@@ -34,6 +36,32 @@ export const Route = createRootRoute({
       {
         name: 'description',
         content: 'Client-only TanStack Start foundation for the Padel Buddy score tracker.'
+      },
+      {
+        name: 'theme-color',
+        content: '#2F7CF6'
+      },
+      {
+        name: 'apple-mobile-web-app-capable',
+        content: 'yes'
+      },
+      {
+        name: 'apple-mobile-web-app-status-bar-style',
+        content: 'default'
+      },
+      {
+        name: 'apple-mobile-web-app-title',
+        content: 'Padel Buddy'
+      }
+    ],
+    links: [
+      {
+        rel: 'manifest',
+        href: '/manifest.json'
+      },
+      {
+        rel: 'apple-touch-icon',
+        href: '/icon.png'
       }
     ]
   }),
@@ -136,6 +164,13 @@ function RootDocument() {
     }
   }, [])
 
+  // Register service worker on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+      void registerSW()
+    }
+  }, [])
+
   if (!i18nReady) {
     return (
       <html lang="en">
@@ -204,6 +239,7 @@ function RootDocument() {
           </div>
         </ToastProvider>
         <Scripts />
+        {import.meta.env.DEV && <DebugPwa />}
       </body>
     </html>
   )

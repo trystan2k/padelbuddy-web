@@ -275,7 +275,9 @@ describe('MatchEndScreen', () => {
 
     expect(share).not.toHaveBeenCalled()
     expect(anchorClickSpy).toHaveBeenCalledTimes(1)
-    expect(revokeObjectUrlMock).toHaveBeenCalledWith('blob:match-end-screen')
+    await vi.waitFor(() => {
+      expect(revokeObjectUrlMock).toHaveBeenCalledWith('blob:match-end-screen')
+    })
     // Toast is triggered via useToast - verify mock was called
     await vi.waitFor(() => {
       expect(mockAddInfoToast).toHaveBeenCalledWith('Match image downloaded.', expect.any(Object))
