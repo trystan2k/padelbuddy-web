@@ -5,6 +5,8 @@
   Permissions-Policy: camera=(), microphone=(), geolocation=()
 
 /index.html
+  # Note: 'unsafe-inline' required for Vite's hot module replacement and dynamic code evaluation
+  # In a CSP-compliant production build, consider using nonces or hashes
   Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'
 
 /locales/*

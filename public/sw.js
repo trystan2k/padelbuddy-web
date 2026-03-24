@@ -49,10 +49,23 @@ self.addEventListener('activate', (event) => {
   )
 })
 
+// Only cache static asset paths
+const STATIC_ASSET_PATTERN = /^\/(assets|locales|icon|\w+\.js|\w+\.css|\w+\.png|\w+\.ico)/
+const isStaticAsset = (url) => STATIC_ASSET_PATTERN.test(url.pathname)
+
 // Fetch event - cache-first strategy for all requests
+// This is INTENTIONAL: all static assets (JS/CSS bundles) are already precached during install.
+// Using cache-first for all requests ensures offline functionality without network dependency.
 self.addEventListener('fetch', (event) => {
   // Only handle GET requests
   if (event.request.method !== 'GET') {
+    return
+  }
+
+  // Only cache static assets - defensive check to prevent API calls from being cached
+  // if the app ever adds them in the future
+  const url = new URL(event.request.url)
+  if (!isStaticAsset(url)) {
     return
   }
 

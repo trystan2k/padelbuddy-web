@@ -18,12 +18,6 @@
       "sizes": "124x124",
       "type": "image/png",
       "purpose": "any"
-    },
-    {
-      "src": "/icon.png",
-      "sizes": "124x124",
-      "type": "image/png",
-      "purpose": "any"
     }
   ]
 }
