@@ -3,6 +3,11 @@ const SW_VERSION = '1.0.0'
 const CACHE_NAME = `padel-buddy-${SW_VERSION}`
 
 // Assets to precache for full offline support
+// Note: We intentionally do NOT precache hashed JS/CSS bundles (e.g., /assets/*.js)
+// because:
+//   1. Vite hashed filenames change on every build, making precache invalidation complex
+//   2. Runtime caching (cache-first on first fetch) handles these automatically
+//   3. The HTML shell + locales are sufficient for offline app initialization
 const PRECACHE_URLS = [
   '/',
   '/index.html',
@@ -14,6 +19,9 @@ const PRECACHE_URLS = [
 ]
 
 // Install event - precache all assets
+// Note: caches.open() is called per-URL here. While this could be optimized to open
+// once and add all URLs, the current approach is simple and works correctly.
+// The overhead is minimal for our small precache list (~7 URLs).
 self.addEventListener('install', (event) => {
   event.waitUntil(
     Promise.allSettled(
