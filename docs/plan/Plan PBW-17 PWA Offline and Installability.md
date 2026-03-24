@@ -52,7 +52,7 @@ Create a complete manifest following PWA best practices:
 - `orientation`: "portrait"
 - `theme_color`: Use project brand color (from design tokens)
 - `background_color`: "#FFFFFF"
-- `icons`: Include 192x192 and 512x512 PNG icons from public/icon.png
+- `icons`: Include 124x124 PNG icon (public/icon.png) as any-purpose icon. Maskable variants (192x192, 512x512) should be added later with proper 40% inset safe zone design.
 - `categories`: ["sports", "games"]
 - `lang`: "en"
 - `dir`: "ltr"

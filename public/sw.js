@@ -53,12 +53,20 @@ self.addEventListener('activate', (event) => {
 const STATIC_ASSET_PATTERN = /^\/(assets|locales|icon|\w+\.js|\w+\.css|\w+\.png|\w+\.ico)/
 const isStaticAsset = (url) => STATIC_ASSET_PATTERN.test(url.pathname)
 
-// Fetch event - cache-first strategy for all requests
-// This is INTENTIONAL: all static assets (JS/CSS bundles) are already precached during install.
-// Using cache-first for all requests ensures offline functionality without network dependency.
+// Fetch event - cache-first strategy for static assets, network-first for navigation
 self.addEventListener('fetch', (event) => {
   // Only handle GET requests
   if (event.request.method !== 'GET') {
+    return
+  }
+
+  // Handle navigation requests (SPA routes) with network-first + offline fallback
+  // This must come BEFORE the static asset check because navigation URLs aren't static assets
+  if (
+    event.request.mode === 'navigate' ||
+    event.request.headers.get('Accept')?.includes('text/html')
+  ) {
+    event.respondWith(fetch(event.request).catch(() => caches.match('/index.html')))
     return
   }
 
@@ -99,12 +107,7 @@ self.addEventListener('fetch', (event) => {
           return networkResponse
         })
         .catch(() => {
-          // Network failed and not in cache
-          // For HTML requests, return the offline page
-          if (event.request.headers.get('Accept')?.includes('text/html')) {
-            return caches.match('/index.html')
-          }
-          // For other requests, just fail
+          // Network failed and not in cache - return error for static assets
           return new Response('Offline', { status: 503, statusText: 'Service Unavailable' })
         })
     })
