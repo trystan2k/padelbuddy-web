@@ -142,25 +142,42 @@ Add PWA-related elements:
 
 ### Step 6: Configure Security Headers in Cloudflare Pages Deployment
 
-Modify `.github/workflows/deploy-production.yml` to add headers configuration:
+Create `public/_headers` file to configure CSP and security headers for Cloudflare Pages:
 
-```yaml
-# After deploy step, add headers via wrangler pages project command
-- name: Configure security headers
-  run: |
-    # Create _headers file for Cloudflare Pages
-    echo '/static/*' > dist/client/_headers
-    echo '  Cache-Control: public, max-age=31536000, immutable' >> dist/client/_headers
-    echo '  X-Content-Type-Options: nosniff' >> dist/client/_headers
-    echo '  X-Frame-Options: DENY' >> dist/client/_headers
-    echo '  X-XSS-Protection: 1; mode=block' >> dist/client/_headers
-    echo '  Referrer-Policy: strict-origin-when-cross-origin' >> dist/client/_headers
+```
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  X-XSS-Protection: 1; mode=block
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+
+/index.html
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self'; worker-src 'self';
+
+/locales/*
+  Cache-Control: public, max-age=86400
+
+/static/*
+  Cache-Control: public, max-age=31536000, immutable
+```
+
+**Note**: The `_headers` file is served from the `public/` directory and automatically picked up by Cloudflare Pages during deployment. No workflow modification required.| # Create \_headers file for Cloudflare Pages
+echo '/static/\*' > dist/client/\_headers
+echo ' Cache-Control: public, max-age=31536000, immutable' >> dist/client/\_headers
+echo ' X-Content-Type-Options: nosniff' >> dist/client/\_headers
+echo ' X-Frame-Options: DENY' >> dist/client/\_headers
+echo ' X-XSS-Protection: 1; mode=block' >> dist/client/\_headers
+echo ' Referrer-Policy: strict-origin-when-cross-origin' >> dist/client/\_headers
+
 ```
 
 Add CSP header in a subsequent deploy or via Cloudflare Pages dashboard:
 
 ```
+
 Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self'; worker-src 'self';
+
 ```
 
 **Pre-implementation checkpoint**: Verify Cloudflare Pages project settings allow header configuration
@@ -192,27 +209,29 @@ Add vitest browser tests for:
 ## File Structure
 
 ```
+
 public/
-├── manifest.json          # Web App Manifest (NEW)
-├── sw.js                  # Vanilla Service Worker (NEW)
-└── icon.png               # Existing app icon
+├── manifest.json # Web App Manifest (NEW)
+├── sw.js # Vanilla Service Worker (NEW)
+└── icon.png # Existing app icon
 
 src/
 ├── lib/
-│   └── pwa/
-│       ├── index.ts       # Barrel export (NEW)
-│       └── registration.ts # SW registration logic (NEW)
+│ └── pwa/
+│ ├── index.ts # Barrel export (NEW)
+│ └── registration.ts # SW registration logic (NEW)
 ├── components/
-│   └── DebugPwa/          # Dev-only debug panel (NEW)
-│       ├── DebugPwa.tsx
-│       ├── DebugPwa.module.css
-│       └── index.ts
+│ └── DebugPwa/ # Dev-only debug panel (NEW)
+│ ├── DebugPwa.tsx
+│ ├── DebugPwa.module.css
+│ └── index.ts
 └── routes/
-    └── __root.tsx         # Add manifest link, meta tags (MODIFIED)
+└── \_\_root.tsx # Add manifest link, meta tags (MODIFIED)
 
 .github/workflows/
-└── deploy-production.yml  # Add security headers (MODIFIED)
-```
+└── deploy-production.yml # Add security headers (MODIFIED)
+
+````
 
 ## Edge Cases and Error Handling
 
@@ -260,7 +279,7 @@ pnpm complete-check
 # 2. Serve dist/client
 # 3. Enable airplane mode in DevTools
 # 4. Navigate all routes
-```
+````
 
 ## CSP Security Headers
 

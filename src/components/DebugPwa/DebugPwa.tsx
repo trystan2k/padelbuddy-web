@@ -24,17 +24,20 @@ export function DebugPwa() {
   const [isClearing, setIsClearing] = useState(false)
 
   useEffect(() => {
+    let cancelled = false
     let isFetching = false
 
-    const fetchState = async () => {
-      if (isFetching) return
+    const tick = async () => {
+      if (cancelled || isFetching) return
       isFetching = true
       try {
         const state = await getSWState()
+        if (cancelled) return
         setSwState(state)
 
         if (state.registered) {
           const version = await getSWVersion()
+          if (cancelled) return
           setCacheInfo(version)
         }
       } finally {
@@ -42,11 +45,14 @@ export function DebugPwa() {
       }
     }
 
-    void fetchState()
+    void tick()
 
     // Refresh state periodically
-    const interval = setInterval(fetchState, 5000)
-    return () => clearInterval(interval)
+    const id = setInterval(tick, 5000)
+    return () => {
+      cancelled = true
+      clearInterval(id)
+    }
   }, [])
 
   const handleUpdate = useCallback(async () => {
