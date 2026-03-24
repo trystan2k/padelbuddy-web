@@ -62,15 +62,18 @@ export async function unregisterSW(): Promise<void> {
   if (!isServiceWorkerSupported()) {
     return
   }
-
-  if (!registration) {
-    const sws = await navigator.serviceWorker.getRegistrations()
-    await Promise.all(sws.map((sw) => sw.unregister()))
-    return
+  try {
+    if (!registration) {
+      const sws = await navigator.serviceWorker.getRegistrations()
+      await Promise.all(sws.map((sw) => sw.unregister()))
+      return
+    }
+    await registration.unregister()
+  } catch (error) {
+    console.error('[SW] Unregistration failed:', error)
+  } finally {
+    registration = null
   }
-
-  await registration.unregister()
-  registration = null
 }
 
 /**

@@ -50,7 +50,8 @@ self.addEventListener('activate', (event) => {
 })
 
 // Only cache static asset paths
-const STATIC_ASSET_PATTERN = /^\/(assets|locales|icon|\w+\.js|\w+\.css|\w+\.png|\w+\.ico)/
+const STATIC_ASSET_PATTERN =
+  /^\/(assets|locales|icon|[\w-]+\.js|[\w-]+\.css|[\w-]+\.png|[\w-]+\.ico)/
 const isStaticAsset = (url) => STATIC_ASSET_PATTERN.test(url.pathname)
 
 // Fetch event - cache-first strategy for static assets, network-first for navigation

@@ -52,7 +52,7 @@ Create a complete manifest following PWA best practices:
 - `orientation`: "portrait"
 - `theme_color`: Use project brand color (from design tokens)
 - `background_color`: "#FFFFFF"
-- `icons`: Include 124x124 PNG icon (public/icon.png) as any-purpose icon. Maskable variants (192x192, 512x512) should be added later with proper 40% inset safe zone design.
+- `icons`: Provide dedicated PWA icons in `public/` matching the manifest implementation, e.g. 192x192 and 512x512 PNGs (including maskable variants) such as `icon-192x192.png`, `icon-192x192-maskable.png`, `icon-512x512.png`, and `icon-512x512-maskable.png`.
 - `categories`: ["sports", "games"]
 - `lang`: "en"
 - `dir`: "ltr"
@@ -84,7 +84,7 @@ Key behaviors:
 
 - **Install**: Precache all static assets listed above
 - **Activate**: Clear old caches matching pattern `padel-buddy-*`
-- **Fetch**: Cache-first strategy for all requests (entire app precached)
+- **Fetch**: Network-first for navigation (HTML), cache-first for static assets (JS/CSS, images, locales)
 - **Skip waiting**: New SW activates immediately in background
 - **Clients claim**: New SW takes control of all clients immediately
 

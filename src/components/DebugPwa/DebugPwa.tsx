@@ -63,16 +63,18 @@ export function DebugPwa() {
       if (success) {
         setCacheInfo(null)
       }
-    } catch {
-      console.error('[DebugPWA] Failed to clear cache')
+    } catch (error) {
+      console.error('[DebugPWA] Failed to clear cache:', error)
     } finally {
       setIsClearing(false)
     }
   }, [])
 
   return (
-    <div className={styles.container} role="region" aria-label="PWA Debug Panel">
-      <h3 className={styles.title}>{t('debugPwa.title', { defaultValue: 'PWA Debug' })}</h3>
+    <div className={styles.container} role="region" aria-labelledby="debug-pwa-title">
+      <h3 id="debug-pwa-title" className={styles.title}>
+        {t('debugPwa.title', { defaultValue: 'PWA Debug' })}
+      </h3>
 
       <dl className={styles.list}>
         <dt className={styles.term}>{t('debugPwa.supported', { defaultValue: 'SW Supported' })}</dt>
