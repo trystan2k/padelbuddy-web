@@ -179,3 +179,4 @@ function SearchInput({ query, onQueryChange }) {
 - **React styling conventions** [references/styling-conventions.md](references/styling-conventions.md)
 - **React barrel file imports** [references/bundle-barrel-imports.md](references/bundle-barrel-imports.md)
 - **React component interfaces** [references/component-interfaces.md](references/component-interfaces.md)
+- **JSX prop functions & useCallback** [references/jsx-prop-functions.md](references/jsx-prop-functions.md)
