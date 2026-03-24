@@ -59,13 +59,12 @@ export function DebugPwa() {
   const handleClearCache = useCallback(async () => {
     setIsClearing(true)
     try {
-      await clearSWCache()
-      // Refresh state
-      const state = await getSWState()
-      setSwState(state)
-      setCacheInfo(null)
-    } catch (error) {
-      console.error('[DebugPWA] Clear cache failed:', error)
+      const success = await clearSWCache()
+      if (success) {
+        setCacheInfo(null)
+      }
+    } catch {
+      console.error('[DebugPWA] Failed to clear cache')
     } finally {
       setIsClearing(false)
     }

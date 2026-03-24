@@ -16,15 +16,12 @@ const PRECACHE_URLS = [
 // Install event - precache all assets
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches
-      .open(CACHE_NAME)
-      .then((cache) => {
-        return cache.addAll(PRECACHE_URLS)
-      })
-      .then(() => {
-        // Skip waiting to activate immediately
-        return self.skipWaiting()
-      })
+    Promise.allSettled(
+      PRECACHE_URLS.map((url) => caches.open(CACHE_NAME).then((cache) => cache.add(url)))
+    ).then(() => {
+      // Skip waiting to activate immediately
+      return self.skipWaiting()
+    })
   )
 })
 

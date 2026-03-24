@@ -16,7 +16,7 @@ let registration: ServiceWorkerRegistration | null = null
  * Check if service workers are supported
  */
 export function isServiceWorkerSupported(): boolean {
-  return 'serviceWorker' in navigator
+  return typeof navigator !== 'undefined' && 'serviceWorker' in navigator
 }
 
 /**
@@ -121,17 +121,20 @@ export function sendSWMessage(message: SWMessage, timeoutMs = 5000): Promise<unk
       reject(new Error(`SW message '${message.type}' timed out after ${timeoutMs}ms`))
     }, timeoutMs)
 
-    channel.port1.addEventListener('message', (event) => {
+    // eslint-disable-next-line unicorn/prefer-add-event-listener -- MessagePort uses onmessage pattern
+    channel.port1.onmessage = (event) => {
       clearTimeout(timer)
       channel.port1.close()
+      channel.port2.close()
       if (event.data?.error) {
         reject(new Error(event.data.error))
       } else {
         resolve(event.data)
       }
-    })
+    }
 
     navigator.serviceWorker.controller.postMessage(message, [channel.port2])
+    channel.port1.start()
   })
 }
 

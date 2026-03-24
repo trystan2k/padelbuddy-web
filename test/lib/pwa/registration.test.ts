@@ -66,6 +66,7 @@ describe('PWA registration module', () => {
 
   afterEach(() => {
     vi.useRealTimers()
+    vi.unstubAllGlobals()
   })
 
   // ── isServiceWorkerSupported ─────────────────────────────────────────────
