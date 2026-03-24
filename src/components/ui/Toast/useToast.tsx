@@ -69,13 +69,42 @@ export function useToastManager() {
   return BaseToast.useToastManager()
 }
 
+function ToastViewportInner() {
+  const { toasts } = BaseToast.useToastManager()
+
+  return (
+    <BaseToast.Portal>
+      <BaseToast.Viewport className={styles.viewport}>
+        {toasts.map((toast) => (
+          <BaseToast.Root
+            key={toast.id}
+            toast={toast}
+            className={styles.toast}
+            data-type={toast.data?.type}
+          >
+            <BaseToast.Content className={styles.content}>
+              <BaseToast.Title className={styles.title}>{toast.title}</BaseToast.Title>
+              {toast.description ? (
+                <BaseToast.Description className={styles.description}>
+                  {toast.description}
+                </BaseToast.Description>
+              ) : null}
+              <BaseToast.Close className={styles.close} aria-label="Close">
+                ✕
+              </BaseToast.Close>
+            </BaseToast.Content>
+          </BaseToast.Root>
+        ))}
+      </BaseToast.Viewport>
+    </BaseToast.Portal>
+  )
+}
+
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   return (
     <BaseToast.Provider toastManager={globalToastManager}>
       {children}
-      <BaseToast.Portal>
-        <BaseToast.Viewport className={styles.viewport} />
-      </BaseToast.Portal>
+      <ToastViewportInner />
     </BaseToast.Provider>
   )
 }

@@ -14,7 +14,6 @@ export function ToastViewport() {
           key={toast.id}
           toast={toast}
           className={styles.toast}
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           data-type={toast.data?.type}
         >
           <BaseToast.Content className={styles.content}>

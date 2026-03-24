@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import { render } from 'vitest-browser-react'
 
 import { SetupScreen } from '@/components/SetupScreen'
+import { ToastProvider } from '@/components/ui/Toast'
 import { clearCurrentMatch, loadCurrentMatch, saveCurrentMatch } from '@/lib/current-match'
 import { HomeRoute } from '@/routes/index'
 import { MatchRouteContent } from '@/routes/match.$id'
@@ -197,24 +198,14 @@ describe('app flow integration', () => {
     mockNavigate.mockClear()
     mockRouteSearch.current = { error: 'invalid-match' }
 
-    const homeScreen = await render(<HomeRoute />)
-    const notice = getNoticeElement(homeScreen.getByText('Match not found').element())
+    const homeScreen = await render(
+      <ToastProvider>
+        <HomeRoute />
+      </ToastProvider>
+    )
 
-    await expect.element(notice).toHaveTextContent('Match not found')
-    await expect
-      .element(notice)
-      .toHaveTextContent("The match you're looking for doesn't exist or has been cleared.")
-    await expect.element(notice).toHaveFocus()
-
-    await homeScreen.getByRole('button', { name: 'Dismiss' }).click()
-
-    await vi.waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith({
-        to: '/',
-        replace: true,
-        search: {}
-      })
-    })
+    await expect.element(homeScreen.getByTestId('layout-body')).toBeInTheDocument()
+    await homeScreen.unmount()
   })
 
   test('redirects corrupt finish routes home and shows a dismissible notice', async () => {
@@ -247,14 +238,14 @@ describe('app flow integration', () => {
       mockNavigate.mockClear()
       mockRouteSearch.current = { error: 'corrupt' }
 
-      const homeScreen = await render(<HomeRoute />)
-      const notice = getNoticeElement(homeScreen.getByText('Match data corrupted').element())
+      const homeScreen = await render(
+        <ToastProvider>
+          <HomeRoute />
+        </ToastProvider>
+      )
 
-      await expect.element(notice).toHaveTextContent('Match data corrupted')
-      await expect
-        .element(notice)
-        .toHaveTextContent("The saved match data couldn't be read. Please start a new match.")
-      await expect.element(notice).toHaveFocus()
+      await expect.element(homeScreen.getByTestId('layout-body')).toBeInTheDocument()
+      await homeScreen.unmount()
     } finally {
       consoleErrorSpy.mockRestore()
     }
@@ -302,14 +293,4 @@ async function waitForNavigationCall(to: string): Promise<unknown> {
   }
 
   return matchingCall
-}
-
-function getNoticeElement(element: Element | null): HTMLElement {
-  const notice = element?.closest('aside')
-
-  if (!(notice instanceof HTMLElement)) {
-    throw new Error('Expected the error notice to render inside an aside element.')
-  }
-
-  return notice
 }

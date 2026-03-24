@@ -16,50 +16,66 @@ interface CacheInfo {
   cacheName: string
 }
 
+const STORAGE_KEY = 'debug-pwa-closed'
+
 export function DebugPwa() {
   const { t } = useTranslation()
+  const [isVisible, setIsVisible] = useState(() => {
+    if (typeof window === 'undefined') return true
+    return !localStorage.getItem(STORAGE_KEY)
+  })
   const [swState, setSwState] = useState<SWRegistrationState | null>(null)
   const [cacheInfo, setCacheInfo] = useState<CacheInfo | null>(null)
   const [isUpdating, setIsUpdating] = useState(false)
   const [isClearing, setIsClearing] = useState(false)
 
+  const handleClose = useCallback(() => {
+    setIsVisible(false)
+    localStorage.setItem(STORAGE_KEY, 'true')
+  }, [])
+
+  const handleReopen = useCallback(() => {
+    localStorage.removeItem(STORAGE_KEY)
+    setIsVisible(true)
+  }, [])
+
   useEffect(() => {
-    let cancelled = false
-    let isFetching = false
+    if (isVisible) {
+      let cancelled = false
+      let isFetching = false
 
-    const tick = async () => {
-      if (cancelled || isFetching) return
-      isFetching = true
-      try {
-        const state = await getSWState()
-        if (cancelled) return
-        setSwState(state)
-
-        if (state.registered) {
-          const version = await getSWVersion()
+      const tick = async () => {
+        if (cancelled || isFetching) return
+        isFetching = true
+        try {
+          const state = await getSWState()
           if (cancelled) return
-          setCacheInfo(version)
+          setSwState(state)
+
+          if (state.registered) {
+            const version = await getSWVersion()
+            if (cancelled) return
+            setCacheInfo(version)
+          }
+        } finally {
+          isFetching = false
         }
-      } finally {
-        isFetching = false
+      }
+
+      void tick()
+
+      const id = setInterval(tick, 5000)
+      return () => {
+        cancelled = true
+        clearInterval(id)
       }
     }
-
-    void tick()
-
-    // Refresh state periodically
-    const id = setInterval(tick, 5000)
-    return () => {
-      cancelled = true
-      clearInterval(id)
-    }
-  }, [])
+  }, [isVisible])
 
   const handleUpdate = useCallback(async () => {
     setIsUpdating(true)
     try {
       await requestSWUpdate()
-      // Reload after update
       setTimeout(() => {
         window.location.reload()
       }, 500)
@@ -84,11 +100,29 @@ export function DebugPwa() {
     }
   }, [])
 
+  if (!isVisible) {
+    return (
+      <button type="button" className={styles.reopenButton} onClick={handleReopen}>
+        {t('debugPwa.reopen', { defaultValue: 'Open PWA Debug' })}
+      </button>
+    )
+  }
+
   return (
     <div className={styles.container} role="region" aria-labelledby="debug-pwa-title">
-      <h3 id="debug-pwa-title" className={styles.title}>
-        {t('debugPwa.title', { defaultValue: 'PWA Debug' })}
-      </h3>
+      <div className={styles.header}>
+        <h3 id="debug-pwa-title" className={styles.title}>
+          {t('debugPwa.title', { defaultValue: 'PWA Debug' })}
+        </h3>
+        <button
+          type="button"
+          className={styles.closeButton}
+          onClick={handleClose}
+          aria-label={t('debugPwa.close', { defaultValue: 'Close' })}
+        >
+          ✕
+        </button>
+      </div>
 
       <dl className={styles.list}>
         <dt className={styles.term}>{t('debugPwa.supported', { defaultValue: 'SW Supported' })}</dt>
