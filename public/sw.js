@@ -8,15 +8,7 @@ const CACHE_NAME = `padel-buddy-${SW_VERSION}`
 //   1. Vite hashed filenames change on every build, making precache invalidation complex
 //   2. Runtime caching (cache-first on first fetch) handles these automatically
 //   3. The HTML shell + locales are sufficient for offline app initialization
-const PRECACHE_URLS = [
-  '/',
-  '/index.html',
-  '/icon.png',
-  '/locales/en.json',
-  '/locales/es.json',
-  '/locales/pt.json',
-  '/manifest.json'
-]
+const PRECACHE_URLS = ['/', '/index.html', '/icon.png', '/manifest.json']
 
 // Install event - precache all assets
 // Note: caches.open() is called per-URL here. While this could be optimized to open
@@ -58,8 +50,7 @@ self.addEventListener('activate', (event) => {
 })
 
 // Only cache static asset paths
-const STATIC_ASSET_PATTERN =
-  /^\/(assets|locales|icon|[\w-]+\.js|[\w-]+\.css|[\w-]+\.png|[\w-]+\.ico)/
+const STATIC_ASSET_PATTERN = /^\/(assets|icon|[\w-]+\.js|[\w-]+\.css|[\w-]+\.png|[\w-]+\.ico)/
 const isStaticAsset = (url) => STATIC_ASSET_PATTERN.test(url.pathname)
 
 // Fetch event - cache-first strategy for static assets, network-first for navigation
