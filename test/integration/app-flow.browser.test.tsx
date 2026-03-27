@@ -162,6 +162,7 @@ describe('app flow integration', () => {
         viewTransition: true
       })
     })
+    expect(mockInvalidate).not.toHaveBeenCalled()
     expect(mockPreloadRoute).toHaveBeenCalledWith({
       to: '/match/$id',
       params: { id: matchId }
@@ -247,6 +248,7 @@ describe('app flow integration', () => {
     await matchEndScreen.getByTestId('continue-match-button').click()
 
     await vi.waitFor(() => {
+      expect(mockInvalidate).toHaveBeenCalledTimes(1)
       expect(mockPreloadRoute).toHaveBeenCalledWith({
         to: '/match/$id',
         params: { id: matchId }

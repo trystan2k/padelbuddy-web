@@ -50,4 +50,18 @@ describe('index route', () => {
     })
     expect(mockLoadHomeStartup).toHaveBeenCalledTimes(1)
   })
+
+  test('keeps only supported deep-link error notices in search state', () => {
+    const validateSearch = Route.options.validateSearch
+
+    if (typeof validateSearch !== 'function') {
+      throw new Error('Expected the home route to expose validateSearch.')
+    }
+
+    expect(validateSearch({ error: 'invalid-match' })).toEqual({ error: 'invalid-match' })
+    expect(validateSearch({ error: 'corrupt' })).toEqual({ error: 'corrupt' })
+    expect(validateSearch({ error: 'no-match' })).toEqual({ error: 'no-match' })
+    expect(validateSearch({ error: 'other' })).toEqual({})
+    expect(validateSearch({})).toEqual({})
+  })
 })
