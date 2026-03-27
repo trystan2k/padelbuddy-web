@@ -5,8 +5,10 @@ import { render } from 'vitest-browser-react'
 
 import { SetupScreen } from '@/components/SetupScreen/SetupScreen'
 
-const { mockNavigate } = vi.hoisted(() => ({
-  mockNavigate: vi.fn()
+const { mockInvalidate, mockNavigate, mockPreloadRoute } = vi.hoisted(() => ({
+  mockInvalidate: vi.fn(),
+  mockNavigate: vi.fn(),
+  mockPreloadRoute: vi.fn()
 }))
 
 vi.mock('@tanstack/react-router', async (importOriginal) => {
@@ -14,7 +16,11 @@ vi.mock('@tanstack/react-router', async (importOriginal) => {
 
   return {
     ...actual,
-    useNavigate: () => mockNavigate
+    useNavigate: () => mockNavigate,
+    useRouter: () => ({
+      invalidate: mockInvalidate,
+      preloadRoute: mockPreloadRoute
+    })
   }
 })
 

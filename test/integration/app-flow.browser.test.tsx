@@ -20,9 +20,10 @@ import { Route as MatchFinishRoute } from '@/routes/match.finish.$id'
 
 import { createTestSetup, scorePoints, winQuickSet } from '../core/match/test-helpers'
 
-const { mockNavigate, mockClearCache, mockRouteSearch } = vi.hoisted(() => ({
+const { mockInvalidate, mockNavigate, mockPreloadRoute, mockRouteSearch } = vi.hoisted(() => ({
+  mockInvalidate: vi.fn(async () => undefined),
   mockNavigate: vi.fn(),
-  mockClearCache: vi.fn(),
+  mockPreloadRoute: vi.fn(async () => undefined),
   mockRouteSearch: {
     current: {} as { error?: string }
   }
@@ -42,7 +43,8 @@ vi.mock('@tanstack/react-router', async (importOriginal) => {
     }),
     useNavigate: () => mockNavigate,
     useRouter: () => ({
-      clearCache: mockClearCache
+      invalidate: mockInvalidate,
+      preloadRoute: mockPreloadRoute
     }),
     redirect: (options: unknown) => options
   }
@@ -51,6 +53,8 @@ vi.mock('@tanstack/react-router', async (importOriginal) => {
 describe('app flow integration', () => {
   beforeEach(async () => {
     vi.clearAllMocks()
+    mockInvalidate.mockResolvedValue(undefined)
+    mockPreloadRoute.mockResolvedValue(undefined)
     mockRouteSearch.current = {}
     await clearCurrentMatch()
     await setHomeStartupState({ status: 'no-match', notice: null })
@@ -69,6 +73,12 @@ describe('app flow integration', () => {
     const startNavigation = await waitForNavigationCall('/match/$id')
     const matchId = getNavigationMatchId(startNavigation)
     const startedMatch = await loadCurrentMatch()
+
+    expect(mockInvalidate).toHaveBeenCalledTimes(1)
+    expect(mockPreloadRoute).toHaveBeenCalledWith({
+      to: '/match/$id',
+      params: { id: matchId }
+    })
 
     expect(startedMatch.status).toBe('ok')
     if (startedMatch.status !== 'ok') {
@@ -113,6 +123,7 @@ describe('app flow integration', () => {
     await vi.waitFor(() => {
       expect(mockNavigate).toHaveBeenCalledWith({ to: '/', viewTransition: true })
     })
+    expect(mockPreloadRoute).toHaveBeenCalledWith({ to: '/' })
 
     await matchEndScreen.unmount()
     mockNavigate.mockClear()
@@ -150,6 +161,10 @@ describe('app flow integration', () => {
         params: { id: matchId },
         viewTransition: true
       })
+    })
+    expect(mockPreloadRoute).toHaveBeenCalledWith({
+      to: '/match/$id',
+      params: { id: matchId }
     })
 
     const activeLoaderData = await runMatchRouteLoader(matchId)
@@ -209,6 +224,59 @@ describe('app flow integration', () => {
       params: { id: matchId },
       replace: true
     })
+  })
+
+  test('continues a finished match with fresh active-route data', async () => {
+    const setup = createTestSetup()
+    const matchId = 'continued-match'
+
+    await saveCurrentMatch({
+      matchId,
+      setup,
+      actions: [...winQuickSet('team-1'), ...winQuickSet('team-1')],
+      startedAt: Date.now() - 5 * 60 * 1000,
+      finishedAt: Date.now() - 60 * 1000
+    })
+
+    const finishLoaderData = await runMatchFinishRouteLoader(matchId)
+    setRouteLoaderData(MatchFinishRoute, finishLoaderData)
+    const MatchFinishRouteComponent = getRouteComponent(MatchFinishRoute, 'finish match')
+
+    const matchEndScreen = await render(<MatchFinishRouteComponent />)
+
+    await matchEndScreen.getByTestId('continue-match-button').click()
+
+    await vi.waitFor(() => {
+      expect(mockPreloadRoute).toHaveBeenCalledWith({
+        to: '/match/$id',
+        params: { id: matchId }
+      })
+      expect(mockNavigate).toHaveBeenCalledWith({
+        to: '/match/$id',
+        params: { id: matchId },
+        replace: true,
+        viewTransition: true
+      })
+    })
+
+    const resumedMatch = await loadCurrentMatch()
+
+    expect(resumedMatch.status).toBe('ok')
+    if (resumedMatch.status !== 'ok') {
+      throw new Error('Expected the continued match to be persisted.')
+    }
+
+    expect(resumedMatch.record.finishedAt).toBeUndefined()
+
+    const activeLoaderData = await runMatchRouteLoader(matchId)
+
+    expect(activeLoaderData).toMatchObject({
+      matchId,
+      record: expect.objectContaining({
+        matchId
+      })
+    })
+    expect(activeLoaderData.record.finishedAt).toBeUndefined()
   })
 })
 

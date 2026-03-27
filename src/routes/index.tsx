@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { SetupScreen } from '@/components/SetupScreen'
 import { CurrentMatchStartupGate } from '@/components/CurrentMatchStartupGate/CurrentMatchStartupGate'
 import { useToast } from '@/components/ui/Toast'
+import { currentMatchPersistenceRouteLoaderOptions } from '@/lib/router/current-match-route-flow'
 
 import { loadHomeStartup } from './-home-startup'
 import { parseMatchRouteErrorType, type MatchRouteErrorType } from './-match-route-state'
@@ -21,6 +22,7 @@ const homeRouteErrorContent: Record<MatchRouteErrorType, string> = {
 }
 
 export const Route = createFileRoute('/')({
+  ...currentMatchPersistenceRouteLoaderOptions,
   validateSearch: (search): HomeRouteSearch => {
     const error = parseMatchRouteErrorType(search.error)
 

@@ -15,8 +15,10 @@ function formatTimeOfDay(date: Date): string {
     .join(':')
 }
 
-const { mockNavigate } = vi.hoisted(() => ({
-  mockNavigate: vi.fn()
+const { mockInvalidate, mockNavigate, mockPreloadRoute } = vi.hoisted(() => ({
+  mockInvalidate: vi.fn(async () => undefined),
+  mockNavigate: vi.fn(),
+  mockPreloadRoute: vi.fn(async () => undefined)
 }))
 
 vi.mock('@tanstack/react-router', async (importOriginal) => {
@@ -24,7 +26,11 @@ vi.mock('@tanstack/react-router', async (importOriginal) => {
 
   return {
     ...actual,
-    useNavigate: () => mockNavigate
+    useNavigate: () => mockNavigate,
+    useRouter: () => ({
+      invalidate: mockInvalidate,
+      preloadRoute: mockPreloadRoute
+    })
   }
 })
 
@@ -43,6 +49,8 @@ describe('ActiveMatchScreen', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
+    mockInvalidate.mockResolvedValue(undefined)
+    mockPreloadRoute.mockResolvedValue(undefined)
   })
 
   afterEach(() => {

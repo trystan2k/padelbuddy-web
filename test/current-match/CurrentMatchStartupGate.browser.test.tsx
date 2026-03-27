@@ -3,12 +3,18 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import { render } from 'vitest-browser-react'
 
-const { mockNavigate } = vi.hoisted(() => ({
-  mockNavigate: vi.fn()
+const { mockInvalidate, mockNavigate, mockPreloadRoute } = vi.hoisted(() => ({
+  mockInvalidate: vi.fn(async () => undefined),
+  mockNavigate: vi.fn(),
+  mockPreloadRoute: vi.fn(async () => undefined)
 }))
 
 vi.mock('@tanstack/react-router', () => ({
-  useNavigate: () => mockNavigate
+  useNavigate: () => mockNavigate,
+  useRouter: () => ({
+    invalidate: mockInvalidate,
+    preloadRoute: mockPreloadRoute
+  })
 }))
 
 import { CurrentMatchStartupGate } from '@/components/CurrentMatchStartupGate/CurrentMatchStartupGate'
@@ -34,6 +40,8 @@ describe('CurrentMatchStartupGate browser', () => {
 
   beforeEach(() => {
     mockNavigate.mockReset()
+    mockInvalidate.mockReset()
+    mockPreloadRoute.mockReset()
     databaseName = `padel-buddy-startup-gate-${crypto.randomUUID()}`
     persistence = createCurrentMatchPersistence({
       databaseName,
@@ -100,6 +108,12 @@ describe('CurrentMatchStartupGate browser', () => {
         })
       })
     )
+    expect(mockPreloadRoute).toHaveBeenCalledWith({
+      to: '/match/$id',
+      params: expect.objectContaining({
+        id: expect.any(String)
+      })
+    })
     expect(document.body.textContent).not.toContain('Resume saved match?')
     await expect
       .element(screen.getByRole('heading', { level: 1, name: 'Padel Buddy' }))
@@ -144,6 +158,9 @@ describe('CurrentMatchStartupGate browser', () => {
     await expect
       .element(firstScreen.getByRole('heading', { level: 1, name: 'Padel Buddy' }))
       .toBeVisible()
+    await vi.waitFor(() => {
+      expect(mockInvalidate).toHaveBeenCalledTimes(1)
+    })
 
     await firstScreen.unmount()
 

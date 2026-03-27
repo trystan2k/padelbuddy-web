@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useNavigate } from '@tanstack/react-router'
+import { useNavigate, useRouter } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 
 import { Layout } from '@/components/Layout/Layout'
 import { TopBar } from '@/components/ui/TopBar'
+import { prepareCurrentMatchRouteNavigation } from '@/lib/router/current-match-route-flow'
 import { cn } from '@/lib/utils/cn'
 import { getViewTransitionNavigationOptions } from '@/lib/utils/view-transitions'
 
@@ -33,8 +34,10 @@ export function ActiveMatchScreen({
   finishedAt
 }: ActiveMatchScreenProps) {
   const navigate = useNavigate()
+  const router = useRouter()
   const { t } = useTranslation()
   const [sideSwitchDismissed, setSideSwitchDismissed] = useState(false)
+  const [isNavigatingToFinish, setIsNavigatingToFinish] = useState(false)
 
   const { snapshot, scorePoint, undoScoreAction, finishMatch, isLoading } = useMatchSession({
     matchId,
@@ -71,17 +74,34 @@ export function ActiveMatchScreen({
   }, [sideSwitch.shouldPrompt])
 
   useEffect(() => {
-    if (!isMatchCompleted) {
+    if (!isMatchCompleted || isNavigatingToFinish) {
       return
     }
 
-    void navigate({
-      to: '/match/finish/$id',
-      params: { id: matchId },
-      replace: true,
-      ...getViewTransitionNavigationOptions()
-    })
-  }, [isMatchCompleted, matchId, navigate])
+    setIsNavigatingToFinish(true)
+
+    void (async () => {
+      try {
+        await prepareCurrentMatchRouteNavigation(
+          router,
+          {
+            to: '/match/finish/$id',
+            params: { id: matchId }
+          },
+          { invalidate: true }
+        )
+        await navigate({
+          to: '/match/finish/$id',
+          params: { id: matchId },
+          replace: true,
+          ...getViewTransitionNavigationOptions()
+        })
+      } catch (error) {
+        console.error('Failed to navigate to the finished match route.', error)
+        setIsNavigatingToFinish(false)
+      }
+    })()
+  }, [isMatchCompleted, isNavigatingToFinish, matchId, navigate, router])
 
   const getTeamScore = (teamId: MatchTeamId): string => {
     if (scoreDisplay.kind === 'standard') {

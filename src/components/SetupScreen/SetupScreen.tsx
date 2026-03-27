@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo } from 'react'
 import type { KeyboardEvent } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigate } from '@tanstack/react-router'
+import { useNavigate, useRouter } from '@tanstack/react-router'
 
 import {
   countdownTimerDurations,
@@ -11,6 +11,7 @@ import {
   type MatchFormat
 } from '@/core/match'
 import { saveCurrentMatch } from '@/lib/current-match'
+import { prepareCurrentMatchRouteNavigation } from '@/lib/router/current-match-route-flow'
 import { cn } from '@/lib/utils/cn'
 import { getViewTransitionNavigationOptions } from '@/lib/utils/view-transitions'
 
@@ -51,6 +52,7 @@ const countdownDurationKeys: Record<CountdownTimerDuration, string> = {
 export function SetupScreen() {
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const router = useRouter()
   const [isStarting, setIsStarting] = useState(false)
 
   const {
@@ -103,6 +105,14 @@ export function SetupScreen() {
 
       // Persist match state to IndexedDB before navigation
       await saveCurrentMatch({ matchId, setup, actions: [], startedAt: Date.now() })
+      await prepareCurrentMatchRouteNavigation(
+        router,
+        {
+          to: '/match/$id',
+          params: { id: matchId }
+        },
+        { invalidate: true }
+      )
 
       // Navigate to active match route
       await navigate({
@@ -114,7 +124,7 @@ export function SetupScreen() {
       console.error('Failed to start match:', error)
       setIsStarting(false)
     }
-  }, [formData, validate, navigate])
+  }, [formData, navigate, router, validate])
 
   const handleFormatChange = useCallback(
     (format: MatchFormat) => {

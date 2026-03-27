@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type HTMLAttributes } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigate } from '@tanstack/react-router'
+import { useNavigate, useRouter } from '@tanstack/react-router'
 import { Dialog } from '@base-ui/react/dialog'
 
 import { Button } from '@/components/ui'
@@ -9,6 +9,10 @@ import {
   type CurrentMatchPersistence,
   type CurrentMatchStartupResult
 } from '@/lib/current-match'
+import {
+  invalidateCurrentMatchPersistenceRoutes,
+  prepareCurrentMatchRouteNavigation
+} from '@/lib/router/current-match-route-flow'
 import { getViewTransitionNavigationOptions } from '@/lib/utils/view-transitions'
 
 import styles from './CurrentMatchStartupGate.module.css'
@@ -73,6 +77,7 @@ export function CurrentMatchStartupGate({
 }: CurrentMatchStartupGateProps) {
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const router = useRouter()
   const [startupState, setStartupState] = useState<CurrentMatchStartupResult>(initialStartupState)
   const [isClearing, setIsClearing] = useState(false)
   const [clearErrorMessage, setClearErrorMessage] = useState<string | null>(null)
@@ -93,12 +98,21 @@ export function CurrentMatchStartupGate({
 
     pendingResumeMatchIdRef.current = null
 
-    void navigate({
-      to: '/match/$id',
-      params: { id: matchId },
-      ...getViewTransitionNavigationOptions()
-    })
-  }, [navigate, startupState])
+    void (async () => {
+      try {
+        await prepareCurrentMatchRouteNavigation(router, {
+          to: '/match/$id',
+          params: { id: matchId }
+        })
+      } finally {
+        await navigate({
+          to: '/match/$id',
+          params: { id: matchId },
+          ...getViewTransitionNavigationOptions()
+        })
+      }
+    })()
+  }, [navigate, router, startupState])
 
   const dismissNotice = useCallback(() => {
     setStartupState((currentState) => dismissCurrentMatchStartupNotice(currentState))
@@ -110,6 +124,7 @@ export function CurrentMatchStartupGate({
 
     try {
       await (persistence?.clearCurrentMatch() ?? clearCurrentMatch())
+      await invalidateCurrentMatchPersistenceRoutes(router)
       setStartupState((currentState) => clearCurrentMatchStartup(currentState))
     } catch (error) {
       setClearErrorMessage(
@@ -118,7 +133,7 @@ export function CurrentMatchStartupGate({
     } finally {
       setIsClearing(false)
     }
-  }, [persistence])
+  }, [persistence, router])
 
   const resumeSavedMatch = useCallback(() => {
     setClearErrorMessage(null)

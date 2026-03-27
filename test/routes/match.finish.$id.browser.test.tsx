@@ -29,7 +29,12 @@ vi.mock('@tanstack/react-router', async (importOriginal) => {
       isPending: false,
       error: false
     }),
-    redirect: (options: unknown) => options
+    redirect: (options: unknown) => options,
+    useRouter: () => ({
+      invalidate: vi.fn(),
+      preloadRoute: vi.fn()
+    }),
+    useNavigate: () => vi.fn()
   }
 })
 
