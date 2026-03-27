@@ -8,7 +8,7 @@ import {
   createRouter
 } from '@tanstack/react-router'
 import { afterEach, describe, expect, test, vi } from 'vitest'
-import { render } from 'vitest-browser-react'
+import { render, cleanup } from 'vitest-browser-react'
 
 import { routerPendingConfig } from '@/router'
 import { RoutePendingBoundary } from '@/routes/-route-utils'
@@ -59,9 +59,10 @@ function NextScreen() {
 describe('RoutePendingOverlay', () => {
   const originalPathname = window.location.pathname
 
-  afterEach(() => {
+  afterEach(async () => {
     vi.useRealTimers()
     window.history.replaceState(null, '', originalPathname)
+    await cleanup()
   })
 
   test('appears only after the pending threshold and clears after the transition resolves', async () => {
