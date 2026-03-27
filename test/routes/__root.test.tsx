@@ -2,6 +2,12 @@ import { describe, expect, test, vi, beforeAll } from 'vitest'
 
 import { defaultTranslation, i18n, initializeI18n, resetI18nInitialization } from '@/lib/i18n'
 
+const { routerStateMock } = vi.hoisted(() => ({
+  routerStateMock: {
+    isRoutePending: false
+  }
+}))
+
 beforeAll(async () => {
   resetI18nInitialization()
   i18n.addResourceBundle('en', 'translation', defaultTranslation, true, true)
@@ -17,7 +23,7 @@ vi.mock('@tanstack/react-router', async (importOriginal) => {
     Outlet: () => <div>route outlet</div>,
     Scripts: () => <script type="application/json">scripts</script>,
     createRootRoute: (options: unknown) => ({ options }),
-    useRouterState: () => false
+    useRouterState: () => routerStateMock.isRoutePending
   }
 })
 
@@ -62,5 +68,23 @@ describe('root route', () => {
     expect(initialMarkup).toContain('<html lang="en">')
     expect(initialMarkup).toContain('route outlet')
     expect(initialMarkup).toContain('scripts')
+  })
+
+  test('keeps the route pending notice out of the initial shell until a route turns pending', () => {
+    const RootDocument = Route.options.component
+
+    if (!RootDocument) {
+      throw new Error('Expected the root route to expose component')
+    }
+
+    routerStateMock.isRoutePending = false
+    const initialMarkup = renderToStaticMarkup(<RootDocument />)
+
+    expect(initialMarkup).not.toContain('Loading the next view')
+
+    routerStateMock.isRoutePending = true
+    const pendingMarkup = renderToStaticMarkup(<RootDocument />)
+
+    expect(pendingMarkup).toContain('Loading the next view')
   })
 })

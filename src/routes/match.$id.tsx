@@ -5,12 +5,11 @@ import { loadCurrentMatch, type CurrentMatchRecord } from '@/lib/current-match'
 import { currentMatchPersistenceRouteLoaderOptions } from '@/lib/router/current-match-route-flow'
 
 import { resolveMatchRouteState } from './-match-route-state'
-import { RouteErrorState, RouteLoadingState } from './-route-utils'
+import { RouteErrorState } from './-route-utils'
 
 export const Route = createFileRoute('/match/$id')({
   ...currentMatchPersistenceRouteLoaderOptions,
   component: MatchRoute,
-  pendingComponent: RouteLoadingState,
   errorComponent: RouteErrorState,
   loader: async ({ params }) => {
     const matchData = await loadCurrentMatch()

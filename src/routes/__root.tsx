@@ -5,6 +5,7 @@ import {
   HeadContent,
   Outlet,
   Scripts,
+  useRouterState,
   type ErrorComponentProps
 } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
@@ -12,7 +13,7 @@ import { useTranslation } from 'react-i18next'
 
 import { DebugPwa } from '@/components/DebugPwa'
 import { NotFoundPage } from '@/components/NotFoundPage/NotFoundPage'
-import { Button, ToastProvider } from '@/components/ui'
+import { Button, Spinner, ToastProvider } from '@/components/ui'
 import { i18n, initializeI18n } from '@/lib/i18n'
 import { registerSW } from '@/lib/pwa'
 
@@ -133,6 +134,7 @@ function AppShell() {
       <body>
         <ToastProvider>
           <div className={styles.routeShell}>
+            <RoutePendingOverlay />
             <div className={styles.routeViewport} data-view-transition-root="true">
               <Outlet />
             </div>
@@ -142,6 +144,35 @@ function AppShell() {
         {import.meta.env.DEV && <DebugPwa />}
       </body>
     </html>
+  )
+}
+
+export function RoutePendingOverlay() {
+  const { t } = useTranslation()
+  const isRoutePending = useRouterState({
+    select: (state) =>
+      Boolean(state.resolvedLocation) && state.matches.some((match) => match.status === 'pending'),
+    structuralSharing: true
+  })
+
+  if (!isRoutePending) {
+    return null
+  }
+
+  return (
+    <div className={styles.routePendingOverlay} role="status" aria-live="polite" aria-atomic="true">
+      <Spinner
+        className={styles.routePendingSpinner}
+        size="sm"
+        color="secondary"
+        silent={true}
+        aria-hidden="true"
+      />
+      <div className={styles.routePendingCopy}>
+        <p className={styles.routePendingTitle}>{t('loadingState.routeTransition')}</p>
+        <p className={styles.routePendingBody}>{t('loadingState.routeBody')}</p>
+      </div>
+    </div>
   )
 }
 

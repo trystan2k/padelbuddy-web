@@ -9,7 +9,6 @@ import { currentMatchPersistenceRouteLoaderOptions } from '@/lib/router/current-
 
 import { loadHomeStartup } from './-home-startup'
 import { parseMatchRouteErrorType, type MatchRouteErrorType } from './-match-route-state'
-import { RouteLoadingState } from './-route-utils'
 
 interface HomeRouteSearch {
   error?: MatchRouteErrorType
@@ -29,7 +28,6 @@ export const Route = createFileRoute('/')({
     return error ? { error } : {}
   },
   loader: async () => loadHomeStartup(),
-  pendingComponent: RouteLoadingState,
   component: HomeRoute
 })
 
