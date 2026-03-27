@@ -6,8 +6,14 @@ import { render } from 'vitest-browser-react'
 
 import { SetupScreen } from '@/components/SetupScreen'
 import { ToastProvider } from '@/components/ui/Toast'
-import { clearCurrentMatch, loadCurrentMatch, saveCurrentMatch } from '@/lib/current-match'
-import { HomeRoute } from '@/routes/index'
+import {
+  clearCurrentMatch,
+  hydrateCurrentMatchStartup,
+  loadCurrentMatch,
+  saveCurrentMatch,
+  type CurrentMatchStartupResult
+} from '@/lib/current-match'
+import { HomeRoute, Route as HomeIndexRoute } from '@/routes/index'
 import { MatchRouteContent } from '@/routes/match.$id'
 import { MatchFinishRouteContent } from '@/routes/match.finish.$id'
 
@@ -45,6 +51,7 @@ describe('app flow integration', () => {
     vi.clearAllMocks()
     mockRouteSearch.current = {}
     await clearCurrentMatch()
+    await setHomeStartupState({ status: 'ready', notice: null, session: null })
   })
 
   afterEach(async () => {
@@ -117,6 +124,7 @@ describe('app flow integration', () => {
     await matchEndScreen.unmount()
     mockNavigate.mockClear()
 
+    await setHomeStartupState(await hydrateCurrentMatchStartup())
     const homeScreen = await render(<HomeRoute />)
 
     await expect.element(homeScreen.getByRole('button', { name: 'Start Match' })).toBeVisible()
@@ -134,6 +142,7 @@ describe('app flow integration', () => {
       startedAt: Date.now()
     })
 
+    await setHomeStartupState(await hydrateCurrentMatchStartup())
     const homeScreen = await render(<HomeRoute />)
 
     await expect
@@ -197,6 +206,7 @@ describe('app flow integration', () => {
 
     mockNavigate.mockClear()
     mockRouteSearch.current = { error: 'invalid-match' }
+    await setHomeStartupState(await hydrateCurrentMatchStartup())
 
     const homeScreen = await render(
       <ToastProvider>
@@ -237,6 +247,7 @@ describe('app flow integration', () => {
 
       mockNavigate.mockClear()
       mockRouteSearch.current = { error: 'corrupt' }
+      await setHomeStartupState(await hydrateCurrentMatchStartup())
 
       const homeScreen = await render(
         <ToastProvider>
@@ -251,6 +262,16 @@ describe('app flow integration', () => {
     }
   })
 })
+
+async function setHomeStartupState(startupState: CurrentMatchStartupResult): Promise<void> {
+  const loader = HomeIndexRoute.useLoaderData
+
+  if (!vi.isMockFunction(loader)) {
+    throw new Error('Expected the home route loader to be mocked in integration tests.')
+  }
+
+  loader.mockReturnValue(startupState)
+}
 
 function getNavigationMatchId(navigation: unknown): string {
   if (

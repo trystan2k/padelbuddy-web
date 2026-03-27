@@ -310,6 +310,7 @@ export function CurrentMatchStartupGate({
   portalContainer,
   ...props
 }: CurrentMatchStartupGateProps) {
+  const { t } = useTranslation()
   const [startupState, setStartupState] = useState<CurrentMatchStartupViewState>({
     status: 'loading'
   })
@@ -331,8 +332,6 @@ export function CurrentMatchStartupGate({
   }, [persistence])
 
   if (startupState.status === 'loading') {
-    const { t } = useTranslation()
-
     return (
       <main className={styles.loadingPage} {...props}>
         <section className={styles.loadingCard} aria-live="polite">

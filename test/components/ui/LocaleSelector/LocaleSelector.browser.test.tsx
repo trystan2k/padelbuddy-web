@@ -7,17 +7,10 @@ import { LocaleSelector } from '@/components/ui/LocaleSelector'
 import { TopBar } from '@/components/ui/TopBar'
 import * as i18nModule from '@/lib/i18n'
 
-vi.mock('@/lib/i18n', async (importOriginal) => {
-  const original = await importOriginal<typeof i18nModule>()
-  return {
-    ...original,
-    changeLocale: vi.fn().mockResolvedValue(undefined)
-  }
-})
-
 describe('LocaleSelector', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks()
+    await i18nModule.i18n.changeLanguage('en')
   })
 
   test('renders as TopBar child content', async () => {
@@ -62,23 +55,29 @@ describe('LocaleSelector', () => {
 
   test('calls changeLocale and onLocaleChange when locale changes', async () => {
     const handleLocaleChange = vi.fn()
-    const screen = await render(
-      <LocaleSelector currentLocale="en" onLocaleChange={handleLocaleChange} />
-    )
+    const screen = await render(<LocaleSelector onLocaleChange={handleLocaleChange} />)
 
     await screen.getByRole('button', { name: /english/i }).click()
 
-    const spanishOption = screen.getByRole('button', { name: /español/i })
-    await spanishOption.click()
+    const menu = screen.container.querySelector('#locale-menu')
+    const spanishOption = Array.from(menu?.querySelectorAll('button') ?? []).find((button) =>
+      button.textContent?.includes('Español')
+    )
+
+    expect(spanishOption).toBeTruthy()
+    spanishOption?.click()
 
     await vi.waitFor(() => {
-      expect(i18nModule.changeLocale).toHaveBeenCalledWith('es')
       expect(handleLocaleChange).toHaveBeenCalledWith('es')
+      expect(i18nModule.i18n.resolvedLanguage ?? i18nModule.i18n.language).toBe('es')
     })
   })
 
   test('does not call changeLocale when selecting the current locale', async () => {
-    const screen = await render(<LocaleSelector currentLocale="en" />)
+    const handleLocaleChange = vi.fn()
+    const screen = await render(
+      <LocaleSelector currentLocale="en" onLocaleChange={handleLocaleChange} />
+    )
     const trigger = screen.getByRole('button', { name: /english/i })
 
     await trigger.click()
@@ -91,6 +90,6 @@ describe('LocaleSelector', () => {
     expect(englishMenuOption).toBeTruthy()
     englishMenuOption?.click()
 
-    expect(i18nModule.changeLocale).not.toHaveBeenCalled()
+    expect(handleLocaleChange).not.toHaveBeenCalled()
   })
 })

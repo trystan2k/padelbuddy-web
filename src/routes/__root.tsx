@@ -12,14 +12,12 @@ import { useTranslation } from 'react-i18next'
 
 import { DebugPwa } from '@/components/DebugPwa'
 import { NotFoundPage } from '@/components/NotFoundPage/NotFoundPage'
-import { Button, ToastProvider, TopBar } from '@/components/ui'
+import { Button, ToastProvider } from '@/components/ui'
 import { i18n, initializeI18n } from '@/lib/i18n'
 import { registerSW } from '@/lib/pwa'
 
 import { getErrorMessage } from './-route-utils'
 import styles from './RootDocument.module.css'
-import { PadelCourtSpinner } from '@/components/PadelCourtSpinner'
-import { Layout } from '@/components/Layout'
 
 export const Route = createRootRoute({
   head: () => ({
@@ -70,15 +68,6 @@ export const Route = createRootRoute({
   errorComponent: RootErrorState,
   notFoundComponent: NotFoundPage
 })
-
-const HeaderContent = <TopBar iconSrc="/icon.png" iconAlt="Padel Buddy" title="Padel Buddy" />
-const LoaderPadelCourt = () => (
-  <Layout header={HeaderContent}>
-    <div className={styles.loaderContainer}>
-      <PadelCourtSpinner />
-    </div>
-  </Layout>
-)
 
 function RootErrorState({ error, reset }: ErrorComponentProps) {
   const { t } = useTranslation()
@@ -157,45 +146,11 @@ function AppShell() {
 }
 
 function RootDocument() {
-  const [i18nReady, setI18nReady] = useState(() => i18n.isInitialized)
-
   useEffect(() => {
-    if (i18n.isInitialized) {
-      return
-    }
-
-    let cancelled = false
-
-    void initializeI18n()
-      .then(() => {
-        if (cancelled) return undefined
-        setI18nReady(true)
-        return undefined
-      })
-      .catch((error) => {
-        if (cancelled) return
-        console.error('Failed to initialize i18n:', error)
-        setI18nReady(true)
-      })
-
-    return () => {
-      cancelled = true
-    }
+    void initializeI18n().catch((error) => {
+      console.error('Failed to initialize i18n:', error)
+    })
   }, [])
-
-  if (!i18nReady) {
-    return (
-      <html lang="en">
-        <head>
-          <HeadContent />
-        </head>
-        <body>
-          <LoaderPadelCourt />
-          <Scripts />
-        </body>
-      </html>
-    )
-  }
 
   return <AppShell />
 }
