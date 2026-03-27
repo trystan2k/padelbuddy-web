@@ -10,8 +10,8 @@ import {
 } from '@/lib/i18n'
 
 describe('i18n initialization', () => {
-  afterEach(() => {
-    resetI18nInitialization()
+  afterEach(async () => {
+    await resetI18nInitialization()
     vi.unstubAllGlobals()
   })
 
@@ -21,7 +21,7 @@ describe('i18n initialization', () => {
     vi.stubGlobal('fetch', fetchSpy)
     vi.stubGlobal('indexedDB', undefined)
 
-    resetI18nInitialization()
+    await resetI18nInitialization()
     await initializeI18n()
 
     expect(getCurrentLocale()).toBe('en')
@@ -35,7 +35,7 @@ describe('i18n initialization', () => {
     vi.stubGlobal('indexedDB', fakeIndexedDb.factory)
 
     await saveLocalePreference('es')
-    resetI18nInitialization()
+    await resetI18nInitialization()
     await initializeI18n()
 
     expect(getCurrentLocale()).toBe('es')
@@ -50,7 +50,7 @@ describe('i18n initialization', () => {
     await changeLocale('pt')
     expect(getCurrentLocale()).toBe('pt')
 
-    resetI18nInitialization()
+    await resetI18nInitialization()
     await initializeI18n()
 
     expect(getCurrentLocale()).toBe('pt')

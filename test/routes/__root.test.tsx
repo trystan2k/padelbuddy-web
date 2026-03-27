@@ -9,7 +9,7 @@ const { routerStateMock } = vi.hoisted(() => ({
 }))
 
 beforeAll(async () => {
-  resetI18nInitialization()
+  await resetI18nInitialization()
   i18n.addResourceBundle('en', 'translation', defaultTranslation, true, true)
   await initializeI18n()
 })
@@ -54,14 +54,14 @@ describe('root route', () => {
     expect(Route.options.notFoundComponent).toBeTypeOf('function')
   })
 
-  test('renders full document immediately without an i18n bootstrap gate', () => {
+  test('renders full document immediately without an i18n bootstrap gate', async () => {
     const RootDocument = Route.options.component
 
     if (!RootDocument) {
       throw new Error('Expected the root route to expose component')
     }
 
-    resetI18nInitialization()
+    await resetI18nInitialization()
 
     const initialMarkup = renderToStaticMarkup(<RootDocument />)
 

@@ -15,7 +15,11 @@ let localeReconciliationPromise: Promise<void> | null = null
  * Resets the initialization state. For testing purposes only.
  * @internal
  */
-export function resetI18nInitialization(): void {
+/**
+ * Resets the initialization state. For testing purposes only.
+ * @internal
+ */
+export async function resetI18nInitialization(): Promise<void> {
   localeReconciliationPromise = null
 
   for (const locale of supportedLocales) {
@@ -26,8 +30,7 @@ export function resetI18nInitialization(): void {
     i18n.removeResourceBundle(locale, 'translation')
   }
 
-  void i18n.changeLanguage(defaultLocale)
-  baseInitializationPromise = ensureBaseInitialization()
+  await i18n.changeLanguage(defaultLocale)
 }
 
 /**
