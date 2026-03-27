@@ -7,6 +7,8 @@ import {
   replayCurrentMatchRecord,
   type CurrentMatchPersistence
 } from '@/lib/current-match'
+import { createLocaleStorage, type SupportedLocale } from '@/lib/i18n'
+import { createSpeechStorage, type SpeechPreferences } from '@/lib/speech'
 
 import { createTestSetup, scorePoints, winQuickGame } from '../core/match/test-helpers'
 
@@ -62,6 +64,37 @@ describe('current match IndexedDB persistence', () => {
     }
 
     expect(replayCurrentMatchRecord(loadedRecord.record).state.actionCount).toBe(6)
+  })
+
+  test('shares the same IndexedDB bootstrap across persistence modules', async () => {
+    const localeStorage = createLocaleStorage({ databaseName })
+    const speechStorage = createSpeechStorage({ databaseName })
+    const speechPreferences: SpeechPreferences = {
+      muted: false,
+      verbosity: 'standard',
+      updatedAt: '2024-01-01T00:00:00.000Z'
+    }
+
+    await localeStorage.saveLocalePreference('es' as SupportedLocale)
+    await expect(persistence.loadCurrentMatch()).resolves.toEqual({
+      status: 'empty'
+    })
+
+    const currentMatchRecord = await persistence.saveCurrentMatch({
+      matchId: testMatchId,
+      setup: createTestSetup(),
+      actions: winQuickGame('team-1'),
+      startedAt: Date.now()
+    })
+
+    await speechStorage.saveSpeechPreferences(speechPreferences)
+
+    await expect(localeStorage.loadLocalePreference()).resolves.toBe('es')
+    await expect(speechStorage.loadSpeechPreferences()).resolves.toEqual(speechPreferences)
+    await expect(persistence.loadCurrentMatch()).resolves.toEqual({
+      status: 'ok',
+      record: currentMatchRecord
+    })
   })
 
   test('clears the stored current match record', async () => {

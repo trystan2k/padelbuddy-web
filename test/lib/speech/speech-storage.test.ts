@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
+import { sharedIndexedDbObjectStoreNames } from '@/lib/persistence/indexed-db'
 import { createSpeechStorage } from '@/lib/speech/speech-storage'
 import type { SpeechPreferences } from '@/lib/speech/types'
 
@@ -147,7 +148,6 @@ describe('speech-storage', () => {
 
     const storage = createSpeechStorage({ databaseName: 'test-verbosity-db' })
 
-    // Test minimal verbosity
     const minimalPrefs: SpeechPreferences = {
       muted: false,
       verbosity: 'minimal',
@@ -157,7 +157,6 @@ describe('speech-storage', () => {
     let loaded = await storage.loadSpeechPreferences()
     expect(loaded).toEqual(minimalPrefs)
 
-    // Test standard verbosity
     const standardPrefs: SpeechPreferences = {
       muted: false,
       verbosity: 'standard',
@@ -167,7 +166,6 @@ describe('speech-storage', () => {
     loaded = await storage.loadSpeechPreferences()
     expect(loaded).toEqual(standardPrefs)
 
-    // Test verbose verbosity
     const verbosePrefs: SpeechPreferences = {
       muted: false,
       verbosity: 'verbose',
@@ -265,7 +263,7 @@ class FakeRequest<TResult> extends EventTarget {
 }
 
 class FakeDatabase {
-  private hasStore: boolean
+  private readonly storeNames: Set<string>
 
   constructor(
     private readonly storage: Map<string, unknown>,
@@ -276,15 +274,15 @@ class FakeDatabase {
     },
     private readonly createdObjectStores: string[]
   ) {
-    this.hasStore = options.storeExists
+    this.storeNames = options.storeExists ? new Set(sharedIndexedDbObjectStoreNames) : new Set()
   }
 
   objectStoreNames = {
-    contains: (_name: string) => this.hasStore
+    contains: (name: string) => this.storeNames.has(name)
   }
 
   createObjectStore(name: string): Record<string, never> {
-    this.hasStore = true
+    this.storeNames.add(name)
     this.createdObjectStores.push(name)
 
     return {}
