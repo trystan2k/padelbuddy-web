@@ -3,6 +3,7 @@
 
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import { render } from 'vitest-browser-react'
+import type { ComponentType } from 'react'
 
 import { SetupScreen } from '@/components/SetupScreen'
 import { ToastProvider } from '@/components/ui/Toast'
@@ -14,8 +15,8 @@ import {
   type CurrentMatchStartupResult
 } from '@/lib/current-match'
 import { HomeRoute, Route as HomeIndexRoute } from '@/routes/index'
-import { MatchRouteContent } from '@/routes/match.$id'
-import { MatchFinishRouteContent } from '@/routes/match.finish.$id'
+import { Route as MatchRoute } from '@/routes/match.$id'
+import { Route as MatchFinishRoute } from '@/routes/match.finish.$id'
 
 import { createTestSetup, scorePoints, winQuickSet } from '../core/match/test-helpers'
 
@@ -42,7 +43,8 @@ vi.mock('@tanstack/react-router', async (importOriginal) => {
     useNavigate: () => mockNavigate,
     useRouter: () => ({
       clearCache: mockClearCache
-    })
+    }),
+    redirect: (options: unknown) => options
   }
 })
 
@@ -76,43 +78,34 @@ describe('app flow integration', () => {
     await setupScreen.unmount()
     mockNavigate.mockClear()
 
-    const activeMatchScreen = await render(
-      <MatchRouteContent matchData={startedMatch} matchId={matchId} />
-    )
+    const activeLoaderData = await runMatchRouteLoader(matchId)
+    setRouteLoaderData(MatchRoute, activeLoaderData)
+    const MatchRouteComponent = getRouteComponent(MatchRoute, 'active match')
+
+    const activeMatchScreen = await render(<MatchRouteComponent />)
 
     await expect.element(activeMatchScreen.getByTestId('layout-body')).toBeInTheDocument()
 
     await activeMatchScreen.unmount()
 
-    const completedMatch = {
-      status: 'ok' as const,
-      record: {
-        ...startedMatch.record,
-        actions: [...winQuickSet('team-1'), ...winQuickSet('team-1')]
-      }
-    }
-
     await saveCurrentMatch({
       matchId,
-      setup: completedMatch.record.setup,
-      actions: completedMatch.record.actions,
-      startedAt: completedMatch.record.startedAt
+      setup: startedMatch.record.setup,
+      actions: [...winQuickSet('team-1'), ...winQuickSet('team-1')],
+      startedAt: startedMatch.record.startedAt
     })
 
-    mockNavigate.mockClear()
+    await expect(runMatchRouteLoader(matchId)).rejects.toMatchObject({
+      to: '/match/finish/$id',
+      params: { id: matchId },
+      replace: true
+    })
 
-    const completedMatchRedirect = await render(
-      <MatchRouteContent matchData={completedMatch} matchId={matchId} />
-    )
+    const finishLoaderData = await runMatchFinishRouteLoader(matchId)
+    setRouteLoaderData(MatchFinishRoute, finishLoaderData)
+    const MatchFinishRouteComponent = getRouteComponent(MatchFinishRoute, 'finish match')
 
-    await waitForNavigationCall('/match/finish/$id')
-    await completedMatchRedirect.unmount()
-
-    mockNavigate.mockClear()
-
-    const matchEndScreen = await render(
-      <MatchFinishRouteContent matchData={completedMatch} matchId={matchId} />
-    )
+    const matchEndScreen = await render(<MatchFinishRouteComponent />)
 
     await expect.element(matchEndScreen.getByTestId('match-end-screen')).toBeInTheDocument()
     await matchEndScreen.getByRole('button', { name: 'New Match' }).click()
@@ -159,23 +152,18 @@ describe('app flow integration', () => {
       })
     })
 
-    const resumedMatch = await loadCurrentMatch()
-
-    expect(resumedMatch.status).toBe('ok')
-    if (resumedMatch.status !== 'ok') {
-      throw new Error('Expected the resumed match to still be persisted.')
-    }
+    const activeLoaderData = await runMatchRouteLoader(matchId)
+    setRouteLoaderData(MatchRoute, activeLoaderData)
+    const MatchRouteComponent = getRouteComponent(MatchRoute, 'active match')
 
     await homeScreen.unmount()
 
-    const activeMatchScreen = await render(
-      <MatchRouteContent matchData={resumedMatch} matchId={matchId} />
-    )
+    const activeMatchScreen = await render(<MatchRouteComponent />)
 
     await expect.element(activeMatchScreen.getByTestId('layout-body')).toBeInTheDocument()
   })
 
-  test('redirects invalid match routes home and shows a dismissible notice', async () => {
+  test('redirects invalid active deep links home through the loader and preserves the home notice flow', async () => {
     const setup = createTestSetup()
     const persistedMatchId = 'real-match'
 
@@ -186,25 +174,12 @@ describe('app flow integration', () => {
       startedAt: Date.now()
     })
 
-    const persistedMatch = await loadCurrentMatch()
-
-    expect(persistedMatch.status).toBe('ok')
-    if (persistedMatch.status !== 'ok') {
-      throw new Error('Expected the persisted match to be available.')
-    }
-
-    await render(<MatchRouteContent matchData={persistedMatch} matchId="invalid-id" />)
-
-    await vi.waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith({
-        to: '/',
-        replace: true,
-        search: { error: 'invalid-match' },
-        viewTransition: true
-      })
+    await expect(runMatchRouteLoader('invalid-id')).rejects.toMatchObject({
+      to: '/',
+      replace: true,
+      search: { error: 'invalid-match' }
     })
 
-    mockNavigate.mockClear()
     mockRouteSearch.current = { error: 'invalid-match' }
     await setHomeStartupState(await hydrateCurrentMatchStartup())
 
@@ -218,48 +193,22 @@ describe('app flow integration', () => {
     await homeScreen.unmount()
   })
 
-  test('redirects corrupt finish routes home and shows a dismissible notice', async () => {
-    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined)
+  test('redirects in-progress finish deep links back to the active route through the loader', async () => {
+    const setup = createTestSetup()
+    const matchId = 'finish-loader-redirect'
 
-    try {
-      await render(
-        <MatchFinishRouteContent
-          matchData={{
-            status: 'corrupt',
-            message: 'Current match payload is corrupt.'
-          }}
-          matchId="broken-match"
-        />
-      )
+    await saveCurrentMatch({
+      matchId,
+      setup,
+      actions: scorePoints('team-1', 'team-2'),
+      startedAt: Date.now()
+    })
 
-      await vi.waitFor(() => {
-        expect(mockNavigate).toHaveBeenCalledWith({
-          to: '/',
-          replace: true,
-          search: { error: 'corrupt' },
-          viewTransition: true
-        })
-      })
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
-        'Corrupted match data:',
-        'Current match payload is corrupt.'
-      )
-
-      mockNavigate.mockClear()
-      mockRouteSearch.current = { error: 'corrupt' }
-      await setHomeStartupState(await hydrateCurrentMatchStartup())
-
-      const homeScreen = await render(
-        <ToastProvider>
-          <HomeRoute />
-        </ToastProvider>
-      )
-
-      await expect.element(homeScreen.getByTestId('layout-body')).toBeInTheDocument()
-      await homeScreen.unmount()
-    } finally {
-      consoleErrorSpy.mockRestore()
-    }
+    await expect(runMatchFinishRouteLoader(matchId)).rejects.toMatchObject({
+      to: '/match/$id',
+      params: { id: matchId },
+      replace: true
+    })
   })
 })
 
@@ -271,6 +220,58 @@ async function setHomeStartupState(startupState: CurrentMatchStartupResult): Pro
   }
 
   loader.mockReturnValue({ startupState })
+}
+
+async function runMatchRouteLoader(matchId: string) {
+  const loader = MatchRoute.options.loader
+
+  if (typeof loader !== 'function') {
+    throw new Error('Expected the active match route to expose a loader.')
+  }
+
+  return loader({ params: { id: matchId } } as never)
+}
+
+async function runMatchFinishRouteLoader(matchId: string) {
+  const loader = MatchFinishRoute.options.loader
+
+  if (typeof loader !== 'function') {
+    throw new Error('Expected the finish match route to expose a loader.')
+  }
+
+  return loader({ params: { id: matchId } } as never)
+}
+
+function setRouteLoaderData(
+  route: {
+    useLoaderData: unknown
+  },
+  loaderData: unknown
+) {
+  const useLoaderData = route.useLoaderData as ReturnType<typeof vi.fn>
+
+  if (!vi.isMockFunction(useLoaderData)) {
+    throw new Error('Expected route loader data to be mocked in integration tests.')
+  }
+
+  useLoaderData.mockReturnValue(loaderData)
+}
+
+function getRouteComponent(
+  route: {
+    options: {
+      component?: unknown
+    }
+  },
+  label: string
+): ComponentType {
+  const component = route.options.component
+
+  if (typeof component !== 'function') {
+    throw new Error(`Expected the ${label} route to expose a component.`)
+  }
+
+  return component as ComponentType
 }
 
 function getNavigationMatchId(navigation: unknown): string {

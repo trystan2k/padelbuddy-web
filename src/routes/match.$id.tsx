@@ -1,11 +1,9 @@
-import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
-import { useEffect } from 'react'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 
 import { ActiveMatchScreen } from '@/components/ActiveMatchScreen'
-import { loadCurrentMatch, type CurrentMatchLoadResult } from '@/lib/current-match'
-import { getViewTransitionNavigationOptions } from '@/lib/utils/view-transitions'
+import { loadCurrentMatch, type CurrentMatchRecord } from '@/lib/current-match'
 
-import { determineErrorType, resolveMatchRouteState } from './-match-route-state'
+import { resolveMatchRouteState } from './-match-route-state'
 import { RouteErrorState, RouteLoadingState } from './-route-utils'
 
 export const Route = createFileRoute('/match/$id')({
@@ -20,7 +18,7 @@ export const Route = createFileRoute('/match/$id')({
       throw redirect({
         to: '/',
         replace: true,
-        search: { error: determineErrorType(params.id, matchData) }
+        search: { error: routeState.error }
       })
     }
 
@@ -49,18 +47,12 @@ function MatchRoute() {
   return <MatchRouteReadyContent matchId={matchId} record={record} />
 }
 
-export interface MatchRouteContentProps {
+interface MatchRouteReadyContentProps {
   matchId: string
-  matchData: CurrentMatchLoadResult
+  record: CurrentMatchRecord
 }
 
-function MatchRouteReadyContent({
-  matchId,
-  record
-}: {
-  matchId: string
-  record: Extract<CurrentMatchLoadResult, { status: 'ok' }>['record']
-}) {
+function MatchRouteReadyContent({ matchId, record }: MatchRouteReadyContentProps) {
   const { setup, actions, startedAt } = record
 
   return (
@@ -72,40 +64,4 @@ function MatchRouteReadyContent({
       {...(typeof record.finishedAt === 'number' ? { finishedAt: record.finishedAt } : {})}
     />
   )
-}
-
-export function MatchRouteContent({ matchId, matchData }: MatchRouteContentProps) {
-  const navigate = useNavigate()
-  const routeState = resolveMatchRouteState(matchId, matchData, 'active')
-
-  useEffect(() => {
-    if (matchData.status === 'corrupt') {
-      console.error('Corrupted match data:', matchData.message)
-    }
-
-    if (routeState.status === 'redirect-home') {
-      void navigate({
-        to: '/',
-        replace: true,
-        search: { error: determineErrorType(matchId, matchData) },
-        ...getViewTransitionNavigationOptions()
-      })
-      return
-    }
-
-    if (routeState.status === 'redirect-finish') {
-      void navigate({
-        to: '/match/finish/$id',
-        params: { id: routeState.matchId },
-        replace: true,
-        ...getViewTransitionNavigationOptions()
-      })
-    }
-  }, [matchData, matchId, navigate, routeState])
-
-  if (routeState.status !== 'ready') {
-    return null
-  }
-
-  return <MatchRouteReadyContent matchId={matchId} record={routeState.record} />
 }
