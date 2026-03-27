@@ -74,7 +74,7 @@ describe('app flow integration', () => {
     const matchId = getNavigationMatchId(startNavigation)
     const startedMatch = await loadCurrentMatch()
 
-    expect(mockInvalidate).toHaveBeenCalledTimes(1)
+    expect(mockInvalidate).not.toHaveBeenCalled()
     expect(mockPreloadRoute).toHaveBeenCalledWith({
       to: '/match/$id',
       params: { id: matchId }

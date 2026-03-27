@@ -105,14 +105,10 @@ export function SetupScreen() {
 
       // Persist match state to IndexedDB before navigation
       await saveCurrentMatch({ matchId, setup, actions: [], startedAt: Date.now() })
-      await prepareCurrentMatchRouteNavigation(
-        router,
-        {
-          to: '/match/$id',
-          params: { id: matchId }
-        },
-        { invalidate: true }
-      )
+      await prepareCurrentMatchRouteNavigation(router, {
+        to: '/match/$id',
+        params: { id: matchId }
+      })
 
       // Navigate to active match route
       await navigate({
