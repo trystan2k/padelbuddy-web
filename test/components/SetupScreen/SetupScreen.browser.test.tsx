@@ -1,6 +1,6 @@
 /* oxlint-disable jsx-no-new-function-as-prop -- Test files use inline functions for readability */
 
-import { describe, expect, test, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import { render } from 'vitest-browser-react'
 
 import { SetupScreen } from '@/components/SetupScreen/SetupScreen'
@@ -25,6 +25,14 @@ vi.mock('@tanstack/react-router', async (importOriginal) => {
 })
 
 describe('SetupScreen countdown timer controls', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  afterEach(async () => {
+    // Cleanup handled by shared.ts afterEach (document.body.innerHTML, restoreAllMocks)
+  })
+
   test('renders countdown controls with the default disabled duration state', async () => {
     const screen = await render(<SetupScreen />)
 
@@ -47,7 +55,10 @@ describe('SetupScreen countdown timer controls', () => {
     const oneHourOption = screen.getByRole('radio', { name: '1:00 h' })
     const twoHourOption = screen.getByRole('radio', { name: '2:00 h' })
 
-    ;(countdownToggle.element() as HTMLElement).click()
+    // Use dispatchEvent instead of Playwright's click() because the Switch element
+    // has no CSS loaded in the test environment (zero bounding box). This is equivalent
+    // to the original DOM .click() approach that bypassed Playwright's checks.
+    countdownToggle.element().dispatchEvent(new MouseEvent('click', { bubbles: true }))
 
     await expect.element(countdownToggle).toHaveAttribute('aria-checked', 'true')
     await expect.element(oneHourOption).toBeEnabled()
@@ -68,7 +79,7 @@ describe('SetupScreen countdown timer controls', () => {
     const ninetyMinuteOption = screen.getByRole('radio', { name: '1:30 h' })
     const twoHourOption = screen.getByRole('radio', { name: '2:00 h' })
 
-    ;(countdownToggle.element() as HTMLElement).click()
+    countdownToggle.element().dispatchEvent(new MouseEvent('click', { bubbles: true }))
 
     await expect.element(ninetyMinuteOption).toHaveAttribute('tabindex', '0')
     await expect.element(oneHourOption).toHaveAttribute('tabindex', '-1')
@@ -96,7 +107,7 @@ describe('SetupScreen countdown timer controls', () => {
     const team1ServerButton = screen.getByRole('button', { name: /^team 1$/i })
     const team2ServerButton = screen.getByRole('button', { name: /^team 2$/i })
 
-    ;(servingIndicatorToggle.element() as HTMLElement).click()
+    servingIndicatorToggle.element().dispatchEvent(new MouseEvent('click', { bubbles: true }))
 
     await expect.element(servingIndicatorToggle).toHaveAttribute('aria-checked', 'false')
     expect(getComputedStyle(firstServerSection.element()).opacity).toBe('0.35')
@@ -114,10 +125,10 @@ describe('SetupScreen countdown timer controls', () => {
     await team2ServerButton.click()
     await expect.element(team2ServerButton).toHaveAttribute('aria-pressed', 'true')
 
-    ;(servingIndicatorToggle.element() as HTMLElement).click()
+    servingIndicatorToggle.element().dispatchEvent(new MouseEvent('click', { bubbles: true }))
     await expect.element(team2ServerButton).toBeDisabled()
 
-    ;(servingIndicatorToggle.element() as HTMLElement).click()
+    servingIndicatorToggle.element().dispatchEvent(new MouseEvent('click', { bubbles: true }))
 
     await expect.element(team2ServerButton).toBeEnabled()
     await expect.element(team2ServerButton).toHaveAttribute('aria-pressed', 'true')

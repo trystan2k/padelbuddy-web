@@ -1,6 +1,6 @@
 /* oxlint-disable jsx-no-new-function-as-prop -- Test files use inline functions for readability */
 
-import { describe, expect, test, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import { render } from 'vitest-browser-react'
 
 import { TeamPanel } from '@/components/ActiveMatchScreen/TeamPanel/TeamPanel'
@@ -8,29 +8,37 @@ import styles from '@/components/ActiveMatchScreen/TeamPanel/TeamPanel.module.cs
 import { resolveCssColor } from '../../utils/css'
 
 describe('TeamPanel', () => {
-  const defaultProps = {
+  const createDefaultProps = () => ({
     teamId: 'team-1' as const,
     teamName: 'Team Alpha',
     score: '15',
     isServing: false,
     onClick: vi.fn()
-  }
+  })
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  afterEach(() => {
+    // Cleanup handled by shared.ts afterEach (document.body.innerHTML, restoreAllMocks)
+  })
 
   test('renders team name', async () => {
-    const screen = await render(<TeamPanel {...defaultProps} />)
+    const screen = await render(<TeamPanel {...createDefaultProps()} />)
 
     await expect.element(screen.getByText('Team Alpha')).toBeInTheDocument()
   })
 
   test('renders score', async () => {
-    const screen = await render(<TeamPanel {...defaultProps} score="40" />)
+    const screen = await render(<TeamPanel {...createDefaultProps()} score="40" />)
 
     await expect.element(screen.getByRole('button')).toHaveTextContent('40')
   })
 
   test('calls onClick when clicked', async () => {
     const handleClick = vi.fn()
-    const screen = await render(<TeamPanel {...defaultProps} onClick={handleClick} />)
+    const screen = await render(<TeamPanel {...createDefaultProps()} onClick={handleClick} />)
 
     await screen.getByRole('button').click()
 
@@ -38,31 +46,31 @@ describe('TeamPanel', () => {
   })
 
   test('is disabled when disabled prop is true', async () => {
-    const screen = await render(<TeamPanel {...defaultProps} disabled={true} />)
+    const screen = await render(<TeamPanel {...createDefaultProps()} disabled={true} />)
 
     await expect.element(screen.getByRole('button')).toBeDisabled()
   })
 
   test('is enabled when disabled prop is false', async () => {
-    const screen = await render(<TeamPanel {...defaultProps} disabled={false} />)
+    const screen = await render(<TeamPanel {...createDefaultProps()} disabled={false} />)
 
     await expect.element(screen.getByRole('button')).not.toBeDisabled()
   })
 
   test('renders for team-1 with correct test id', async () => {
-    const screen = await render(<TeamPanel {...defaultProps} teamId="team-1" />)
+    const screen = await render(<TeamPanel {...createDefaultProps()} teamId="team-1" />)
 
     await expect.element(screen.getByTestId('team-panel-team-1')).toBeInTheDocument()
   })
 
   test('renders for team-2 with correct test id', async () => {
-    const screen = await render(<TeamPanel {...defaultProps} teamId="team-2" />)
+    const screen = await render(<TeamPanel {...createDefaultProps()} teamId="team-2" />)
 
     await expect.element(screen.getByTestId('team-panel-team-2')).toBeInTheDocument()
   })
 
   test('has accessible label for scoring', async () => {
-    const screen = await render(<TeamPanel {...defaultProps} teamName="The Champions" />)
+    const screen = await render(<TeamPanel {...createDefaultProps()} teamName="The Champions" />)
 
     await expect
       .element(screen.getByRole('button'))
@@ -70,20 +78,20 @@ describe('TeamPanel', () => {
   })
 
   test('score has aria-live for accessibility', async () => {
-    const screen = await render(<TeamPanel {...defaultProps} />)
+    const screen = await render(<TeamPanel {...createDefaultProps()} />)
 
     expect(screen.container.querySelector('[aria-live="polite"]')).toBeTruthy()
   })
 
   test('applies serving styles when the serving indicator is enabled', async () => {
     const screen = await render(
-      <TeamPanel {...defaultProps} isServing={true} showServingIndicator={true} />
+      <TeamPanel {...createDefaultProps()} isServing={true} showServingIndicator={true} />
     )
 
     const panel = screen.getByRole('button')
     const score = screen.getByText('15')
 
-    await expect.element(panel).toHaveClass(styles.serving!)
+    await expect.element(panel).toHaveClass(String(styles.serving))
     expect(getComputedStyle(panel.element()).backgroundColor).toBe(
       resolveCssColor('backgroundColor', 'var(--semantic-color-items-primary-background)')
     )
@@ -93,11 +101,11 @@ describe('TeamPanel', () => {
   })
 
   test('does not render games, serving, or golden point affordances', async () => {
-    const screen = await render(<TeamPanel {...defaultProps} />)
+    const screen = await render(<TeamPanel {...createDefaultProps()} />)
 
     const button = screen.getByRole('button').element()
-    const nameElement = screen.getByText(defaultProps.teamName).element()
-    const scoreElement = screen.getByText(defaultProps.score).element()
+    const nameElement = screen.getByText('Team Alpha').element()
+    const scoreElement = screen.getByText('15').element()
     // Button content should only include the team name and score, no extra affordance text
     expect(button.contains(nameElement)).toBe(true)
     expect(button.contains(scoreElement)).toBe(true)
@@ -111,14 +119,26 @@ describe('TeamPanel', () => {
   })
 
   test('has type button', async () => {
-    const screen = await render(<TeamPanel {...defaultProps} />)
+    const screen = await render(<TeamPanel {...createDefaultProps()} />)
 
     await expect.element(screen.getByRole('button')).toHaveAttribute('type', 'button')
   })
 
-  test('disabled state prevents click handler in browser', async () => {
-    const screen = await render(<TeamPanel {...defaultProps} disabled={true} />)
+  test('renders disabled button when disabled prop is true', async () => {
+    const screen = await render(<TeamPanel {...createDefaultProps()} disabled={true} />)
 
     await expect.element(screen.getByRole('button')).toBeDisabled()
+  })
+
+  test('disabled state prevents onClick from being called', async () => {
+    const handleClick = vi.fn()
+    const screen = await render(
+      <TeamPanel {...createDefaultProps()} onClick={handleClick} disabled={true} />
+    )
+
+    const button = screen.getByRole('button').element()
+    button.dispatchEvent(new MouseEvent('click', { bubbles: true }))
+
+    expect(handleClick).not.toHaveBeenCalled()
   })
 })

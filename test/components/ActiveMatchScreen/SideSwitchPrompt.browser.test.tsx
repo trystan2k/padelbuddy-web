@@ -1,6 +1,6 @@
 /* oxlint-disable jsx-no-new-function-as-prop -- Test files use inline functions for readability */
 
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
+import { afterEach, describe, expect, test, vi } from 'vitest'
 import { render, cleanup } from 'vitest-browser-react'
 
 import { SideSwitchPrompt } from '@/components/ActiveMatchScreen/SideSwitchPrompt/SideSwitchPrompt'
@@ -13,13 +13,9 @@ describe('SideSwitchPrompt', () => {
     autoCloseDelay: 0 // Disable auto-close for tests
   }
 
-  // Ensure cleanup between tests
   afterEach(async () => {
-    await cleanup()
-  })
-
-  beforeEach(() => {
     vi.clearAllMocks()
+    await cleanup()
   })
 
   test('renders when open with odd-games reason', async () => {
@@ -60,8 +56,9 @@ describe('SideSwitchPrompt', () => {
     const screen = await render(<SideSwitchPrompt {...defaultProps} onClose={handleClose} />)
 
     const backdrop = screen.getByTestId('side-switch-backdrop')
-    // Click top-left corner to avoid clicking the centered dialog
-    await backdrop.click({ position: { x: 0, y: 0 } })
+    // Click near the top-left corner of the backdrop, well away from the
+    // centered dialog popup which overlays the backdrop center
+    await backdrop.click({ position: { x: 5, y: 5 } })
 
     expect(handleClose).toHaveBeenCalledTimes(1)
   })
