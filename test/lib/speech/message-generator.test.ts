@@ -31,7 +31,7 @@ describe('message-generator', () => {
     resetI18nInitialization()
 
     // Initialize i18n without backend for tests (resources added manually)
-    await initializeI18n({ skipBackend: true })
+    await initializeI18n()
 
     // Add test translations directly to i18n
     i18n.addResourceBundle('en', 'translation', testTranslations, true, true)

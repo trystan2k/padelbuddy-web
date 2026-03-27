@@ -30,27 +30,12 @@ export function resetI18nInitialization(): void {
   baseInitializationPromise = ensureBaseInitialization()
 }
 
-export interface InitializeI18nOptions {
-  /**
-   * Whether to skip persisted/browser locale reconciliation.
-   * Set to true for tests that only need the bundled default locale.
-   */
-  skipBackend?: boolean
-}
-
 /**
  * Initializes the i18n system. The default locale is bundled synchronously,
  * while persisted/browser locale reconciliation happens asynchronously.
- *
- * @param options - Configuration options for i18n initialization
- * @param options.skipBackend - Set to true to skip persisted/browser reconciliation
  */
-export async function initializeI18n(options: InitializeI18nOptions = {}): Promise<void> {
+export async function initializeI18n(): Promise<void> {
   await ensureBaseInitialization()
-
-  if (options.skipBackend) {
-    return
-  }
 
   if (localeReconciliationPromise) {
     return localeReconciliationPromise

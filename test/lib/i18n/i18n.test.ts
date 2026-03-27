@@ -22,7 +22,7 @@ describe('i18n initialization', () => {
     vi.stubGlobal('indexedDB', undefined)
 
     resetI18nInitialization()
-    await initializeI18n({ skipBackend: true })
+    await initializeI18n()
 
     expect(getCurrentLocale()).toBe('en')
     expect(i18n.t('common.retry')).toBe('Try again')

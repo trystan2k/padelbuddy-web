@@ -11,7 +11,7 @@ const { routerStateMock } = vi.hoisted(() => ({
 beforeAll(async () => {
   resetI18nInitialization()
   i18n.addResourceBundle('en', 'translation', defaultTranslation, true, true)
-  await initializeI18n({ skipBackend: true })
+  await initializeI18n()
 })
 
 vi.mock('@tanstack/react-router', async (importOriginal) => {
