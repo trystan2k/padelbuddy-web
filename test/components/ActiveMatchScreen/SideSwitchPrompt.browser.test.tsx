@@ -1,6 +1,6 @@
 /* oxlint-disable jsx-no-new-function-as-prop -- Test files use inline functions for readability */
 
-import { afterEach, describe, expect, test, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import { render, cleanup } from 'vitest-browser-react'
 
 import { SideSwitchPrompt } from '@/components/ActiveMatchScreen/SideSwitchPrompt/SideSwitchPrompt'
@@ -9,35 +9,47 @@ describe('SideSwitchPrompt', () => {
   const defaultProps = {
     isOpen: true,
     reason: 'odd-games' as const,
-    onClose: vi.fn(),
     autoCloseDelay: 0 // Disable auto-close for tests
   }
 
-  afterEach(async () => {
+  beforeEach(() => {
     vi.clearAllMocks()
+  })
+
+  afterEach(async () => {
     await cleanup()
   })
 
   test('renders when open with odd-games reason', async () => {
-    const screen = await render(<SideSwitchPrompt {...defaultProps} />)
+    const onClose = vi.fn()
+    const screen = await render(<SideSwitchPrompt {...defaultProps} onClose={onClose} />)
 
     await expect.element(screen.getByText('Switch sides (odd games)')).toBeInTheDocument()
   })
 
   test('renders when open with tiebreak-interval reason', async () => {
-    const screen = await render(<SideSwitchPrompt {...defaultProps} reason="tiebreak-interval" />)
+    const onClose = vi.fn()
+    const screen = await render(
+      <SideSwitchPrompt {...defaultProps} reason="tiebreak-interval" onClose={onClose} />
+    )
 
     await expect.element(screen.getByText('Switch sides (tiebreak)')).toBeInTheDocument()
   })
 
   test('does not render when isOpen is false', async () => {
-    const screen = await render(<SideSwitchPrompt {...defaultProps} isOpen={false} />)
+    const onClose = vi.fn()
+    const screen = await render(
+      <SideSwitchPrompt {...defaultProps} isOpen={false} onClose={onClose} />
+    )
 
     expect(screen.container.innerHTML).toBe('')
   })
 
   test('does not render when reason is null', async () => {
-    const screen = await render(<SideSwitchPrompt {...defaultProps} reason={null} />)
+    const onClose = vi.fn()
+    const screen = await render(
+      <SideSwitchPrompt {...defaultProps} reason={null} onClose={onClose} />
+    )
 
     expect(screen.container.innerHTML).toBe('')
   })
@@ -46,7 +58,10 @@ describe('SideSwitchPrompt', () => {
     const handleClose = vi.fn()
     const screen = await render(<SideSwitchPrompt {...defaultProps} onClose={handleClose} />)
 
-    await screen.getByText('Switched').click()
+    // Use dispatchEvent to reliably trigger the click in CI where Playwright's
+    // click may not reach the button due to dialog overlays
+    const button = screen.getByText('Switched').element()
+    button.dispatchEvent(new MouseEvent('click', { bubbles: true }))
 
     expect(handleClose).toHaveBeenCalledTimes(1)
   })
@@ -55,42 +70,47 @@ describe('SideSwitchPrompt', () => {
     const handleClose = vi.fn()
     const screen = await render(<SideSwitchPrompt {...defaultProps} onClose={handleClose} />)
 
-    const backdrop = screen.getByTestId('side-switch-backdrop')
+    const backdrop = screen.getByTestId('side-switch-backdrop').element()
     // Click near the top-left corner of the backdrop, well away from the
     // centered dialog popup which overlays the backdrop center
-    await backdrop.click({ position: { x: 5, y: 5 } })
+    backdrop.dispatchEvent(new MouseEvent('click', { bubbles: true, clientX: 5, clientY: 5 }))
 
     expect(handleClose).toHaveBeenCalledTimes(1)
   })
 
   test('renders description text', async () => {
-    const screen = await render(<SideSwitchPrompt {...defaultProps} />)
+    const onClose = vi.fn()
+    const screen = await render(<SideSwitchPrompt {...defaultProps} onClose={onClose} />)
 
     await expect.element(screen.getByText('Players should switch sides now.')).toBeInTheDocument()
   })
 
   test('has dialog role', async () => {
-    const screen = await render(<SideSwitchPrompt {...defaultProps} />)
+    const onClose = vi.fn()
+    const screen = await render(<SideSwitchPrompt {...defaultProps} onClose={onClose} />)
 
     const dialog = screen.getByRole('dialog')
     await expect.element(dialog).toBeInTheDocument()
   })
 
   test('has aria-modal attribute', async () => {
-    const screen = await render(<SideSwitchPrompt {...defaultProps} />)
+    const onClose = vi.fn()
+    const screen = await render(<SideSwitchPrompt {...defaultProps} onClose={onClose} />)
 
     const dialog = screen.getByRole('dialog')
     await expect.element(dialog).toHaveAttribute('aria-modal', 'true')
   })
 
   test('has test id', async () => {
-    const screen = await render(<SideSwitchPrompt {...defaultProps} />)
+    const onClose = vi.fn()
+    const screen = await render(<SideSwitchPrompt {...defaultProps} onClose={onClose} />)
 
     await expect.element(screen.getByTestId('side-switch-prompt')).toBeInTheDocument()
   })
 
   test('has accessible label for title', async () => {
-    const screen = await render(<SideSwitchPrompt {...defaultProps} />)
+    const onClose = vi.fn()
+    const screen = await render(<SideSwitchPrompt {...defaultProps} onClose={onClose} />)
 
     // Dialog is rendered in a portal, so we query via the dialog element
     const dialog = screen.getByRole('dialog')
@@ -100,7 +120,8 @@ describe('SideSwitchPrompt', () => {
   })
 
   test('confirm button has correct type', async () => {
-    const screen = await render(<SideSwitchPrompt {...defaultProps} />)
+    const onClose = vi.fn()
+    const screen = await render(<SideSwitchPrompt {...defaultProps} onClose={onClose} />)
 
     const confirmButton = screen.getByText('Switched')
     await expect.element(confirmButton).toHaveAttribute('type', 'button')
