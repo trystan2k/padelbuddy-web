@@ -3,10 +3,10 @@ import { useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { SetupScreen } from '@/components/SetupScreen'
-import { CurrentMatchStartupGateResolved } from '@/components/CurrentMatchStartupGate/CurrentMatchStartupGate'
+import { CurrentMatchStartupGate } from '@/components/CurrentMatchStartupGate/CurrentMatchStartupGate'
 import { useToast } from '@/components/ui/Toast'
-import { hydrateCurrentMatchStartup } from '@/lib/current-match'
 
+import { loadHomeStartup } from './-home-startup'
 import { parseMatchRouteErrorType, type MatchRouteErrorType } from './-match-route-state'
 import { RouteLoadingState } from './-route-utils'
 
@@ -26,7 +26,7 @@ export const Route = createFileRoute('/')({
 
     return error ? { error } : {}
   },
-  loader: async () => hydrateCurrentMatchStartup(),
+  loader: async () => loadHomeStartup(),
   pendingComponent: RouteLoadingState,
   component: HomeRoute
 })
@@ -34,7 +34,7 @@ export const Route = createFileRoute('/')({
 export function HomeRoute() {
   const { t } = useTranslation()
   const search = Route.useSearch()
-  const startupState = Route.useLoaderData()
+  const { startupState } = Route.useLoaderData()
   const { error } = search
   const { addErrorToast } = useToast()
   const toastShownRef = useRef(false)
@@ -51,8 +51,8 @@ export function HomeRoute() {
   }, [error, addErrorToast, t])
 
   return (
-    <CurrentMatchStartupGateResolved initialState={startupState}>
+    <CurrentMatchStartupGate startupState={startupState}>
       <SetupScreen />
-    </CurrentMatchStartupGateResolved>
+    </CurrentMatchStartupGate>
   )
 }

@@ -6,7 +6,6 @@ import { Dialog } from '@base-ui/react/dialog'
 import { Button } from '@/components/ui'
 import {
   clearCurrentMatch,
-  hydrateCurrentMatchStartup,
   type CurrentMatchPersistence,
   type CurrentMatchStartupResult
 } from '@/lib/current-match'
@@ -14,12 +13,11 @@ import { getViewTransitionNavigationOptions } from '@/lib/utils/view-transitions
 
 import styles from './CurrentMatchStartupGate.module.css'
 
-interface CurrentMatchStartupGateProps extends HTMLAttributes<HTMLElement> {
+export interface CurrentMatchStartupGateProps extends HTMLAttributes<HTMLElement> {
+  startupState: CurrentMatchStartupResult
   persistence?: CurrentMatchPersistence
   portalContainer?: HTMLElement | null
 }
-
-export type CurrentMatchStartupViewState = { status: 'loading' } | CurrentMatchStartupResult
 
 export interface CurrentMatchStartupGateResolvedProps extends HTMLAttributes<HTMLElement> {
   initialState: CurrentMatchStartupResult
@@ -28,12 +26,8 @@ export interface CurrentMatchStartupGateResolvedProps extends HTMLAttributes<HTM
 }
 
 export function dismissCurrentMatchStartupNotice(
-  currentState: CurrentMatchStartupViewState
-): CurrentMatchStartupViewState {
-  if (currentState.status === 'loading') {
-    return currentState
-  }
-
+  currentState: CurrentMatchStartupResult
+): CurrentMatchStartupResult {
   return {
     ...currentState,
     notice: null
@@ -41,8 +35,8 @@ export function dismissCurrentMatchStartupNotice(
 }
 
 export function resumeCurrentMatchStartup(
-  currentState: CurrentMatchStartupViewState
-): CurrentMatchStartupViewState {
+  currentState: CurrentMatchStartupResult
+): CurrentMatchStartupResult {
   if (currentState.status !== 'resume-required') {
     return currentState
   }
@@ -50,73 +44,45 @@ export function resumeCurrentMatchStartup(
   return {
     status: 'ready',
     notice: currentState.notice,
-    session: currentState.session
+    match: currentState.match
   }
 }
 
 export function clearCurrentMatchStartup(
-  currentState: CurrentMatchStartupViewState
-): Extract<CurrentMatchStartupResult, { status: 'ready' }> {
+  currentState: CurrentMatchStartupResult
+): Extract<CurrentMatchStartupResult, { status: 'no-match' }> {
   return {
-    status: 'ready',
-    notice: currentState.status === 'loading' ? null : currentState.notice,
-    session: null
+    status: 'no-match',
+    notice: currentState.notice
   }
-}
-
-function dismissResolvedStartupNotice(
-  currentState: CurrentMatchStartupResult
-): CurrentMatchStartupResult {
-  if (currentState.status === 'resume-required') {
-    return {
-      ...currentState,
-      notice: null
-    }
-  }
-
-  if (currentState.status === 'ready') {
-    return {
-      ...currentState,
-      notice: null
-    }
-  }
-
-  return currentState
-}
-
-function resumeResolvedStartupState(
-  currentState: CurrentMatchStartupResult
-): CurrentMatchStartupResult {
-  if (currentState.status === 'resume-required') {
-    return {
-      status: 'ready',
-      notice: currentState.notice,
-      session: currentState.session
-    }
-  }
-
-  return currentState
 }
 
 export function CurrentMatchStartupGateResolved({
-  children,
   initialState,
+  ...props
+}: CurrentMatchStartupGateResolvedProps) {
+  return <CurrentMatchStartupGate startupState={initialState} {...props} />
+}
+
+export function CurrentMatchStartupGate({
+  children,
+  startupState: initialStartupState,
   persistence,
   portalContainer,
   ...props
-}: CurrentMatchStartupGateResolvedProps) {
+}: CurrentMatchStartupGateProps) {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const [startupState, setStartupState] = useState<CurrentMatchStartupResult>(initialState)
+  const [startupState, setStartupState] = useState<CurrentMatchStartupResult>(initialStartupState)
   const [isClearing, setIsClearing] = useState(false)
   const [clearErrorMessage, setClearErrorMessage] = useState<string | null>(null)
   const pendingResumeMatchIdRef = useRef<string | null>(null)
 
   useEffect(() => {
-    setStartupState(initialState)
+    setStartupState(initialStartupState)
     setIsClearing(false)
     setClearErrorMessage(null)
-  }, [initialState])
+  }, [initialStartupState])
 
   useEffect(() => {
     const matchId = pendingResumeMatchIdRef.current
@@ -135,7 +101,7 @@ export function CurrentMatchStartupGateResolved({
   }, [navigate, startupState])
 
   const dismissNotice = useCallback(() => {
-    setStartupState((currentState) => dismissResolvedStartupNotice(currentState))
+    setStartupState((currentState) => dismissCurrentMatchStartupNotice(currentState))
   }, [])
 
   const clearSavedMatch = useCallback(async () => {
@@ -158,10 +124,10 @@ export function CurrentMatchStartupGateResolved({
     setClearErrorMessage(null)
     setStartupState((currentState) => {
       if (currentState.status === 'resume-required') {
-        pendingResumeMatchIdRef.current = currentState.matchId
+        pendingResumeMatchIdRef.current = currentState.match.matchId
       }
 
-      return resumeResolvedStartupState(currentState)
+      return resumeCurrentMatchStartup(currentState)
     })
   }, [])
 
@@ -295,62 +261,10 @@ export function CurrentMatchStartupGateResolved({
         <Dialog.Root open={true} onOpenChange={handleDialogOpenChange}>
           <Dialog.Portal container={portalContainer}>
             <Dialog.Backdrop render={renderBackdrop} />
-
             <Dialog.Popup render={renderPopup} />
           </Dialog.Portal>
         </Dialog.Root>
       )}
     </>
-  )
-}
-
-export function CurrentMatchStartupGate({
-  children,
-  persistence,
-  portalContainer,
-  ...props
-}: CurrentMatchStartupGateProps) {
-  const { t } = useTranslation()
-  const [startupState, setStartupState] = useState<CurrentMatchStartupViewState>({
-    status: 'loading'
-  })
-
-  useEffect(() => {
-    let cancelled = false
-
-    void (async () => {
-      const result = await hydrateCurrentMatchStartup(persistence ? { persistence } : {})
-
-      if (!cancelled) {
-        setStartupState(result)
-      }
-    })()
-
-    return () => {
-      cancelled = true
-    }
-  }, [persistence])
-
-  if (startupState.status === 'loading') {
-    return (
-      <main className={styles.loadingPage} {...props}>
-        <section className={styles.loadingCard} aria-live="polite">
-          <p className={styles.eyebrow}>{t('startupGate.loading.eyebrow')}</p>
-          <h1 className={styles.title}>{t('startupGate.loading.title')}</h1>
-          <p className={styles.body}>{t('startupGate.loading.body')}</p>
-        </section>
-      </main>
-    )
-  }
-
-  return (
-    <CurrentMatchStartupGateResolved
-      initialState={startupState}
-      {...(persistence ? { persistence } : {})}
-      {...(typeof portalContainer !== 'undefined' ? { portalContainer } : {})}
-      {...props}
-    >
-      {children}
-    </CurrentMatchStartupGateResolved>
   )
 }

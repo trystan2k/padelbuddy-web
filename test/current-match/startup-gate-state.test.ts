@@ -1,52 +1,41 @@
-import { describe, expect, test, vi } from 'vitest'
+import { describe, expect, test } from 'vitest'
 
 import {
   clearCurrentMatchStartup,
   dismissCurrentMatchStartupNotice,
-  resumeCurrentMatchStartup,
-  type CurrentMatchStartupViewState
+  resumeCurrentMatchStartup
 } from '@/components/CurrentMatchStartupGate/CurrentMatchStartupGate'
-import type { CurrentMatchSession } from '@/lib/current-match'
+import { createCurrentMatchSessionSnapshot } from '@/lib/current-match'
+
+import { createTestSetup, scorePoints } from '../core/match/test-helpers'
 
 describe('current match startup gate state helpers', () => {
-  test('keeps the loading state unchanged when dismissing notice early', () => {
-    const state: CurrentMatchStartupViewState = {
-      status: 'loading'
-    }
-
-    expect(dismissCurrentMatchStartupNotice(state)).toBe(state)
-  })
-
-  test('clears a startup notice without changing the resolved state', () => {
-    const session = createSessionStub()
-
+  test('clears a startup notice without changing a no-match state', () => {
     expect(
       dismissCurrentMatchStartupNotice({
-        status: 'ready',
+        status: 'no-match',
         notice: {
           reason: 'schema-version'
-        },
-        session
+        }
       })
     ).toEqual({
-      status: 'ready',
-      notice: null,
-      session
+      status: 'no-match',
+      notice: null
     })
   })
 
   test('keeps non-resume states unchanged when resuming is not applicable', () => {
-    const state: CurrentMatchStartupViewState = {
-      status: 'ready',
+    const state = {
+      status: 'ready' as const,
       notice: null,
-      session: null
+      match: createStartupMatch()
     }
 
     expect(resumeCurrentMatchStartup(state)).toBe(state)
   })
 
-  test('converts resume-required state into ready while keeping the session', () => {
-    const session = createSessionStub()
+  test('converts resume-required state into ready while keeping the match data', () => {
+    const match = createStartupMatch()
 
     expect(
       resumeCurrentMatchStartup({
@@ -54,31 +43,18 @@ describe('current match startup gate state helpers', () => {
         notice: {
           reason: 'schema-version'
         },
-        session,
-        matchId: 'test-match'
+        match
       })
     ).toEqual({
       status: 'ready',
       notice: {
         reason: 'schema-version'
       },
-      session
+      match
     })
   })
 
-  test('clears startup state to ready from loading without preserving a notice', () => {
-    expect(
-      clearCurrentMatchStartup({
-        status: 'loading'
-      })
-    ).toEqual({
-      status: 'ready',
-      notice: null,
-      session: null
-    })
-  })
-
-  test('clears startup state to ready while preserving any existing notice', () => {
+  test('clears startup state to no-match while preserving any existing notice', () => {
     expect(
       clearCurrentMatchStartup({
         status: 'corrupt',
@@ -88,21 +64,21 @@ describe('current match startup gate state helpers', () => {
         message: 'Current match payload is corrupt.'
       })
     ).toEqual({
-      status: 'ready',
+      status: 'no-match',
       notice: {
         reason: 'schema-version'
-      },
-      session: null
+      }
     })
   })
 })
 
-function createSessionStub(): CurrentMatchSession {
+function createStartupMatch() {
   return {
-    getSnapshot: vi.fn(),
-    scorePoint: vi.fn(),
-    undoScoreAction: vi.fn(),
-    continuePlaying: vi.fn(),
-    finishMatch: vi.fn()
+    matchId: 'test-match',
+    snapshot: createCurrentMatchSessionSnapshot({
+      setup: createTestSetup(),
+      actions: scorePoints('team-1'),
+      startedAt: Date.now()
+    })
   }
 }

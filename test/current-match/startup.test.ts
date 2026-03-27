@@ -11,7 +11,7 @@ describe('current match startup', () => {
   const testMatchId = 'test-match'
   const testStartedAt = Date.now()
 
-  test('treats completed saved matches as ready without a resume prompt', async () => {
+  test('returns ready with serializable completed match data', async () => {
     const setup = createTestSetup({
       format: 'best-of-1'
     })
@@ -38,7 +38,9 @@ describe('current match startup', () => {
       throw new Error('Expected startup hydration to enter the ready state.')
     }
 
-    expect(result.session?.getSnapshot().projection.derived.status).toBe('completed')
+    expect(result.match.snapshot.projection.derived.status).toBe('completed')
+    expect(result.match.matchId).toBe(testMatchId)
+    expect(JSON.parse(JSON.stringify(result))).toEqual(result)
   })
 
   test('returns corrupt when the stored record cannot be decoded', async () => {
@@ -72,20 +74,33 @@ describe('current match startup', () => {
     })
 
     await expect(hydrateCurrentMatchStartup({ persistence })).resolves.toEqual({
-      status: 'ready',
+      status: 'no-match',
       notice: {
         reason: 'schema-version'
-      },
-      session: null
+      }
     })
     await expect(hydrateCurrentMatchStartup({ persistence })).resolves.toEqual({
-      status: 'ready',
-      notice: null,
-      session: null
+      status: 'no-match',
+      notice: null
     })
   })
 
-  test('returns resume-required for in-progress matches', async () => {
+  test('returns no-match when no persisted match exists', async () => {
+    await expect(
+      hydrateCurrentMatchStartup({
+        persistence: createPersistenceStub({
+          loadCurrentMatch: async () => ({
+            status: 'empty'
+          })
+        })
+      })
+    ).resolves.toEqual({
+      status: 'no-match',
+      notice: null
+    })
+  })
+
+  test('returns resume-required with serializable in-progress match data', async () => {
     const setup = createTestSetup({
       format: 'best-of-3'
     })
@@ -112,8 +127,10 @@ describe('current match startup', () => {
       throw new Error('Expected startup hydration to require a resume decision.')
     }
 
-    expect(result.session.getSnapshot().actions).toEqual([...actions])
-    expect(result.session.getSnapshot().projection.derived.status).toBe('in-progress')
+    expect(result.match.matchId).toBe(testMatchId)
+    expect(result.match.snapshot.actions).toEqual([...actions])
+    expect(result.match.snapshot.projection.derived.status).toBe('in-progress')
+    expect(JSON.parse(JSON.stringify(result))).toEqual(result)
   })
 })
 

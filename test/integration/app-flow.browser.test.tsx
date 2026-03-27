@@ -51,7 +51,7 @@ describe('app flow integration', () => {
     vi.clearAllMocks()
     mockRouteSearch.current = {}
     await clearCurrentMatch()
-    await setHomeStartupState({ status: 'ready', notice: null, session: null })
+    await setHomeStartupState({ status: 'no-match', notice: null })
   })
 
   afterEach(async () => {
@@ -270,7 +270,7 @@ async function setHomeStartupState(startupState: CurrentMatchStartupResult): Pro
     throw new Error('Expected the home route loader to be mocked in integration tests.')
   }
 
-  loader.mockReturnValue(startupState)
+  loader.mockReturnValue({ startupState })
 }
 
 function getNavigationMatchId(navigation: unknown): string {
