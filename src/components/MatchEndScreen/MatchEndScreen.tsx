@@ -215,7 +215,7 @@ export function MatchEndScreen({
 
     try {
       await clearCurrentMatch()
-      await prepareCurrentMatchRouteNavigation(router, { to: '/' }, { invalidate: true })
+      await prepareCurrentMatchRouteNavigation(router, { to: '/' })
       await navigate({ to: '/', ...getViewTransitionNavigationOptions() })
     } catch (error) {
       console.error('Failed to clear the current match before starting a new one.', error)
