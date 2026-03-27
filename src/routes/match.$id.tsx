@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
 import { useEffect } from 'react'
 
 import { ActiveMatchScreen } from '@/components/ActiveMatchScreen'
@@ -13,17 +13,40 @@ export const Route = createFileRoute('/match/$id')({
   pendingComponent: RouteLoadingState,
   errorComponent: RouteErrorState,
   loader: async ({ params }) => {
-    // Load match data from persistence
-    // Match ID is stored for future use (sharing, history)
     const matchData = await loadCurrentMatch()
-    return { matchId: params.id, matchData }
+    const routeState = resolveMatchRouteState(params.id, matchData, 'active')
+
+    if (routeState.status === 'redirect-home') {
+      throw redirect({
+        to: '/',
+        replace: true,
+        search: { error: determineErrorType(params.id, matchData) }
+      })
+    }
+
+    if (routeState.status === 'redirect-finish') {
+      throw redirect({
+        to: '/match/finish/$id',
+        params: { id: routeState.matchId },
+        replace: true
+      })
+    }
+
+    if (routeState.status !== 'ready') {
+      throw new Error('Expected active match route state to be ready after redirect guards.')
+    }
+
+    return {
+      matchId: params.id,
+      record: routeState.record
+    }
   }
 })
 
 function MatchRoute() {
-  const { matchId, matchData } = Route.useLoaderData()
+  const { matchId, record } = Route.useLoaderData()
 
-  return <MatchRouteContent matchData={matchData} matchId={matchId} />
+  return <MatchRouteReadyContent matchId={matchId} record={record} />
 }
 
 export interface MatchRouteContentProps {
@@ -31,19 +54,36 @@ export interface MatchRouteContentProps {
   matchData: CurrentMatchLoadResult
 }
 
+function MatchRouteReadyContent({
+  matchId,
+  record
+}: {
+  matchId: string
+  record: Extract<CurrentMatchLoadResult, { status: 'ok' }>['record']
+}) {
+  const { setup, actions, startedAt } = record
+
+  return (
+    <ActiveMatchScreen
+      matchId={matchId}
+      initialSetup={setup}
+      initialActions={actions}
+      startedAt={startedAt}
+      {...(typeof record.finishedAt === 'number' ? { finishedAt: record.finishedAt } : {})}
+    />
+  )
+}
+
 export function MatchRouteContent({ matchId, matchData }: MatchRouteContentProps) {
   const navigate = useNavigate()
   const routeState = resolveMatchRouteState(matchId, matchData, 'active')
-  const routeStateStatus = routeState.status
-  const redirectMatchId = routeStateStatus === 'redirect-finish' ? routeState.matchId : null
-  const corruptMessage = matchData.status === 'corrupt' ? matchData.message : null
 
   useEffect(() => {
-    if (corruptMessage !== null) {
-      console.error('Corrupted match data:', corruptMessage)
+    if (matchData.status === 'corrupt') {
+      console.error('Corrupted match data:', matchData.message)
     }
 
-    if (routeStateStatus === 'redirect-home') {
+    if (routeState.status === 'redirect-home') {
       void navigate({
         to: '/',
         replace: true,
@@ -53,32 +93,19 @@ export function MatchRouteContent({ matchId, matchData }: MatchRouteContentProps
       return
     }
 
-    if (routeStateStatus === 'redirect-finish' && redirectMatchId !== null) {
+    if (routeState.status === 'redirect-finish') {
       void navigate({
         to: '/match/finish/$id',
-        params: { id: redirectMatchId },
+        params: { id: routeState.matchId },
         replace: true,
         ...getViewTransitionNavigationOptions()
       })
-      return
     }
-  }, [corruptMessage, matchData, matchId, navigate, redirectMatchId, routeStateStatus])
+  }, [matchData, matchId, navigate, routeState])
 
-  if (routeStateStatus !== 'ready') {
-    return <RouteLoadingState />
+  if (routeState.status !== 'ready') {
+    return null
   }
 
-  const { setup, actions, startedAt } = routeState.record
-
-  return (
-    <ActiveMatchScreen
-      matchId={matchId}
-      initialSetup={setup}
-      initialActions={actions}
-      startedAt={startedAt}
-      {...(typeof routeState.record.finishedAt === 'number'
-        ? { finishedAt: routeState.record.finishedAt }
-        : {})}
-    />
-  )
+  return <MatchRouteReadyContent matchId={matchId} record={routeState.record} />
 }

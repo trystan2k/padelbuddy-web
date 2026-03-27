@@ -21,6 +21,12 @@ interface CurrentMatchStartupGateProps extends HTMLAttributes<HTMLElement> {
 
 export type CurrentMatchStartupViewState = { status: 'loading' } | CurrentMatchStartupResult
 
+export interface CurrentMatchStartupGateResolvedProps extends HTMLAttributes<HTMLElement> {
+  initialState: CurrentMatchStartupResult
+  persistence?: CurrentMatchPersistence
+  portalContainer?: HTMLElement | null
+}
+
 export function dismissCurrentMatchStartupNotice(
   currentState: CurrentMatchStartupViewState
 ): CurrentMatchStartupViewState {
@@ -58,36 +64,59 @@ export function clearCurrentMatchStartup(
   }
 }
 
-export function CurrentMatchStartupGate({
+function dismissResolvedStartupNotice(
+  currentState: CurrentMatchStartupResult
+): CurrentMatchStartupResult {
+  if (currentState.status === 'resume-required') {
+    return {
+      ...currentState,
+      notice: null
+    }
+  }
+
+  if (currentState.status === 'ready') {
+    return {
+      ...currentState,
+      notice: null
+    }
+  }
+
+  return currentState
+}
+
+function resumeResolvedStartupState(
+  currentState: CurrentMatchStartupResult
+): CurrentMatchStartupResult {
+  if (currentState.status === 'resume-required') {
+    return {
+      status: 'ready',
+      notice: currentState.notice,
+      session: currentState.session
+    }
+  }
+
+  return currentState
+}
+
+export function CurrentMatchStartupGateResolved({
   children,
+  initialState,
   persistence,
   portalContainer,
   ...props
-}: CurrentMatchStartupGateProps) {
+}: CurrentMatchStartupGateResolvedProps) {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const [startupState, setStartupState] = useState<CurrentMatchStartupViewState>({
-    status: 'loading'
-  })
+  const [startupState, setStartupState] = useState<CurrentMatchStartupResult>(initialState)
   const [isClearing, setIsClearing] = useState(false)
   const [clearErrorMessage, setClearErrorMessage] = useState<string | null>(null)
   const pendingResumeMatchIdRef = useRef<string | null>(null)
 
   useEffect(() => {
-    let cancelled = false
-
-    void (async () => {
-      const result = await hydrateCurrentMatchStartup(persistence ? { persistence } : {})
-
-      if (!cancelled) {
-        setStartupState(result)
-      }
-    })()
-
-    return () => {
-      cancelled = true
-    }
-  }, [persistence])
+    setStartupState(initialState)
+    setIsClearing(false)
+    setClearErrorMessage(null)
+  }, [initialState])
 
   useEffect(() => {
     const matchId = pendingResumeMatchIdRef.current
@@ -106,7 +135,7 @@ export function CurrentMatchStartupGate({
   }, [navigate, startupState])
 
   const dismissNotice = useCallback(() => {
-    setStartupState((currentState) => dismissCurrentMatchStartupNotice(currentState))
+    setStartupState((currentState) => dismissResolvedStartupNotice(currentState))
   }, [])
 
   const clearSavedMatch = useCallback(async () => {
@@ -132,7 +161,7 @@ export function CurrentMatchStartupGate({
         pendingResumeMatchIdRef.current = currentState.matchId
       }
 
-      return resumeCurrentMatchStartup(currentState)
+      return resumeResolvedStartupState(currentState)
     })
   }, [])
 
@@ -219,18 +248,6 @@ export function CurrentMatchStartupGate({
     ]
   )
 
-  if (startupState.status === 'loading') {
-    return (
-      <main className={styles.loadingPage} {...props}>
-        <section className={styles.loadingCard} aria-live="polite">
-          <p className={styles.eyebrow}>{t('startupGate.loading.eyebrow')}</p>
-          <h1 className={styles.title}>{t('startupGate.loading.title')}</h1>
-          <p className={styles.body}>{t('startupGate.loading.body')}</p>
-        </section>
-      </main>
-    )
-  }
-
   if (startupState.status === 'corrupt') {
     return (
       <main className={styles.loadingPage} {...props}>
@@ -284,5 +301,57 @@ export function CurrentMatchStartupGate({
         </Dialog.Root>
       )}
     </>
+  )
+}
+
+export function CurrentMatchStartupGate({
+  children,
+  persistence,
+  portalContainer,
+  ...props
+}: CurrentMatchStartupGateProps) {
+  const [startupState, setStartupState] = useState<CurrentMatchStartupViewState>({
+    status: 'loading'
+  })
+
+  useEffect(() => {
+    let cancelled = false
+
+    void (async () => {
+      const result = await hydrateCurrentMatchStartup(persistence ? { persistence } : {})
+
+      if (!cancelled) {
+        setStartupState(result)
+      }
+    })()
+
+    return () => {
+      cancelled = true
+    }
+  }, [persistence])
+
+  if (startupState.status === 'loading') {
+    const { t } = useTranslation()
+
+    return (
+      <main className={styles.loadingPage} {...props}>
+        <section className={styles.loadingCard} aria-live="polite">
+          <p className={styles.eyebrow}>{t('startupGate.loading.eyebrow')}</p>
+          <h1 className={styles.title}>{t('startupGate.loading.title')}</h1>
+          <p className={styles.body}>{t('startupGate.loading.body')}</p>
+        </section>
+      </main>
+    )
+  }
+
+  return (
+    <CurrentMatchStartupGateResolved
+      initialState={startupState}
+      {...(persistence ? { persistence } : {})}
+      {...(typeof portalContainer !== 'undefined' ? { portalContainer } : {})}
+      {...props}
+    >
+      {children}
+    </CurrentMatchStartupGateResolved>
   )
 }

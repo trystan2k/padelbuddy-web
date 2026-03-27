@@ -3,10 +3,12 @@ import { useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { SetupScreen } from '@/components/SetupScreen'
-import { CurrentMatchStartupGate } from '@/components/CurrentMatchStartupGate/CurrentMatchStartupGate'
+import { CurrentMatchStartupGateResolved } from '@/components/CurrentMatchStartupGate/CurrentMatchStartupGate'
 import { useToast } from '@/components/ui/Toast'
+import { hydrateCurrentMatchStartup } from '@/lib/current-match'
 
 import { parseMatchRouteErrorType, type MatchRouteErrorType } from './-match-route-state'
+import { RouteLoadingState } from './-route-utils'
 
 interface HomeRouteSearch {
   error?: MatchRouteErrorType
@@ -24,12 +26,15 @@ export const Route = createFileRoute('/')({
 
     return error ? { error } : {}
   },
+  loader: async () => hydrateCurrentMatchStartup(),
+  pendingComponent: RouteLoadingState,
   component: HomeRoute
 })
 
 export function HomeRoute() {
   const { t } = useTranslation()
   const search = Route.useSearch()
+  const startupState = Route.useLoaderData()
   const { error } = search
   const { addErrorToast } = useToast()
   const toastShownRef = useRef(false)
@@ -42,12 +47,12 @@ export function HomeRoute() {
     toastShownRef.current = true
     const errorBodyKey = homeRouteErrorContent[error]
     const translatedMessage = t(errorBodyKey)
-    addErrorToast(translatedMessage, { timeout: 10_000 })
+    addErrorToast(translatedMessage, { timeout: 10000 })
   }, [error, addErrorToast, t])
 
   return (
-    <CurrentMatchStartupGate>
+    <CurrentMatchStartupGateResolved initialState={startupState}>
       <SetupScreen />
-    </CurrentMatchStartupGate>
+    </CurrentMatchStartupGateResolved>
   )
 }

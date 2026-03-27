@@ -6,6 +6,8 @@ function createAppRouter() {
   return createRouter({
     routeTree,
     defaultPreload: 'intent',
+    defaultPendingMs: 200,
+    defaultPendingMinMs: 300,
     scrollRestoration: true
   })
 }

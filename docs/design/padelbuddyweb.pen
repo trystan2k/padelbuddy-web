@@ -4355,7 +4355,7 @@
     {
       "type": "frame",
       "id": "shareScreen",
-      "x": 3274,
+      "x": 3313,
       "y": 0,
       "name": "Share Screen (Story)",
       "clip": true,
@@ -4921,7 +4921,7 @@
       "type": "frame",
       "id": "YiSCl",
       "x": 0,
-      "y": 2887,
+      "y": 3014,
       "name": "Setup Screen – Resume Modal",
       "clip": true,
       "width": 1024,
@@ -7365,6 +7365,332 @@
                   "fontWeight": "800"
                 }
               ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "e83SP",
+      "x": 3856,
+      "y": 0,
+      "name": "Loading Screen",
+      "clip": true,
+      "width": 1024,
+      "height": 768,
+      "fill": [
+        {
+          "type": "gradient",
+          "gradientType": "linear",
+          "enabled": true,
+          "rotation": 180,
+          "size": {
+            "height": 1
+          },
+          "colors": [
+            {
+              "color": "$bg-app",
+              "position": 0
+            },
+            {
+              "color": "#E9F3DF",
+              "position": 1
+            }
+          ]
+        },
+        {
+          "type": "gradient",
+          "gradientType": "radial",
+          "enabled": true,
+          "opacity": 0.2,
+          "rotation": 0,
+          "size": {
+            "width": 0.5,
+            "height": 0.4
+          },
+          "colors": [
+            {
+              "color": "$accent-lime",
+              "position": 0
+            },
+            {
+              "color": "#FFFFFF00",
+              "position": 1
+            }
+          ],
+          "center": {
+            "x": 0.12,
+            "y": 0.08
+          }
+        }
+      ],
+      "layout": "vertical",
+      "gap": 16,
+      "padding": 16,
+      "children": [
+        {
+          "type": "frame",
+          "id": "0GE9C",
+          "name": "header",
+          "width": "fill_container",
+          "height": 64,
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "sH5bf",
+              "name": "headLeft",
+              "layout": "vertical",
+              "gap": 2,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "zXozP",
+                  "name": "titleRow",
+                  "gap": 12,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "Z1iI8",
+                      "name": "appIcon",
+                      "width": 40,
+                      "height": 40,
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "../../public/icon.png",
+                        "mode": "fit"
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "uMZ3t",
+                      "name": "kicker",
+                      "fill": "$ink-strong",
+                      "content": "Padel Buddy",
+                      "fontFamily": "Outfit",
+                      "fontSize": 34,
+                      "fontWeight": "800",
+                      "letterSpacing": -1
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "pP0gy",
+          "layoutPosition": "absolute",
+          "x": 0,
+          "y": 0,
+          "name": "modalOverlay",
+          "width": 1024,
+          "height": 768,
+          "fill": "#00000080",
+          "effect": {
+            "type": "background_blur",
+            "radius": 0,
+            "enabled": false
+          },
+          "layout": "none"
+        },
+        {
+          "type": "frame",
+          "id": "fdqZs",
+          "name": "Frame 1",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "justifyContent": "center",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "UpGeW",
+              "name": "Padel Court",
+              "width": 284,
+              "height": 140,
+              "fill": "#1a3a5c",
+              "cornerRadius": 12,
+              "stroke": {
+                "thickness": 3,
+                "fill": "#2f7cf6"
+              },
+              "effect": {
+                "type": "shadow",
+                "shadowType": "outer",
+                "color": "#ffffffb3",
+                "blur": 200
+              },
+              "layout": "none",
+              "children": [
+                {
+                  "type": "line",
+                  "id": "EV2Mw",
+                  "x": 20,
+                  "y": 67,
+                  "name": "Ball Trajectory",
+                  "opacity": 0.4,
+                  "fill": "#00000000",
+                  "width": 240,
+                  "height": 6,
+                  "stroke": {
+                    "thickness": 2,
+                    "fill": "#2F7CF6"
+                  }
+                },
+                {
+                  "type": "rectangle",
+                  "id": "2Aq8M",
+                  "x": 137,
+                  "y": 3.5,
+                  "name": "Net",
+                  "fill": "#FFFFFF",
+                  "width": 4,
+                  "height": 133,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "#FFFFFF"
+                  }
+                },
+                {
+                  "type": "rectangle",
+                  "id": "Bl90s",
+                  "x": 225,
+                  "y": 3.5,
+                  "name": "Service Line Right",
+                  "fill": "#FFFFFF",
+                  "width": 2,
+                  "height": 133,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "#FFFFFF"
+                  }
+                },
+                {
+                  "type": "rectangle",
+                  "id": "J9QJO",
+                  "x": 141,
+                  "y": 68.50000000000003,
+                  "name": "Center Service Right",
+                  "rotation": -270,
+                  "fill": "#FFFFFF",
+                  "width": 2,
+                  "height": 85,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "#FFFFFF"
+                  }
+                },
+                {
+                  "type": "rectangle",
+                  "id": "Bz0Ig",
+                  "x": 54,
+                  "y": 3.5,
+                  "name": "Service Line Right",
+                  "fill": "#FFFFFF",
+                  "width": 2,
+                  "height": 133,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "#FFFFFF"
+                  }
+                },
+                {
+                  "type": "rectangle",
+                  "id": "qsoea",
+                  "x": 54,
+                  "y": 68.50000000000003,
+                  "name": "Center Service Right",
+                  "rotation": 90.00000000000003,
+                  "fill": "#FFFFFF",
+                  "width": 2,
+                  "height": 85,
+                  "stroke": {
+                    "thickness": 1,
+                    "fill": "#FFFFFF"
+                  }
+                },
+                {
+                  "type": "ellipse",
+                  "id": "rgeqY",
+                  "x": 132,
+                  "y": 59.5,
+                  "name": "Padel Ball",
+                  "fill": "#D4E157",
+                  "width": 14,
+                  "height": 14,
+                  "stroke": {
+                    "thickness": 1.5,
+                    "fill": "#B8C62E"
+                  },
+                  "effect": {
+                    "type": "shadow",
+                    "shadowType": "outer",
+                    "color": "#D4E15766",
+                    "blur": 6
+                  }
+                },
+                {
+                  "type": "ellipse",
+                  "id": "pDR6j",
+                  "x": 60,
+                  "y": 107.5,
+                  "name": "Ball Ghost 1",
+                  "opacity": 0.3,
+                  "fill": "#D4E157",
+                  "width": 10,
+                  "height": 10
+                },
+                {
+                  "type": "ellipse",
+                  "id": "17rip",
+                  "x": 97,
+                  "y": 85.5,
+                  "name": "Ball Ghost 2",
+                  "opacity": 0.2,
+                  "fill": "#D4E157",
+                  "width": 10,
+                  "height": 10
+                },
+                {
+                  "type": "ellipse",
+                  "id": "Tk1Wl",
+                  "x": 174,
+                  "y": 39.5,
+                  "name": "Ball Ghost 3",
+                  "opacity": 0.2,
+                  "fill": "#D4E157",
+                  "width": 10,
+                  "height": 10
+                },
+                {
+                  "type": "ellipse",
+                  "id": "1uSsJ",
+                  "x": 210,
+                  "y": 23.5,
+                  "name": "Ball Ghost 4",
+                  "opacity": 0.3,
+                  "fill": "#D4E157",
+                  "width": 10,
+                  "height": 10
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "hH1Ih",
+              "name": "Loading Text",
+              "fill": "#2F7CF6",
+              "content": "Loading...",
+              "fontFamily": "Inter",
+              "fontSize": 14,
+              "fontWeight": "normal"
             }
           ]
         }

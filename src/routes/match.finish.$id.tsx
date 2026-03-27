@@ -1,7 +1,8 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
 import { useEffect } from 'react'
 
 import { MatchEndScreen } from '@/components/MatchEndScreen'
+import type { MatchProjection } from '@/core/match'
 import { loadCurrentMatch, type CurrentMatchLoadResult } from '@/lib/current-match'
 import { getViewTransitionNavigationOptions } from '@/lib/utils/view-transitions'
 
@@ -14,14 +15,40 @@ export const Route = createFileRoute('/match/finish/$id')({
   errorComponent: RouteErrorState,
   loader: async ({ params }) => {
     const matchData = await loadCurrentMatch()
-    return { matchId: params.id, matchData }
+    const routeState = resolveMatchRouteState(params.id, matchData, 'finish')
+
+    if (routeState.status === 'redirect-home') {
+      throw redirect({
+        to: '/',
+        replace: true,
+        search: { error: determineErrorType(params.id, matchData) }
+      })
+    }
+
+    if (routeState.status === 'redirect-active') {
+      throw redirect({
+        to: '/match/$id',
+        params: { id: routeState.matchId },
+        replace: true
+      })
+    }
+
+    if (routeState.status !== 'ready') {
+      throw new Error('Expected finish match route state to be ready after redirect guards.')
+    }
+
+    return {
+      matchId: params.id,
+      record: routeState.record,
+      projection: routeState.projection
+    }
   }
 })
 
 function MatchFinishRoute() {
-  const { matchId, matchData } = Route.useLoaderData()
+  const { record, projection } = Route.useLoaderData()
 
-  return <MatchFinishRouteContent matchData={matchData} matchId={matchId} />
+  return <MatchFinishRouteReadyContent record={record} projection={projection} />
 }
 
 export interface MatchFinishRouteContentProps {
@@ -29,19 +56,35 @@ export interface MatchFinishRouteContentProps {
   matchData: CurrentMatchLoadResult
 }
 
+function MatchFinishRouteReadyContent({
+  record,
+  projection
+}: {
+  record: Extract<CurrentMatchLoadResult, { status: 'ok' }>['record']
+  projection: MatchProjection
+}) {
+  return (
+    <MatchEndScreen
+      matchId={record.matchId}
+      setup={record.setup}
+      actions={record.actions}
+      projection={projection}
+      startedAt={record.startedAt}
+      {...(typeof record.finishedAt === 'number' ? { finishedAt: record.finishedAt } : {})}
+    />
+  )
+}
+
 export function MatchFinishRouteContent({ matchId, matchData }: MatchFinishRouteContentProps) {
   const navigate = useNavigate()
   const routeState = resolveMatchRouteState(matchId, matchData, 'finish')
-  const routeStateStatus = routeState.status
-  const redirectMatchId = routeStateStatus === 'redirect-active' ? routeState.matchId : null
-  const corruptMessage = matchData.status === 'corrupt' ? matchData.message : null
 
   useEffect(() => {
-    if (corruptMessage !== null) {
-      console.error('Corrupted match data:', corruptMessage)
+    if (matchData.status === 'corrupt') {
+      console.error('Corrupted match data:', matchData.message)
     }
 
-    if (routeStateStatus === 'redirect-home') {
+    if (routeState.status === 'redirect-home') {
       void navigate({
         to: '/',
         replace: true,
@@ -51,31 +94,21 @@ export function MatchFinishRouteContent({ matchId, matchData }: MatchFinishRoute
       return
     }
 
-    if (routeStateStatus === 'redirect-active' && redirectMatchId !== null) {
+    if (routeState.status === 'redirect-active') {
       void navigate({
         to: '/match/$id',
-        params: { id: redirectMatchId },
+        params: { id: routeState.matchId },
         replace: true,
         ...getViewTransitionNavigationOptions()
       })
-      return
     }
-  }, [corruptMessage, matchData, matchId, navigate, redirectMatchId, routeStateStatus])
+  }, [matchData, matchId, navigate, routeState])
 
-  if (routeStateStatus !== 'ready') {
-    return <RouteLoadingState />
+  if (routeState.status !== 'ready') {
+    return null
   }
 
   return (
-    <MatchEndScreen
-      matchId={routeState.record.matchId}
-      setup={routeState.record.setup}
-      actions={routeState.record.actions}
-      projection={routeState.projection}
-      startedAt={routeState.record.startedAt}
-      {...(typeof routeState.record.finishedAt === 'number'
-        ? { finishedAt: routeState.record.finishedAt }
-        : {})}
-    />
+    <MatchFinishRouteReadyContent record={routeState.record} projection={routeState.projection} />
   )
 }

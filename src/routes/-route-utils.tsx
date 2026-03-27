@@ -1,7 +1,9 @@
 import type { ErrorComponentProps } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 
-import { Button, Spinner } from '@/components/ui'
+import { Button, TopBar } from '@/components/ui'
+import { Layout } from '@/components/Layout'
+import { PadelCourtSpinner } from '@/components/PadelCourtSpinner'
 
 export function getErrorMessage(error: unknown): string | null {
   if (error instanceof Error && error.message.length > 0) {
@@ -17,18 +19,15 @@ export function getErrorMessage(error: unknown): string | null {
   return null
 }
 
-export function RouteLoadingState() {
-  const { t } = useTranslation()
+const HeaderContent = <TopBar iconSrc="/icon.png" iconAlt="Padel Buddy" title="Padel Buddy" />
+const LoaderPadelCourt = () => (
+  <Layout header={HeaderContent}>
+    <PadelCourtSpinner />
+  </Layout>
+)
 
-  return (
-    <main className="appStatusPage">
-      <section className="appStatusCard" aria-live="polite" aria-busy="true">
-        <Spinner className="appStatusSpinner" size="lg" label={t('common.loading')} silent />
-        <h1 className="appStatusTitle">{t('common.loading')}</h1>
-        <p className="appStatusBody">{t('loadingState.routeBody')}</p>
-      </section>
-    </main>
-  )
+export function RouteLoadingState() {
+  return <LoaderPadelCourt />
 }
 
 interface RouteErrorStateProps extends ErrorComponentProps {
