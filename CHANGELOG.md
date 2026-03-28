@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.18.0](https://github.com/trystan2k/padelbuddy-web/compare/v0.17.0...v0.18.0) (2026-03-28)
+
+
+### Features
+
+* Bluetooth remote controller support ([30d8b05](https://github.com/trystan2k/padelbuddy-web/commit/30d8b052aed45377773c64f63dd769a76af35d42))
+
 ## [0.17.0](https://github.com/trystan2k/padelbuddy-web/compare/v0.16.0...v0.17.0) (2026-03-28)
 
 
