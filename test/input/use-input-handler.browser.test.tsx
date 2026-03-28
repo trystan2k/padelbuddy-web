@@ -202,7 +202,7 @@ describe('use-input-handler browser', () => {
 
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'z' }))
 
-    expect(onUndoForTeam).toHaveBeenCalledWith('team-1')
+    expect(onUndoForTeam).not.toHaveBeenCalled()
     await expect.element(screen.getByTestId('action-count')).toHaveTextContent('1')
   })
 
@@ -422,6 +422,99 @@ describe('use-input-handler browser', () => {
     await expect.element(screen.getByTestId('action-count')).toHaveTextContent('0')
   })
 
+  test('cancels a pending buffered add when the handler becomes disabled', async () => {
+    vi.useFakeTimers()
+
+    const onAdd = vi.fn()
+
+    function ToggleEnabledHarness() {
+      const [enabled, setEnabled] = useState(true)
+      const state = useInputHandler(
+        {
+          actions: [],
+          enabled
+        },
+        {
+          onAdd,
+          onUndo: async () => undefined,
+          onUndoForTeam: async () => undefined
+        }
+      )
+
+      return (
+        <button type="button" data-testid="disable-handler" onClick={() => setEnabled(false)}>
+          {state.wakeLockState.isActive ? 'active' : 'inactive'}
+        </button>
+      )
+    }
+
+    const screen = await render(<ToggleEnabledHarness />)
+
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft' }))
+    await screen.getByTestId('disable-handler').click()
+    await vi.advanceTimersByTimeAsync(400)
+
+    expect(onAdd).not.toHaveBeenCalled()
+  })
+
+  test('enabled ref guard prevents a buffered add from committing after disable', async () => {
+    vi.useFakeTimers()
+
+    const onAdd = vi.fn()
+    const clearTimeoutSpy = vi.spyOn(globalThis, 'clearTimeout').mockImplementation(() => undefined)
+
+    function ToggleEnabledHarness() {
+      const [enabled, setEnabled] = useState(true)
+      const state = useInputHandler(
+        {
+          actions: [],
+          enabled
+        },
+        {
+          onAdd,
+          onUndo: async () => undefined,
+          onUndoForTeam: async () => undefined
+        }
+      )
+
+      return (
+        <button type="button" data-testid="disable-handler" onClick={() => setEnabled(false)}>
+          {state.wakeLockState.isActive ? 'active' : 'inactive'}
+        </button>
+      )
+    }
+
+    const screen = await render(<ToggleEnabledHarness />)
+
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft' }))
+    await screen.getByTestId('disable-handler').click()
+    await vi.advanceTimersByTimeAsync(400)
+
+    expect(clearTimeoutSpy).toHaveBeenCalled()
+    expect(onAdd).not.toHaveBeenCalled()
+  })
+
+  test('double-press with no prior team action cancels the add without calling undo', async () => {
+    // When actions = [] and user double-presses team-1's add key:
+    // First press queues buffered add, second press cancels timer and calls undoForTeam,
+    // but undoForTeam bails because hasScoringAction is false.
+    // Net result: no score, no undo — both presses silently discarded.
+    vi.useFakeTimers()
+
+    const onAdd = vi.fn()
+    const onUndoForTeam = vi.fn()
+
+    await render(<InputHandlerHarness onAdd={onAdd} onUndoForTeam={onUndoForTeam} />)
+
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft' }))
+    await vi.advanceTimersByTimeAsync(100)
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft' }))
+    await vi.advanceTimersByTimeAsync(400)
+
+    expect(onAdd).not.toHaveBeenCalled()
+    expect(onUndoForTeam).not.toHaveBeenCalled()
+  })
+
   test('ignores mapped keyboard input when the handler is disabled', async () => {
     vi.useFakeTimers()
 
@@ -470,7 +563,7 @@ describe('use-input-handler browser', () => {
 
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'z' }))
 
-    expect(onUndoForTeam).toHaveBeenCalledWith('team-1')
+    expect(onUndoForTeam).not.toHaveBeenCalled()
     await expect.element(screen.getByTestId('action-count')).toHaveTextContent('0')
   })
 

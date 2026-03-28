@@ -241,8 +241,20 @@ export function ActiveMatchScreen({
   const shouldShowSideSwitch =
     sideSwitch.shouldPrompt && setup.sideSwitchPrompts && !sideSwitchDismissed
   const timerLabelKey = countdownEnabled ? 'match.timer.countdownLabel' : 'match.timer.label'
-  const canUndoTeam1 = snapshot.actions.some((action) => action.teamId === 'team-1')
-  const canUndoTeam2 = snapshot.actions.some((action) => action.teamId === 'team-2')
+  const canUndoTeam1 = useMemo(
+    () =>
+      snapshot.actions.some(
+        (action) => action.type === 'score-point' && action.teamId === 'team-1'
+      ),
+    [snapshot.actions]
+  )
+  const canUndoTeam2 = useMemo(
+    () =>
+      snapshot.actions.some(
+        (action) => action.type === 'score-point' && action.teamId === 'team-2'
+      ),
+    [snapshot.actions]
+  )
   const isUndoTeam1Disabled = isLoading || !canUndoTeam1
   const isUndoTeam2Disabled = isLoading || !canUndoTeam2
 

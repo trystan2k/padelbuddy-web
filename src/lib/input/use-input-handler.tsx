@@ -49,6 +49,8 @@ export function useInputHandler(
 
   const callbacksRef = useRef(callbacks)
   const bindingsRef = useRef<RemoteControllerBindings | null>(bindings)
+  const actionsRef = useRef(options.actions)
+  const enabledRef = useRef(enabled)
   const pendingAddTimersRef = useRef<Record<MatchTeamId, ReturnType<typeof setTimeout> | null>>({
     'team-1': null,
     'team-2': null
@@ -56,6 +58,8 @@ export function useInputHandler(
 
   callbacksRef.current = callbacks
   bindingsRef.current = bindings
+  actionsRef.current = options.actions
+  enabledRef.current = enabled
 
   const onWakeLockError = useCallback((error: Error) => {
     callbacksRef.current.onError?.(error)
@@ -85,6 +89,15 @@ export function useInputHandler(
   }, [])
 
   const undoForTeam = useCallback(async (teamId: MatchTeamId) => {
+    // MatchAction is currently ScorePointAction only; guard is future-proof if new action types are added
+    const hasScoringAction = actionsRef.current.some(
+      (action) => action.type === 'score-point' && action.teamId === teamId
+    )
+
+    if (!hasScoringAction) {
+      return
+    }
+
     try {
       await callbacksRef.current.onUndoForTeam(teamId)
     } catch (err) {
@@ -122,6 +135,11 @@ export function useInputHandler(
 
       pendingAddTimersRef.current[teamId] = setTimeout(() => {
         pendingAddTimersRef.current[teamId] = null
+
+        if (!enabledRef.current) {
+          return
+        }
+
         void scorePoint(teamId)
       }, bufferedAddWindowMs)
     },
@@ -204,7 +222,10 @@ export function useInputHandler(
   }, [enabled, undo])
 
   useEffect(() => {
+    // enabledRef is already current from the render body (synchronous assignment above).
+    // cancelAllPendingAdds() is the important cleanup here.
     if (!enabled) {
+      cancelAllPendingAdds()
       return
     }
 
@@ -213,7 +234,7 @@ export function useInputHandler(
     return () => {
       window.removeEventListener('keydown', onKeyDown)
     }
-  }, [enabled, onKeyDown])
+  }, [cancelAllPendingAdds, enabled, onKeyDown])
 
   useEffect(() => {
     return () => {
