@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.17.0](https://github.com/trystan2k/padelbuddy-web/compare/v0.16.0...v0.17.0) (2026-03-28)
+
+
+### Features
+
+* add PWA offline support and installability ([4bccbda](https://github.com/trystan2k/padelbuddy-web/commit/4bccbda3cc92b49f5390f8d1b0eb1c459141c1ee))
+* loader and routing architecture cleanup for SPA ([84787c3](https://github.com/trystan2k/padelbuddy-web/commit/84787c3906c45f224385631969eac280af78ae12))
+* **toast:** enhance animations and replace error notices with toasts ([1a37dde](https://github.com/trystan2k/padelbuddy-web/commit/1a37dde8e01012f51f3a90562fbed36e75f066d9))
+
 ## [0.16.0](https://github.com/trystan2k/padelbuddy-web/compare/v0.15.0...v0.16.0) (2026-03-23)
 
 
