@@ -34,6 +34,7 @@ export {
   clearRemoteControllerBindings,
   createRemoteControllerStorage,
   loadRemoteControllerBindings,
+  loadRemoteControllerBindingsWithFallback,
   parseStoredRemoteControllerBindings,
   remoteControllerStorage,
   sanitizeRemoteControllerBindings,

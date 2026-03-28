@@ -6,7 +6,7 @@ import { Layout } from '@/components/Layout/Layout'
 import { TopBar } from '@/components/ui/TopBar'
 import {
   createEmptyRemoteControllerBindings,
-  loadRemoteControllerBindings,
+  loadRemoteControllerBindingsWithFallback,
   useInputHandler,
   type RemoteControllerBindings
 } from '@/lib/input'
@@ -88,13 +88,13 @@ export function ActiveMatchScreen({
 
     void (async () => {
       try {
-        const storedBindings = await loadRemoteControllerBindings()
+        const storedBindings = await loadRemoteControllerBindingsWithFallback()
 
         if (!isMounted) {
           return
         }
 
-        setRemoteBindings(storedBindings ?? createEmptyRemoteControllerBindings())
+        setRemoteBindings(storedBindings)
       } catch (error) {
         console.error('Failed to load remote controller bindings.', error)
 

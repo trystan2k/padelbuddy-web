@@ -109,7 +109,7 @@ export function useInputHandler(
   const cancelPendingAdd = useCallback((teamId: MatchTeamId): boolean => {
     const timer = pendingAddTimersRef.current[teamId]
 
-    if (!timer) {
+    if (timer === null) {
       return false
     }
 

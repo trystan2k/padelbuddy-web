@@ -53,7 +53,7 @@ vi.mock('@/lib/input', async (importOriginal) => {
 
   return {
     ...actual,
-    loadRemoteControllerBindings: mockLoadRemoteControllerBindings
+    loadRemoteControllerBindingsWithFallback: mockLoadRemoteControllerBindings
   }
 })
 

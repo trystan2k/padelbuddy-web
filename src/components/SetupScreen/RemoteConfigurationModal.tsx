@@ -1,6 +1,6 @@
 /* oxlint-disable jsx-no-new-function-as-prop -- Base UI Dialog uses render props for accessible composition. */
 
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Dialog } from '@base-ui/react/dialog'
 import { useTranslation } from 'react-i18next'
 
@@ -12,9 +12,8 @@ import {
   configurableKeyboardActions,
   createEmptyRemoteControllerBindings,
   createRemoteControllerBindings,
-  defaultRemoteControllerBindings,
   getKeyboardBindingDisplayLabel,
-  loadRemoteControllerBindings,
+  loadRemoteControllerBindingsWithFallback,
   saveRemoteControllerBindings,
   type ConfigurableKeyboardAction,
   type RemoteControllerBindings
@@ -42,6 +41,13 @@ export function RemoteConfigurationModal({ isOpen, onClose }: RemoteConfiguratio
   )
   const [listeningAction, setListeningAction] = useState<ConfigurableKeyboardAction | null>(null)
   const [isSaving, setIsSaving] = useState(false)
+  const closeGuardRef = useRef(false)
+
+  useEffect(() => {
+    if (isOpen) {
+      closeGuardRef.current = false
+    }
+  }, [isOpen])
 
   useEffect(() => {
     if (!isOpen) {
@@ -53,13 +59,13 @@ export function RemoteConfigurationModal({ isOpen, onClose }: RemoteConfiguratio
 
     void (async () => {
       try {
-        const storedBindings = await loadRemoteControllerBindings()
+        const storedBindings = await loadRemoteControllerBindingsWithFallback()
 
         if (!isMounted) {
           return
         }
 
-        setDraftBindings(storedBindings ?? createEmptyRemoteControllerBindings())
+        setDraftBindings(storedBindings)
       } catch (error) {
         console.error('Failed to load remote controller bindings.', error)
 
@@ -103,6 +109,24 @@ export function RemoteConfigurationModal({ isOpen, onClose }: RemoteConfiguratio
     }
   }, [isOpen, listeningAction])
 
+  const requestClose = useCallback(() => {
+    if (closeGuardRef.current) {
+      return
+    }
+
+    closeGuardRef.current = true
+    onClose()
+  }, [onClose])
+
+  const handleOpenChange = useCallback(
+    (open: boolean) => {
+      if (!open) {
+        requestClose()
+      }
+    },
+    [requestClose]
+  )
+
   const handleSave = useCallback(async () => {
     setIsSaving(true)
 
@@ -116,7 +140,7 @@ export function RemoteConfigurationModal({ isOpen, onClose }: RemoteConfiguratio
       }
 
       addSuccessToast(t('setup.remoteConfig.feedback.saveSuccess'))
-      onClose()
+      requestClose()
     } catch (error) {
       const saveError = toError(error)
       addErrorToast(`${t('setup.remoteConfig.feedback.saveError')} ${saveError.message}`)
@@ -124,7 +148,7 @@ export function RemoteConfigurationModal({ isOpen, onClose }: RemoteConfiguratio
       setIsSaving(false)
       setListeningAction(null)
     }
-  }, [addErrorToast, addSuccessToast, draftBindings, onClose, t])
+  }, [addErrorToast, addSuccessToast, draftBindings, requestClose, t])
 
   const handleClear = useCallback(() => {
     setListeningAction(null)
@@ -133,7 +157,7 @@ export function RemoteConfigurationModal({ isOpen, onClose }: RemoteConfiguratio
 
   const handleResetDefaults = useCallback(() => {
     setListeningAction(null)
-    setDraftBindings(createRemoteControllerBindings(defaultRemoteControllerBindings))
+    setDraftBindings(createRemoteControllerBindings())
   }, [])
 
   const bindingRows = useMemo(
@@ -174,7 +198,7 @@ export function RemoteConfigurationModal({ isOpen, onClose }: RemoteConfiguratio
     : ''
 
   return (
-    <Dialog.Root open={isOpen} onOpenChange={(open) => !open && onClose()}>
+    <Dialog.Root open={isOpen} onOpenChange={handleOpenChange}>
       <Dialog.Portal>
         <Dialog.Backdrop render={(props) => <div {...props} className={styles.overlay} />} />
 
@@ -265,7 +289,7 @@ export function RemoteConfigurationModal({ isOpen, onClose }: RemoteConfiguratio
                 </div>
 
                 <div className={styles.footerGroup}>
-                  <Button variant="outline" size="sm" accent="secondary" onClick={onClose}>
+                  <Button variant="outline" size="sm" accent="secondary" onClick={requestClose}>
                     {t('setup.remoteConfig.actions.cancel')}
                   </Button>
                   <Button

@@ -39,6 +39,12 @@ export interface RemoteControllerStorage {
   clearRemoteControllerBindings(): Promise<void>
 }
 
+export async function loadRemoteControllerBindingsWithFallback(): Promise<RemoteControllerBindings> {
+  const storedBindings = await loadRemoteControllerBindings()
+
+  return storedBindings ?? createEmptyRemoteControllerBindings()
+}
+
 export function createRemoteControllerStorage(
   options: RemoteControllerStorageOptions = {}
 ): RemoteControllerStorage {
