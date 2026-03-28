@@ -7,66 +7,6 @@
   min-height: 100vh;
 }
 
-.routePendingOverlay {
-  position: fixed;
-  top: calc(env(safe-area-inset-top, 0px) + 1rem);
-  left: 50%;
-  z-index: var(--base-priority-xl);
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 0.75rem;
-  align-items: center;
-  width: min(30rem, calc(100vw - 2rem));
-  padding: 0.875rem 1rem;
-  border: 1px solid
-    color-mix(
-      in srgb,
-      var(--semantic-color-border-subtle) 76%,
-      var(--semantic-color-content-accent-secondary)
-    );
-  border-radius: 1rem;
-  background: color-mix(in srgb, var(--semantic-color-background-surface) 90%, transparent);
-  box-shadow: 0 1rem 2.5rem var(--base-color-common-overlay-soft);
-  backdrop-filter: blur(18px);
-  pointer-events: none;
-  transform: translateX(-50%);
-}
-
 .routePendingSpinner {
   color: var(--semantic-color-content-accent-secondary);
-}
-
-.routePendingCopy {
-  min-width: 0;
-  display: grid;
-  gap: 0.15rem;
-}
-
-.routePendingTitle,
-.routePendingBody {
-  margin: 0;
-}
-
-.routePendingTitle {
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: var(--semantic-color-content-primary);
-}
-
-.routePendingBody {
-  font-size: 0.8rem;
-  line-height: 1.5;
-  color: var(--semantic-color-content-secondary);
-}
-
-@media (width <= 40rem) {
-  .routePendingOverlay {
-    top: calc(env(safe-area-inset-top, 0px) + 0.75rem);
-    width: calc(100vw - 1rem);
-    padding: 0.75rem 0.875rem;
-  }
-
-  .routePendingBody {
-    display: none;
-  }
 }

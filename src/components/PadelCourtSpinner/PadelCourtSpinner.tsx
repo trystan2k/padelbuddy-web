@@ -69,9 +69,8 @@ export function PadelCourtSpinner({
   const keyTimes = generateKeyTimes(SEGMENTS + 1)
 
   return (
-    <div className={cn(styles.overlay, styles.loaderContainer)}>
+    <div ref={ref} className={cn(styles.overlay, styles.loaderContainer)}>
       <div
-        ref={ref}
         className={cn(styles.container, className)}
         {...(silent ? {} : { role: 'status', 'aria-live': 'polite' })}
         aria-busy="true"

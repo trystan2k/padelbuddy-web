@@ -69,22 +69,4 @@ describe('root route', () => {
     expect(initialMarkup).toContain('route outlet')
     expect(initialMarkup).toContain('scripts')
   })
-
-  test('keeps the route pending notice out of the initial shell until a route turns pending', () => {
-    const RootDocument = Route.options.component
-
-    if (!RootDocument) {
-      throw new Error('Expected the root route to expose component')
-    }
-
-    routerStateMock.isRoutePending = false
-    const initialMarkup = renderToStaticMarkup(<RootDocument />)
-
-    expect(initialMarkup).not.toContain('Loading the next view')
-
-    routerStateMock.isRoutePending = true
-    const pendingMarkup = renderToStaticMarkup(<RootDocument />)
-
-    expect(pendingMarkup).toContain('Loading the next view')
-  })
 })

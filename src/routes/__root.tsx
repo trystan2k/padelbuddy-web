@@ -8,17 +8,18 @@ import {
   useRouterState,
   type ErrorComponentProps
 } from '@tanstack/react-router'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { DebugPwa } from '@/components/DebugPwa'
 import { NotFoundPage } from '@/components/NotFoundPage/NotFoundPage'
-import { Button, Spinner, ToastProvider } from '@/components/ui'
+import { Button, ToastProvider } from '@/components/ui'
 import { i18n, initializeI18n } from '@/lib/i18n'
 import { registerSW } from '@/lib/pwa'
 
 import { getErrorMessage } from './-route-utils'
 import styles from './RootDocument.module.css'
+import { PadelCourtSpinner } from '../components/PadelCourtSpinner'
 
 export const Route = createRootRoute({
   head: () => ({
@@ -108,6 +109,8 @@ function AppShell() {
     () => i18n.resolvedLanguage ?? i18n.language ?? 'en'
   )
 
+  const routePendingRef = useRef<HTMLDivElement>(null)
+
   useEffect(() => {
     const handleLanguageChanged = (lng: string) => {
       setCurrentLang(lng || 'en')
@@ -126,12 +129,25 @@ function AppShell() {
     }
   }, [])
 
+  useEffect(() => {
+    if (routePendingRef.current) {
+      // remove from dom
+      document.body.removeChild(routePendingRef.current)
+    }
+  }, [routePendingRef])
+
   return (
     <html lang={currentLang}>
       <head>
         <HeadContent />
       </head>
       <body>
+        <PadelCourtSpinner
+          ref={routePendingRef}
+          className={styles.routePendingSpinner}
+          silent={true}
+          aria-hidden="true"
+        />
         <ToastProvider>
           <div className={styles.routeShell}>
             <RoutePendingOverlay />
@@ -148,7 +164,6 @@ function AppShell() {
 }
 
 export function RoutePendingOverlay() {
-  const { t } = useTranslation()
   const isRoutePending = useRouterState({
     select: (state) =>
       Boolean(state.resolvedLocation) && state.matches.some((match) => match.status === 'pending'),
@@ -160,19 +175,7 @@ export function RoutePendingOverlay() {
   }
 
   return (
-    <div className={styles.routePendingOverlay} role="status" aria-live="polite" aria-atomic="true">
-      <Spinner
-        className={styles.routePendingSpinner}
-        size="sm"
-        color="secondary"
-        silent={true}
-        aria-hidden="true"
-      />
-      <div className={styles.routePendingCopy}>
-        <p className={styles.routePendingTitle}>{t('loadingState.routeTransition')}</p>
-        <p className={styles.routePendingBody}>{t('loadingState.routeBody')}</p>
-      </div>
-    </div>
+    <PadelCourtSpinner className={styles.routePendingSpinner} silent={true} aria-hidden="true" />
   )
 }
 

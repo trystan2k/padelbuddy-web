@@ -14,8 +14,6 @@ const { initializeI18nMock, i18nMock, registerSWMock, routerStateMock, translati
       isRoutePending: false
     },
     translationMap: {
-      'loadingState.routeTransition': 'Loading the next view',
-      'loadingState.routeBody': 'Preparing your saved match data.',
       'error.unexpectedLabel': 'Unexpected error',
       'error.unexpectedTitle': 'Something went wrong',
       'error.unexpectedBody': 'Please try again.',

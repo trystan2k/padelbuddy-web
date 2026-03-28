@@ -23,14 +23,6 @@ export default {
       body: "There's no match data available. Please start a new match."
     }
   },
-  loadingState: {
-    appInitLabel: 'Loading Padel Buddy',
-    appInitEyebrow: 'Starting app',
-    appInitTitle: 'Preparing Padel Buddy',
-    appInitBody: 'Loading translations and preparing the score tracker shell.',
-    routeBody: 'Padel Buddy is restoring the latest match data and preparing the next screen.',
-    routeTransition: 'Loading the next view'
-  },
   app: {
     title: 'Padel Buddy',
     description: 'A deliberately styled starter shell for the live score tracker.'

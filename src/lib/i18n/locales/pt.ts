@@ -23,15 +23,6 @@ export default {
       body: 'Não há dados de partida disponíveis. Inicie uma nova partida.'
     }
   },
-  loadingState: {
-    appInitLabel: 'Carregando Padel Buddy',
-    appInitEyebrow: 'Iniciando aplicativo',
-    appInitTitle: 'Preparando Padel Buddy',
-    appInitBody: 'Carregando traduções e preparando a base do placar ao vivo.',
-    routeBody:
-      'O Padel Buddy está restaurando os dados mais recentes da partida e preparando a próxima tela.',
-    routeTransition: 'Carregando a próxima tela'
-  },
   app: {
     title: 'Padel Buddy',
     description: 'Uma base estilizada para o rastreador de pontuação ao vivo.'
