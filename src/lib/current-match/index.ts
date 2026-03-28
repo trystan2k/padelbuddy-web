@@ -35,6 +35,7 @@ export {
   type CurrentMatchSessionInput,
   type CurrentMatchSessionSnapshot
 } from './session'
+export { undoLastScoringActionForTeam } from './helpers'
 export {
   hydrateCurrentMatchStartup,
   type CurrentMatchStartupCorruptResult,

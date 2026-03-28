@@ -1,14 +1,16 @@
 export const persistenceDatabaseName = 'padel-buddy-web'
-export const persistenceDatabaseVersion = 4
+export const persistenceDatabaseVersion = 5
 
 export const currentMatchObjectStoreName = 'current-match'
 export const localePreferenceObjectStoreName = 'locale-preference'
 export const speechPreferenceObjectStoreName = 'speech-preference'
+export const remoteControllerPreferenceObjectStoreName = 'remote-controller-preference'
 
 export const sharedIndexedDbObjectStoreNames = [
   currentMatchObjectStoreName,
   localePreferenceObjectStoreName,
-  speechPreferenceObjectStoreName
+  speechPreferenceObjectStoreName,
+  remoteControllerPreferenceObjectStoreName
 ] as const
 
 export interface IndexedDbStorageOptions {

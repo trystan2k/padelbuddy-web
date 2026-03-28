@@ -4,12 +4,15 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import { render } from 'vitest-browser-react'
 
 import { SetupScreen } from '@/components/SetupScreen/SetupScreen'
+import { createEmptyRemoteControllerBindings, createRemoteControllerBindings } from '@/lib/input'
 
-const { mockInvalidate, mockNavigate, mockPreloadRoute } = vi.hoisted(() => ({
-  mockInvalidate: vi.fn(),
-  mockNavigate: vi.fn(),
-  mockPreloadRoute: vi.fn()
-}))
+const { mockInvalidate, mockNavigate, mockPreloadRoute, mockLoadRemoteControllerBindings } =
+  vi.hoisted(() => ({
+    mockInvalidate: vi.fn(),
+    mockNavigate: vi.fn(),
+    mockPreloadRoute: vi.fn(),
+    mockLoadRemoteControllerBindings: vi.fn()
+  }))
 
 vi.mock('@tanstack/react-router', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@tanstack/react-router')>()
@@ -24,9 +27,19 @@ vi.mock('@tanstack/react-router', async (importOriginal) => {
   }
 })
 
-describe('SetupScreen countdown timer controls', () => {
+vi.mock('@/lib/input', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/lib/input')>()
+
+  return {
+    ...actual,
+    loadRemoteControllerBindingsWithFallback: mockLoadRemoteControllerBindings
+  }
+})
+
+describe('SetupScreen', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    mockLoadRemoteControllerBindings.mockResolvedValue(createEmptyRemoteControllerBindings())
   })
 
   afterEach(async () => {
@@ -55,9 +68,6 @@ describe('SetupScreen countdown timer controls', () => {
     const oneHourOption = screen.getByRole('radio', { name: '1:00 h' })
     const twoHourOption = screen.getByRole('radio', { name: '2:00 h' })
 
-    // Use dispatchEvent instead of Playwright's click() because the Switch element
-    // has no CSS loaded in the test environment (zero bounding box). This is equivalent
-    // to the original DOM .click() approach that bypassed Playwright's checks.
     countdownToggle.element().dispatchEvent(new MouseEvent('click', { bubbles: true }))
 
     await expect.element(countdownToggle).toHaveAttribute('aria-checked', 'true')
@@ -133,5 +143,47 @@ describe('SetupScreen countdown timer controls', () => {
     await expect.element(team2ServerButton).toBeEnabled()
     await expect.element(team2ServerButton).toHaveAttribute('aria-pressed', 'true')
     await expect.element(team1ServerButton).toHaveAttribute('aria-pressed', 'false')
+  })
+
+  test('places the remote configuration button below the first server controls in the left column', async () => {
+    const screen = await render(<SetupScreen />)
+
+    const button = screen.getByRole('button', { name: /remote configuration/i })
+    const firstServerSection = screen.getByTestId('first-server-section')
+
+    expect(firstServerSection.element().parentElement).toBe(button.element().parentElement)
+    expect(
+      firstServerSection.element().compareDocumentPosition(button.element()) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy()
+  })
+
+  test('opens the remote configuration modal and loads empty bindings when nothing is saved', async () => {
+    const screen = await render(<SetupScreen />)
+
+    await screen.getByRole('button', { name: /remote configuration/i }).click()
+
+    await expect.element(screen.getByTestId('remote-configuration-modal')).toBeVisible()
+    expect(mockLoadRemoteControllerBindings).toHaveBeenCalledTimes(1)
+    await expect
+      .element(screen.getByTestId('remote-binding-add-team-1'))
+      .toHaveTextContent('Not set')
+
+    await screen.getByRole('button', { name: /cancel/i }).click()
+  })
+
+  test('opens the remote configuration modal and loads saved bindings', async () => {
+    mockLoadRemoteControllerBindings.mockResolvedValue(createRemoteControllerBindings())
+    const screen = await render(<SetupScreen />)
+
+    await screen.getByRole('button', { name: /remote configuration/i }).click()
+
+    await expect.element(screen.getByTestId('remote-configuration-modal')).toBeVisible()
+    expect(mockLoadRemoteControllerBindings).toHaveBeenCalledTimes(1)
+    await expect
+      .element(screen.getByTestId('remote-binding-add-team-1'))
+      .toHaveTextContent('← Left')
+
+    await screen.getByRole('button', { name: /cancel/i }).click()
   })
 })

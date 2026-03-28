@@ -1,537 +1,620 @@
+/* oxlint-disable jsx-no-new-function-as-prop, jsx-no-new-object-as-prop, jsx-no-new-array-as-prop -- test harness props are intentionally inline for readability. */
+
+import { useEffect, useState } from 'react'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
-/* eslint-disable react-perf/jsx-no-new-object-as-prop, react-perf/jsx-no-new-function-as-prop, @typescript-eslint/no-explicit-any */
 import { render } from 'vitest-browser-react'
-import { useEffect } from 'react'
 
-import {
-  useInputHandler,
-  type UseInputHandlerOptions,
-  type UseInputHandlerReturn,
-  type UseInputHandlerCallbacks
-} from '@/lib/input'
-import { currentMatchSchemaVersion } from '@/lib/current-match/persistence'
-import {
-  createCurrentMatchSession,
-  type CurrentMatchSession,
-  type CurrentMatchPersistence
-} from '@/lib/current-match'
+import { useInputHandler, type RemoteControllerBindings } from '@/lib/input'
+import type { MatchAction, MatchTeamId } from '@/core/match'
 
-import { createTestSetup } from '../core/match/test-helpers'
+function removeLastTeamAction(actions: MatchAction[], teamId: MatchTeamId): MatchAction[] {
+  const actionIndex = actions.findLastIndex((action) => action.teamId === teamId)
 
-const testMatchId = 'test-match'
+  if (actionIndex < 0) {
+    return actions
+  }
 
-// Helper function at module scope to avoid eslint warning about function recreation
-const createOptions = (sessionObj: CurrentMatchSession) => ({ session: sessionObj })
+  return [...actions.slice(0, actionIndex), ...actions.slice(actionIndex + 1)]
+}
 
-// Test component to render the hook output
-function InputHandlerTestComponent({
-  options,
-  callbacks,
+function InputHandlerHarness({
+  enabled = true,
+  bindings = null,
+  initialActions = [],
+  bufferedAddWindowMs = 380,
+  onAdd = vi.fn(),
+  onUndo = vi.fn(),
+  onUndoForTeam = vi.fn(),
+  onError = vi.fn(),
   onStateChange
 }: {
-  options: UseInputHandlerOptions
-  callbacks?: UseInputHandlerCallbacks
-  onStateChange?: (state: UseInputHandlerReturn) => void
+  enabled?: boolean
+  bindings?: RemoteControllerBindings | null
+  initialActions?: MatchAction[]
+  bufferedAddWindowMs?: number
+  onAdd?: (teamId: MatchTeamId) => void
+  onUndo?: () => void
+  onUndoForTeam?: (teamId: MatchTeamId) => void
+  onError?: (error: Error) => void
+  onStateChange?: (state: ReturnType<typeof useInputHandler>) => void
 }) {
-  const state = useInputHandler(options, callbacks)
+  const [actions, setActions] = useState<MatchAction[]>(initialActions)
+  const state = useInputHandler(
+    {
+      actions,
+      bindings,
+      enabled,
+      bufferedAddWindowMs
+    },
+    {
+      onAdd: async (teamId) => {
+        setActions((currentActions) => [...currentActions, { type: 'score-point', teamId }])
+        onAdd(teamId)
+      },
+      onUndo: async () => {
+        setActions((currentActions) => currentActions.slice(0, -1))
+        onUndo()
+      },
+      onUndoForTeam: async (teamId) => {
+        setActions((currentActions) => removeLastTeamAction(currentActions, teamId))
+        onUndoForTeam(teamId)
+      },
+      onError
+    }
+  )
 
   useEffect(() => {
     onStateChange?.(state)
-  }, [state, onStateChange])
+  }, [onStateChange, state])
 
   return (
     <div>
-      <span data-testid="enabled">{options.enabled !== false ? 'true' : 'false'}</span>
-      <button data-testid="team1Score" type="button" onClick={state.handlers.onTeam1Score}>
-        Team 1 Score
+      <button data-testid="touch-add-team-1" type="button" onClick={state.handlers.onTeam1Score}>
+        Add team 1
       </button>
-      <button data-testid="team2Score" type="button" onClick={state.handlers.onTeam2Score}>
-        Team 2 Score
+      <button data-testid="touch-add-team-2" type="button" onClick={state.handlers.onTeam2Score}>
+        Add team 2
       </button>
-      <button data-testid="undo" type="button" onClick={state.handlers.onUndo}>
+      <button data-testid="touch-undo" type="button" onClick={state.handlers.onUndo}>
         Undo
       </button>
-      <span data-testid="wakeLockSupported">{state.wakeLockState.isSupported.toString()}</span>
+      <span data-testid="action-count">{actions.length}</span>
+      <span data-testid="latest-team">{actions.at(-1)?.teamId ?? 'none'}</span>
     </div>
   )
 }
 
 describe('use-input-handler browser', () => {
-  let session: CurrentMatchSession
-  let mockPersistence: CurrentMatchPersistence
-
   beforeEach(() => {
-    const matchSetup = createTestSetup()
-    const testStartedAt = Date.now()
-    mockPersistence = {
-      saveCurrentMatch: vi
-        .fn<CurrentMatchPersistence['saveCurrentMatch']>()
-        .mockImplementation(async ({ matchId = testMatchId, setup, actions, startedAt }) => ({
-          schemaVersion: currentMatchSchemaVersion,
-          matchId,
-          setup,
-          actions,
-          startedAt: startedAt ?? testStartedAt
-        })),
-      loadCurrentMatch: vi.fn(),
-      clearCurrentMatch: vi.fn(async () => undefined)
-    }
-    session = createCurrentMatchSession({
-      matchId: testMatchId,
-      setup: matchSetup,
-      actions: [],
-      startedAt: testStartedAt,
-      persistence: mockPersistence
-    })
+    vi.clearAllMocks()
   })
 
   afterEach(() => {
+    vi.useRealTimers()
     vi.restoreAllMocks()
   })
 
-  describe('keyboard event handling', () => {
-    test('handles ArrowLeft key for team-1 score', async () => {
-      const onScore = vi.fn()
-      // eslint-disable-next-line react-perf/jsx-no-new-object-as-prop
-      const options = createOptions(session)
-      // eslint-disable-next-line react-perf/jsx-no-new-object-as-prop
-      const callbacks = { onScore }
+  test('commits a mapped add after the buffered window', async () => {
+    vi.useFakeTimers()
 
-      await render(<InputHandlerTestComponent options={options} callbacks={callbacks} />)
+    const onAdd = vi.fn()
+    await render(<InputHandlerHarness onAdd={onAdd} />)
 
-      // Simulate keyboard event
-      window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft' }))
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft' }))
 
-      // Wait for the callback to be called
-      await vi.waitFor(() => expect(onScore).toHaveBeenCalledWith('team-1'))
-    })
+    expect(onAdd).not.toHaveBeenCalled()
 
-    test('handles ArrowRight key for team-2 score', async () => {
-      const onScore = vi.fn()
-      const options = createOptions(session)
-      const callbacks = { onScore }
+    await vi.advanceTimersByTimeAsync(380)
 
-      await render(<InputHandlerTestComponent options={options} callbacks={callbacks} />)
-
-      window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight' }))
-
-      await vi.waitFor(() => expect(onScore).toHaveBeenCalledWith('team-2'))
-    })
-
-    test('handles ArrowUp key for undo', async () => {
-      const onUndo = vi.fn()
-      const options = createOptions(session)
-      const callbacks = { onUndo }
-
-      await render(<InputHandlerTestComponent options={options} callbacks={callbacks} />)
-
-      window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp' }))
-
-      await vi.waitFor(() => expect(onUndo).toHaveBeenCalled())
-    })
-
-    test('ignores unknown keys', async () => {
-      const onScore = vi.fn()
-      const onUndo = vi.fn()
-      const options = createOptions(session)
-      const callbacks = { onScore, onUndo }
-
-      await render(<InputHandlerTestComponent options={options} callbacks={callbacks} />)
-
-      window.dispatchEvent(new KeyboardEvent('keydown', { key: 'x' }))
-
-      await vi.waitFor(() => {
-        expect(onScore).not.toHaveBeenCalled()
-        expect(onUndo).not.toHaveBeenCalled()
-      })
-    })
-
-    test('does not handle events when disabled', async () => {
-      const onScore = vi.fn()
-      const options = { session, enabled: false }
-      const callbacks = { onScore }
-
-      const screen = await render(
-        <InputHandlerTestComponent options={options} callbacks={callbacks} />
-      )
-
-      // When enabled is false, the click handler should also return early
-      await screen.getByTestId('team1Score').click()
-
-      await vi.waitFor(() => expect(onScore).not.toHaveBeenCalled())
-    })
+    expect(onAdd).toHaveBeenCalledWith('team-1')
   })
 
-  describe('touch/click handlers', () => {
-    test('onTeam1Score triggers team-1 score', async () => {
-      const onScore = vi.fn()
-      const options = createOptions(session)
-      const callbacks = { onScore }
+  test('supports custom mapped adds for team 2', async () => {
+    vi.useFakeTimers()
 
-      const screen = await render(
-        <InputHandlerTestComponent options={options} callbacks={callbacks} />
-      )
+    const onAdd = vi.fn()
+    await render(
+      <InputHandlerHarness
+        onAdd={onAdd}
+        bindings={{
+          'add-team-1': 'q',
+          'revert-team-1': 'a',
+          'add-team-2': 'w',
+          'revert-team-2': 's'
+        }}
+      />
+    )
 
-      await screen.getByTestId('team1Score').click()
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'w' }))
+    await vi.advanceTimersByTimeAsync(380)
 
-      await vi.waitFor(() => expect(onScore).toHaveBeenCalledWith('team-1'))
-    })
-
-    test('onTeam2Score triggers team-2 score', async () => {
-      const onScore = vi.fn()
-      const options = createOptions(session)
-      const callbacks = { onScore }
-
-      const screen = await render(
-        <InputHandlerTestComponent options={options} callbacks={callbacks} />
-      )
-
-      await screen.getByTestId('team2Score').click()
-
-      await vi.waitFor(() => expect(onScore).toHaveBeenCalledWith('team-2'))
-    })
-
-    test('onUndo triggers undo', async () => {
-      const onUndo = vi.fn()
-      const options = createOptions(session)
-      const callbacks = { onUndo }
-
-      const screen = await render(
-        <InputHandlerTestComponent options={options} callbacks={callbacks} />
-      )
-
-      await screen.getByTestId('undo').click()
-
-      await vi.waitFor(() => expect(onUndo).toHaveBeenCalled())
-    })
-
-    test('touch handlers do not work when disabled', async () => {
-      const onScore = vi.fn()
-      const options = { session, enabled: false }
-      const callbacks = { onScore }
-
-      const screen = await render(
-        <InputHandlerTestComponent options={options} callbacks={callbacks} />
-      )
-
-      await screen.getByTestId('team1Score').click()
-
-      await vi.waitFor(() => expect(onScore).not.toHaveBeenCalled())
-    })
+    expect(onAdd).toHaveBeenCalledWith('team-2')
   })
 
-  describe('debounce prevents rapid duplicate scores', () => {
-    test('debounces rapid button clicks', async () => {
-      vi.useFakeTimers({ toFake: ['Date'] })
+  test('double pressing the same add key reverts that team instead of scoring', async () => {
+    vi.useFakeTimers()
 
-      const onScore = vi.fn()
-      const options = createOptions(session)
-      const callbacks = { onScore }
+    const onAdd = vi.fn()
+    const onUndoForTeam = vi.fn()
+    const initialActions: MatchAction[] = [{ type: 'score-point', teamId: 'team-1' }]
 
-      const screen = await render(
-        <InputHandlerTestComponent options={options} callbacks={callbacks} />
-      )
+    const screen = await render(
+      <InputHandlerHarness
+        initialActions={initialActions}
+        onAdd={onAdd}
+        onUndoForTeam={onUndoForTeam}
+      />
+    )
 
-      // First click registers and sets debounce timestamp
-      await screen.getByTestId('team1Score').click()
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft' }))
+    await vi.advanceTimersByTimeAsync(150)
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft' }))
+    await vi.advanceTimersByTimeAsync(400)
 
-      // Wait for the first callback to complete
-      await vi.waitFor(() => expect(onScore).toHaveBeenCalledTimes(1))
-      expect(onScore).toHaveBeenCalledWith('team-1')
-
-      // Don't advance time - second click should be debounced
-      await screen.getByTestId('team1Score').click()
-
-      // Verify debounce blocked the second click
-      expect(onScore).toHaveBeenCalledTimes(1)
-
-      vi.useRealTimers()
-    })
-
-    test('allows score after debounce period', async () => {
-      const onScore = vi.fn()
-      const options = createOptions(session)
-      const callbacks = { onScore }
-
-      const screen = await render(
-        <InputHandlerTestComponent options={options} callbacks={callbacks} />
-      )
-
-      // First click
-      await screen.getByTestId('team1Score').click()
-
-      await vi.waitFor(() => expect(onScore).toHaveBeenCalledTimes(1))
-
-      // Wait for debounce to expire (300ms + buffer)
-      await new Promise((resolve) => setTimeout(resolve, 350))
-
-      // Second click should now register
-      await screen.getByTestId('team1Score').click()
-
-      await vi.waitFor(() => expect(onScore).toHaveBeenCalledTimes(2))
-    })
-
-    test('undo is not debounced', async () => {
-      const onUndo = vi.fn()
-      const options = createOptions(session)
-      const callbacks = { onUndo }
-
-      const screen = await render(
-        <InputHandlerTestComponent options={options} callbacks={callbacks} />
-      )
-
-      // First undo
-      await screen.getByTestId('undo').click()
-
-      await vi.waitFor(() => expect(onUndo).toHaveBeenCalledTimes(1))
-
-      // Rapid second undo should also work
-      await screen.getByTestId('undo').click()
-
-      await vi.waitFor(() => expect(onUndo).toHaveBeenCalledTimes(2))
-    })
+    expect(onAdd).not.toHaveBeenCalled()
+    expect(onUndoForTeam).toHaveBeenCalledWith('team-1')
+    await expect.element(screen.getByTestId('action-count')).toHaveTextContent('0')
   })
 
-  describe('wake lock integration', () => {
-    test('handles wake lock error when useWakeLock is enabled', async () => {
-      const onError = vi.fn()
-      const options = { session, useWakeLock: true }
-      const callbacks = { onError }
+  test('explicit revert mapping removes the last team-specific action even when another team scored later', async () => {
+    const onUndoForTeam = vi.fn()
+    const bindings: RemoteControllerBindings = {
+      'add-team-1': 'q',
+      'revert-team-1': 'z',
+      'add-team-2': 'w',
+      'revert-team-2': 'x'
+    }
 
-      // This test just verifies the component renders with wake lock enabled
-      // The actual wake lock error handling is tested in wake-lock.browser.test.tsx
-      const screen = await render(
-        <InputHandlerTestComponent options={options} callbacks={callbacks} />
-      )
+    const screen = await render(
+      <InputHandlerHarness
+        bindings={bindings}
+        initialActions={[
+          { type: 'score-point', teamId: 'team-1' },
+          { type: 'score-point', teamId: 'team-2' }
+        ]}
+        onUndoForTeam={onUndoForTeam}
+      />
+    )
 
-      await expect.element(screen.getByTestId('wakeLockSupported')).toBeVisible()
-    })
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'z' }))
+
+    expect(onUndoForTeam).toHaveBeenCalledWith('team-1')
+    await expect.element(screen.getByTestId('action-count')).toHaveTextContent('1')
+    await expect.element(screen.getByTestId('latest-team')).toHaveTextContent('team-2')
   })
 
-  describe('handler invocation', () => {
-    test('onKeyDown handler respects enabled: false via state', async () => {
-      const onScore = vi.fn()
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      let handlerRef: any = null
+  test('explicit revert mapping does nothing when that team has no scoring action', async () => {
+    const onUndoForTeam = vi.fn()
+    const bindings: RemoteControllerBindings = {
+      'add-team-1': 'q',
+      'revert-team-1': 'z',
+      'add-team-2': 'w',
+      'revert-team-2': 'x'
+    }
 
-      const options = { session, enabled: false }
-      const callbacks = { onScore }
+    const screen = await render(
+      <InputHandlerHarness
+        bindings={bindings}
+        initialActions={[{ type: 'score-point', teamId: 'team-2' }]}
+        onUndoForTeam={onUndoForTeam}
+      />
+    )
 
-      await render(
-        <InputHandlerTestComponent
-          options={options}
-          callbacks={callbacks}
-          onStateChange={(state) => {
-            handlerRef = state.handlers.onKeyDown
-          }}
-        />
-      )
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'z' }))
 
-      // Now call the handler directly
-      if (handlerRef) {
-        handlerRef(new KeyboardEvent('keydown', { key: 'ArrowLeft' }))
-      }
-
-      await vi.waitFor(() => {
-        // onScore should NOT be called because enabled is false
-        expect(onScore).not.toHaveBeenCalled()
-      })
-    })
+    expect(onUndoForTeam).not.toHaveBeenCalled()
+    await expect.element(screen.getByTestId('action-count')).toHaveTextContent('1')
   })
 
-  describe('return value', () => {
-    test('works without callbacks provided', async () => {
-      const options = createOptions(session)
+  test('team-2 revert mapping removes the last team-2 action', async () => {
+    const onUndoForTeam = vi.fn()
 
-      const screen = await render(<InputHandlerTestComponent options={options} />)
+    const screen = await render(
+      <InputHandlerHarness
+        bindings={{
+          'add-team-1': 'q',
+          'revert-team-1': 'z',
+          'add-team-2': 'w',
+          'revert-team-2': 'x'
+        }}
+        initialActions={[
+          { type: 'score-point', teamId: 'team-2' },
+          { type: 'score-point', teamId: 'team-1' },
+          { type: 'score-point', teamId: 'team-2' }
+        ]}
+        onUndoForTeam={onUndoForTeam}
+      />
+    )
 
-      // Should render without errors even without callbacks
-      await expect.element(screen.getByTestId('team1Score')).toBeVisible()
-    })
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'x' }))
 
-    test('returns correct interface shape', async () => {
-      const options = createOptions(session)
-      const screen = await render(<InputHandlerTestComponent options={options} />)
-
-      // Check that the component renders with expected elements
-      await expect.element(screen.getByTestId('team1Score')).toBeVisible()
-      await expect.element(screen.getByTestId('team2Score')).toBeVisible()
-      await expect.element(screen.getByTestId('undo')).toBeVisible()
-      await expect.element(screen.getByTestId('wakeLockSupported')).toBeVisible()
-    })
+    expect(onUndoForTeam).toHaveBeenCalledWith('team-2')
+    await expect.element(screen.getByTestId('action-count')).toHaveTextContent('2')
+    await expect.element(screen.getByTestId('latest-team')).toHaveTextContent('team-1')
   })
 
-  describe('error handling', () => {
-    test('calls onError callback when score fails', async () => {
-      const onError = vi.fn()
+  test('legacy undo keys still work', async () => {
+    const onUndo = vi.fn()
+    const screen = await render(
+      <InputHandlerHarness
+        initialActions={[{ type: 'score-point', teamId: 'team-1' }]}
+        onUndo={onUndo}
+      />
+    )
 
-      // Create a session that throws on score - use a proper mock that implements the interface
-      const failingSession = {
-        getSnapshot: () => session.getSnapshot(),
-        scorePoint: vi.fn().mockRejectedValue(new Error('Score failed')),
-        undoScoreAction: vi.fn().mockResolvedValue(session.getSnapshot()),
-        continuePlaying: vi.fn().mockResolvedValue(session.getSnapshot())
-      }
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-type-assertion
-      const options = { session: failingSession as any }
-      const callbacks = { onError }
-
-      const screen = await render(
-        <InputHandlerTestComponent options={options} callbacks={callbacks} />
-      )
-
-      await screen.getByTestId('team1Score').click()
-
-      await vi.waitFor(() => {
-        expect(onError).toHaveBeenCalledWith(expect.any(Error))
-        expect(onError.mock.calls[0]![0].message).toBe('Score failed')
-      })
-    })
-
-    test('calls onError callback when undo fails', async () => {
-      const onError = vi.fn()
-
-      const failingSession = {
-        getSnapshot: () => session.getSnapshot(),
-        scorePoint: vi.fn().mockResolvedValue(session.getSnapshot()),
-        undoScoreAction: vi.fn().mockRejectedValue(new Error('Undo failed')),
-        continuePlaying: vi.fn().mockResolvedValue(session.getSnapshot())
-      }
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-type-assertion
-      const options = { session: failingSession as any }
-      const callbacks = { onError }
-
-      const screen = await render(
-        <InputHandlerTestComponent options={options} callbacks={callbacks} />
-      )
-
-      await screen.getByTestId('undo').click()
-
-      await vi.waitFor(() => {
-        expect(onError).toHaveBeenCalledWith(expect.any(Error))
-        expect(onError.mock.calls[0]![0].message).toBe('Undo failed')
-      })
-    })
+    expect(onUndo).toHaveBeenCalledTimes(1)
+    await expect.element(screen.getByTestId('action-count')).toHaveTextContent('0')
   })
 
-  describe('debounce edge cases', () => {
-    test('does not trigger score when debounce is not ready', async () => {
-      const onScore = vi.fn()
-      const options = createOptions(session)
-      const callbacks = { onScore }
+  test('mapped keys call preventDefault', async () => {
+    let handler: ((event: KeyboardEvent) => void) | null = null
 
-      const screen = await render(
-        <InputHandlerTestComponent options={options} callbacks={callbacks} />
-      )
+    await render(
+      <InputHandlerHarness
+        onStateChange={(state) => {
+          handler = state.handlers.onKeyDown
+        }}
+      />
+    )
 
-      // First click - should work
-      await screen.getByTestId('team1Score').click()
-      await vi.waitFor(() => expect(onScore).toHaveBeenCalledTimes(1))
+    const preventDefault = vi.fn()
 
-      // Immediate second click - debounce should block it
-      await screen.getByTestId('team1Score').click()
-      await vi.waitFor(() => {
-        // Still only 1 call because of debounce
-        expect(onScore).toHaveBeenCalledTimes(1)
-      })
+    await vi.waitFor(() => {
+      expect(handler).not.toBeNull()
     })
+
+    const currentHandler = handler as unknown as (event: KeyboardEvent) => void
+
+    currentHandler({
+      key: 'ArrowLeft',
+      ctrlKey: false,
+      metaKey: false,
+      altKey: false,
+      preventDefault,
+      target: document.body
+    } as unknown as KeyboardEvent)
+
+    expect(preventDefault).toHaveBeenCalledTimes(1)
   })
 
-  describe('keyboard event edge cases', () => {
-    test('processes keyboard events when target is not an HTMLElement (null)', async () => {
-      const onScore = vi.fn()
-      const options = createOptions(session)
-      const callbacks = { onScore }
+  test('ignores unmapped keys, modifier keys, and editable targets', async () => {
+    const onAdd = vi.fn()
+    let handler: ((event: KeyboardEvent) => void) | null = null
 
-      await render(<InputHandlerTestComponent options={options} callbacks={callbacks} />)
+    await render(
+      <InputHandlerHarness
+        onAdd={onAdd}
+        onStateChange={(state) => {
+          handler = state.handlers.onKeyDown
+        }}
+      />
+    )
 
-      // Dispatch keyboard event with a non-HTMLElement target (like window)
-      const event = new KeyboardEvent('keydown', { key: 'ArrowLeft' })
-      Object.defineProperty(event, 'target', { value: null })
-      window.dispatchEvent(event)
-
-      await vi.waitFor(() => expect(onScore).toHaveBeenCalledWith('team-1'))
+    await vi.waitFor(() => {
+      expect(handler).not.toBeNull()
     })
 
-    test('ignores keyboard events when target is an input element', async () => {
-      const onScore = vi.fn()
-      const options = createOptions(session)
-      const callbacks = { onScore }
+    const currentHandler = handler as unknown as (event: KeyboardEvent) => void
 
-      // Create a mock input element
-      const input = document.createElement('input')
-      document.body.appendChild(input)
+    currentHandler({
+      key: 'b',
+      ctrlKey: false,
+      metaKey: false,
+      altKey: false,
+      preventDefault: vi.fn(),
+      target: document.body
+    } as unknown as KeyboardEvent)
+    currentHandler({
+      key: 'ArrowLeft',
+      ctrlKey: true,
+      metaKey: false,
+      altKey: false,
+      preventDefault: vi.fn(),
+      target: document.body
+    } as unknown as KeyboardEvent)
 
-      try {
-        await render(<InputHandlerTestComponent options={options} callbacks={callbacks} />)
+    const input = document.createElement('input')
+    currentHandler({
+      key: 'ArrowLeft',
+      ctrlKey: false,
+      metaKey: false,
+      altKey: false,
+      preventDefault: vi.fn(),
+      target: input
+    } as unknown as KeyboardEvent)
 
-        // Focus on input and dispatch keyboard event
-        input.focus()
-        const event = new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true })
-        input.dispatchEvent(event)
+    expect(onAdd).not.toHaveBeenCalled()
+  })
 
-        await vi.waitFor(() => {
-          // Should NOT trigger because target is an INPUT element
-          expect(onScore).not.toHaveBeenCalled()
-        })
-      } finally {
-        document.body.removeChild(input)
-      }
+  test('treats non-HTMLElement targets as non-editable', async () => {
+    vi.useFakeTimers()
+
+    let handler: ((event: KeyboardEvent) => void) | null = null
+    const onAdd = vi.fn()
+
+    await render(
+      <InputHandlerHarness
+        onAdd={onAdd}
+        onStateChange={(state) => {
+          handler = state.handlers.onKeyDown
+        }}
+      />
+    )
+
+    await vi.waitFor(() => {
+      expect(handler).not.toBeNull()
     })
 
-    test('ignores keyboard events when target is a textarea element', async () => {
-      const onScore = vi.fn()
-      const options = createOptions(session)
-      const callbacks = { onScore }
+    const currentHandler = handler as unknown as (event: KeyboardEvent) => void
+    const textNode = document.createTextNode('target')
 
-      // Create a mock textarea element
-      const textarea = document.createElement('textarea')
-      document.body.appendChild(textarea)
+    currentHandler({
+      key: 'ArrowLeft',
+      ctrlKey: false,
+      metaKey: false,
+      altKey: false,
+      preventDefault: vi.fn(),
+      target: textNode
+    } as unknown as KeyboardEvent)
 
-      try {
-        await render(<InputHandlerTestComponent options={options} callbacks={callbacks} />)
+    await vi.advanceTimersByTimeAsync(380)
 
-        // Focus on textarea and dispatch keyboard event
-        textarea.focus()
-        const event = new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true })
-        textarea.dispatchEvent(event)
+    expect(onAdd).toHaveBeenCalledWith('team-1')
+  })
 
-        await vi.waitFor(() => {
-          // Should NOT trigger because target is a TEXTAREA element
-          expect(onScore).not.toHaveBeenCalled()
-        })
-      } finally {
-        document.body.removeChild(textarea)
-      }
-    })
+  test('touch handlers remain immediate and do not use the buffer', async () => {
+    const onAdd = vi.fn()
+    const screen = await render(<InputHandlerHarness onAdd={onAdd} />)
 
-    test('ignores keyboard events when target is contentEditable', async () => {
-      const onScore = vi.fn()
-      const options = createOptions(session)
-      const callbacks = { onScore }
+    await screen.getByTestId('touch-add-team-1').click()
 
-      // Create a mock contentEditable div
-      const div = document.createElement('div')
-      div.contentEditable = 'true'
-      document.body.appendChild(div)
+    expect(onAdd).toHaveBeenCalledWith('team-1')
+    await expect.element(screen.getByTestId('action-count')).toHaveTextContent('1')
+  })
 
-      try {
-        await render(<InputHandlerTestComponent options={options} callbacks={callbacks} />)
+  test('touch team-2 scoring remains immediate', async () => {
+    const onAdd = vi.fn()
 
-        // Focus on div and dispatch keyboard event
-        div.focus()
-        const event = new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true })
-        div.dispatchEvent(event)
+    function Team2Harness() {
+      const [actions, setActions] = useState<MatchAction[]>([])
+      const state = useInputHandler(
+        {
+          actions
+        },
+        {
+          onAdd: async (teamId) => {
+            setActions((currentActions) => [...currentActions, { type: 'score-point', teamId }])
+            onAdd(teamId)
+          },
+          onUndo: async () => undefined,
+          onUndoForTeam: async () => undefined
+        }
+      )
 
-        await vi.waitFor(() => {
-          // Should NOT trigger because target is contentEditable
-          expect(onScore).not.toHaveBeenCalled()
-        })
-      } finally {
-        document.body.removeChild(div)
-      }
+      return (
+        <button type="button" data-testid="touch-add-team-2" onClick={state.handlers.onTeam2Score}>
+          Add team 2
+        </button>
+      )
+    }
+
+    const screen = await render(<Team2Harness />)
+
+    await screen.getByTestId('touch-add-team-2').click()
+
+    expect(onAdd).toHaveBeenCalledWith('team-2')
+  })
+
+  test('touch undo handler works immediately when enabled', async () => {
+    const onUndo = vi.fn()
+    const screen = await render(
+      <InputHandlerHarness
+        initialActions={[{ type: 'score-point', teamId: 'team-1' }]}
+        onUndo={onUndo}
+      />
+    )
+
+    await screen.getByTestId('touch-undo').click()
+
+    expect(onUndo).toHaveBeenCalledTimes(1)
+    await expect.element(screen.getByTestId('action-count')).toHaveTextContent('0')
+  })
+
+  test('cancels a pending buffered add when the handler becomes disabled', async () => {
+    vi.useFakeTimers()
+
+    const onAdd = vi.fn()
+
+    function ToggleEnabledHarness() {
+      const [enabled, setEnabled] = useState(true)
+      const state = useInputHandler(
+        {
+          actions: [],
+          enabled
+        },
+        {
+          onAdd,
+          onUndo: async () => undefined,
+          onUndoForTeam: async () => undefined
+        }
+      )
+
+      return (
+        <button type="button" data-testid="disable-handler" onClick={() => setEnabled(false)}>
+          {state.wakeLockState.isActive ? 'active' : 'inactive'}
+        </button>
+      )
+    }
+
+    const screen = await render(<ToggleEnabledHarness />)
+
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft' }))
+    await screen.getByTestId('disable-handler').click()
+    await vi.advanceTimersByTimeAsync(400)
+
+    expect(onAdd).not.toHaveBeenCalled()
+  })
+
+  test('enabled ref guard prevents a buffered add from committing after disable', async () => {
+    vi.useFakeTimers()
+
+    const onAdd = vi.fn()
+    const clearTimeoutSpy = vi.spyOn(globalThis, 'clearTimeout').mockImplementation(() => undefined)
+
+    function ToggleEnabledHarness() {
+      const [enabled, setEnabled] = useState(true)
+      const state = useInputHandler(
+        {
+          actions: [],
+          enabled
+        },
+        {
+          onAdd,
+          onUndo: async () => undefined,
+          onUndoForTeam: async () => undefined
+        }
+      )
+
+      return (
+        <button type="button" data-testid="disable-handler" onClick={() => setEnabled(false)}>
+          {state.wakeLockState.isActive ? 'active' : 'inactive'}
+        </button>
+      )
+    }
+
+    const screen = await render(<ToggleEnabledHarness />)
+
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft' }))
+    await screen.getByTestId('disable-handler').click()
+    await vi.advanceTimersByTimeAsync(400)
+
+    expect(clearTimeoutSpy).toHaveBeenCalled()
+    expect(onAdd).not.toHaveBeenCalled()
+  })
+
+  test('double-press with no prior team action cancels the add without calling undo', async () => {
+    // When actions = [] and user double-presses team-1's add key:
+    // First press queues buffered add, second press cancels timer and calls undoForTeam,
+    // but undoForTeam bails because hasScoringAction is false.
+    // Net result: no score, no undo — both presses silently discarded.
+    vi.useFakeTimers()
+
+    const onAdd = vi.fn()
+    const onUndoForTeam = vi.fn()
+
+    await render(<InputHandlerHarness onAdd={onAdd} onUndoForTeam={onUndoForTeam} />)
+
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft' }))
+    await vi.advanceTimersByTimeAsync(100)
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft' }))
+    await vi.advanceTimersByTimeAsync(400)
+
+    expect(onAdd).not.toHaveBeenCalled()
+    expect(onUndoForTeam).not.toHaveBeenCalled()
+  })
+
+  test('ignores mapped keyboard input when the handler is disabled', async () => {
+    vi.useFakeTimers()
+
+    const onAdd = vi.fn()
+    await render(<InputHandlerHarness enabled={false} onAdd={onAdd} />)
+
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft' }))
+    await vi.advanceTimersByTimeAsync(400)
+
+    expect(onAdd).not.toHaveBeenCalled()
+  })
+
+  test('ignores touch handlers when the hook is disabled', async () => {
+    const onAdd = vi.fn()
+    const onUndo = vi.fn()
+    const screen = await render(
+      <InputHandlerHarness
+        enabled={false}
+        onAdd={onAdd}
+        onUndo={onUndo}
+        initialActions={[{ type: 'score-point', teamId: 'team-1' }]}
+      />
+    )
+
+    await screen.getByTestId('touch-add-team-1').click()
+    await screen.getByTestId('touch-add-team-2').click()
+    await screen.getByTestId('touch-undo').click()
+
+    expect(onAdd).not.toHaveBeenCalled()
+    expect(onUndo).not.toHaveBeenCalled()
+  })
+
+  test('team-specific revert keeps state unchanged when that team has no actions', async () => {
+    const onUndoForTeam = vi.fn()
+    const screen = await render(
+      <InputHandlerHarness
+        onUndoForTeam={onUndoForTeam}
+        bindings={{
+          'add-team-1': 'q',
+          'revert-team-1': 'z',
+          'add-team-2': 'w',
+          'revert-team-2': 'x'
+        }}
+      />
+    )
+
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'z' }))
+
+    expect(onUndoForTeam).not.toHaveBeenCalled()
+    await expect.element(screen.getByTestId('action-count')).toHaveTextContent('0')
+  })
+
+  test('global undo cancels a pending buffered add before it is committed', async () => {
+    vi.useFakeTimers()
+
+    const onAdd = vi.fn()
+    const onUndo = vi.fn()
+
+    await render(<InputHandlerHarness onAdd={onAdd} onUndo={onUndo} />)
+
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft' }))
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
+    await vi.advanceTimersByTimeAsync(400)
+
+    expect(onAdd).not.toHaveBeenCalled()
+    expect(onUndo).not.toHaveBeenCalled()
+  })
+
+  test('reports callback errors through onError', async () => {
+    const onError = vi.fn()
+
+    function ErrorHarness() {
+      const state = useInputHandler(
+        {
+          actions: [],
+          bufferedAddWindowMs: 10
+        },
+        {
+          onAdd: async () => {
+            throw new Error('score failed')
+          },
+          onUndo: async () => undefined,
+          onUndoForTeam: async () => undefined,
+          onError
+        }
+      )
+
+      return (
+        <button type="button" data-testid="error-button" onClick={state.handlers.onTeam1Score}>
+          Error
+        </button>
+      )
+    }
+
+    const screen = await render(<ErrorHarness />)
+
+    await screen.getByTestId('error-button').click()
+
+    await vi.waitFor(() => {
+      expect(onError).toHaveBeenCalledWith(expect.objectContaining({ message: 'score failed' }))
     })
   })
 })

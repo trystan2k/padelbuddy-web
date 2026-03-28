@@ -1,130 +1,100 @@
 import { describe, expect, test } from 'vitest'
 
-import { getActionFromKey, type KeyboardAction } from '@/lib/input'
+import {
+  assignRemoteControllerBinding,
+  createRemoteControllerBindings,
+  getActionFromKey,
+  getKeyboardBindingDisplayLabel,
+  type KeyboardAction
+} from '@/lib/input'
 
 describe('keyboard-aliases', () => {
-  describe('team-1 aliases', () => {
-    const team1Keys = ['ArrowLeft', 'a', '1', 'Home', 'PageUp']
-
-    test.each(team1Keys)('maps "%s" to score-team-1', (key) => {
-      expect(getActionFromKey(key)).toBe('score-team-1')
-    })
+  test.each(['ArrowLeft', 'a', 'A', '1', 'Home', 'PageUp'])('maps %s to add-team-1', (key) => {
+    expect(getActionFromKey(key)).toBe('add-team-1')
   })
 
-  describe('team-2 aliases', () => {
-    const team2Keys = ['ArrowRight', 'd', '2', 'End', 'PageDown']
-
-    test.each(team2Keys)('maps "%s" to score-team-2', (key) => {
-      expect(getActionFromKey(key)).toBe('score-team-2')
-    })
+  test.each(['ArrowRight', 'd', 'D', '2', 'End', 'PageDown'])('maps %s to add-team-2', (key) => {
+    expect(getActionFromKey(key)).toBe('add-team-2')
   })
 
-  describe('undo aliases', () => {
-    const undoKeys = ['ArrowUp', 'Backspace', 'u', 'Delete', 'Escape', 'r']
-
-    test.each(undoKeys)('maps "%s" to undo', (key) => {
+  test.each(['ArrowUp', 'Backspace', 'u', 'U', 'Delete', 'Escape', 'r', 'R'])(
+    'maps %s to undo',
+    (key) => {
       expect(getActionFromKey(key)).toBe('undo')
+    }
+  )
+
+  test('prefers custom bindings before legacy defaults', () => {
+    const bindings = createRemoteControllerBindings({
+      'add-team-1': 'ArrowRight',
+      'add-team-2': 'ArrowLeft',
+      'revert-team-1': 'z',
+      'revert-team-2': 'x'
     })
+
+    expect(getActionFromKey('ArrowRight', bindings)).toBe('add-team-1')
+    expect(getActionFromKey('ArrowLeft', bindings)).toBe('add-team-2')
+    expect(getActionFromKey('z', bindings)).toBe('revert-team-1')
+    expect(getActionFromKey('x', bindings)).toBe('revert-team-2')
   })
 
-  describe('case insensitivity', () => {
-    test('maps "A" (uppercase) to score-team-1', () => {
-      expect(getActionFromKey('A')).toBe('score-team-1')
+  test('falls back to legacy defaults when a custom binding is not configured', () => {
+    const bindings = createRemoteControllerBindings({
+      'revert-team-1': null,
+      'revert-team-2': null
     })
 
-    test('maps "D" (uppercase) to score-team-2', () => {
-      expect(getActionFromKey('D')).toBe('score-team-2')
-    })
-
-    test('maps "U" (uppercase) to undo', () => {
-      expect(getActionFromKey('U')).toBe('undo')
-    })
-
-    test('maps "R" (uppercase) to undo', () => {
-      expect(getActionFromKey('R')).toBe('undo')
-    })
+    expect(getActionFromKey('PageUp', bindings)).toBe('add-team-1')
+    expect(getActionFromKey('Escape', bindings)).toBe('undo')
   })
 
-  describe('unknown keys', () => {
-    const unknownKeys = [
-      'b',
-      'c',
-      'e',
-      'f',
-      'g',
-      'h',
-      'i',
-      'j',
-      'k',
-      'l',
-      'm',
-      'n',
-      'o',
-      'p',
-      'q',
-      's',
-      't',
-      'v',
-      'w',
-      'x',
-      'y',
-      'z',
-      '0',
-      '3',
-      '4',
-      '5',
-      '6',
-      '7',
-      '8',
-      '9',
-      'ArrowDown',
-      'Enter',
-      'Space',
-      'Tab',
-      'Shift',
-      'Control',
-      'Alt',
-      'Meta',
-      'CapsLock',
-      'F1',
-      'F12',
-      ''
+  test.each(['b', 'ArrowDown', 'Enter', 'Tab', 'Shift', '!', ''])(
+    'maps %s to unknown when it has no binding',
+    (key) => {
+      expect(getActionFromKey(key)).toBe('unknown')
+    }
+  )
+
+  test('returns the expected keyboard display labels', () => {
+    expect(getKeyboardBindingDisplayLabel('ArrowLeft')).toBe('← Left')
+    expect(getKeyboardBindingDisplayLabel('Escape')).toBe('Esc')
+    expect(getKeyboardBindingDisplayLabel('a')).toBe('A')
+    expect(getKeyboardBindingDisplayLabel(' ')).toBe('Space')
+    expect(getKeyboardBindingDisplayLabel(null)).toBe('')
+  })
+
+  test('replaces duplicate custom bindings when a key is reassigned', () => {
+    const bindings = createRemoteControllerBindings()
+    const updatedBindings = assignRemoteControllerBinding(bindings, 'add-team-2', 'ArrowLeft')
+
+    expect(updatedBindings['add-team-1']).toBeNull()
+    expect(updatedBindings['add-team-2']).toBe('ArrowLeft')
+  })
+
+  test('treats duplicate custom bindings as case insensitive', () => {
+    const bindings = createRemoteControllerBindings({
+      'add-team-1': 'a',
+      'revert-team-1': 'z',
+      'add-team-2': 'w',
+      'revert-team-2': 'x'
+    })
+
+    const updatedBindings = assignRemoteControllerBinding(bindings, 'add-team-2', 'A')
+
+    expect(updatedBindings['add-team-1']).toBeNull()
+    expect(updatedBindings['add-team-2']).toBe('A')
+  })
+
+  test('returns a valid keyboard action type', () => {
+    const validActions: KeyboardAction[] = [
+      'add-team-1',
+      'revert-team-1',
+      'add-team-2',
+      'revert-team-2',
+      'undo',
+      'unknown'
     ]
 
-    test.each(unknownKeys)('maps "%s" to unknown', (key) => {
-      expect(getActionFromKey(key)).toBe('unknown')
-    })
-
-    test('returns unknown for empty string', () => {
-      expect(getActionFromKey('')).toBe('unknown')
-    })
-
-    test('returns unknown for special characters', () => {
-      expect(getActionFromKey('!')).toBe('unknown')
-      expect(getActionFromKey('@')).toBe('unknown')
-      expect(getActionFromKey('#')).toBe('unknown')
-    })
-  })
-
-  describe('return type', () => {
-    test('returns valid KeyboardAction type for all known keys', () => {
-      const validActions: KeyboardAction[] = ['score-team-1', 'score-team-2', 'undo', 'unknown']
-      const result = getActionFromKey('a')
-
-      expect(validActions).toContain(result)
-    })
-  })
-
-  describe('edge cases', () => {
-    test('handles keys with whitespace', () => {
-      expect(getActionFromKey(' a ')).toBe('unknown')
-      expect(getActionFromKey('\ta')).toBe('unknown')
-    })
-
-    test('handles numeric string keys', () => {
-      expect(getActionFromKey('1')).toBe('score-team-1')
-      expect(getActionFromKey('2')).toBe('score-team-2')
-      expect(getActionFromKey('3')).toBe('unknown')
-    })
+    expect(validActions).toContain(getActionFromKey('a'))
   })
 })

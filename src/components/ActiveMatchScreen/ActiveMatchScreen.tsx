@@ -4,6 +4,12 @@ import { useTranslation } from 'react-i18next'
 
 import { Layout } from '@/components/Layout/Layout'
 import { TopBar } from '@/components/ui/TopBar'
+import {
+  createEmptyRemoteControllerBindings,
+  loadRemoteControllerBindingsWithFallback,
+  useInputHandler,
+  type RemoteControllerBindings
+} from '@/lib/input'
 import { prepareCurrentMatchRouteNavigation } from '@/lib/router/current-match-route-flow'
 import { cn } from '@/lib/utils/cn'
 import { getViewTransitionNavigationOptions } from '@/lib/utils/view-transitions'
@@ -38,14 +44,18 @@ export function ActiveMatchScreen({
   const { t } = useTranslation()
   const [sideSwitchDismissed, setSideSwitchDismissed] = useState(false)
   const [isNavigatingToFinish, setIsNavigatingToFinish] = useState(false)
+  const [remoteBindings, setRemoteBindings] = useState<RemoteControllerBindings>(
+    createEmptyRemoteControllerBindings()
+  )
 
-  const { snapshot, scorePoint, undoScoreAction, finishMatch, isLoading } = useMatchSession({
-    matchId,
-    setup: initialSetup,
-    initialActions,
-    startedAt,
-    ...(typeof finishedAt === 'number' ? { initialFinishedAt: finishedAt } : {})
-  })
+  const { snapshot, scorePoint, undoScoreAction, undoScoreActionForTeam, finishMatch, isLoading } =
+    useMatchSession({
+      matchId,
+      setup: initialSetup,
+      initialActions,
+      startedAt,
+      ...(typeof finishedAt === 'number' ? { initialFinishedAt: finishedAt } : {})
+    })
 
   const isMatchCompleted =
     snapshot.projection.derived.status === 'completed' || typeof snapshot.finishedAt === 'number'
@@ -72,6 +82,34 @@ export function ActiveMatchScreen({
       setSideSwitchDismissed(false)
     }
   }, [sideSwitch.shouldPrompt])
+
+  useEffect(() => {
+    let isMounted = true
+
+    void (async () => {
+      try {
+        const storedBindings = await loadRemoteControllerBindingsWithFallback()
+
+        if (!isMounted) {
+          return
+        }
+
+        setRemoteBindings(storedBindings)
+      } catch (error) {
+        console.error('Failed to load remote controller bindings.', error)
+
+        if (!isMounted) {
+          return
+        }
+
+        setRemoteBindings(createEmptyRemoteControllerBindings())
+      }
+    })()
+
+    return () => {
+      isMounted = false
+    }
+  }, [])
 
   useEffect(() => {
     if (!isMatchCompleted || isNavigatingToFinish) {
@@ -137,6 +175,57 @@ export function ActiveMatchScreen({
     await undoScoreAction()
   }, [isLoading, undoScoreAction])
 
+  const handleRevertTeam1 = useCallback(async () => {
+    if (isLoading) {
+      return
+    }
+
+    await undoScoreActionForTeam('team-1')
+  }, [isLoading, undoScoreActionForTeam])
+
+  const handleRevertTeam2 = useCallback(async () => {
+    if (isLoading) {
+      return
+    }
+
+    await undoScoreActionForTeam('team-2')
+  }, [isLoading, undoScoreActionForTeam])
+
+  const handleRemoteAdd = useCallback(
+    async (teamId: MatchTeamId) => {
+      if (isLoading || isMatchCompleted) {
+        return
+      }
+
+      await scorePoint(teamId)
+    },
+    [isLoading, isMatchCompleted, scorePoint]
+  )
+
+  const handleRemoteUndoForTeam = useCallback(
+    async (teamId: MatchTeamId) => {
+      if (isLoading || isMatchCompleted) {
+        return
+      }
+
+      await undoScoreActionForTeam(teamId)
+    },
+    [isLoading, isMatchCompleted, undoScoreActionForTeam]
+  )
+
+  useInputHandler(
+    {
+      actions: snapshot.actions,
+      bindings: remoteBindings,
+      enabled: !isMatchCompleted
+    },
+    {
+      onAdd: handleRemoteAdd,
+      onUndo: handleRevert,
+      onUndoForTeam: handleRemoteUndoForTeam
+    }
+  )
+
   const handleFinish = useCallback(async () => {
     if (isLoading || isMatchCompleted) {
       return
@@ -152,7 +241,22 @@ export function ActiveMatchScreen({
   const shouldShowSideSwitch =
     sideSwitch.shouldPrompt && setup.sideSwitchPrompts && !sideSwitchDismissed
   const timerLabelKey = countdownEnabled ? 'match.timer.countdownLabel' : 'match.timer.label'
-  const isUndoDisabled = isLoading || snapshot.actions.length === 0
+  const canUndoTeam1 = useMemo(
+    () =>
+      snapshot.actions.some(
+        (action) => action.type === 'score-point' && action.teamId === 'team-1'
+      ),
+    [snapshot.actions]
+  )
+  const canUndoTeam2 = useMemo(
+    () =>
+      snapshot.actions.some(
+        (action) => action.type === 'score-point' && action.teamId === 'team-2'
+      ),
+    [snapshot.actions]
+  )
+  const isUndoTeam1Disabled = isLoading || !canUndoTeam1
+  const isUndoTeam2Disabled = isLoading || !canUndoTeam2
 
   const headerContent = useMemo(
     () => (
@@ -206,8 +310,8 @@ export function ActiveMatchScreen({
           <button
             type="button"
             className={cn(styles.revertButton, styles.revertButtonTeam1)}
-            onClick={handleRevert}
-            disabled={isUndoDisabled}
+            onClick={handleRevertTeam1}
+            disabled={isUndoTeam1Disabled}
             data-testid="revert-button-team-1"
           >
             {t('match.actions.revertPoint')}
@@ -227,8 +331,8 @@ export function ActiveMatchScreen({
           <button
             type="button"
             className={cn(styles.revertButton, styles.revertButtonTeam2)}
-            onClick={handleRevert}
-            disabled={isUndoDisabled}
+            onClick={handleRevertTeam2}
+            disabled={isUndoTeam2Disabled}
             data-testid="revert-button-team-2"
           >
             {t('match.actions.revertPoint')}

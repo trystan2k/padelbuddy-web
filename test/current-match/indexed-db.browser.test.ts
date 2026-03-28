@@ -8,6 +8,7 @@ import {
   type CurrentMatchPersistence
 } from '@/lib/current-match'
 import { createLocaleStorage, type SupportedLocale } from '@/lib/i18n'
+import { createRemoteControllerBindings, createRemoteControllerStorage } from '@/lib/input'
 import { createSpeechStorage, type SpeechPreferences } from '@/lib/speech'
 
 import { createTestSetup, scorePoints, winQuickGame } from '../core/match/test-helpers'
@@ -68,7 +69,14 @@ describe('current match IndexedDB persistence', () => {
 
   test('shares the same IndexedDB bootstrap across persistence modules', async () => {
     const localeStorage = createLocaleStorage({ databaseName })
+    const remoteControllerStorage = createRemoteControllerStorage({ databaseName })
     const speechStorage = createSpeechStorage({ databaseName })
+    const remoteBindings = createRemoteControllerBindings({
+      'add-team-1': 'q',
+      'revert-team-1': 'z',
+      'add-team-2': 'w',
+      'revert-team-2': 'x'
+    })
     const speechPreferences: SpeechPreferences = {
       muted: false,
       verbosity: 'standard',
@@ -87,9 +95,13 @@ describe('current match IndexedDB persistence', () => {
       startedAt: Date.now()
     })
 
+    await remoteControllerStorage.saveRemoteControllerBindings(remoteBindings)
     await speechStorage.saveSpeechPreferences(speechPreferences)
 
     await expect(localeStorage.loadLocalePreference()).resolves.toBe('es')
+    await expect(remoteControllerStorage.loadRemoteControllerBindings()).resolves.toEqual(
+      remoteBindings
+    )
     await expect(speechStorage.loadSpeechPreferences()).resolves.toEqual(speechPreferences)
     await expect(persistence.loadCurrentMatch()).resolves.toEqual({
       status: 'ok',

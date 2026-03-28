@@ -26,6 +26,7 @@ import { Toggle } from '@/components/ui/Toggle'
 import { TopBar } from '@/components/ui/TopBar'
 import { LocaleSelector } from '@/components/ui/LocaleSelector'
 
+import { RemoteConfigurationModal } from './RemoteConfigurationModal'
 import { useSetupForm } from './useSetupForm'
 import styles from './SetupScreen.module.css'
 
@@ -54,6 +55,7 @@ export function SetupScreen() {
   const navigate = useNavigate()
   const router = useRouter()
   const [isStarting, setIsStarting] = useState(false)
+  const [isRemoteConfigurationOpen, setIsRemoteConfigurationOpen] = useState(false)
 
   const {
     formData,
@@ -170,6 +172,14 @@ export function SetupScreen() {
     },
     [updateCountdownTimerDuration]
   )
+
+  const handleOpenRemoteConfiguration = useCallback(() => {
+    setIsRemoteConfigurationOpen(true)
+  }, [])
+
+  const handleCloseRemoteConfiguration = useCallback(() => {
+    setIsRemoteConfigurationOpen(false)
+  }, [])
 
   const handleCountdownDurationKeyDown = useCallback(
     (event: KeyboardEvent<HTMLDivElement>) => {
@@ -326,6 +336,16 @@ export function SetupScreen() {
               </Chip>
             </div>
           </div>
+
+          <Button
+            className={styles.remoteConfigurationButton}
+            variant="outline"
+            size="lg"
+            accent="secondary"
+            onClick={handleOpenRemoteConfiguration}
+          >
+            {t('setup.remoteConfig.trigger')}
+          </Button>
         </div>
 
         {/* Right column - Options */}
@@ -461,6 +481,11 @@ export function SetupScreen() {
           </Card>
         </div>
       </div>
+
+      <RemoteConfigurationModal
+        isOpen={isRemoteConfigurationOpen}
+        onClose={handleCloseRemoteConfiguration}
+      />
     </Layout>
   )
 }

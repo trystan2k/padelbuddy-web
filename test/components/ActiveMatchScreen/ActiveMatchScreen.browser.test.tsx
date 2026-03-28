@@ -6,7 +6,9 @@ import { render } from 'vitest-browser-react'
 
 import { ActiveMatchScreen } from '@/components/ActiveMatchScreen/ActiveMatchScreen'
 import teamPanelStyles from '@/components/ActiveMatchScreen/TeamPanel/TeamPanel.module.css'
-import { createTestSetup, winQuickSet } from '../../core/match/test-helpers'
+import { createRemoteControllerBindings } from '@/lib/input'
+
+import { createTestSetup, scorePoints, winQuickSet } from '../../core/match/test-helpers'
 import { resolveCssColor } from '../../utils/css'
 
 function formatTimeOfDay(date: Date): string {
@@ -15,11 +17,13 @@ function formatTimeOfDay(date: Date): string {
     .join(':')
 }
 
-const { mockInvalidate, mockNavigate, mockPreloadRoute } = vi.hoisted(() => ({
-  mockInvalidate: vi.fn(async () => undefined),
-  mockNavigate: vi.fn(),
-  mockPreloadRoute: vi.fn(async () => undefined)
-}))
+const { mockInvalidate, mockNavigate, mockPreloadRoute, mockLoadRemoteControllerBindings } =
+  vi.hoisted(() => ({
+    mockInvalidate: vi.fn(async () => undefined),
+    mockNavigate: vi.fn(),
+    mockPreloadRoute: vi.fn(async () => undefined),
+    mockLoadRemoteControllerBindings: vi.fn()
+  }))
 
 vi.mock('@tanstack/react-router', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@tanstack/react-router')>()
@@ -44,6 +48,15 @@ vi.mock('@/lib/i18n', async (importOriginal) => {
   }
 })
 
+vi.mock('@/lib/input', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/lib/input')>()
+
+  return {
+    ...actual,
+    loadRemoteControllerBindingsWithFallback: mockLoadRemoteControllerBindings
+  }
+})
+
 describe('ActiveMatchScreen', () => {
   const defaultStartedAt = Date.now() - 5 * 60 * 1000
 
@@ -51,6 +64,7 @@ describe('ActiveMatchScreen', () => {
     vi.clearAllMocks()
     mockInvalidate.mockResolvedValue(undefined)
     mockPreloadRoute.mockResolvedValue(undefined)
+    mockLoadRemoteControllerBindings.mockResolvedValue(null)
   })
 
   afterEach(() => {
@@ -59,18 +73,18 @@ describe('ActiveMatchScreen', () => {
   })
 
   test('renders with initial state', async () => {
-    const setup = createTestSetup()
-
     const screen = await render(
       <ActiveMatchScreen
         matchId="test-match"
-        initialSetup={setup}
+        initialSetup={createTestSetup()}
         initialActions={[]}
         startedAt={defaultStartedAt}
       />
     )
 
     await expect.element(screen.getByTestId('layout-body')).toBeInTheDocument()
+    await expect.element(screen.getByTestId('team-panel-team-1')).toBeInTheDocument()
+    await expect.element(screen.getByTestId('team-panel-team-2')).toBeInTheDocument()
   })
 
   test('renders team names', async () => {
@@ -95,12 +109,10 @@ describe('ActiveMatchScreen', () => {
   })
 
   test('renders team panels', async () => {
-    const setup = createTestSetup()
-
     const screen = await render(
       <ActiveMatchScreen
         matchId="test-match"
-        initialSetup={setup}
+        initialSetup={createTestSetup()}
         initialActions={[]}
         startedAt={defaultStartedAt}
       />
@@ -111,12 +123,10 @@ describe('ActiveMatchScreen', () => {
   })
 
   test('renders sets card without the info card overlay', async () => {
-    const setup = createTestSetup()
-
     const screen = await render(
       <ActiveMatchScreen
         matchId="test-match"
-        initialSetup={setup}
+        initialSetup={createTestSetup()}
         initialActions={[]}
         startedAt={defaultStartedAt}
       />
@@ -130,12 +140,10 @@ describe('ActiveMatchScreen', () => {
     vi.useFakeTimers()
     vi.setSystemTime(new Date('2026-03-21T12:00:00.000Z'))
 
-    const setup = createTestSetup()
-
     const screen = await render(
       <ActiveMatchScreen
         matchId="test-match"
-        initialSetup={setup}
+        initialSetup={createTestSetup()}
         initialActions={[]}
         startedAt={defaultStartedAt}
       />
@@ -173,14 +181,10 @@ describe('ActiveMatchScreen', () => {
   })
 
   test('highlights the serving team panel when the serving indicator is enabled', async () => {
-    const setup = createTestSetup({
-      servingIndicatorEnabled: true
-    })
-
     const screen = await render(
       <ActiveMatchScreen
         matchId="test-match"
-        initialSetup={setup}
+        initialSetup={createTestSetup({ servingIndicatorEnabled: true })}
         initialActions={[]}
         startedAt={defaultStartedAt}
       />
@@ -205,14 +209,10 @@ describe('ActiveMatchScreen', () => {
   })
 
   test('does not highlight team panels when the serving indicator is disabled', async () => {
-    const setup = createTestSetup({
-      servingIndicatorEnabled: false
-    })
-
     const screen = await render(
       <ActiveMatchScreen
         matchId="test-match"
-        initialSetup={setup}
+        initialSetup={createTestSetup({ servingIndicatorEnabled: false })}
         initialActions={[]}
         startedAt={defaultStartedAt}
       />
@@ -227,16 +227,15 @@ describe('ActiveMatchScreen', () => {
   })
 
   test('uses the countdown timer aria-label when countdown mode is enabled', async () => {
-    const setup = createTestSetup({
-      countdownTimerEnabled: true,
-      countdownTimerDuration: 60
-    })
     const startedAt = Date.now() - 5 * 60 * 1000
 
     const screen = await render(
       <ActiveMatchScreen
         matchId="test-match"
-        initialSetup={setup}
+        initialSetup={createTestSetup({
+          countdownTimerEnabled: true,
+          countdownTimerDuration: 60
+        })}
         initialActions={[]}
         startedAt={startedAt}
       />
@@ -248,12 +247,10 @@ describe('ActiveMatchScreen', () => {
   })
 
   test('renders revert buttons', async () => {
-    const setup = createTestSetup()
-
     const screen = await render(
       <ActiveMatchScreen
         matchId="test-match"
-        initialSetup={setup}
+        initialSetup={createTestSetup()}
         initialActions={[]}
         startedAt={defaultStartedAt}
       />
@@ -264,12 +261,10 @@ describe('ActiveMatchScreen', () => {
   })
 
   test('renders finish button', async () => {
-    const setup = createTestSetup()
-
     const screen = await render(
       <ActiveMatchScreen
         matchId="test-match"
-        initialSetup={setup}
+        initialSetup={createTestSetup()}
         initialActions={[]}
         startedAt={defaultStartedAt}
       />
@@ -279,12 +274,10 @@ describe('ActiveMatchScreen', () => {
   })
 
   test('finish button stays enabled when match is not completed', async () => {
-    const setup = createTestSetup()
-
     const screen = await render(
       <ActiveMatchScreen
         matchId="test-match"
-        initialSetup={setup}
+        initialSetup={createTestSetup()}
         initialActions={[]}
         startedAt={defaultStartedAt}
       />
@@ -293,55 +286,11 @@ describe('ActiveMatchScreen', () => {
     await expect.element(screen.getByTestId('finish-button')).toBeEnabled()
   })
 
-  test('scoring updates team score', async () => {
-    const setup = createTestSetup()
-
+  test('touch scoring updates the team score immediately', async () => {
     const screen = await render(
       <ActiveMatchScreen
         matchId="test-match"
-        initialSetup={setup}
-        initialActions={[]}
-        startedAt={defaultStartedAt}
-      />
-    )
-
-    const team1Panel = screen.getByTestId('team-panel-team-1')
-    const scoreElement = team1Panel.element().querySelector('[aria-live="polite"]')
-    expect(scoreElement?.textContent).toBe('0')
-
-    ;(team1Panel.element() as HTMLButtonElement).click()
-
-    await vi.waitFor(() => {
-      const newScoreElement = screen
-        .getByTestId('team-panel-team-1')
-        .element()
-        .querySelector('[aria-live="polite"]')
-      return expect(newScoreElement?.textContent).toBe('15')
-    })
-  })
-
-  test('revert button is disabled when no actions', async () => {
-    const setup = createTestSetup()
-
-    const screen = await render(
-      <ActiveMatchScreen
-        matchId="test-match"
-        initialSetup={setup}
-        initialActions={[]}
-        startedAt={defaultStartedAt}
-      />
-    )
-
-    await expect.element(screen.getByTestId('revert-button-team-1')).toBeDisabled()
-  })
-
-  test('revert button removes the last point for both team controls', async () => {
-    const setup = createTestSetup()
-
-    const screen = await render(
-      <ActiveMatchScreen
-        matchId="test-match"
-        initialSetup={setup}
+        initialSetup={createTestSetup()}
         initialActions={[]}
         startedAt={defaultStartedAt}
       />
@@ -350,33 +299,201 @@ describe('ActiveMatchScreen', () => {
     await screen.getByTestId('team-panel-team-1').click()
 
     await vi.waitFor(() => {
-      const scoreElement = screen
-        .getByTestId('team-panel-team-1')
-        .element()
-        .querySelector('[aria-live="polite"]')
-      return expect(scoreElement?.textContent).toBe('15')
+      expect(readDisplayedScore(screen, 'team-1')).toBe('15')
     })
+  })
 
-    await screen.getByTestId('revert-button-team-2').click()
+  test('team-specific revert buttons are disabled independently', async () => {
+    const screen = await render(
+      <ActiveMatchScreen
+        matchId="test-match"
+        initialSetup={createTestSetup()}
+        initialActions={scorePoints('team-1')}
+        startedAt={defaultStartedAt}
+      />
+    )
+
+    await expect.element(screen.getByTestId('revert-button-team-1')).toBeEnabled()
+    await expect.element(screen.getByTestId('revert-button-team-2')).toBeDisabled()
+  })
+
+  test('revert button removes the last point for its own team only', async () => {
+    const screen = await render(
+      <ActiveMatchScreen
+        matchId="test-match"
+        initialSetup={createTestSetup()}
+        initialActions={scorePoints('team-1', 'team-2')}
+        startedAt={defaultStartedAt}
+      />
+    )
+
+    await screen.getByTestId('revert-button-team-1').click()
 
     await vi.waitFor(() => {
-      const scoreElement = screen
-        .getByTestId('team-panel-team-1')
-        .element()
-        .querySelector('[aria-live="polite"]')
-      return expect(scoreElement?.textContent).toBe('0')
+      expect(readDisplayedScore(screen, 'team-1')).toBe('0')
+      expect(readDisplayedScore(screen, 'team-2')).toBe('15')
+    })
+  })
+
+  test('loads saved remote bindings on mount', async () => {
+    await render(
+      <ActiveMatchScreen
+        matchId="test-match"
+        initialSetup={createTestSetup()}
+        initialActions={[]}
+        startedAt={defaultStartedAt}
+      />
+    )
+
+    await vi.waitFor(() => {
+      expect(mockLoadRemoteControllerBindings).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  test('legacy Backspace continues to undo when no remote is configured', async () => {
+    const screen = await render(
+      <ActiveMatchScreen
+        matchId="test-match"
+        initialSetup={createTestSetup()}
+        initialActions={scorePoints('team-1')}
+        startedAt={defaultStartedAt}
+      />
+    )
+
+    await vi.waitFor(() => {
+      expect(mockLoadRemoteControllerBindings).toHaveBeenCalledTimes(1)
+    })
+
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Backspace' }))
+
+    await vi.waitFor(() => {
+      expect(readDisplayedScore(screen, 'team-1')).toBe('0')
+    })
+  })
+
+  test('legacy Delete continues to undo when no remote is configured', async () => {
+    const screen = await render(
+      <ActiveMatchScreen
+        matchId="test-match"
+        initialSetup={createTestSetup()}
+        initialActions={scorePoints('team-2')}
+        startedAt={defaultStartedAt}
+      />
+    )
+
+    await vi.waitFor(() => {
+      expect(mockLoadRemoteControllerBindings).toHaveBeenCalledTimes(1)
+    })
+
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Delete' }))
+
+    await vi.waitFor(() => {
+      expect(readDisplayedScore(screen, 'team-2')).toBe('0')
+    })
+  })
+
+  test('mapped remote add waits for the buffered window before scoring', async () => {
+    vi.useFakeTimers()
+    mockLoadRemoteControllerBindings.mockResolvedValue(
+      createRemoteControllerBindings({
+        'add-team-1': 'q',
+        'revert-team-1': 'z',
+        'add-team-2': 'w',
+        'revert-team-2': 'x'
+      })
+    )
+
+    const screen = await render(
+      <ActiveMatchScreen
+        matchId="test-match"
+        initialSetup={createTestSetup()}
+        initialActions={[]}
+        startedAt={defaultStartedAt}
+      />
+    )
+
+    await vi.waitFor(() => {
+      expect(mockLoadRemoteControllerBindings).toHaveBeenCalledTimes(1)
+    })
+
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'q' }))
+    expect(readDisplayedScore(screen, 'team-1')).toBe('0')
+
+    await vi.advanceTimersByTimeAsync(380)
+
+    await vi.waitFor(() => {
+      expect(readDisplayedScore(screen, 'team-1')).toBe('15')
+    })
+  })
+
+  test('remote team-specific revert removes the last score for that team', async () => {
+    mockLoadRemoteControllerBindings.mockResolvedValue(
+      createRemoteControllerBindings({
+        'add-team-1': 'q',
+        'revert-team-1': 'z',
+        'add-team-2': 'w',
+        'revert-team-2': 'x'
+      })
+    )
+
+    const screen = await render(
+      <ActiveMatchScreen
+        matchId="test-match"
+        initialSetup={createTestSetup()}
+        initialActions={scorePoints('team-1', 'team-2')}
+        startedAt={defaultStartedAt}
+      />
+    )
+
+    await vi.waitFor(() => {
+      expect(mockLoadRemoteControllerBindings).toHaveBeenCalledTimes(1)
+    })
+
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'z' }))
+
+    await vi.waitFor(() => {
+      expect(readDisplayedScore(screen, 'team-1')).toBe('0')
+      expect(readDisplayedScore(screen, 'team-2')).toBe('15')
+    })
+  })
+
+  test('remote team-specific revert leaves the score unchanged when that team has no actions', async () => {
+    mockLoadRemoteControllerBindings.mockResolvedValue(
+      createRemoteControllerBindings({
+        'add-team-1': 'q',
+        'revert-team-1': 'z',
+        'add-team-2': 'w',
+        'revert-team-2': 'x'
+      })
+    )
+
+    const screen = await render(
+      <ActiveMatchScreen
+        matchId="test-match"
+        initialSetup={createTestSetup()}
+        initialActions={scorePoints('team-2')}
+        startedAt={defaultStartedAt}
+      />
+    )
+
+    await vi.waitFor(() => {
+      expect(mockLoadRemoteControllerBindings).toHaveBeenCalledTimes(1)
+    })
+
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'z' }))
+
+    await vi.waitFor(() => {
+      expect(readDisplayedScore(screen, 'team-1')).toBe('0')
+      expect(readDisplayedScore(screen, 'team-2')).toBe('15')
     })
   })
 
   test('navigates to the finish route when the match is completed', async () => {
-    const setup = createTestSetup()
-    const actions = [...winQuickSet('team-1'), ...winQuickSet('team-1')]
-
     await render(
       <ActiveMatchScreen
         matchId="test-match"
-        initialSetup={setup}
-        initialActions={actions}
+        initialSetup={createTestSetup()}
+        initialActions={[...winQuickSet('team-1'), ...winQuickSet('team-1')]}
         startedAt={defaultStartedAt}
       />
     )
@@ -393,12 +510,10 @@ describe('ActiveMatchScreen', () => {
   })
 
   test('clicking finish marks the match finished and navigates to the finish route', async () => {
-    const setup = createTestSetup()
-
     const screen = await render(
       <ActiveMatchScreen
         matchId="test-match"
-        initialSetup={setup}
+        initialSetup={createTestSetup()}
         initialActions={[]}
         startedAt={defaultStartedAt}
       />
@@ -418,14 +533,11 @@ describe('ActiveMatchScreen', () => {
   })
 
   test('team panels are disabled when match is completed', async () => {
-    const setup = createTestSetup()
-    const actions = [...winQuickSet('team-1'), ...winQuickSet('team-1')]
-
     const screen = await render(
       <ActiveMatchScreen
         matchId="test-match"
-        initialSetup={setup}
-        initialActions={actions}
+        initialSetup={createTestSetup()}
+        initialActions={[...winQuickSet('team-1'), ...winQuickSet('team-1')]}
         startedAt={defaultStartedAt}
       />
     )
@@ -435,14 +547,11 @@ describe('ActiveMatchScreen', () => {
   })
 
   test('finish button is disabled when match is already completed', async () => {
-    const setup = createTestSetup()
-    const actions = [...winQuickSet('team-1'), ...winQuickSet('team-1')]
-
     const screen = await render(
       <ActiveMatchScreen
         matchId="test-match"
-        initialSetup={setup}
-        initialActions={actions}
+        initialSetup={createTestSetup()}
+        initialActions={[...winQuickSet('team-1'), ...winQuickSet('team-1')]}
         startedAt={defaultStartedAt}
       />
     )
@@ -450,3 +559,13 @@ describe('ActiveMatchScreen', () => {
     await expect.element(screen.getByTestId('finish-button')).toBeDisabled()
   })
 })
+
+function readDisplayedScore(
+  screen: Awaited<ReturnType<typeof render>>,
+  teamId: 'team-1' | 'team-2'
+): string {
+  return (
+    screen.getByTestId(`team-panel-${teamId}`).element().querySelector('[aria-live="polite"]')
+      ?.textContent ?? ''
+  )
+}

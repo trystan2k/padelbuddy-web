@@ -183,6 +183,36 @@ export default {
         twoHours: '2:00 h'
       }
     },
+    remoteConfig: {
+      trigger: 'Configuración del control remoto',
+      title: 'Control remoto Bluetooth',
+      description:
+        'Asigna un botón por acción. Los botones de revertir siempre eliminan solo la última acción de puntuación de ese equipo.',
+      helper:
+        'Mientras está escuchando, presiona una vez cualquier botón del control o teclado. Guardar con todas las acciones vacías elimina la configuración personalizada.',
+      listening: 'Escuchando...',
+      listeningAnnouncement: 'Presiona un botón en tu control para asignarlo a {{action}}.',
+      notSet: 'Sin asignar',
+      rows: {
+        singlePressHint: 'Una pulsación para sumar un punto',
+        guardedUndoHint: 'Elimina la última acción de puntuación de ese equipo'
+      },
+      actions: {
+        addTeam1: 'Sumar Equipo 1',
+        revertTeam1: 'Revertir Equipo 1',
+        addTeam2: 'Sumar Equipo 2',
+        revertTeam2: 'Revertir Equipo 2',
+        clear: 'Asignaciones vacías',
+        resetDefaults: 'Restablecer predeterminados',
+        cancel: 'Cancelar',
+        save: 'Guardar'
+      },
+      feedback: {
+        loadError: 'No se pudo cargar la configuración del control remoto.',
+        saveError: 'No se pudo guardar la configuración del control remoto.',
+        saveSuccess: 'Configuración del control remoto guardada.'
+      }
+    },
     startButton: 'Iniciar Partido',
     validation: {
       teamNamesRequired: 'Ambos nombres de equipo son obligatorios',
