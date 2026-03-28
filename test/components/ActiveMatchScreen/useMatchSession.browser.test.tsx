@@ -51,6 +51,20 @@ function SessionTestComponent({
       <button type="button" data-testid="undo" onClick={() => state.undoScoreAction()}>
         Undo
       </button>
+      <button
+        type="button"
+        data-testid="undo-team-1"
+        onClick={() => state.undoScoreActionForTeam('team-1')}
+      >
+        Undo Team 1
+      </button>
+      <button
+        type="button"
+        data-testid="undo-team-2"
+        onClick={() => state.undoScoreActionForTeam('team-2')}
+      >
+        Undo Team 2
+      </button>
     </div>
   )
 }
@@ -179,6 +193,49 @@ describe('useMatchSession', () => {
 
     // Should still be 0
     await expect.element(screen.getByTestId('actionCount')).toHaveTextContent('0')
+  })
+
+  test('undoScoreActionForTeam removes the last action for the selected team', async () => {
+    const setup = createTestSetup()
+    const initialActions = [
+      { type: 'score-point' as const, teamId: 'team-1' as const },
+      { type: 'score-point' as const, teamId: 'team-2' as const },
+      { type: 'score-point' as const, teamId: 'team-1' as const }
+    ]
+
+    const screen = await render(
+      <SessionTestComponent
+        setup={setup}
+        initialActions={initialActions}
+        startedAt={defaultStartedAt}
+        persistence={mockPersistence}
+      />
+    )
+
+    await expect.element(screen.getByTestId('actionCount')).toHaveTextContent('3')
+
+    await screen.getByTestId('undo-team-1').click()
+
+    await vi.waitFor(() => {
+      expect(screen.getByTestId('actionCount').element().textContent).toBe('2')
+    })
+  })
+
+  test('undoScoreActionForTeam keeps the snapshot unchanged when the selected team has no actions', async () => {
+    const setup = createTestSetup()
+
+    const screen = await render(
+      <SessionTestComponent
+        setup={setup}
+        initialActions={[{ type: 'score-point' as const, teamId: 'team-2' as const }]}
+        startedAt={defaultStartedAt}
+        persistence={mockPersistence}
+      />
+    )
+
+    await screen.getByTestId('undo-team-1').click()
+
+    await expect.element(screen.getByTestId('actionCount')).toHaveTextContent('1')
   })
 
   test('works without persistence (uses default)', async () => {

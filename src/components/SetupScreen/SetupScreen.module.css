@@ -197,6 +197,7 @@
   color: var(--semantic-color-content-secondary);
 }
 
+.remoteConfigurationButton,
 .startButton {
   width: 100%;
 }

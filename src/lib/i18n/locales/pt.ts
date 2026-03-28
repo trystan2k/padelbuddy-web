@@ -183,6 +183,36 @@ export default {
         twoHours: '2:00 h'
       }
     },
+    remoteConfig: {
+      trigger: 'Configuração do controle remoto',
+      title: 'Controle remoto Bluetooth',
+      description:
+        'Atribua um botão por ação. Os botões de reverter sempre removem apenas a última ação de pontuação daquele time.',
+      helper:
+        'Enquanto estiver escutando, pressione uma vez qualquer botão do controle ou teclado. Salvar com todas as ações vazias remove o mapeamento personalizado.',
+      listening: 'Escutando...',
+      listeningAnnouncement: 'Pressione um botão no seu controle para atribuí-lo a {{action}}.',
+      notSet: 'Não configurado',
+      rows: {
+        singlePressHint: 'Um toque para adicionar um ponto',
+        guardedUndoHint: 'Remove a última ação de pontuação daquele time'
+      },
+      actions: {
+        addTeam1: 'Adicionar Time 1',
+        revertTeam1: 'Reverter Time 1',
+        addTeam2: 'Adicionar Time 2',
+        revertTeam2: 'Reverter Time 2',
+        clear: 'Vínculos vazios',
+        resetDefaults: 'Restaurar padrões',
+        cancel: 'Cancelar',
+        save: 'Salvar'
+      },
+      feedback: {
+        loadError: 'Não foi possível carregar a configuração do controle remoto.',
+        saveError: 'Não foi possível salvar a configuração do controle remoto.',
+        saveSuccess: 'Configuração do controle remoto salva.'
+      }
+    },
     startButton: 'Iniciar Partida',
     validation: {
       teamNamesRequired: 'Ambos os nomes dos times são obrigatórios',

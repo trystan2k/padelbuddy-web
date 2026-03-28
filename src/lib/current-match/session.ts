@@ -9,6 +9,7 @@ import {
 } from '@/core/match'
 
 import { currentMatchPersistence, type CurrentMatchPersistence } from './indexed-db'
+import { undoLastScoringActionForTeam } from './helpers'
 
 export interface CurrentMatchSessionInput {
   setup: MatchSetup
@@ -29,6 +30,7 @@ export interface CurrentMatchSession {
   getSnapshot(): CurrentMatchSessionSnapshot
   scorePoint(teamId: MatchTeamId): Promise<CurrentMatchSessionSnapshot>
   undoScoreAction(): Promise<CurrentMatchSessionSnapshot>
+  undoScoreActionForTeam(teamId: MatchTeamId): Promise<CurrentMatchSessionSnapshot>
   continuePlaying(): Promise<CurrentMatchSessionSnapshot>
   finishMatch(): Promise<CurrentMatchSessionSnapshot>
 }
@@ -81,6 +83,25 @@ export function createCurrentMatchSession(
     undoScoreAction: () =>
       enqueueMutation(async () => {
         const nextActions = undoLastScoringAction(snapshot.actions)
+
+        if (nextActions.length === snapshot.actions.length) {
+          return snapshot
+        }
+
+        return commitSnapshot(
+          withFinishedAtIfCompleted(
+            createCurrentMatchSessionSnapshot({
+              setup: snapshot.setup,
+              actions: nextActions,
+              startedAt: snapshot.startedAt
+            }),
+            snapshot.finishedAt
+          )
+        )
+      }),
+    undoScoreActionForTeam: (teamId) =>
+      enqueueMutation(async () => {
+        const nextActions = undoLastScoringActionForTeam(snapshot.actions, teamId)
 
         if (nextActions.length === snapshot.actions.length) {
           return snapshot

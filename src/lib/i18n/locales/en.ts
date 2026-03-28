@@ -182,6 +182,36 @@ export default {
         twoHours: '2:00 h'
       }
     },
+    remoteConfig: {
+      trigger: 'Remote Configuration',
+      title: 'Bluetooth Remote Controller',
+      description:
+        'Assign one button per action. Revert buttons always remove the latest scoring action for that team only.',
+      helper:
+        'While listening, press any remote or keyboard button once. Saving with every action cleared removes the custom mapping.',
+      listening: 'Listening...',
+      listeningAnnouncement: 'Press a button on your remote to assign it to {{action}}.',
+      notSet: 'Not set',
+      rows: {
+        singlePressHint: 'Single press to add a point',
+        guardedUndoHint: "Removes that team's latest scoring action"
+      },
+      actions: {
+        addTeam1: 'Add Team 1',
+        revertTeam1: 'Revert Team 1',
+        addTeam2: 'Add Team 2',
+        revertTeam2: 'Revert Team 2',
+        clear: 'Empty bindings',
+        resetDefaults: 'Reset defaults',
+        cancel: 'Cancel',
+        save: 'Save'
+      },
+      feedback: {
+        loadError: 'Could not load the remote controller bindings.',
+        saveError: 'Could not save the remote controller bindings.',
+        saveSuccess: 'Remote controller bindings saved.'
+      }
+    },
     startButton: 'Start Match',
     validation: {
       teamNamesRequired: 'Both team names are required',

@@ -5,6 +5,7 @@ import {
   createCurrentMatchSession,
   createCurrentMatchSessionSnapshot,
   currentMatchSchemaVersion,
+  undoLastScoringActionForTeam,
   type CurrentMatchPersistence
 } from '@/lib/current-match'
 
@@ -107,6 +108,51 @@ describe('current match session', () => {
     expect(saveCurrentMatchMock).not.toHaveBeenCalled()
     expect(snapshot).toEqual(
       createCurrentMatchSessionSnapshot({ setup, actions: [], startedAt: testStartedAt })
+    )
+  })
+
+  test('team-specific undo removes the latest score for the selected team and replays from scratch', async () => {
+    const setup = createTestSetup()
+    const actions = scorePoints('team-1', 'team-2', 'team-1')
+    const { persistence, saveCurrentMatchMock } = createPersistenceStub()
+    const session = createCurrentMatchSession({
+      matchId: testMatchId,
+      setup,
+      actions,
+      startedAt: testStartedAt,
+      persistence
+    })
+
+    const snapshot = await session.undoScoreActionForTeam('team-1')
+    const nextActions = undoLastScoringActionForTeam(actions, 'team-1')
+
+    expect(saveCurrentMatchMock).toHaveBeenCalledWith({
+      matchId: testMatchId,
+      setup,
+      actions: nextActions,
+      startedAt: testStartedAt
+    })
+    expect(snapshot.actions).toEqual(nextActions)
+    expect(snapshot.projection).toEqual(projectMatch(setup, nextActions))
+  })
+
+  test('team-specific undo returns the existing snapshot when the selected team has no actions', async () => {
+    const setup = createTestSetup()
+    const actions = scorePoints('team-2')
+    const { persistence, saveCurrentMatchMock } = createPersistenceStub()
+    const session = createCurrentMatchSession({
+      matchId: testMatchId,
+      setup,
+      actions,
+      startedAt: testStartedAt,
+      persistence
+    })
+
+    const snapshot = await session.undoScoreActionForTeam('team-1')
+
+    expect(saveCurrentMatchMock).not.toHaveBeenCalled()
+    expect(snapshot).toEqual(
+      createCurrentMatchSessionSnapshot({ setup, actions, startedAt: testStartedAt })
     )
   })
 
