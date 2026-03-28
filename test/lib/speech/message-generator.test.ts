@@ -28,10 +28,10 @@ const testTranslations = {
 describe('message-generator', () => {
   beforeEach(async () => {
     // Reset i18n initialization state for each test
-    resetI18nInitialization()
+    await resetI18nInitialization()
 
     // Initialize i18n without backend for tests (resources added manually)
-    await initializeI18n({ skipBackend: true })
+    await initializeI18n()
 
     // Add test translations directly to i18n
     i18n.addResourceBundle('en', 'translation', testTranslations, true, true)

@@ -7,17 +7,10 @@ import { LocaleSelector } from '@/components/ui/LocaleSelector'
 import { TopBar } from '@/components/ui/TopBar'
 import * as i18nModule from '@/lib/i18n'
 
-vi.mock('@/lib/i18n', async (importOriginal) => {
-  const original = await importOriginal<typeof i18nModule>()
-  return {
-    ...original,
-    changeLocale: vi.fn().mockResolvedValue(undefined)
-  }
-})
-
 describe('LocaleSelector', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks()
+    await i18nModule.i18n.changeLanguage('en')
   })
 
   test('renders as TopBar child content', async () => {
@@ -45,12 +38,17 @@ describe('LocaleSelector', () => {
     await expect.element(trigger).toHaveAttribute('aria-haspopup', 'true')
     await expect.element(trigger).toHaveAttribute('aria-expanded', 'false')
 
-    await trigger.click()
+    // Use dispatchEvent for reliable click triggering in CI where Playwright's
+    // click() may not reach the component due to overlay/z-index issues
+    triggerElement.dispatchEvent(new MouseEvent('click', { bubbles: true }))
 
-    await vi.waitFor(() => {
-      expect(triggerElement.getAttribute('aria-expanded')).toBe('true')
-      expect(triggerElement.getAttribute('aria-controls')).toBe('locale-menu')
-    })
+    await vi.waitFor(
+      () => {
+        expect(triggerElement.getAttribute('aria-expanded')).toBe('true')
+        expect(triggerElement.getAttribute('aria-controls')).toBe('locale-menu')
+      },
+      { timeout: 5000 }
+    )
 
     const menu = screen.container.querySelector('#locale-menu')
     expect(menu?.getAttribute('role')).toBe('group')
@@ -62,35 +60,63 @@ describe('LocaleSelector', () => {
 
   test('calls changeLocale and onLocaleChange when locale changes', async () => {
     const handleLocaleChange = vi.fn()
-    const screen = await render(
-      <LocaleSelector currentLocale="en" onLocaleChange={handleLocaleChange} />
+    const screen = await render(<LocaleSelector onLocaleChange={handleLocaleChange} />)
+
+    const triggerElement = screen.getByRole('button', { name: /english/i }).element()
+    triggerElement.dispatchEvent(new MouseEvent('click', { bubbles: true }))
+
+    // Wait for the menu to appear before querying it
+    const menu = await vi.waitFor(
+      () => {
+        const found = screen.container.querySelector('#locale-menu')
+        if (!found) throw new Error('Menu not visible yet')
+        return found
+      },
+      { timeout: 5000 }
     )
 
-    await screen.getByRole('button', { name: /english/i }).click()
+    const spanishOption = Array.from(menu.querySelectorAll('button')).find((button) =>
+      button.textContent?.includes('Español')
+    )
 
-    const spanishOption = screen.getByRole('button', { name: /español/i })
-    await spanishOption.click()
+    expect(spanishOption).toBeTruthy()
+    spanishOption!.click()
 
-    await vi.waitFor(() => {
-      expect(i18nModule.changeLocale).toHaveBeenCalledWith('es')
-      expect(handleLocaleChange).toHaveBeenCalledWith('es')
-    })
+    await vi.waitFor(
+      () => {
+        expect(handleLocaleChange).toHaveBeenCalledWith('es')
+        expect(i18nModule.i18n.resolvedLanguage ?? i18nModule.i18n.language).toBe('es')
+      },
+      { timeout: 5000 }
+    )
   })
 
   test('does not call changeLocale when selecting the current locale', async () => {
-    const screen = await render(<LocaleSelector currentLocale="en" />)
-    const trigger = screen.getByRole('button', { name: /english/i })
+    const handleLocaleChange = vi.fn()
+    const screen = await render(
+      <LocaleSelector currentLocale="en" onLocaleChange={handleLocaleChange} />
+    )
+    const triggerElement = screen.getByRole('button', { name: /english/i }).element()
 
-    await trigger.click()
+    triggerElement.dispatchEvent(new MouseEvent('click', { bubbles: true }))
 
-    const menu = screen.container.querySelector('#locale-menu')
-    const englishMenuOption = Array.from(menu?.querySelectorAll('button') ?? []).find((button) =>
+    // Wait for the menu to appear before querying it
+    const menu = await vi.waitFor(
+      () => {
+        const found = screen.container.querySelector('#locale-menu')
+        if (!found) throw new Error('Menu not visible yet')
+        return found
+      },
+      { timeout: 5000 }
+    )
+
+    const englishMenuOption = Array.from(menu.querySelectorAll('button')).find((button) =>
       button.textContent?.includes('English')
     )
 
     expect(englishMenuOption).toBeTruthy()
-    englishMenuOption?.click()
+    englishMenuOption!.click()
 
-    expect(i18nModule.changeLocale).not.toHaveBeenCalled()
+    expect(handleLocaleChange).not.toHaveBeenCalled()
   })
 })

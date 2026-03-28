@@ -38,6 +38,8 @@ export {
 export {
   hydrateCurrentMatchStartup,
   type CurrentMatchStartupCorruptResult,
+  type CurrentMatchStartupMatch,
+  type CurrentMatchStartupNoMatchResult,
   type CurrentMatchStartupOptions,
   type CurrentMatchStartupReadyResult,
   type CurrentMatchStartupResult,

@@ -1,22 +1,31 @@
 import { currentMatchPersistence, type CurrentMatchPersistence } from './indexed-db'
 import { consumeCurrentMatchResetNotice, type CurrentMatchResetNotice } from './reset-notice'
-import { createCurrentMatchSession, type CurrentMatchSession } from './session'
+import { createCurrentMatchSessionSnapshot, type CurrentMatchSessionSnapshot } from './session'
 
 export interface CurrentMatchStartupOptions {
   persistence?: CurrentMatchPersistence
 }
 
+export interface CurrentMatchStartupMatch {
+  matchId: string
+  snapshot: CurrentMatchSessionSnapshot
+}
+
+export interface CurrentMatchStartupNoMatchResult {
+  status: 'no-match'
+  notice: CurrentMatchResetNotice | null
+}
+
 export interface CurrentMatchStartupReadyResult {
   status: 'ready'
   notice: CurrentMatchResetNotice | null
-  session: CurrentMatchSession | null
+  match: CurrentMatchStartupMatch
 }
 
 export interface CurrentMatchStartupResumeRequiredResult {
   status: 'resume-required'
   notice: CurrentMatchResetNotice | null
-  session: CurrentMatchSession
-  matchId: string
+  match: CurrentMatchStartupMatch
 }
 
 export interface CurrentMatchStartupCorruptResult {
@@ -26,6 +35,7 @@ export interface CurrentMatchStartupCorruptResult {
 }
 
 export type CurrentMatchStartupResult =
+  | CurrentMatchStartupNoMatchResult
   | CurrentMatchStartupReadyResult
   | CurrentMatchStartupResumeRequiredResult
   | CurrentMatchStartupCorruptResult
@@ -39,9 +49,8 @@ export async function hydrateCurrentMatchStartup(
 
   if (loadResult.status === 'empty' || loadResult.status === 'reset-required') {
     return {
-      status: 'ready',
-      notice,
-      session: null
+      status: 'no-match',
+      notice
     }
   }
 
@@ -53,29 +62,29 @@ export async function hydrateCurrentMatchStartup(
     }
   }
 
-  const session = createCurrentMatchSession({
+  const match = {
     matchId: loadResult.record.matchId,
-    setup: loadResult.record.setup,
-    actions: loadResult.record.actions,
-    startedAt: loadResult.record.startedAt,
-    ...(typeof loadResult.record.finishedAt === 'number'
-      ? { finishedAt: loadResult.record.finishedAt }
-      : {}),
-    persistence
-  })
+    snapshot: createCurrentMatchSessionSnapshot({
+      setup: loadResult.record.setup,
+      actions: loadResult.record.actions,
+      startedAt: loadResult.record.startedAt,
+      ...(typeof loadResult.record.finishedAt === 'number'
+        ? { finishedAt: loadResult.record.finishedAt }
+        : {})
+    })
+  }
 
-  if (session.getSnapshot().projection.derived.status === 'in-progress') {
+  if (match.snapshot.projection.derived.status === 'in-progress') {
     return {
       status: 'resume-required',
       notice,
-      session,
-      matchId: loadResult.record.matchId
+      match
     }
   }
 
   return {
     status: 'ready',
     notice,
-    session
+    match
   }
 }

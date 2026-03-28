@@ -8,6 +8,7 @@ import { useToast } from '@/components/ui'
 import { TopBar } from '@/components/ui/TopBar'
 import type { MatchAction, MatchFormat, MatchProjection, MatchSetup } from '@/core/match'
 import { clearCurrentMatch, createCurrentMatchSession } from '@/lib/current-match'
+import { prepareCurrentMatchRouteNavigation } from '@/lib/router/current-match-route-flow'
 import { getViewTransitionNavigationOptions } from '@/lib/utils/view-transitions'
 
 import { createMatchEndScreenSummary, getMatchDurationParts } from './view-model'
@@ -32,8 +33,6 @@ const formatTranslationKeys: Record<MatchFormat, 'bestOf1' | 'bestOf3' | 'bestOf
   'best-of-3': 'bestOf3',
   'best-of-5': 'bestOf5'
 }
-
-const activeMatchRouteId = '/match/$id'
 
 const hiddenScreenStyle = {
   position: 'fixed',
@@ -216,12 +215,13 @@ export function MatchEndScreen({
 
     try {
       await clearCurrentMatch()
+      await prepareCurrentMatchRouteNavigation(router, { to: '/' })
       await navigate({ to: '/', ...getViewTransitionNavigationOptions() })
     } catch (error) {
       console.error('Failed to clear the current match before starting a new one.', error)
       setIsStartingNewMatch(false)
     }
-  }, [isStartingNewMatch, navigate])
+  }, [isStartingNewMatch, navigate, router])
 
   const handleContinue = useCallback(async () => {
     if (isContinuingMatch) {
@@ -240,10 +240,14 @@ export function MatchEndScreen({
       })
 
       await session.continuePlaying()
-      router.clearCache({
-        filter: (routeMatch) =>
-          routeMatch.routeId === activeMatchRouteId && routeMatch.params.id === matchId
-      })
+      await prepareCurrentMatchRouteNavigation(
+        router,
+        {
+          to: '/match/$id',
+          params: { id: matchId }
+        },
+        { invalidate: true }
+      )
       await navigate({
         to: '/match/$id',
         params: { id: matchId },

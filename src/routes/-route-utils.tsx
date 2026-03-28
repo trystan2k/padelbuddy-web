@@ -1,7 +1,7 @@
 import type { ErrorComponentProps } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 
-import { Button, Spinner } from '@/components/ui'
+import { Button } from '@/components/ui'
 
 export function getErrorMessage(error: unknown): string | null {
   if (error instanceof Error && error.message.length > 0) {
@@ -17,18 +17,8 @@ export function getErrorMessage(error: unknown): string | null {
   return null
 }
 
-export function RouteLoadingState() {
-  const { t } = useTranslation()
-
-  return (
-    <main className="appStatusPage">
-      <section className="appStatusCard" aria-live="polite" aria-busy="true">
-        <Spinner className="appStatusSpinner" size="lg" label={t('common.loading')} silent />
-        <h1 className="appStatusTitle">{t('common.loading')}</h1>
-        <p className="appStatusBody">{t('loadingState.routeBody')}</p>
-      </section>
-    </main>
-  )
+export function RoutePendingBoundary() {
+  return null
 }
 
 interface RouteErrorStateProps extends ErrorComponentProps {

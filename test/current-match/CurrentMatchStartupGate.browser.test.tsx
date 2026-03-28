@@ -1,12 +1,20 @@
+/* oxlint-disable jsx-no-new-object-as-prop -- Test files use inline objects for readability */
+
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import { render } from 'vitest-browser-react'
 
-const { mockNavigate } = vi.hoisted(() => ({
-  mockNavigate: vi.fn()
+const { mockInvalidate, mockNavigate, mockPreloadRoute } = vi.hoisted(() => ({
+  mockInvalidate: vi.fn(async () => undefined),
+  mockNavigate: vi.fn(),
+  mockPreloadRoute: vi.fn(async () => undefined)
 }))
 
 vi.mock('@tanstack/react-router', () => ({
-  useNavigate: () => mockNavigate
+  useNavigate: () => mockNavigate,
+  useRouter: () => ({
+    invalidate: mockInvalidate,
+    preloadRoute: mockPreloadRoute
+  })
 }))
 
 import { CurrentMatchStartupGate } from '@/components/CurrentMatchStartupGate/CurrentMatchStartupGate'
@@ -14,9 +22,12 @@ import {
   clearCurrentMatch,
   consumeCurrentMatchResetNotice,
   createCurrentMatchPersistence,
+  createCurrentMatchSessionSnapshot,
   currentMatchSchemaVersion,
+  hydrateCurrentMatchStartup,
   saveCurrentMatch,
-  type CurrentMatchPersistence
+  type CurrentMatchPersistence,
+  type CurrentMatchStartupResult
 } from '@/lib/current-match'
 
 import { createTestSetup, scorePoints } from '../core/match/test-helpers'
@@ -29,6 +40,8 @@ describe('CurrentMatchStartupGate browser', () => {
 
   beforeEach(() => {
     mockNavigate.mockReset()
+    mockInvalidate.mockReset()
+    mockPreloadRoute.mockReset()
     databaseName = `padel-buddy-startup-gate-${crypto.randomUUID()}`
     persistence = createCurrentMatchPersistence({
       databaseName,
@@ -47,7 +60,11 @@ describe('CurrentMatchStartupGate browser', () => {
 
   test('renders the shell directly when no saved match exists', async () => {
     const screen = await render(
-      <CurrentMatchStartupGate persistence={persistence} portalContainer={portalContainer}>
+      <CurrentMatchStartupGate
+        startupState={await hydrateCurrentMatchStartup({ persistence })}
+        persistence={persistence}
+        portalContainer={portalContainer}
+      >
         <TestShell />
       </CurrentMatchStartupGate>
     )
@@ -65,7 +82,11 @@ describe('CurrentMatchStartupGate browser', () => {
     })
 
     const screen = await render(
-      <CurrentMatchStartupGate persistence={persistence} portalContainer={portalContainer}>
+      <CurrentMatchStartupGate
+        startupState={await hydrateCurrentMatchStartup({ persistence })}
+        persistence={persistence}
+        portalContainer={portalContainer}
+      >
         <TestShell />
       </CurrentMatchStartupGate>
     )
@@ -77,9 +98,6 @@ describe('CurrentMatchStartupGate browser', () => {
     await expect.element(resumeButton).toHaveFocus()
     await expect.element(screen.getByRole('button', { name: 'Discard match' })).toBeVisible()
 
-    // Note: Base UI Dialog focus trapping may behave differently than the custom implementation
-    // The important thing is that focus is properly contained within the dialog
-
     await resumeButton.click()
 
     expect(mockNavigate).toHaveBeenCalledWith(
@@ -90,6 +108,12 @@ describe('CurrentMatchStartupGate browser', () => {
         })
       })
     )
+    expect(mockPreloadRoute).toHaveBeenCalledWith({
+      to: '/match/$id',
+      params: expect.objectContaining({
+        id: expect.any(String)
+      })
+    })
     expect(document.body.textContent).not.toContain('Resume saved match?')
     await expect
       .element(screen.getByRole('heading', { level: 1, name: 'Padel Buddy' }))
@@ -98,7 +122,11 @@ describe('CurrentMatchStartupGate browser', () => {
     await screen.unmount()
 
     const repeatedStartupScreen = await render(
-      <CurrentMatchStartupGate persistence={persistence} portalContainer={portalContainer}>
+      <CurrentMatchStartupGate
+        startupState={await hydrateCurrentMatchStartup({ persistence })}
+        persistence={persistence}
+        portalContainer={portalContainer}
+      >
         <TestShell />
       </CurrentMatchStartupGate>
     )
@@ -117,7 +145,11 @@ describe('CurrentMatchStartupGate browser', () => {
     })
 
     const firstScreen = await render(
-      <CurrentMatchStartupGate persistence={persistence} portalContainer={portalContainer}>
+      <CurrentMatchStartupGate
+        startupState={await hydrateCurrentMatchStartup({ persistence })}
+        persistence={persistence}
+        portalContainer={portalContainer}
+      >
         <TestShell />
       </CurrentMatchStartupGate>
     )
@@ -126,11 +158,18 @@ describe('CurrentMatchStartupGate browser', () => {
     await expect
       .element(firstScreen.getByRole('heading', { level: 1, name: 'Padel Buddy' }))
       .toBeVisible()
+    await vi.waitFor(() => {
+      expect(mockInvalidate).toHaveBeenCalledTimes(1)
+    })
 
     await firstScreen.unmount()
 
     const secondScreen = await render(
-      <CurrentMatchStartupGate persistence={persistence} portalContainer={portalContainer}>
+      <CurrentMatchStartupGate
+        startupState={await hydrateCurrentMatchStartup({ persistence })}
+        persistence={persistence}
+        portalContainer={portalContainer}
+      >
         <TestShell />
       </CurrentMatchStartupGate>
     )
@@ -141,8 +180,6 @@ describe('CurrentMatchStartupGate browser', () => {
     expect(document.body.textContent).not.toContain('Resume saved match?')
   })
 
-  // Note: This test fails due to Base UI Dialog Portal cleanup race condition during unmount.
-  // The visual behavior is correct - this is a known issue with how Base UI handles Portal cleanup.
   test('renders corrupted-state recovery with only reset and continue', async () => {
     await writeRawRecord({
       databaseName,
@@ -156,7 +193,10 @@ describe('CurrentMatchStartupGate browser', () => {
     })
 
     const screen = await render(
-      <CurrentMatchStartupGate persistence={persistence}>
+      <CurrentMatchStartupGate
+        startupState={await hydrateCurrentMatchStartup({ persistence })}
+        persistence={persistence}
+      >
         <TestShell />
       </CurrentMatchStartupGate>
     )
@@ -169,8 +209,6 @@ describe('CurrentMatchStartupGate browser', () => {
     expect(document.body.textContent).not.toContain('Discard saved match')
   })
 
-  // Note: This test fails due to Base UI Dialog Portal cleanup race condition during unmount.
-  // The visual behavior is correct - this is a known issue with how Base UI handles Portal cleanup.
   test('reset and continue clears the corrupted record for the next startup', async () => {
     await writeRawRecord({
       databaseName,
@@ -184,7 +222,11 @@ describe('CurrentMatchStartupGate browser', () => {
     })
 
     const firstScreen = await render(
-      <CurrentMatchStartupGate persistence={persistence} portalContainer={portalContainer}>
+      <CurrentMatchStartupGate
+        startupState={await hydrateCurrentMatchStartup({ persistence })}
+        persistence={persistence}
+        portalContainer={portalContainer}
+      >
         <TestShell />
       </CurrentMatchStartupGate>
     )
@@ -197,7 +239,11 @@ describe('CurrentMatchStartupGate browser', () => {
     await firstScreen.unmount()
 
     const secondScreen = await render(
-      <CurrentMatchStartupGate persistence={persistence} portalContainer={portalContainer}>
+      <CurrentMatchStartupGate
+        startupState={await hydrateCurrentMatchStartup({ persistence })}
+        persistence={persistence}
+        portalContainer={portalContainer}
+      >
         <TestShell />
       </CurrentMatchStartupGate>
     )
@@ -208,8 +254,6 @@ describe('CurrentMatchStartupGate browser', () => {
     expect(document.body.textContent).not.toContain('Saved match needs recovery')
   })
 
-  // Note: This test fails due to Base UI Dialog Portal cleanup race condition during unmount.
-  // The visual behavior is correct - this is a known issue with how Base UI handles Portal cleanup.
   test('shows the reset notice once after startup clears an incompatible record', async () => {
     await writeRawRecord({
       databaseName,
@@ -221,7 +265,11 @@ describe('CurrentMatchStartupGate browser', () => {
     })
 
     const firstScreen = await render(
-      <CurrentMatchStartupGate persistence={persistence} portalContainer={portalContainer}>
+      <CurrentMatchStartupGate
+        startupState={await hydrateCurrentMatchStartup({ persistence })}
+        persistence={persistence}
+        portalContainer={portalContainer}
+      >
         <TestShell />
       </CurrentMatchStartupGate>
     )
@@ -233,7 +281,11 @@ describe('CurrentMatchStartupGate browser', () => {
     await firstScreen.unmount()
 
     const secondScreen = await render(
-      <CurrentMatchStartupGate persistence={persistence} portalContainer={portalContainer}>
+      <CurrentMatchStartupGate
+        startupState={await hydrateCurrentMatchStartup({ persistence })}
+        persistence={persistence}
+        portalContainer={portalContainer}
+      >
         <TestShell />
       </CurrentMatchStartupGate>
     )
@@ -244,8 +296,6 @@ describe('CurrentMatchStartupGate browser', () => {
     expect(document.body.textContent).not.toContain('Saved match was reset')
   })
 
-  // Note: This test fails due to Base UI Dialog Portal cleanup race condition during unmount.
-  // The visual behavior is correct - this is a known issue with how Base UI handles Portal cleanup.
   test('uses the default persistence path when no persistence prop is provided', async () => {
     await saveCurrentMatch({
       setup: createTestSetup(),
@@ -253,7 +303,10 @@ describe('CurrentMatchStartupGate browser', () => {
     })
 
     const firstScreen = await render(
-      <CurrentMatchStartupGate portalContainer={portalContainer}>
+      <CurrentMatchStartupGate
+        startupState={await hydrateCurrentMatchStartup()}
+        portalContainer={portalContainer}
+      >
         <TestShell />
       </CurrentMatchStartupGate>
     )
@@ -269,7 +322,10 @@ describe('CurrentMatchStartupGate browser', () => {
     await firstScreen.unmount()
 
     const secondScreen = await render(
-      <CurrentMatchStartupGate portalContainer={portalContainer}>
+      <CurrentMatchStartupGate
+        startupState={await hydrateCurrentMatchStartup()}
+        portalContainer={portalContainer}
+      >
         <TestShell />
       </CurrentMatchStartupGate>
     )
@@ -280,26 +336,12 @@ describe('CurrentMatchStartupGate browser', () => {
     expect(document.body.textContent).not.toContain('Resume saved match?')
   })
 
-  // Note: This test fails due to Base UI Dialog Portal cleanup race condition during unmount.
-  // The visual behavior is correct - this is a known issue with how Base UI handles Portal cleanup.
   test('keeps the resume dialog open and shows an error when discarding fails', async () => {
-    const setup = createTestSetup()
-    const testStartedAt = Date.now()
-
     const screen = await render(
       <CurrentMatchStartupGate
+        startupState={createResumeRequiredStartupState()}
         portalContainer={portalContainer}
         persistence={createPersistenceStub({
-          loadCurrentMatch: async () => ({
-            status: 'ok',
-            record: {
-              schemaVersion: currentMatchSchemaVersion,
-              matchId: testMatchId,
-              setup,
-              actions: scorePoints('team-1'),
-              startedAt: testStartedAt
-            }
-          }),
           clearCurrentMatch: async () => {
             throw new Error('Failed to clear saved match.')
           }
@@ -317,18 +359,16 @@ describe('CurrentMatchStartupGate browser', () => {
       .toHaveTextContent('Failed to clear saved match.')
   })
 
-  // Note: This test fails due to Base UI Dialog Portal cleanup race condition during unmount.
-  // The visual behavior is correct - this is a known issue with how Base UI handles Portal cleanup.
   test('keeps the recovery screen visible and shows an error when reset fails', async () => {
     const screen = await render(
       <CurrentMatchStartupGate
+        startupState={{
+          status: 'corrupt',
+          notice: null,
+          message: 'Current match payload is corrupt.'
+        }}
         portalContainer={portalContainer}
         persistence={createPersistenceStub({
-          loadCurrentMatch: async () => ({
-            status: 'corrupt',
-            notice: null,
-            message: 'Current match payload is corrupt.'
-          }),
           clearCurrentMatch: async () => {
             throw new Error('Failed to clear saved match.')
           }
@@ -419,15 +459,31 @@ function waitForTransaction(transaction: IDBTransaction): Promise<void> {
 }
 
 function createPersistenceStub(overrides: {
-  loadCurrentMatch: CurrentMatchPersistence['loadCurrentMatch']
   clearCurrentMatch: CurrentMatchPersistence['clearCurrentMatch']
 }): CurrentMatchPersistence {
   return {
     saveCurrentMatch: async () => {
       throw new Error('saveCurrentMatch should not be called in this test.')
     },
-    loadCurrentMatch: overrides.loadCurrentMatch,
+    loadCurrentMatch: async () => ({
+      status: 'empty'
+    }),
     clearCurrentMatch: overrides.clearCurrentMatch
+  }
+}
+
+function createResumeRequiredStartupState(): CurrentMatchStartupResult {
+  return {
+    status: 'resume-required',
+    notice: null,
+    match: {
+      matchId: 'test-match',
+      snapshot: createCurrentMatchSessionSnapshot({
+        setup: createTestSetup(),
+        actions: scorePoints('team-1'),
+        startedAt: Date.now()
+      })
+    }
   }
 }
 

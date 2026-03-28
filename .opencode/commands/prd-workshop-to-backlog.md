@@ -22,7 +22,7 @@ Run a complete PRD-to-backlog workflow for this repository.
 
 ### Phase 2: Interactive Refinement (Question-Driven)
 
-1. Run a structured interview with the user.
+1. Run a structured interview with the user (using question tool and brainstorming skill).
 2. Ask focused questions in small batches (1-3 related questions per batch).
 3. Continue until requirements are implementation-safe across:
    - scope and feature behavior

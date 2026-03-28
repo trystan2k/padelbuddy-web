@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { createLocaleStorage, type SupportedLocale } from '@/lib/i18n'
+import { sharedIndexedDbObjectStoreNames } from '@/lib/persistence/indexed-db'
 
 describe('locale-storage', () => {
   afterEach(() => {
@@ -114,6 +115,15 @@ describe('locale-storage', () => {
     )
   })
 
+  it('registers all shared object stores in explicit order during upgrade', async () => {
+    const fakeIndexedDb = createFakeIndexedDb()
+    vi.stubGlobal('indexedDB', fakeIndexedDb.factory)
+
+    const storage = createLocaleStorage({ databaseName: 'new-shared-db' })
+    await expect(storage.loadLocalePreference()).resolves.toBeNull()
+    expect(fakeIndexedDb.createdObjectStores).toEqual([...sharedIndexedDbObjectStoreNames])
+  })
+
   it('skips object-store creation when the store already exists', async () => {
     const fakeIndexedDb = createFakeIndexedDb({
       storeExists: true
@@ -188,7 +198,7 @@ class FakeRequest<TResult> extends EventTarget {
 }
 
 class FakeDatabase {
-  private hasStore: boolean
+  private readonly storeNames: Set<string>
 
   constructor(
     private readonly storage: Map<string, unknown>,
@@ -199,15 +209,15 @@ class FakeDatabase {
     },
     private readonly createdObjectStores: string[]
   ) {
-    this.hasStore = options.storeExists
+    this.storeNames = options.storeExists ? new Set(sharedIndexedDbObjectStoreNames) : new Set()
   }
 
   objectStoreNames = {
-    contains: (_name: string) => this.hasStore
+    contains: (name: string) => this.storeNames.has(name)
   }
 
   createObjectStore(name: string): Record<string, never> {
-    this.hasStore = true
+    this.storeNames.add(name)
     this.createdObjectStores.push(name)
 
     return {}

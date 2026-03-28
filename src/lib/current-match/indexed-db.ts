@@ -7,11 +7,26 @@ import {
   type CurrentMatchSaveInput
 } from './persistence'
 import { queueCurrentMatchResetNotice } from './reset-notice'
+import {
+  currentMatchObjectStoreName,
+  persistenceDatabaseName,
+  persistenceDatabaseVersion,
+  resolveIndexedDbStorageConfig,
+  waitForIndexedDbRequest,
+  waitForIndexedDbTransaction,
+  withIndexedDbDatabase,
+  type IndexedDbOpenMessages
+} from '../persistence/indexed-db'
 
-export const defaultDatabaseName = 'padel-buddy-web'
-export const defaultDatabaseVersion = 4
-export const defaultObjectStoreName = 'current-match'
+export const defaultDatabaseName = persistenceDatabaseName
+export const defaultDatabaseVersion = persistenceDatabaseVersion
+export const defaultObjectStoreName = currentMatchObjectStoreName
 export const currentMatchRecordKey = 'current-match'
+
+const indexedDbMessages: IndexedDbOpenMessages = {
+  blocked: 'Opening the current match database was blocked.',
+  openFailed: 'Unable to open the current match database.'
+}
 
 export interface CurrentMatchPersistenceOptions {
   databaseName?: string
@@ -35,9 +50,6 @@ export interface CurrentMatchLoadResetRequiredResult {
   storedSchemaVersion: number
 }
 
-// `loadCurrentMatch()` returns this only after clearing the incompatible persisted record and
-// queueing the one-time reset notice, so callers should treat it as an informational result.
-
 export type CurrentMatchLoadResult =
   | CurrentMatchLoadEmptyResult
   | CurrentMatchDecodeOkResult
@@ -47,32 +59,28 @@ export type CurrentMatchLoadResult =
 export function createCurrentMatchPersistence(
   options: CurrentMatchPersistenceOptions = {}
 ): CurrentMatchPersistence {
-  const config = {
-    databaseName: options.databaseName ?? defaultDatabaseName,
-    databaseVersion: options.databaseVersion ?? defaultDatabaseVersion,
-    objectStoreName: options.objectStoreName ?? defaultObjectStoreName
-  }
+  const config = resolveIndexedDbStorageConfig(options, defaultObjectStoreName)
 
   const saveCurrentMatch = async (input: CurrentMatchSaveInput): Promise<CurrentMatchRecord> => {
     const record = createCurrentMatchRecord(input)
 
-    await withDatabase(config, async (database) => {
+    await withIndexedDbDatabase(config, indexedDbMessages, async (database) => {
       const transaction = database.transaction(config.objectStoreName, 'readwrite')
 
       transaction.objectStore(config.objectStoreName).put(record, currentMatchRecordKey)
-      await waitForTransaction(transaction)
+      await waitForIndexedDbTransaction(transaction)
     })
 
     return record
   }
 
   const loadCurrentMatch = async (): Promise<CurrentMatchLoadResult> => {
-    return withDatabase(config, async (database) => {
+    return withIndexedDbDatabase(config, indexedDbMessages, async (database) => {
       const transaction = database.transaction(config.objectStoreName, 'readonly')
       const request = transaction.objectStore(config.objectStoreName).get(currentMatchRecordKey)
-      const storedRecord = await waitForRequest(request)
+      const storedRecord = await waitForIndexedDbRequest(request)
 
-      await waitForTransaction(transaction)
+      await waitForIndexedDbTransaction(transaction)
 
       if (typeof storedRecord === 'undefined') {
         return {
@@ -86,7 +94,7 @@ export function createCurrentMatchPersistence(
         const resetTransaction = database.transaction(config.objectStoreName, 'readwrite')
 
         resetTransaction.objectStore(config.objectStoreName).delete(currentMatchRecordKey)
-        await waitForTransaction(resetTransaction)
+        await waitForIndexedDbTransaction(resetTransaction)
         queueCurrentMatchResetNotice({
           reason: 'schema-version'
         })
@@ -101,11 +109,11 @@ export function createCurrentMatchPersistence(
   }
 
   const clearCurrentMatch = async (): Promise<void> => {
-    await withDatabase(config, async (database) => {
+    await withIndexedDbDatabase(config, indexedDbMessages, async (database) => {
       const transaction = database.transaction(config.objectStoreName, 'readwrite')
 
       transaction.objectStore(config.objectStoreName).delete(currentMatchRecordKey)
-      await waitForTransaction(transaction)
+      await waitForIndexedDbTransaction(transaction)
     })
   }
 
@@ -121,90 +129,3 @@ export const saveCurrentMatch = (input: CurrentMatchSaveInput) =>
   currentMatchPersistence.saveCurrentMatch(input)
 export const loadCurrentMatch = () => currentMatchPersistence.loadCurrentMatch()
 export const clearCurrentMatch = () => currentMatchPersistence.clearCurrentMatch()
-
-function getIndexedDb(): IDBFactory {
-  if (typeof indexedDB === 'undefined') {
-    throw new Error('IndexedDB is not available in this environment.')
-  }
-
-  return indexedDB
-}
-
-// Shared object store names for coordinated upgrades
-const localeStoreName = 'locale-preference'
-const speechStoreName = 'speech-preference'
-
-function openDatabase(config: Required<CurrentMatchPersistenceOptions>): Promise<IDBDatabase> {
-  return new Promise((resolve, reject) => {
-    const request = getIndexedDb().open(config.databaseName, config.databaseVersion)
-
-    request.addEventListener('upgradeneeded', () => {
-      const database = request.result
-
-      // Create all stores to prevent version collision with other modules
-      // This ensures all object stores exist regardless of which module opens the DB first
-      if (!database.objectStoreNames.contains(config.objectStoreName)) {
-        database.createObjectStore(config.objectStoreName)
-      }
-      if (!database.objectStoreNames.contains(localeStoreName)) {
-        database.createObjectStore(localeStoreName)
-      }
-      if (!database.objectStoreNames.contains(speechStoreName)) {
-        database.createObjectStore(speechStoreName)
-      }
-    })
-
-    request.addEventListener('success', () => {
-      resolve(request.result)
-    })
-
-    request.addEventListener('error', () => {
-      reject(request.error ?? new Error('Unable to open the current match database.'))
-    })
-
-    request.addEventListener('blocked', () => {
-      reject(new Error('Opening the current match database was blocked.'))
-    })
-  })
-}
-
-async function withDatabase<T>(
-  config: Required<CurrentMatchPersistenceOptions>,
-  operation: (database: IDBDatabase) => Promise<T>
-): Promise<T> {
-  const database = await openDatabase(config)
-
-  try {
-    return await operation(database)
-  } finally {
-    database.close()
-  }
-}
-
-function waitForRequest<T>(request: IDBRequest<T>): Promise<T> {
-  return new Promise((resolve, reject) => {
-    request.addEventListener('success', () => {
-      resolve(request.result)
-    })
-
-    request.addEventListener('error', () => {
-      reject(request.error ?? new Error('IndexedDB request failed.'))
-    })
-  })
-}
-
-function waitForTransaction(transaction: IDBTransaction): Promise<void> {
-  return new Promise((resolve, reject) => {
-    transaction.addEventListener('complete', () => {
-      resolve()
-    })
-
-    transaction.addEventListener('error', () => {
-      reject(transaction.error ?? new Error('IndexedDB transaction failed.'))
-    })
-
-    transaction.addEventListener('abort', () => {
-      reject(transaction.error ?? new Error('IndexedDB transaction was aborted.'))
-    })
-  })
-}

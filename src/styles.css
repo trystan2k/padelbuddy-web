@@ -54,10 +54,6 @@ body {
   background: transparent;
 }
 
-body[data-route-pending='true'] {
-  cursor: progress;
-}
-
 body::before {
   content: '';
   position: fixed;

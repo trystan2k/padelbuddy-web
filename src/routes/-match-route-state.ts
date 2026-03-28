@@ -10,6 +10,7 @@ export type MatchRouteErrorType = (typeof matchRouteErrorTypes)[number]
 export type MatchRouteState =
   | {
       status: 'redirect-home'
+      error: MatchRouteErrorType
     }
   | {
       status: 'redirect-active'
@@ -30,23 +31,21 @@ export function resolveMatchRouteState(
   matchData: CurrentMatchLoadResult,
   mode: MatchRouteMode
 ): MatchRouteState {
-  if (
-    matchData.status === 'empty' ||
-    matchData.status === 'reset-required' ||
-    matchData.status === 'corrupt'
-  ) {
+  const homeRedirectError = getHomeRedirectError(matchId, matchData)
+
+  if (homeRedirectError) {
     return {
-      status: 'redirect-home'
+      status: 'redirect-home',
+      error: homeRedirectError
     }
   }
 
-  if (matchData.record.matchId !== matchId) {
-    return {
-      status: 'redirect-home'
-    }
+  if (matchData.status !== 'ok') {
+    throw new Error('Expected persisted match data after match route entry validation.')
   }
 
-  const projection = projectMatch(matchData.record.setup, matchData.record.actions)
+  const { record } = matchData
+  const projection = projectMatch(record.setup, record.actions)
 
   if (mode === 'active' && projection.derived.status === 'completed') {
     return {
@@ -58,7 +57,7 @@ export function resolveMatchRouteState(
   if (
     mode === 'finish' &&
     projection.derived.status === 'in-progress' &&
-    typeof matchData.record.finishedAt !== 'number'
+    typeof record.finishedAt !== 'number'
   ) {
     return {
       status: 'redirect-active',
@@ -68,15 +67,15 @@ export function resolveMatchRouteState(
 
   return {
     status: 'ready',
-    record: matchData.record,
+    record,
     projection
   }
 }
 
-export function determineErrorType(
+function getHomeRedirectError(
   matchId: string,
   matchData: CurrentMatchLoadResult
-): MatchRouteErrorType {
+): MatchRouteErrorType | undefined {
   if (matchData.status === 'corrupt') {
     return 'corrupt'
   }
@@ -85,17 +84,15 @@ export function determineErrorType(
     return 'no-match'
   }
 
+  if (matchData.status !== 'ok') {
+    return undefined
+  }
+
   if (matchData.record.matchId !== matchId) {
     return 'invalid-match'
   }
 
-  console.error('[determineErrorType] Unexpected state.', {
-    matchId,
-    matchDataStatus: matchData.status,
-    recordMatchId: matchData.record.matchId
-  })
-
-  return 'no-match'
+  return undefined
 }
 
 export function parseMatchRouteErrorType(value: unknown): MatchRouteErrorType | undefined {

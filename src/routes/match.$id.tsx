@@ -1,74 +1,60 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { useEffect } from 'react'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 
 import { ActiveMatchScreen } from '@/components/ActiveMatchScreen'
-import { loadCurrentMatch, type CurrentMatchLoadResult } from '@/lib/current-match'
-import { getViewTransitionNavigationOptions } from '@/lib/utils/view-transitions'
+import { loadCurrentMatch, type CurrentMatchRecord } from '@/lib/current-match'
+import { currentMatchPersistenceRouteLoaderOptions } from '@/lib/router/current-match-route-flow'
 
-import { determineErrorType, resolveMatchRouteState } from './-match-route-state'
-import { RouteErrorState, RouteLoadingState } from './-route-utils'
+import { resolveMatchRouteState } from './-match-route-state'
+import { RouteErrorState } from './-route-utils'
 
 export const Route = createFileRoute('/match/$id')({
+  ...currentMatchPersistenceRouteLoaderOptions,
   component: MatchRoute,
-  pendingComponent: RouteLoadingState,
   errorComponent: RouteErrorState,
   loader: async ({ params }) => {
-    // Load match data from persistence
-    // Match ID is stored for future use (sharing, history)
     const matchData = await loadCurrentMatch()
-    return { matchId: params.id, matchData }
+    const routeState = resolveMatchRouteState(params.id, matchData, 'active')
+
+    if (routeState.status === 'redirect-home') {
+      throw redirect({
+        to: '/',
+        replace: true,
+        search: { error: routeState.error }
+      })
+    }
+
+    if (routeState.status === 'redirect-finish') {
+      throw redirect({
+        to: '/match/finish/$id',
+        params: { id: routeState.matchId },
+        replace: true
+      })
+    }
+
+    if (routeState.status !== 'ready') {
+      throw new Error('Expected active match route state to be ready after redirect guards.')
+    }
+
+    return {
+      matchId: params.id,
+      record: routeState.record
+    }
   }
 })
 
 function MatchRoute() {
-  const { matchId, matchData } = Route.useLoaderData()
+  const { matchId, record } = Route.useLoaderData()
 
-  return <MatchRouteContent matchData={matchData} matchId={matchId} />
+  return <MatchRouteReadyContent matchId={matchId} record={record} />
 }
 
-export interface MatchRouteContentProps {
+interface MatchRouteReadyContentProps {
   matchId: string
-  matchData: CurrentMatchLoadResult
+  record: CurrentMatchRecord
 }
 
-export function MatchRouteContent({ matchId, matchData }: MatchRouteContentProps) {
-  const navigate = useNavigate()
-  const routeState = resolveMatchRouteState(matchId, matchData, 'active')
-  const routeStateStatus = routeState.status
-  const redirectMatchId = routeStateStatus === 'redirect-finish' ? routeState.matchId : null
-  const corruptMessage = matchData.status === 'corrupt' ? matchData.message : null
-
-  useEffect(() => {
-    if (corruptMessage !== null) {
-      console.error('Corrupted match data:', corruptMessage)
-    }
-
-    if (routeStateStatus === 'redirect-home') {
-      void navigate({
-        to: '/',
-        replace: true,
-        search: { error: determineErrorType(matchId, matchData) },
-        ...getViewTransitionNavigationOptions()
-      })
-      return
-    }
-
-    if (routeStateStatus === 'redirect-finish' && redirectMatchId !== null) {
-      void navigate({
-        to: '/match/finish/$id',
-        params: { id: redirectMatchId },
-        replace: true,
-        ...getViewTransitionNavigationOptions()
-      })
-      return
-    }
-  }, [corruptMessage, matchData, matchId, navigate, redirectMatchId, routeStateStatus])
-
-  if (routeStateStatus !== 'ready') {
-    return <RouteLoadingState />
-  }
-
-  const { setup, actions, startedAt } = routeState.record
+function MatchRouteReadyContent({ matchId, record }: MatchRouteReadyContentProps) {
+  const { setup, actions, startedAt } = record
 
   return (
     <ActiveMatchScreen
@@ -76,9 +62,7 @@ export function MatchRouteContent({ matchId, matchData }: MatchRouteContentProps
       initialSetup={setup}
       initialActions={actions}
       startedAt={startedAt}
-      {...(typeof routeState.record.finishedAt === 'number'
-        ? { finishedAt: routeState.record.finishedAt }
-        : {})}
+      {...(typeof record.finishedAt === 'number' ? { finishedAt: record.finishedAt } : {})}
     />
   )
 }

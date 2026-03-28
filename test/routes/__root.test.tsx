@@ -1,30 +1,17 @@
 import { describe, expect, test, vi, beforeAll } from 'vitest'
 
-// Note: i18n is initialized in beforeAll() before tests execute.
-// ESM imports are hoisted, so this import runs before beforeAll -
-// but the route component handles uninitialized i18n gracefully.
-import { i18n, resetI18nInitialization } from '@/lib/i18n/i18n'
+import { defaultTranslation, i18n, initializeI18n, resetI18nInitialization } from '@/lib/i18n'
+
+const { routerStateMock } = vi.hoisted(() => ({
+  routerStateMock: {
+    isRoutePending: false
+  }
+}))
 
 beforeAll(async () => {
-  // Reset any previous initialization state
-  resetI18nInitialization()
-
-  // Initialize i18n with test configuration
-  await i18n.init({
-    lng: 'en',
-    fallbackLng: 'en',
-    interpolation: {
-      escapeValue: false
-    },
-    react: {
-      useSuspense: false
-    },
-    resources: {
-      en: {
-        translation: {}
-      }
-    }
-  })
+  await resetI18nInitialization()
+  i18n.addResourceBundle('en', 'translation', defaultTranslation, true, true)
+  await initializeI18n()
 })
 
 vi.mock('@tanstack/react-router', async (importOriginal) => {
@@ -36,7 +23,7 @@ vi.mock('@tanstack/react-router', async (importOriginal) => {
     Outlet: () => <div>route outlet</div>,
     Scripts: () => <script type="application/json">scripts</script>,
     createRootRoute: (options: unknown) => ({ options }),
-    useRouterState: () => false
+    useRouterState: () => routerStateMock.isRoutePending
   }
 })
 
@@ -61,30 +48,25 @@ describe('root route', () => {
       content: 'width=device-width, initial-scale=1'
     })
     expect(headResult.meta).toContainEqual({ title: 'Padel Buddy' })
-    // The component now waits for i18n initialization
-    // In the initial render, it shows the loading state without Outlet
     expect(markup).toContain('<html lang="en">')
+    expect(markup).toContain('route outlet')
     expect(markup).toContain('scripts')
     expect(Route.options.notFoundComponent).toBeTypeOf('function')
   })
 
-  test('renders full document immediately when i18n is already initialized', () => {
+  test('renders full document immediately without an i18n bootstrap gate', async () => {
     const RootDocument = Route.options.component
 
     if (!RootDocument) {
       throw new Error('Expected the root route to expose component')
     }
 
-    // When i18n is already initialized (as it is in beforeAll),
-    // the component renders the full document immediately without loading flash
+    await resetI18nInitialization()
+
     const initialMarkup = renderToStaticMarkup(<RootDocument />)
+
     expect(initialMarkup).toContain('<html lang="en">')
-    // The Outlet should be rendered immediately since i18n is already initialized
     expect(initialMarkup).toContain('route outlet')
     expect(initialMarkup).toContain('scripts')
-
-    // Note: Testing async state transition requires browser tests with
-    // React Testing Library's act() and waitFor().
-    // The async behavior is covered in E2E tests.
   })
 })

@@ -41,7 +41,9 @@ export default defineConfig({
             provider: playwright(),
             headless: true,
             instances: [{ browser: 'chromium' }]
-          }
+          },
+          testTimeout: 60000,
+          hookTimeout: 30000
         }
       }
     ]

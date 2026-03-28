@@ -4,16 +4,19 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 import { render } from 'vitest-browser-react'
 
-import { currentMatchSchemaVersion } from '@/lib/current-match'
-import { MatchFinishRouteContent } from '@/routes/match.finish.$id'
-import { createTestSetup, winQuickSet } from '../core/match/test-helpers'
-
-const { mockNavigate, mockUseLoaderData } = vi.hoisted(() => ({
-  mockNavigate: vi.fn(),
+const { mockLoadCurrentMatch, mockUseLoaderData } = vi.hoisted(() => ({
+  mockLoadCurrentMatch: vi.fn(),
   mockUseLoaderData: vi.fn()
 }))
 
-const viewTransitionOptions = { viewTransition: true as const }
+vi.mock('@/lib/current-match', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/lib/current-match')>()
+
+  return {
+    ...actual,
+    loadCurrentMatch: mockLoadCurrentMatch
+  }
+})
 
 vi.mock('@tanstack/react-router', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@tanstack/react-router')>()
@@ -26,178 +29,210 @@ vi.mock('@tanstack/react-router', async (importOriginal) => {
       isPending: false,
       error: false
     }),
-    useNavigate: () => mockNavigate
+    redirect: (options: unknown) => options,
+    useRouter: () => ({
+      invalidate: vi.fn(),
+      preloadRoute: vi.fn()
+    }),
+    useNavigate: () => vi.fn()
   }
 })
 
-describe('match.finish.$id route content', () => {
+import { currentMatchSchemaVersion } from '@/lib/current-match'
+import { Route } from '@/routes/match.finish.$id'
+
+import { createTestSetup, winQuickSet } from '../core/match/test-helpers'
+
+describe('match.finish.$id route', () => {
+  const setup = createTestSetup()
+
   beforeEach(() => {
     vi.clearAllMocks()
   })
 
   test('redirects home when no saved match exists', async () => {
-    await render(<MatchFinishRouteContent matchData={{ status: 'empty' }} matchId="match-finish" />)
+    mockLoadCurrentMatch.mockResolvedValue({ status: 'empty' })
 
-    await vi.waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith({
-        to: '/',
-        replace: true,
-        search: { error: 'no-match' },
-        ...viewTransitionOptions
-      })
+    await expect(
+      getLoader()({
+        params: { id: 'match-finish' }
+      } as never)
+    ).rejects.toMatchObject({
+      to: '/',
+      replace: true,
+      search: { error: 'no-match' }
     })
   })
 
   test('redirects home when the saved match requires a reset', async () => {
-    await render(
-      <MatchFinishRouteContent
-        matchData={{
-          status: 'reset-required',
-          reason: 'schema-version',
-          storedSchemaVersion: currentMatchSchemaVersion - 1
-        }}
-        matchId="match-finish"
-      />
-    )
+    mockLoadCurrentMatch.mockResolvedValue({
+      status: 'reset-required',
+      reason: 'schema-version',
+      storedSchemaVersion: currentMatchSchemaVersion - 1
+    })
 
-    await vi.waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith({
-        to: '/',
-        replace: true,
-        search: { error: 'no-match' },
-        ...viewTransitionOptions
-      })
+    await expect(
+      getLoader()({
+        params: { id: 'match-finish' }
+      } as never)
+    ).rejects.toMatchObject({
+      to: '/',
+      replace: true,
+      search: { error: 'no-match' }
     })
   })
 
   test('redirects home when the saved match is corrupt', async () => {
-    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    mockLoadCurrentMatch.mockResolvedValue({
+      status: 'corrupt',
+      message: 'bad record'
+    })
 
-    try {
-      await render(
-        <MatchFinishRouteContent
-          matchData={{
-            status: 'corrupt',
-            message: 'bad record'
-          }}
-          matchId="match-finish"
-        />
-      )
+    await expect(
+      getLoader()({
+        params: { id: 'match-finish' }
+      } as never)
+    ).rejects.toMatchObject({
+      to: '/',
+      replace: true,
+      search: { error: 'corrupt' }
+    })
+  })
 
-      await vi.waitFor(() => {
-        expect(mockNavigate).toHaveBeenCalledWith({
-          to: '/',
-          replace: true,
-          search: { error: 'corrupt' },
-          ...viewTransitionOptions
-        })
-      })
-      expect(consoleErrorSpy).toHaveBeenCalledWith('Corrupted match data:', 'bad record')
-    } finally {
-      consoleErrorSpy.mockRestore()
+  test('loads ready data for completed matches', async () => {
+    const record = {
+      schemaVersion: currentMatchSchemaVersion,
+      matchId: 'match-finish',
+      setup,
+      actions: [...winQuickSet('team-1'), ...winQuickSet('team-1')],
+      startedAt: 1_000
     }
+
+    mockLoadCurrentMatch.mockResolvedValue({
+      status: 'ok',
+      record
+    })
+
+    await expect(getLoader()({ params: { id: 'match-finish' } } as never)).resolves.toMatchObject({
+      matchId: 'match-finish',
+      record,
+      projection: {
+        derived: {
+          status: 'completed'
+        }
+      }
+    })
   })
 
-  test('renders the finish screen for completed matches', async () => {
-    const setup = createTestSetup()
+  test('renders the finish screen for loader-ready matches', async () => {
+    const record = {
+      schemaVersion: currentMatchSchemaVersion,
+      matchId: 'match-finish',
+      setup,
+      actions: [...winQuickSet('team-1'), ...winQuickSet('team-1')],
+      startedAt: 1_000,
+      finishedAt: 2_000
+    }
 
-    const screen = await render(
-      <MatchFinishRouteContent
-        matchData={{
-          status: 'ok',
-          record: {
-            schemaVersion: currentMatchSchemaVersion,
-            matchId: 'match-finish',
-            setup,
-            actions: [...winQuickSet('team-1'), ...winQuickSet('team-1')],
-            startedAt: 1_000
-          }
-        }}
-        matchId="match-finish"
-      />
+    mockLoadCurrentMatch.mockResolvedValue({
+      status: 'ok',
+      record
+    })
+
+    mockUseLoaderData.mockReturnValue(
+      await getLoader()({ params: { id: 'match-finish' } } as never)
     )
+
+    const MatchFinishRouteComponent = getRouteComponent()
+    const screen = await render(<MatchFinishRouteComponent />)
 
     await expect.element(screen.getByTestId('match-end-screen')).toBeInTheDocument()
   })
 
-  test('renders the finish screen for manually finished matches', async () => {
-    const setup = createTestSetup()
+  test('loads ready data for manually finished matches', async () => {
+    const record = {
+      schemaVersion: currentMatchSchemaVersion,
+      matchId: 'match-finish',
+      setup,
+      actions: [],
+      startedAt: 1_000,
+      finishedAt: 2_000
+    }
 
-    const screen = await render(
-      <MatchFinishRouteContent
-        matchData={{
-          status: 'ok',
-          record: {
-            schemaVersion: currentMatchSchemaVersion,
-            matchId: 'match-finish',
-            setup,
-            actions: [],
-            startedAt: 1_000,
-            finishedAt: 2_000
-          }
-        }}
-        matchId="match-finish"
-      />
-    )
+    mockLoadCurrentMatch.mockResolvedValue({
+      status: 'ok',
+      record
+    })
 
-    await expect.element(screen.getByTestId('match-end-screen')).toBeInTheDocument()
+    await expect(getLoader()({ params: { id: 'match-finish' } } as never)).resolves.toMatchObject({
+      matchId: 'match-finish',
+      record
+    })
   })
 
   test('redirects in-progress matches back to the active route', async () => {
-    const setup = createTestSetup()
+    mockLoadCurrentMatch.mockResolvedValue({
+      status: 'ok',
+      record: {
+        schemaVersion: currentMatchSchemaVersion,
+        matchId: 'match-finish',
+        setup,
+        actions: [],
+        startedAt: 1_000
+      }
+    })
 
-    await render(
-      <MatchFinishRouteContent
-        matchData={{
-          status: 'ok',
-          record: {
-            schemaVersion: currentMatchSchemaVersion,
-            matchId: 'match-finish',
-            setup,
-            actions: [],
-            startedAt: 1_000
-          }
-        }}
-        matchId="match-finish"
-      />
-    )
-
-    await vi.waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith({
-        to: '/match/$id',
-        params: { id: 'match-finish' },
-        replace: true,
-        ...viewTransitionOptions
-      })
+    await expect(
+      getLoader()({
+        params: { id: 'match-finish' }
+      } as never)
+    ).rejects.toMatchObject({
+      to: '/match/$id',
+      params: { id: 'match-finish' },
+      replace: true
     })
   })
 
   test('redirects home when the saved match does not match the route id', async () => {
-    const setup = createTestSetup()
+    mockLoadCurrentMatch.mockResolvedValue({
+      status: 'ok',
+      record: {
+        schemaVersion: currentMatchSchemaVersion,
+        matchId: 'different-match',
+        setup,
+        actions: [...winQuickSet('team-1'), ...winQuickSet('team-1')],
+        startedAt: 1_000
+      }
+    })
 
-    await render(
-      <MatchFinishRouteContent
-        matchData={{
-          status: 'ok',
-          record: {
-            schemaVersion: currentMatchSchemaVersion,
-            matchId: 'different-match',
-            setup,
-            actions: [...winQuickSet('team-1'), ...winQuickSet('team-1')],
-            startedAt: 1_000
-          }
-        }}
-        matchId="match-finish"
-      />
-    )
-
-    await vi.waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith({
-        to: '/',
-        replace: true,
-        search: { error: 'invalid-match' },
-        ...viewTransitionOptions
-      })
+    await expect(
+      getLoader()({
+        params: { id: 'match-finish' }
+      } as never)
+    ).rejects.toMatchObject({
+      to: '/',
+      replace: true,
+      search: { error: 'invalid-match' }
     })
   })
 })
+
+function getLoader() {
+  const loader = Route.options.loader
+
+  if (typeof loader !== 'function') {
+    throw new Error('Expected the match finish route to expose a loader.')
+  }
+
+  return loader
+}
+
+function getRouteComponent() {
+  const component = Route.options.component
+
+  if (typeof component !== 'function') {
+    throw new Error('Expected the match finish route to expose a component.')
+  }
+
+  return component
+}

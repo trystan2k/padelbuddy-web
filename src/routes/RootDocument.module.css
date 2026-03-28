@@ -5,54 +5,8 @@
 
 .routeViewport {
   min-height: 100vh;
-  transition: opacity 180ms ease;
 }
 
-.routeViewportPending {
-  opacity: 0.78;
-}
-
-.routePendingOverlay {
-  position: fixed;
-  left: 50%;
-  bottom: calc(var(--base-space-24) + env(safe-area-inset-bottom));
-  z-index: var(--base-priority-xxl);
-  transform: translateX(-50%);
-  pointer-events: none;
-}
-
-.routePendingNotice {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--base-space-10);
-  padding: var(--base-space-10) var(--base-space-16);
-  border: 1px solid
-    color-mix(
-      in srgb,
-      var(--semantic-color-border-subtle) 72%,
-      var(--semantic-color-content-primary)
-    );
-  border-radius: 999px;
-  background:
-    linear-gradient(
-      145deg,
-      color-mix(in srgb, var(--semantic-color-content-inverse) 92%, transparent),
-      color-mix(in srgb, var(--semantic-color-background-surface-muted) 84%, transparent)
-    ),
-    var(--semantic-color-background-surface);
-  box-shadow: 0 1rem 2.5rem var(--base-color-common-overlay-soft);
-  backdrop-filter: blur(10px);
-}
-
-.routePendingLabel {
-  margin: 0;
-  font-size: var(--semantic-typography-size-body-sm);
-  font-weight: var(--semantic-typography-weight-strong);
-  color: var(--semantic-color-content-primary);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .routeViewport {
-    transition-duration: 0.01ms;
-  }
+.routePendingSpinner {
+  color: var(--semantic-color-content-accent-secondary);
 }

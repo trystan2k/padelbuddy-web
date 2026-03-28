@@ -1,98 +1,132 @@
 import i18n from 'i18next'
-import { initReactI18next } from 'react-i18next'
-import HttpBackend from 'i18next-http-backend'
 import type { InitOptions } from 'i18next'
+import { initReactI18next } from 'react-i18next'
 
-import { defaultLocale, isSupportedLocale, supportedLocales, type SupportedLocale } from './types'
 import { detectBrowserLocale, resolveInitialLocale } from './locale-detector'
 import { loadLocalePreference, saveLocalePreference } from './locale-storage'
+import enTranslation from './locales/en'
+import { loadLocaleResource } from './resources'
+import { defaultLocale, isSupportedLocale, supportedLocales, type SupportedLocale } from './types'
 
-let initializationPromise: Promise<void> | null = null
+let baseInitializationPromise: Promise<void> | null = null
+let localeReconciliationPromise: Promise<void> | null = null
 
 /**
  * Resets the initialization state. For testing purposes only.
  * @internal
  */
-export function resetI18nInitialization(): void {
-  initializationPromise = null
-}
+/**
+ * Resets the initialization state. For testing purposes only.
+ * @internal
+ */
+export async function resetI18nInitialization(): Promise<void> {
+  localeReconciliationPromise = null
 
-export interface InitializeI18nOptions {
-  /**
-   * Whether to skip the HTTP backend for loading translations.
-   * Set to true for tests that add resources manually.
-   * Defaults to false (uses HttpBackend).
-   */
-  skipBackend?: boolean
+  for (const locale of supportedLocales) {
+    if (locale === defaultLocale || !i18n.hasResourceBundle(locale, 'translation')) {
+      continue
+    }
+
+    i18n.removeResourceBundle(locale, 'translation')
+  }
+
+  await i18n.changeLanguage(defaultLocale)
 }
 
 /**
- * Initializes the i18n system. Should be called once at app startup.
- * Loads stored preference, detects browser language, and configures react-i18next.
- *
- * @param options - Configuration options for i18n initialization
- * @param options.skipBackend - Set to true to skip backend loading (for tests)
+ * Initializes the i18n system. The default locale is bundled synchronously,
+ * while persisted/browser locale reconciliation happens asynchronously.
  */
-export async function initializeI18n(options: InitializeI18nOptions = {}): Promise<void> {
-  // Return existing promise if already initializing
-  if (initializationPromise) {
-    return initializationPromise
+export async function initializeI18n(): Promise<void> {
+  await ensureBaseInitialization()
+
+  if (localeReconciliationPromise) {
+    return localeReconciliationPromise
   }
 
-  initializationPromise = (async () => {
-    try {
-      // Try to load stored preference, but don't fail if IndexedDB is unavailable
-      let storedPreference = null
-      try {
-        storedPreference = await loadLocalePreference()
-      } catch {
-        // IndexedDB not available (e.g., in test environment), use null
-      }
-      const browserLocale = detectBrowserLocale()
-      const initialLocale = resolveInitialLocale(storedPreference, browserLocale)
+  localeReconciliationPromise = reconcileInitialLocale().catch((error) => {
+    localeReconciliationPromise = null
+    throw error
+  })
 
-      const baseConfig: InitOptions = {
-        lng: initialLocale,
-        fallbackLng: defaultLocale,
-        supportedLngs: [...supportedLocales],
-        interpolation: {
-          escapeValue: false // React already escapes values
-        },
-        react: {
-          useSuspense: false
-        }
-      }
+  return localeReconciliationPromise
+}
 
-      if (options.skipBackend) {
-        // No backend - tests should add resources manually
-        await i18n.use(initReactI18next).init({
-          ...baseConfig,
-          resources: {}
-        })
-      } else {
-        await i18n
-          .use(HttpBackend)
-          .use(initReactI18next)
-          .init({
-            ...baseConfig,
-            backend: {
-              loadPath: '/locales/{{lng}}.json'
-            }
-          })
+async function ensureBaseInitialization(): Promise<void> {
+  if (!baseInitializationPromise) {
+    baseInitializationPromise = i18n
+      .use(initReactI18next)
+      .init(createBaseConfig())
+      .then(() => undefined)
+  }
+
+  await baseInitializationPromise
+}
+
+function createBaseConfig(): InitOptions {
+  return {
+    lng: defaultLocale,
+    fallbackLng: defaultLocale,
+    supportedLngs: [...supportedLocales],
+    defaultNS: 'translation',
+    ns: ['translation'],
+    partialBundledLanguages: true,
+    initImmediate: false,
+    interpolation: {
+      escapeValue: false
+    },
+    react: {
+      useSuspense: false
+    },
+    resources: {
+      [defaultLocale]: {
+        translation: enTranslation
       }
-    } catch (error) {
-      initializationPromise = null
-      throw error
     }
-  })()
+  }
+}
 
-  return initializationPromise
+async function reconcileInitialLocale(): Promise<void> {
+  let storedPreference: SupportedLocale | null = null
+
+  try {
+    storedPreference = await loadLocalePreference()
+  } catch {
+    storedPreference = null
+  }
+
+  const browserLocale = detectBrowserLocale()
+  const initialLocale = resolveInitialLocale(storedPreference, browserLocale)
+
+  await applyLocale(initialLocale)
+}
+
+async function applyLocale(locale: SupportedLocale): Promise<void> {
+  await ensureLocaleResource(locale)
+
+  if (i18n.resolvedLanguage === locale || i18n.language === locale) {
+    return
+  }
+
+  await i18n.changeLanguage(locale)
+}
+
+async function ensureLocaleResource(locale: SupportedLocale): Promise<void> {
+  if (i18n.hasResourceBundle(locale, 'translation')) {
+    return
+  }
+
+  const resource = await loadLocaleResource(locale)
+  i18n.addResourceBundle(locale, 'translation', resource.translation, true, true)
 }
 
 /**
  * Changes the current locale and persists the preference.
  */
 export async function changeLocale(locale: SupportedLocale): Promise<void> {
+  await ensureBaseInitialization()
+  await ensureLocaleResource(locale)
+
   // Try to save preference, but don't fail if IndexedDB is unavailable
   try {
     await saveLocalePreference(locale)
@@ -106,7 +140,7 @@ export async function changeLocale(locale: SupportedLocale): Promise<void> {
  * Gets the current locale.
  */
 export function getCurrentLocale(): SupportedLocale {
-  const currentLang = i18n.language
+  const currentLang = i18n.resolvedLanguage ?? i18n.language
 
   if (isSupportedLocale(currentLang)) {
     return currentLang
@@ -116,3 +150,5 @@ export function getCurrentLocale(): SupportedLocale {
 }
 
 export { i18n }
+
+void ensureBaseInitialization()

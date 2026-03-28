@@ -3,10 +3,12 @@ export {
   getCurrentLocale,
   i18n,
   initializeI18n,
-  type InitializeI18nOptions
+  resetI18nInitialization
 } from './i18n'
 export { detectBrowserLocale, resolveInitialLocale } from './locale-detector'
 export { LOCALE_FLAGS, LOCALE_LABELS } from './locale-display'
+export { default as defaultTranslation } from './locales/en'
+export { loadLocaleResource, type TranslationResource } from './resources'
 export {
   clearLocalePreference,
   createLocaleStorage,
