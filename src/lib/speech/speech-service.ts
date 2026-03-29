@@ -264,9 +264,9 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
 
   const speak = useCallback(
     (text: string, options?: SpeechOptions) => {
-      // Read current voice from voiceRef to avoid stale closure issues
-      // voiceRef is kept in sync with state via setVoice calls
-      const currentVoice = voiceRef.current ?? voice
+      // Read voice from state - the dependency array ensures speak is recreated when voice changes
+      // This prevents stale closure issues where speak captured a null voice from initial render
+      const currentVoice = voice
       if (destroyedRef.current || muted || !text) {
         return
       }
