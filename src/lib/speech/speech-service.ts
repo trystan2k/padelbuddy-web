@@ -287,7 +287,7 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
 
       const utterance = new SpeechSynthesisUtterance(text)
       utterance.voice = voice
-      utterance.lang = options?.lang ?? voice.lang
+      utterance.lang = options?.lang || voice?.lang || getSafeLocale(i18n.language)
       utterance.rate = 1.0
       utterance.pitch = 1.0
 
@@ -487,7 +487,7 @@ export function createSpeechService(config: SpeechServiceConfig = {}): SpeechSer
 
     const utterance = new SpeechSynthesisUtterance(text)
     utterance.voice = currentVoice
-    utterance.lang = options?.lang ?? currentVoice?.lang ?? getSafeLocale(i18n.language)
+    utterance.lang = options?.lang || currentVoice?.lang || getSafeLocale(i18n.language)
     utterance.rate = 1.0
     utterance.pitch = 1.0
 

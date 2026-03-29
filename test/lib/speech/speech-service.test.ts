@@ -691,9 +691,9 @@ describe('createSpeechService', () => {
       service.speak('Hello')
 
       expect(mockSpeechSynthesis.speak).toHaveBeenCalled()
-      // voice.lang is '' (empty string), ?? does NOT trigger for empty string,
-      // so utterance.lang should be ''
-      expect(utterances[0]!.lang).toBe('')
+      // voice.lang is '' (empty string), || treats empty string as falsy,
+      // so utterance.lang falls back to getSafeLocale(i18n.language) = 'en'
+      expect(utterances[0]!.lang).toBe('en')
     })
 
     it('uses getSafeLocale fallback when voice lang is undefined', async () => {

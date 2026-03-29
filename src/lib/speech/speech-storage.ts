@@ -56,11 +56,20 @@ export function createSpeechStorage(options: SpeechStorageOptions = {}): SpeechS
         return null
       }
 
-      if (typeof storedPrefs.voiceName !== 'string' && storedPrefs.voiceName !== null) {
+      if (
+        typeof storedPrefs.voiceName !== 'string' &&
+        storedPrefs.voiceName !== null &&
+        storedPrefs.voiceName !== undefined
+      ) {
         return null
       }
 
-      return storedPrefs
+      const normalizedPrefs: SpeechPreferences = {
+        ...storedPrefs,
+        voiceName: storedPrefs.voiceName ?? null
+      }
+
+      return normalizedPrefs
     })
   }
 

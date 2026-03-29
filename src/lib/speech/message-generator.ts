@@ -33,19 +33,16 @@ function formatChairUmpireScore(
   gameMode: SpeechEventData['gameMode']
 ): string {
   const t = i18n.t.bind(i18n)
-  const normalizedTeam1Score = normalizeScoreValue(team1Score)
-  const normalizedTeam2Score = normalizeScoreValue(team2Score)
+  const team1Word = getScoreWord(team1Score)
+  const team2Word = getScoreWord(team2Score)
 
-  if (normalizedTeam1Score === '40' && normalizedTeam2Score === '40') {
+  if (team1Word === 'Forty' && team2Word === 'Forty') {
     return gameMode === 'golden-point'
       ? t('score.announcements.goldenPoint')
       : t('score.announcements.deuce')
   }
 
-  const team1Word = getScoreWord(normalizedTeam1Score)
-  const team2Word = getScoreWord(normalizedTeam2Score)
-
-  if (normalizedTeam1Score === normalizedTeam2Score) {
+  if (team1Word === team2Word) {
     return `${team1Word} - ${t('score.announcements.all')}`
   }
 
