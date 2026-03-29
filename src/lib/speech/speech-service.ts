@@ -15,6 +15,8 @@ import {
 } from './types'
 import { findVoiceByName, getAvailableVoices, selectVoice } from './voice-selector'
 
+const maxPendingAnnouncements = 10
+
 /**
  * Safely extracts a valid SupportedLocale from i18n.language.
  * Falls back to defaultLocale if the language is not supported.
@@ -190,7 +192,10 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
           pendingAnnouncementsRef.current = []
         }
 
-        pendingAnnouncementsRef.current.push({ text, options })
+        if (pendingAnnouncementsRef.current.length < maxPendingAnnouncements) {
+          pendingAnnouncementsRef.current.push({ text, options })
+        }
+
         return
       }
 

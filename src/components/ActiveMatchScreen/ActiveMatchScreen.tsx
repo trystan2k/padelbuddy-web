@@ -98,30 +98,48 @@ function getLeadingTeam(projection: MatchProjection): MatchTeamId | null {
   return team1Leads ? 'team-1' : 'team-2'
 }
 
-function getPointPressure(projection: MatchProjection): SpeechEventData['pointPressure'] {
+function getPointPressureContext(projection: MatchProjection): {
+  pressure: SpeechEventData['pointPressure']
+  team: MatchTeamId | null
+} {
   const matchPointTeam = getPressureTeam(projection, 'match')
 
   if (matchPointTeam) {
-    return 'match-point'
+    return {
+      pressure: 'match-point',
+      team: matchPointTeam
+    }
   }
 
   const setPointTeam = getPressureTeam(projection, 'set')
 
   if (setPointTeam) {
-    return 'set-point'
+    return {
+      pressure: 'set-point',
+      team: setPointTeam
+    }
   }
 
   const leadingTeam = getLeadingTeam(projection)
 
   if (!leadingTeam) {
-    return undefined
+    return {
+      pressure: undefined,
+      team: null
+    }
   }
 
   if (!projection.setup.servingIndicatorEnabled) {
-    return 'game-point'
+    return {
+      pressure: 'game-point',
+      team: leadingTeam
+    }
   }
 
-  return leadingTeam === projection.derived.servingTeam ? 'game-point' : 'break-point'
+  return {
+    pressure: leadingTeam === projection.derived.servingTeam ? 'game-point' : 'break-point',
+    team: null
+  }
 }
 
 function getPressureTeam(
@@ -160,14 +178,7 @@ function createPointScoredEvent(
     return null
   }
 
-  const pointPressure = getPointPressure(projection)
-  const leadingTeam = getLeadingTeam(projection)
-  const pointPressureTeam =
-    pointPressure === 'set-point' || pointPressure === 'match-point'
-      ? getPressureTeam(projection, pointPressure === 'match-point' ? 'match' : 'set')
-      : pointPressure === 'game-point' && !projection.setup.servingIndicatorEnabled
-        ? (leadingTeam ?? undefined)
-        : undefined
+  const { pressure: pointPressure, team: pointPressureTeam } = getPointPressureContext(projection)
 
   return {
     eventType: 'point-scored',
@@ -278,16 +289,10 @@ export function ActiveMatchScreen({
     speechService.announce(event)
   )
   const cancelRef = useRef<() => void>(() => {})
-  const destroySpeechRef = useRef<() => void>(() => {
-    speechService.destroy()
-  })
 
   useLayoutEffect(() => {
     announceSpeechRef.current = (event) => {
       speechService.announce(event)
-    }
-    destroySpeechRef.current = () => {
-      speechService.destroy()
     }
     cancelRef.current = () => {
       speechService.cancel()
