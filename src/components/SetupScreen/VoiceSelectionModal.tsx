@@ -118,9 +118,9 @@ export function VoiceSelectionModal({
 
     const utterance = new SpeechSynthesisUtterance(previewText)
     utterance.voice = previewVoice
-    utterance.lang = previewVoice.lang
+    utterance.lang = previewVoice.lang || localePrefix
     speechSynthesis.speak(utterance)
-  }, [previewText, previewVoice])
+  }, [previewText, previewVoice, localePrefix])
 
   const handleAccept = useCallback(() => {
     if (!previewVoice) {
@@ -151,8 +151,10 @@ export function VoiceSelectionModal({
 
               <div className={styles.field}>
                 <Select.Root value={previewVoice?.name ?? null} onValueChange={handleVoiceChange}>
+                  {/* oxlint-disable jsx-a11y/label-has-associated-control -- Base UI Select.Label and
+                    Select.Trigger are associated through the component's ARIA pattern, not htmlFor */}
                   <Select.Label
-                    render={(labelProps) => <div {...labelProps} className={styles.label} />}
+                    render={(labelProps) => <label {...labelProps} className={styles.label} />}
                   >
                     {t('setup.voiceSelection.selectVoice')}
                   </Select.Label>

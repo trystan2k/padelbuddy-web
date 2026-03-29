@@ -153,7 +153,9 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
         }
       }
 
-      // Bail out only if the component has been permanently destroyed
+      // Bail out only if the component has been permanently destroyed.
+      // Note: we check destroyedRef (not abort signal) because destroyedRef is only set
+      // when destroy() is called (genuine unmount), not during React Strict Mode remount cycles.
       if (destroyedRef.current) return
 
       if (typeof speechSynthesis === 'undefined') {

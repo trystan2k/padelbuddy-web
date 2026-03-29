@@ -9,7 +9,9 @@ export function selectVoice(
   voices: SpeechSynthesisVoice[]
 ): SpeechSynthesisVoice | null {
   const googleVoice = voices.find(
-    (voice) => voice.name.toLowerCase().includes('google') && voice.lang.startsWith(locale)
+    (voice) =>
+      voice.name.toLowerCase().includes('google') &&
+      voice.lang.toLowerCase().startsWith(locale.toLowerCase())
   )
 
   if (googleVoice) {
