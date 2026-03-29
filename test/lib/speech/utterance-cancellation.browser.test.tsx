@@ -74,18 +74,16 @@ describe('utterance-cancellation', () => {
       expect(speechService?.getVoice()).not.toBeNull()
     })
 
-    // Trigger onvoiceschanged to resolve getAvailableVoices promise
-    if (mockSpeechSynthesis.onvoiceschanged) {
-      mockSpeechSynthesis.onvoiceschanged.call(
-        mockSpeechSynthesis as unknown as SpeechSynthesis,
-        new Event('voiceschanged')
-      )
-    }
-
-    // Wait for voice to be available
+    // Additional wait to ensure the voice state is fully settled in the speak closure
+    // The speak function captures voice from state, so we need to ensure it's set
     await vi.waitFor(() => {
       expect(speechService?.getVoice()).not.toBeNull()
     })
+
+    // Ensure speak doesn't return early by checking voice is available
+    // Use getVoice which reads from state, matching what speak() checks internally
+    const voice = speechService!.getVoice()
+    expect(voice).not.toBeNull()
 
     speechService!.speak('First message')
     speechService!.speak('Second message', { immediate: true })

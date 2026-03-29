@@ -12,6 +12,10 @@ export { expect }
  */
 export const test = base.extend({
   page: async ({ page }, use) => {
+    // Hide DebugPwa overlay before any page loads so it doesn't block clicks
+    await page.addInitScript(() => {
+      localStorage.setItem('debug-pwa-closed', 'true')
+    })
     await use(page)
     // Teardown: clear all browser state so tests are idempotent
     await page.evaluate((dbName) => {

@@ -118,7 +118,14 @@ export default {
       set: 'Set',
       match: 'Match',
       serving: 'Serving',
-      all: 'all'
+      all: 'All',
+      deuce: 'Deuce',
+      goldenPoint: 'Golden Point',
+      correction: 'Correction.',
+      gamePoint: 'Game point {{teamName}}',
+      breakPoint: 'Break point',
+      setPoint: 'Set point {{teamName}}',
+      matchPoint: 'Match point {{teamName}}'
     }
   },
   share: {
@@ -165,6 +172,8 @@ export default {
       bestOf5: 'Best of 5'
     },
     rules: {
+      audioAnnouncements: 'Audio Announcements',
+      audioAnnouncementsHint: 'Speak chair umpire scoring updates aloud',
       goldenPoint: 'Golden Point',
       goldenPointHint: 'No advantage on deuce',
       superTiebreak: 'Super Tiebreak',
@@ -211,6 +220,14 @@ export default {
         saveError: 'Could not save the remote controller bindings.',
         saveSuccess: 'Remote controller bindings saved.'
       }
+    },
+    voiceSelection: {
+      title: 'Select voice',
+      selectVoice: 'Select a voice',
+      preview: 'Preview',
+      previewLink: 'Setup voice',
+      cancel: 'Cancel',
+      accept: 'Accept'
     },
     startButton: 'Start Match',
     validation: {
@@ -283,6 +300,10 @@ export default {
         download: 'Match image downloaded.',
         textFinishedEarly:
           'The {{formatLabel}} Padel Buddy match between {{teamOneName}} and {{teamTwoName}} finished early after {{durationValue}} and {{totalGames}} games.'
+      },
+      speech: {
+        victory: 'Victory {{teamName}}',
+        tiedMatch: 'Tied match'
       },
       aria: {
         summaryRegion: 'Match result summary',

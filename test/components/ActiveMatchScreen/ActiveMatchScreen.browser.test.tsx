@@ -8,7 +8,12 @@ import { ActiveMatchScreen } from '@/components/ActiveMatchScreen/ActiveMatchScr
 import teamPanelStyles from '@/components/ActiveMatchScreen/TeamPanel/TeamPanel.module.css'
 import { createRemoteControllerBindings } from '@/lib/input'
 
-import { createTestSetup, scorePoints, winQuickSet } from '../../core/match/test-helpers'
+import {
+  createTestSetup,
+  scorePoints,
+  winQuickGame,
+  winQuickSet
+} from '../../core/match/test-helpers'
 import { resolveCssColor } from '../../utils/css'
 
 function formatTimeOfDay(date: Date): string {
@@ -17,13 +22,21 @@ function formatTimeOfDay(date: Date): string {
     .join(':')
 }
 
-const { mockInvalidate, mockNavigate, mockPreloadRoute, mockLoadRemoteControllerBindings } =
-  vi.hoisted(() => ({
-    mockInvalidate: vi.fn(async () => undefined),
-    mockNavigate: vi.fn(),
-    mockPreloadRoute: vi.fn(async () => undefined),
-    mockLoadRemoteControllerBindings: vi.fn()
-  }))
+const {
+  mockInvalidate,
+  mockNavigate,
+  mockPreloadRoute,
+  mockLoadRemoteControllerBindings,
+  mockSpeechAnnounce,
+  mockSpeechDestroy
+} = vi.hoisted(() => ({
+  mockInvalidate: vi.fn(async () => undefined),
+  mockNavigate: vi.fn(),
+  mockPreloadRoute: vi.fn(async () => undefined),
+  mockLoadRemoteControllerBindings: vi.fn(),
+  mockSpeechAnnounce: vi.fn(),
+  mockSpeechDestroy: vi.fn()
+}))
 
 vi.mock('@tanstack/react-router', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@tanstack/react-router')>()
@@ -57,6 +70,26 @@ vi.mock('@/lib/input', async (importOriginal) => {
   }
 })
 
+vi.mock('@/lib/speech', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/lib/speech')>()
+
+  return {
+    ...actual,
+    useSpeechService: () => ({
+      announce: mockSpeechAnnounce,
+      destroy: mockSpeechDestroy,
+      cancel: vi.fn(),
+      getMuted: vi.fn(() => false),
+      setMuted: vi.fn(),
+      getVerbosity: vi.fn(() => 'standard'),
+      setVerbosity: vi.fn(),
+      getVoice: vi.fn(() => null),
+      isSupported: vi.fn(() => true),
+      speak: vi.fn()
+    })
+  }
+})
+
 describe('ActiveMatchScreen', () => {
   const defaultStartedAt = Date.now() - 5 * 60 * 1000
 
@@ -65,6 +98,8 @@ describe('ActiveMatchScreen', () => {
     mockInvalidate.mockResolvedValue(undefined)
     mockPreloadRoute.mockResolvedValue(undefined)
     mockLoadRemoteControllerBindings.mockResolvedValue(null)
+    mockSpeechAnnounce.mockReset()
+    mockSpeechDestroy.mockReset()
   })
 
   afterEach(() => {
@@ -300,6 +335,172 @@ describe('ActiveMatchScreen', () => {
 
     await vi.waitFor(() => {
       expect(readDisplayedScore(screen, 'team-1')).toBe('15')
+    })
+  })
+
+  test('does not announce anything on initial render', async () => {
+    await render(
+      <ActiveMatchScreen
+        matchId="test-match"
+        initialSetup={createTestSetup()}
+        initialActions={[]}
+        startedAt={defaultStartedAt}
+      />
+    )
+
+    expect(mockSpeechAnnounce).not.toHaveBeenCalled()
+  })
+
+  test('announces updated score after a point when audio announcements are enabled', async () => {
+    const screen = await render(
+      <ActiveMatchScreen
+        matchId="test-match"
+        initialSetup={createTestSetup()}
+        initialActions={[]}
+        startedAt={defaultStartedAt}
+      />
+    )
+
+    await screen.getByTestId('team-panel-team-1').click()
+
+    await vi.waitFor(() => {
+      expect(mockSpeechAnnounce).toHaveBeenCalledWith(
+        expect.objectContaining({
+          eventType: 'point-scored',
+          team1Score: '15',
+          team2Score: '0',
+          gameMode: 'advantage'
+        })
+      )
+    })
+  })
+
+  test('stays silent when audio announcements are disabled', async () => {
+    const screen = await render(
+      <ActiveMatchScreen
+        matchId="test-match"
+        initialSetup={createTestSetup({ audioAnnouncementsEnabled: false })}
+        initialActions={[]}
+        startedAt={defaultStartedAt}
+      />
+    )
+
+    await screen.getByTestId('team-panel-team-1').click()
+
+    await vi.waitFor(() => {
+      expect(readDisplayedScore(screen, 'team-1')).toBe('15')
+    })
+
+    expect(mockSpeechAnnounce).not.toHaveBeenCalled()
+  })
+
+  test('marks undo announcements as corrections', async () => {
+    const screen = await render(
+      <ActiveMatchScreen
+        matchId="test-match"
+        initialSetup={createTestSetup()}
+        initialActions={scorePoints('team-1', 'team-1')}
+        startedAt={defaultStartedAt}
+      />
+    )
+
+    await screen.getByTestId('revert-button-team-1').click()
+
+    await vi.waitFor(() => {
+      expect(mockSpeechAnnounce).toHaveBeenCalledWith(
+        expect.objectContaining({
+          eventType: 'point-scored',
+          isCorrection: true,
+          team1Score: '15',
+          team2Score: '0'
+        })
+      )
+    })
+  })
+
+  test('announces winning points as game events instead of reset scores', async () => {
+    const screen = await render(
+      <ActiveMatchScreen
+        matchId="test-match"
+        initialSetup={createTestSetup()}
+        initialActions={scorePoints('team-1', 'team-1', 'team-1')}
+        startedAt={defaultStartedAt}
+      />
+    )
+
+    await screen.getByTestId('team-panel-team-1').click()
+
+    await vi.waitFor(() => {
+      expect(mockSpeechAnnounce).toHaveBeenCalledWith(
+        expect.objectContaining({
+          eventType: 'game-won',
+          winningTeam: 'team-1'
+        })
+      )
+    })
+    expect(mockSpeechAnnounce).not.toHaveBeenCalledWith(
+      expect.objectContaining({
+        eventType: 'point-scored',
+        team1Score: '0',
+        team2Score: '0'
+      })
+    )
+  })
+
+  test('announces set point when a team can win the set on the next point', async () => {
+    const screen = await render(
+      <ActiveMatchScreen
+        matchId="test-match"
+        initialSetup={createTestSetup()}
+        initialActions={[
+          ...Array.from({ length: 5 }, () => winQuickGame('team-1')).flat(),
+          ...scorePoints('team-1', 'team-1')
+        ]}
+        startedAt={defaultStartedAt}
+      />
+    )
+
+    await screen.getByTestId('team-panel-team-1').click()
+
+    await vi.waitFor(() => {
+      expect(mockSpeechAnnounce).toHaveBeenCalledWith(
+        expect.objectContaining({
+          eventType: 'point-scored',
+          pointPressure: 'set-point',
+          pointPressureTeam: 'team-1',
+          team1Score: '40',
+          team2Score: '0'
+        })
+      )
+    })
+  })
+
+  test('announces match point when a team can win the match on the next point', async () => {
+    const screen = await render(
+      <ActiveMatchScreen
+        matchId="test-match"
+        initialSetup={createTestSetup()}
+        initialActions={[
+          ...winQuickSet('team-1'),
+          ...Array.from({ length: 5 }, () => winQuickGame('team-1')).flat(),
+          ...scorePoints('team-1', 'team-1')
+        ]}
+        startedAt={defaultStartedAt}
+      />
+    )
+
+    await screen.getByTestId('team-panel-team-1').click()
+
+    await vi.waitFor(() => {
+      expect(mockSpeechAnnounce).toHaveBeenCalledWith(
+        expect.objectContaining({
+          eventType: 'point-scored',
+          pointPressure: 'match-point',
+          pointPressureTeam: 'team-1',
+          team1Score: '40',
+          team2Score: '0'
+        })
+      )
     })
   })
 

@@ -6,6 +6,8 @@
   display: flex;
   flex-direction: column;
   gap: var(--base-space-24);
+  min-height: 0;
+  overflow: hidden;
 }
 
 /* Left column (teams section) */
@@ -22,6 +24,7 @@
   flex-direction: column;
   gap: var(--base-space-16);
   min-height: 0;
+  overflow: hidden;
 }
 
 /* Team cards */
@@ -111,10 +114,33 @@
 .rulesCard {
   padding: var(--component-card-rules-padding);
   display: flex;
-  flex: 1;
   flex-direction: column;
-  justify-content: space-between;
+  gap: var(--component-card-rules-gap);
+  justify-content: flex-start;
+  flex: 1;
   min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.voicePreviewButton {
+  align-self: flex-start;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-family: var(--semantic-typography-family-body);
+  font-size: var(--base-font-size-15);
+  font-weight: var(--base-font-weight-medium);
+  color: var(--semantic-color-content-accent-primary);
+  text-decoration: underline;
+  text-underline-offset: 0.16em;
+  cursor: pointer;
+}
+
+.voicePreviewButton:focus-visible {
+  outline: 2px solid var(--semantic-color-action-accent-primary);
+  outline-offset: 2px;
+  border-radius: var(--base-radius-8);
 }
 
 .countdownSection {

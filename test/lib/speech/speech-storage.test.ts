@@ -17,6 +17,7 @@ describe('speech-storage', () => {
     const prefs: SpeechPreferences = {
       muted: true,
       verbosity: 'verbose',
+      voiceName: null,
       updatedAt: '2024-01-01T00:00:00.000Z'
     }
     await storage.saveSpeechPreferences(prefs)
@@ -41,6 +42,7 @@ describe('speech-storage', () => {
     const prefs: SpeechPreferences = {
       muted: false,
       verbosity: 'standard',
+      voiceName: null,
       updatedAt: '2024-01-01T00:00:00.000Z'
     }
     await storage.saveSpeechPreferences(prefs)
@@ -110,6 +112,7 @@ describe('speech-storage', () => {
     const prefs: SpeechPreferences = {
       muted: true,
       verbosity: 'minimal',
+      voiceName: null,
       updatedAt: '2024-01-01T00:00:00.000Z'
     }
     await expect(storage.saveSpeechPreferences(prefs)).rejects.toThrowError(
@@ -151,6 +154,7 @@ describe('speech-storage', () => {
     const minimalPrefs: SpeechPreferences = {
       muted: false,
       verbosity: 'minimal',
+      voiceName: null,
       updatedAt: '2024-01-01T00:00:00.000Z'
     }
     await storage.saveSpeechPreferences(minimalPrefs)
@@ -160,6 +164,7 @@ describe('speech-storage', () => {
     const standardPrefs: SpeechPreferences = {
       muted: false,
       verbosity: 'standard',
+      voiceName: null,
       updatedAt: '2024-01-01T00:01:00.000Z'
     }
     await storage.saveSpeechPreferences(standardPrefs)
@@ -169,6 +174,7 @@ describe('speech-storage', () => {
     const verbosePrefs: SpeechPreferences = {
       muted: false,
       verbosity: 'verbose',
+      voiceName: null,
       updatedAt: '2024-01-01T00:02:00.000Z'
     }
     await storage.saveSpeechPreferences(verbosePrefs)
@@ -185,6 +191,7 @@ describe('speech-storage', () => {
     const initialPrefs: SpeechPreferences = {
       muted: false,
       verbosity: 'standard',
+      voiceName: null,
       updatedAt: '2024-01-01T00:00:00.000Z'
     }
     await storage.saveSpeechPreferences(initialPrefs)
@@ -192,12 +199,47 @@ describe('speech-storage', () => {
     const updatedPrefs: SpeechPreferences = {
       muted: true,
       verbosity: 'minimal',
+      voiceName: null,
       updatedAt: '2024-01-02T00:00:00.000Z'
     }
     await storage.saveSpeechPreferences(updatedPrefs)
 
     const loaded = await storage.loadSpeechPreferences()
     expect(loaded).toEqual(updatedPrefs)
+  })
+
+  it('returns null when stored verbosity is invalid', async () => {
+    const initialStorage = new Map<string, unknown>()
+    initialStorage.set('speech-preference', {
+      muted: false,
+      verbosity: 'invalid-verbosity',
+      voiceName: null,
+      updatedAt: '2024-01-01T00:00:00.000Z'
+    })
+
+    const fakeIndexedDb = createFakeIndexedDb({ initialStorage })
+    vi.stubGlobal('indexedDB', fakeIndexedDb.factory)
+
+    const storage = createSpeechStorage({ databaseName: 'test-invalid-verbosity-db' })
+    const loaded = await storage.loadSpeechPreferences()
+    expect(loaded).toBeNull()
+  })
+
+  it('returns null when stored voiceName is an object (invalid type)', async () => {
+    const initialStorage = new Map<string, unknown>()
+    initialStorage.set('speech-preference', {
+      muted: false,
+      verbosity: 'standard',
+      voiceName: { name: 'Test Voice' },
+      updatedAt: '2024-01-01T00:00:00.000Z'
+    })
+
+    const fakeIndexedDb = createFakeIndexedDb({ initialStorage })
+    vi.stubGlobal('indexedDB', fakeIndexedDb.factory)
+
+    const storage = createSpeechStorage({ databaseName: 'test-invalid-voicename-db' })
+    const loaded = await storage.loadSpeechPreferences()
+    expect(loaded).toBeNull()
   })
 })
 
@@ -207,10 +249,11 @@ function createFakeIndexedDb(
     openOutcome?: 'success' | 'error' | 'blocked'
     getOutcome?: 'success' | 'error'
     writeOutcome?: 'complete' | 'error' | 'abort'
+    initialStorage?: Map<string, unknown>
   } = {}
 ) {
   const createdObjectStores: string[] = []
-  const storage = new Map<string, unknown>()
+  const storage = options.initialStorage ?? new Map<string, unknown>()
   const config = {
     storeExists: options.storeExists ?? false,
     openOutcome: options.openOutcome ?? 'success',

@@ -1,6 +1,7 @@
 import {
   countdownTimerDurations,
   createMatchSetup,
+  defaultAudioAnnouncementsEnabled,
   defaultCountdownTimerDuration,
   defaultCountdownTimerEnabled,
   defaultServingIndicatorEnabled,
@@ -174,6 +175,10 @@ function parseMatchSetup(input: unknown): MatchSetup {
     gameMode: setup.gameMode,
     initialServer: setup.initialServer,
     decidingSetSuperTiebreak: setup.decidingSetSuperTiebreak,
+    audioAnnouncementsEnabled:
+      typeof setup.audioAnnouncementsEnabled === 'boolean'
+        ? setup.audioAnnouncementsEnabled
+        : defaultAudioAnnouncementsEnabled,
     servingIndicatorEnabled:
       typeof setup.servingIndicatorEnabled === 'boolean'
         ? setup.servingIndicatorEnabled

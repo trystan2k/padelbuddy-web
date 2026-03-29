@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import {
   findVoiceByName,
+  getAllVoicesGroupedByLocale,
   getDefaultVoiceForLocale,
   getAvailableVoices,
   selectVoice
@@ -17,6 +18,17 @@ const mockVoices = [
 
 describe('voice-selector', () => {
   describe('selectVoice', () => {
+    it('prefers Google voice when available for locale', () => {
+      const voicesWithGoogle = [
+        { lang: 'es-MX', name: 'Spanish Mexico' },
+        { lang: 'es-ES', name: 'Google español' }
+      ] as SpeechSynthesisVoice[]
+
+      const result = selectVoice('es', voicesWithGoogle)
+
+      expect(result?.name).toBe('Google español')
+    })
+
     it('selects voice matching locale (pt)', () => {
       const result = selectVoice('pt', mockVoices)
       expect(result?.lang).toBe('pt-BR')
@@ -163,6 +175,35 @@ describe('voice-selector', () => {
         expect.any(Function)
       )
     })
+
+    it('rejects when signal is already aborted', async () => {
+      const controller = new AbortController()
+      controller.abort()
+
+      await expect(getAvailableVoices(controller.signal)).rejects.toThrowError('Operation aborted')
+    })
+
+    it('rejects when signal is aborted during operation', async () => {
+      const listeners = new Map<string, Set<EventListener>>()
+
+      mockSpeechSynthesis.getVoices = vi.fn(() => [])
+      mockSpeechSynthesis.addEventListener = vi.fn((type: string, listener: EventListener) => {
+        const set = listeners.get(type) ?? new Set()
+        set.add(listener)
+        listeners.set(type, set)
+      })
+      mockSpeechSynthesis.removeEventListener = vi.fn((type: string, listener: EventListener) => {
+        listeners.get(type)?.delete(listener)
+      })
+
+      const controller = new AbortController()
+      const voicesPromise = getAvailableVoices(controller.signal)
+
+      // Abort before voices are loaded
+      controller.abort()
+
+      await expect(voicesPromise).rejects.toThrowError('Operation aborted')
+    })
   })
 
   describe('findVoiceByName', () => {
@@ -226,6 +267,69 @@ describe('voice-selector', () => {
       ] as SpeechSynthesisVoice[]
 
       const result = getDefaultVoiceForLocale('pt', nonEnglishVoices)
+      expect(result).toBeNull()
+    })
+  })
+
+  describe('getAllVoicesGroupedByLocale', () => {
+    it('groups voices by locale prefix', () => {
+      const voices = [
+        { lang: 'en-US', name: 'English US' },
+        { lang: 'en-GB', name: 'English UK' },
+        { lang: 'pt-BR', name: 'Portuguese Brazil' }
+      ] as SpeechSynthesisVoice[]
+
+      const grouped = getAllVoicesGroupedByLocale(voices)
+
+      expect(grouped['en']).toHaveLength(2)
+      expect(grouped['pt']).toHaveLength(1)
+    })
+
+    it('handles voices with no lang as other', () => {
+      const voices = [
+        { lang: '', name: 'No Lang Voice' },
+        { lang: undefined as unknown as string, name: 'Undefined Lang' }
+      ] as SpeechSynthesisVoice[]
+
+      const grouped = getAllVoicesGroupedByLocale(voices)
+
+      expect(grouped['other']).toHaveLength(2)
+    })
+
+    it('handles empty voice array', () => {
+      const grouped = getAllVoicesGroupedByLocale([])
+      expect(grouped).toEqual({})
+    })
+  })
+
+  describe('getDefaultVoiceForLocale additional', () => {
+    it('prefers local voice when available', () => {
+      const voices = [
+        { lang: 'en-US', name: 'English US', localService: true },
+        { lang: 'en-US', name: 'English US Remote', localService: false }
+      ] as SpeechSynthesisVoice[]
+
+      const result = getDefaultVoiceForLocale('en', voices)
+      expect(result?.name).toBe('English US')
+    })
+
+    it('falls back to first locale voice when no local voice', () => {
+      const voices = [
+        { lang: 'en-US', name: 'English US', localService: false },
+        { lang: 'en-GB', name: 'English UK', localService: false }
+      ] as SpeechSynthesisVoice[]
+
+      const result = getDefaultVoiceForLocale('en', voices)
+      expect(result?.name).toBe('English US')
+    })
+
+    it('returns null when no matching locale and no English fallback', () => {
+      const voices = [
+        { lang: 'fr-FR', name: 'French France' },
+        { lang: 'de-DE', name: 'German Germany' }
+      ] as SpeechSynthesisVoice[]
+
+      const result = getDefaultVoiceForLocale('pt', voices)
       expect(result).toBeNull()
     })
   })

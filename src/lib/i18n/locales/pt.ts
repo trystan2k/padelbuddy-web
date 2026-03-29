@@ -115,11 +115,18 @@ export default {
       Ad: 'Vantagem'
     },
     announcements: {
-      game: 'Jogo',
+      game: 'Game',
       set: 'Set',
       match: 'Partida',
       serving: 'Sacando',
-      all: 'iguais'
+      all: 'Iguais',
+      deuce: 'Deuce',
+      goldenPoint: 'Ponto de Ouro',
+      correction: 'Correção.',
+      gamePoint: 'Game point {{teamName}}',
+      breakPoint: 'Break point',
+      setPoint: 'Set point {{teamName}}',
+      matchPoint: 'Match point {{teamName}}'
     }
   },
   share: {
@@ -166,6 +173,8 @@ export default {
       bestOf5: 'Melhor de 5'
     },
     rules: {
+      audioAnnouncements: 'Anúncios de áudio',
+      audioAnnouncementsHint: 'Narra a pontuação como árbitro de cadeira',
       goldenPoint: 'Ponto de Ouro',
       goldenPointHint: 'Sem vantagem no deuce',
       superTiebreak: 'Super Tiebreak',
@@ -212,6 +221,14 @@ export default {
         saveError: 'Não foi possível salvar a configuração do controle remoto.',
         saveSuccess: 'Configuração do controle remoto salva.'
       }
+    },
+    voiceSelection: {
+      title: 'Selecionar voz',
+      selectVoice: 'Selecione uma voz',
+      preview: 'Prévia',
+      previewLink: 'Configurar voz',
+      cancel: 'Cancelar',
+      accept: 'Aceitar'
     },
     startButton: 'Iniciar Partida',
     validation: {
@@ -284,6 +301,10 @@ export default {
         download: 'A imagem da partida foi baixada.',
         textFinishedEarly:
           'A partida {{formatLabel}} do Padel Buddy entre {{teamOneName}} e {{teamTwoName}} terminou mais cedo após {{durationValue}} e {{totalGames}} games.'
+      },
+      speech: {
+        victory: 'Vitória {{teamName}}',
+        tiedMatch: 'Jogo empatado'
       },
       aria: {
         summaryRegion: 'Resumo do resultado da partida',

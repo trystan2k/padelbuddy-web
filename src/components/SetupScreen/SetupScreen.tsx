@@ -1,5 +1,4 @@
-import { useState, useCallback, useMemo } from 'react'
-import type { KeyboardEvent } from 'react'
+import { useState, useCallback, useEffect, useMemo, type KeyboardEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate, useRouter } from '@tanstack/react-router'
 
@@ -11,6 +10,14 @@ import {
   type MatchFormat
 } from '@/core/match'
 import { saveCurrentMatch } from '@/lib/current-match'
+import { defaultLocale, isSupportedLocale } from '@/lib/i18n/types'
+import {
+  defaultVerbosity,
+  getAvailableVoices,
+  loadSpeechPreferences,
+  saveSpeechPreferences,
+  type SpeechPreferences
+} from '@/lib/speech'
 import { prepareCurrentMatchRouteNavigation } from '@/lib/router/current-match-route-flow'
 import { cn } from '@/lib/utils/cn'
 import { getViewTransitionNavigationOptions } from '@/lib/utils/view-transitions'
@@ -27,6 +34,7 @@ import { TopBar } from '@/components/ui/TopBar'
 import { LocaleSelector } from '@/components/ui/LocaleSelector'
 
 import { RemoteConfigurationModal } from './RemoteConfigurationModal'
+import { VoiceSelectionModal } from './VoiceSelectionModal'
 import { useSetupForm } from './useSetupForm'
 import styles from './SetupScreen.module.css'
 
@@ -51,11 +59,14 @@ const countdownDurationKeys: Record<CountdownTimerDuration, string> = {
 }
 
 export function SetupScreen() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const navigate = useNavigate()
   const router = useRouter()
   const [isStarting, setIsStarting] = useState(false)
   const [isRemoteConfigurationOpen, setIsRemoteConfigurationOpen] = useState(false)
+  const [isVoiceSelectionOpen, setIsVoiceSelectionOpen] = useState(false)
+  const [selectedVoiceName, setSelectedVoiceName] = useState<string | null>(null)
+  const [availableVoices, setAvailableVoices] = useState<SpeechSynthesisVoice[]>([])
 
   const {
     formData,
@@ -66,6 +77,8 @@ export function SetupScreen() {
     updateGameMode,
     updateInitialServer,
     updateDecidingSetSuperTiebreak,
+    updateAudioAnnouncementsEnabled,
+    updateVoiceName,
     updateSideSwitchPrompts,
     updateServingIndicatorEnabled,
     updateCountdownTimerEnabled,
@@ -74,7 +87,12 @@ export function SetupScreen() {
     showSuperTiebreakOption
   } = useSetupForm()
 
+  useEffect(() => {
+    setSelectedVoiceName(formData.voiceName)
+  }, [formData.voiceName])
+
   const hasErrors = Object.keys(errors).length > 0
+  const currentLocale = isSupportedLocale(i18n.language) ? i18n.language : defaultLocale
 
   const handleStartMatch = useCallback(async () => {
     if (!validate()) {
@@ -92,6 +110,7 @@ export function SetupScreen() {
         gameMode: formData.gameMode,
         initialServer: formData.initialServer,
         decidingSetSuperTiebreak: formData.decidingSetSuperTiebreak,
+        audioAnnouncementsEnabled: formData.audioAnnouncementsEnabled,
         servingIndicatorEnabled: formData.servingIndicatorEnabled,
         countdownTimerEnabled: formData.countdownTimerEnabled,
         countdownTimerDuration: formData.countdownTimerDuration,
@@ -180,6 +199,51 @@ export function SetupScreen() {
   const handleCloseRemoteConfiguration = useCallback(() => {
     setIsRemoteConfigurationOpen(false)
   }, [])
+
+  const handleCloseVoiceSelection = useCallback(() => {
+    setIsVoiceSelectionOpen(false)
+  }, [])
+
+  const handleAudioAnnouncementsChange = useCallback(
+    (enabled: boolean) => {
+      updateAudioAnnouncementsEnabled(enabled)
+    },
+    [updateAudioAnnouncementsEnabled]
+  )
+
+  const handleOpenVoiceSelection = useCallback(async () => {
+    try {
+      const voices = await getAvailableVoices()
+      setAvailableVoices(voices)
+    } catch (error) {
+      console.error('Failed to load available voices.', error)
+      setAvailableVoices([])
+    }
+
+    setIsVoiceSelectionOpen(true)
+  }, [])
+
+  const handleVoiceSelectionAccept = useCallback(
+    async (voiceName: string) => {
+      setSelectedVoiceName(voiceName)
+      updateVoiceName(voiceName)
+
+      try {
+        const existingPreferences = await loadSpeechPreferences()
+        const nextPreferences: SpeechPreferences = {
+          muted: existingPreferences?.muted ?? false,
+          verbosity: existingPreferences?.verbosity ?? defaultVerbosity,
+          voiceName,
+          updatedAt: new Date().toISOString()
+        }
+
+        await saveSpeechPreferences(nextPreferences)
+      } catch (error) {
+        console.error('Failed to save selected voice.', error)
+      }
+    },
+    [updateVoiceName]
+  )
 
   const handleCountdownDurationKeyDown = useCallback(
     (event: KeyboardEvent<HTMLDivElement>) => {
@@ -374,7 +438,26 @@ export function SetupScreen() {
           </div>
 
           {/* Rules Card */}
-          <Card className={styles.rulesCard}>
+          <Card className={styles.rulesCard} data-testid="rules-card">
+            <Toggle
+              checked={formData.audioAnnouncementsEnabled}
+              onChange={handleAudioAnnouncementsChange}
+              label={t('setup.rules.audioAnnouncements')}
+              hint={t('setup.rules.audioAnnouncementsHint')}
+            />
+
+            {formData.audioAnnouncementsEnabled && (
+              <button
+                type="button"
+                className={styles.voicePreviewButton}
+                onClick={handleOpenVoiceSelection}
+              >
+                {t('setup.voiceSelection.previewLink')}
+              </button>
+            )}
+
+            <Divider />
+
             {/* Golden Point */}
             <Toggle
               checked={isGoldenPointEnabled}
@@ -485,6 +568,14 @@ export function SetupScreen() {
       <RemoteConfigurationModal
         isOpen={isRemoteConfigurationOpen}
         onClose={handleCloseRemoteConfiguration}
+      />
+      <VoiceSelectionModal
+        isOpen={isVoiceSelectionOpen}
+        onClose={handleCloseVoiceSelection}
+        onAccept={handleVoiceSelectionAccept}
+        voices={availableVoices}
+        selectedVoiceName={selectedVoiceName}
+        locale={currentLocale}
       />
     </Layout>
   )

@@ -2,12 +2,22 @@ import { type SupportedLocale } from '@/lib/i18n/types'
 
 /**
  * Selects the best available voice for the given locale.
- * Priority: locale voice > English voice > null (graceful mute)
+ * Priority: Google locale voice > locale voice > English voice > null (graceful mute)
  */
 export function selectVoice(
   locale: SupportedLocale,
   voices: SpeechSynthesisVoice[]
 ): SpeechSynthesisVoice | null {
+  const googleVoice = voices.find(
+    (voice) =>
+      voice.name.toLowerCase().includes('google') &&
+      voice.lang.toLowerCase().startsWith(locale.toLowerCase())
+  )
+
+  if (googleVoice) {
+    return googleVoice
+  }
+
   // Try to find voice matching locale
   const localeVoice = voices.find((voice) =>
     voice.lang.toLowerCase().startsWith(locale.toLowerCase())
@@ -75,6 +85,22 @@ export function getAvailableVoices(signal?: AbortSignal): Promise<SpeechSynthesi
     speechSynthesis.addEventListener('voiceschanged', handleVoicesChanged)
     signal?.addEventListener('abort', handleAbort)
   })
+}
+
+export function getAllVoicesGroupedByLocale(
+  voices: SpeechSynthesisVoice[]
+): Record<string, SpeechSynthesisVoice[]> {
+  return voices.reduce<Record<string, SpeechSynthesisVoice[]>>((groupedVoices, voice) => {
+    const rawPrefix = (voice.lang ?? '').split('-')[0]?.toLowerCase().trim()
+    const localePrefix = rawPrefix || 'other'
+
+    if (!groupedVoices[localePrefix]) {
+      groupedVoices[localePrefix] = []
+    }
+
+    groupedVoices[localePrefix].push(voice)
+    return groupedVoices
+  }, {})
 }
 
 /**

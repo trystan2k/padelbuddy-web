@@ -33,6 +33,7 @@ export {
   bestOfOneDecidingBehaviors,
   countdownTimerDurations,
   defaultBestOfOneDecidingBehavior,
+  defaultAudioAnnouncementsEnabled,
   defaultCountdownTimerDuration,
   defaultCountdownTimerEnabled,
   defaultServingIndicatorEnabled,

@@ -158,6 +158,7 @@ describe('current match persistence helpers', () => {
 
     const decodedRecord = parseCurrentMatchRecord(legacyRecord)
 
+    expect(decodedRecord.setup.audioAnnouncementsEnabled).toBe(true)
     expect(decodedRecord.setup.servingIndicatorEnabled).toBe(true)
     expect(decodedRecord.setup.countdownTimerEnabled).toBe(false)
     expect(decodedRecord.setup.countdownTimerDuration).toBe(90)
@@ -172,6 +173,7 @@ describe('current match persistence helpers', () => {
         gameMode: 'advantage',
         initialServer: 'team-1',
         decidingSetSuperTiebreak: false,
+        audioAnnouncementsEnabled: 'false',
         servingIndicatorEnabled: 'false',
         countdownTimerEnabled: false,
         countdownTimerDuration: 90,
@@ -187,6 +189,7 @@ describe('current match persistence helpers', () => {
 
     const decodedRecord = parseCurrentMatchRecord(recordWithInvalidServingIndicator)
 
+    expect(decodedRecord.setup.audioAnnouncementsEnabled).toBe(true)
     expect(decodedRecord.setup.servingIndicatorEnabled).toBe(true)
   })
 
@@ -199,6 +202,7 @@ describe('current match persistence helpers', () => {
         gameMode: 'advantage',
         initialServer: 'team-1',
         decidingSetSuperTiebreak: false,
+        audioAnnouncementsEnabled: true,
         countdownTimerEnabled: true,
         countdownTimerDuration: 75,
         sideSwitchPrompts: false,
@@ -214,6 +218,23 @@ describe('current match persistence helpers', () => {
     const decodedRecord = parseCurrentMatchRecord(recordWithInvalidDuration)
 
     expect(decodedRecord.setup.countdownTimerDuration).toBe(90)
+  })
+
+  test('round-trips audio announcements enabled in persisted setup', () => {
+    const setup = createTestSetup({
+      audioAnnouncementsEnabled: false
+    })
+
+    const record = createCurrentMatchRecord({
+      matchId: testMatchId,
+      setup,
+      actions: [],
+      startedAt: testStartedAt
+    })
+
+    const decodedRecord = parseCurrentMatchRecord(record)
+
+    expect(decodedRecord.setup.audioAnnouncementsEnabled).toBe(false)
   })
 
   test('classifies same-version data as ok and replays through the pure match domain', () => {

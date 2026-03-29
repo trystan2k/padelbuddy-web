@@ -130,10 +130,9 @@ function AppShell() {
   }, [])
 
   useEffect(() => {
-    if (routePendingRef.current) {
-      // remove from dom
-      document.body.removeChild(routePendingRef.current)
-    }
+    // Use remove() instead of document.body.removeChild() because during SSR
+    // hydration the spinner may not be a direct child of document.body.
+    routePendingRef.current?.remove()
   }, [routePendingRef])
 
   return (

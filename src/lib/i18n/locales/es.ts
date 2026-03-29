@@ -119,7 +119,14 @@ export default {
       set: 'Set',
       match: 'Partido',
       serving: 'Sacando',
-      all: 'iguales'
+      all: 'Iguales',
+      deuce: 'Deuce',
+      goldenPoint: 'Punto de Oro',
+      correction: 'Corrección.',
+      gamePoint: 'Game Point {{teamName}}',
+      breakPoint: 'Break point',
+      setPoint: 'Set Point {{teamName}}',
+      matchPoint: 'Match point {{teamName}}'
     }
   },
   share: {
@@ -166,6 +173,8 @@ export default {
       bestOf5: 'Mejor de 5'
     },
     rules: {
+      audioAnnouncements: 'Anuncios de audio',
+      audioAnnouncementsHint: 'Lee la puntuación como un juez de silla',
       goldenPoint: 'Punto de Oro',
       goldenPointHint: 'Sin ventaja en deuce',
       superTiebreak: 'Super Tiebreak',
@@ -212,6 +221,14 @@ export default {
         saveError: 'No se pudo guardar la configuración del control remoto.',
         saveSuccess: 'Configuración del control remoto guardada.'
       }
+    },
+    voiceSelection: {
+      title: 'Seleccionar voz',
+      selectVoice: 'Selecciona una voz',
+      preview: 'Vista previa',
+      previewLink: 'Configurar voz',
+      cancel: 'Cancelar',
+      accept: 'Aceptar'
     },
     startButton: 'Iniciar Partido',
     validation: {
@@ -284,6 +301,10 @@ export default {
         download: 'La imagen del partido se descargó.',
         textFinishedEarly:
           'El partido {{formatLabel}} de Padel Buddy entre {{teamOneName}} y {{teamTwoName}} terminó antes de tiempo tras {{durationValue}} y {{totalGames}} juegos.'
+      },
+      speech: {
+        victory: 'Victoria {{teamName}}',
+        tiedMatch: 'Partido empatado'
       },
       aria: {
         summaryRegion: 'Resumen del resultado del partido',

@@ -32,7 +32,9 @@ const {
   mockClearCurrentMatch,
   mockContinuePlaying,
   mockCreateCurrentMatchSession,
-  mockDomToBlob
+  mockDomToBlob,
+  mockSpeechSpeak,
+  mockSpeechDestroy
 } = vi.hoisted(() => {
   const mockInvalidateFn = vi.fn(async () => undefined)
   const mockNavigateFn = vi.fn()
@@ -40,6 +42,8 @@ const {
   const mockClearCurrentMatchFn = vi.fn(async () => undefined)
   const mockContinuePlayingFn = vi.fn(async () => undefined)
   const mockDomToBlobFn = vi.fn()
+  const mockSpeechSpeakFn = vi.fn()
+  const mockSpeechDestroyFn = vi.fn()
   const mockCreateCurrentMatchSessionFn = vi.fn(() => ({
     continuePlaying: mockContinuePlayingFn
   }))
@@ -51,7 +55,9 @@ const {
     mockClearCurrentMatch: mockClearCurrentMatchFn,
     mockContinuePlaying: mockContinuePlayingFn,
     mockCreateCurrentMatchSession: mockCreateCurrentMatchSessionFn,
-    mockDomToBlob: mockDomToBlobFn
+    mockDomToBlob: mockDomToBlobFn,
+    mockSpeechSpeak: mockSpeechSpeakFn,
+    mockSpeechDestroy: mockSpeechDestroyFn
   }
 })
 
@@ -71,6 +77,26 @@ vi.mock('@/lib/current-match', () => ({
   clearCurrentMatch: () => mockClearCurrentMatch(),
   createCurrentMatchSession: mockCreateCurrentMatchSession
 }))
+
+vi.mock('@/lib/speech', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/lib/speech')>()
+
+  return {
+    ...actual,
+    useSpeechService: () => ({
+      speak: mockSpeechSpeak,
+      announce: vi.fn(),
+      cancel: vi.fn(),
+      destroy: mockSpeechDestroy,
+      getMuted: vi.fn(() => false),
+      setMuted: vi.fn(),
+      getVerbosity: vi.fn(() => 'standard'),
+      setVerbosity: vi.fn(),
+      getVoice: vi.fn(() => null),
+      isSupported: vi.fn(() => true)
+    })
+  }
+})
 
 vi.mock('@/lib/i18n', async (importOriginal) => {
   const original = await importOriginal<typeof import('@/lib/i18n')>()
@@ -95,6 +121,8 @@ describe('MatchEndScreen', () => {
     vi.useFakeTimers({ toFake: ['Date'] })
     vi.setSystemTime(currentTime)
     mockDomToBlob.mockResolvedValue(createPngBlob())
+    mockSpeechSpeak.mockReset()
+    mockSpeechDestroy.mockReset()
     createObjectUrlMock = vi.fn(() => 'blob:match-end-screen')
     revokeObjectUrlMock = vi.fn()
     restoreNavigatorProperty('share', originalNavigatorShareDescriptor)
@@ -195,6 +223,53 @@ describe('MatchEndScreen', () => {
     const shareButton = screen.getByRole('button', { name: 'Share' })
 
     await expect.element(shareButton).toBeEnabled()
+  })
+
+  test('announces the match result once for the current i18n language', async () => {
+    await renderCompletedMatchEndScreen()
+
+    await vi.waitFor(() => {
+      expect(mockSpeechSpeak).toHaveBeenCalledTimes(1)
+    })
+
+    expect(mockSpeechSpeak).toHaveBeenCalledWith('Victory Alvaro & Enrique', {
+      immediate: true,
+      lang: 'en'
+    })
+  })
+
+  test('announces tied matches once for the current i18n language when no winner exists', async () => {
+    await renderFinishedEarlyMatchEndScreen()
+
+    await vi.waitFor(() => {
+      expect(mockSpeechSpeak).toHaveBeenCalledTimes(1)
+    })
+
+    expect(mockSpeechSpeak).toHaveBeenCalledWith('Tied match', {
+      immediate: true,
+      lang: 'en'
+    })
+  })
+
+  test('stays silent on the match end screen when audio announcements are disabled', async () => {
+    await render(
+      <MatchEndScreen
+        matchId="test-match"
+        setup={createTestSetup({
+          audioAnnouncementsEnabled: false,
+          sides: [
+            { id: 'team-1', playerNames: ['Alvaro', 'Enrique'] },
+            { id: 'team-2', playerNames: ['Pablo', 'Thiago'] }
+          ]
+        })}
+        actions={createCompletedActions()}
+        projection={createCompletedProjection()}
+        startedAt={startedAt}
+        finishedAt={finishedAt}
+      />
+    )
+
+    expect(mockSpeechSpeak).not.toHaveBeenCalled()
   })
 
   test('locks the share button while capture is in progress', async () => {

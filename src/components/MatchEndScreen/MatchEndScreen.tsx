@@ -8,6 +8,8 @@ import { useToast } from '@/components/ui'
 import { TopBar } from '@/components/ui/TopBar'
 import type { MatchAction, MatchFormat, MatchProjection, MatchSetup } from '@/core/match'
 import { clearCurrentMatch, createCurrentMatchSession } from '@/lib/current-match'
+import { defaultLocale, isSupportedLocale } from '@/lib/i18n/types'
+import { useSpeechService } from '@/lib/speech'
 import { prepareCurrentMatchRouteNavigation } from '@/lib/router/current-match-route-flow'
 import { getViewTransitionNavigationOptions } from '@/lib/utils/view-transitions'
 
@@ -57,6 +59,11 @@ export function MatchEndScreen({
   const [shareScreenReady, setShareScreenReady] = useState(false)
   const [debugShareOpen, setDebugShareOpen] = useState(false)
   const captureRef = useRef<HTMLDivElement | null>(null)
+  const hasAnnouncedResultRef = useRef(false)
+  const speechService = useSpeechService()
+  const destroyRef = useRef(() => speechService.destroy())
+
+  destroyRef.current = () => speechService.destroy()
 
   const summary = useMemo(
     () =>
@@ -192,6 +199,31 @@ export function MatchEndScreen({
   })
 
   const { addErrorToast, addInfoToast } = useToast()
+
+  useEffect(() => {
+    if (hasAnnouncedResultRef.current || !setup.audioAnnouncementsEnabled) {
+      return
+    }
+
+    hasAnnouncedResultRef.current = true
+
+    const currentLocale = isSupportedLocale(i18n.language) ? i18n.language : defaultLocale
+    const message = summary.winnerName
+      ? t('match.end.speech.victory', { teamName: summary.winnerName })
+      : t('match.end.speech.tiedMatch')
+
+    speechService.speak(message, {
+      immediate: true,
+      lang: currentLocale
+    })
+  }, [i18n.language, setup.audioAnnouncementsEnabled, speechService, summary.winnerName, t])
+
+  useEffect(
+    () => () => {
+      destroyRef.current()
+    },
+    []
+  )
 
   // Trigger toasts when error/download messages appear
   useEffect(() => {

@@ -11,6 +11,8 @@ describe('validateSetupForm', () => {
     gameMode: 'advantage',
     initialServer: 'team-1',
     decidingSetSuperTiebreak: false,
+    audioAnnouncementsEnabled: true,
+    voiceName: null,
     servingIndicatorEnabled: true,
     countdownTimerEnabled: false,
     countdownTimerDuration: 90,
