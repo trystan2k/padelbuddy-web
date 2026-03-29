@@ -9,7 +9,7 @@ export function selectVoice(
   voices: SpeechSynthesisVoice[]
 ): SpeechSynthesisVoice | null {
   const googleVoice = voices.find(
-    (voice) => voice.name.includes('Google') && voice.lang.startsWith(locale)
+    (voice) => voice.name.toLowerCase().includes('google') && voice.lang.startsWith(locale)
   )
 
   if (googleVoice) {
@@ -89,7 +89,8 @@ export function getAllVoicesGroupedByLocale(
   voices: SpeechSynthesisVoice[]
 ): Record<string, SpeechSynthesisVoice[]> {
   return voices.reduce<Record<string, SpeechSynthesisVoice[]>>((groupedVoices, voice) => {
-    const localePrefix = voice.lang.split('-')[0]?.toLowerCase() ?? 'other'
+    const rawPrefix = (voice.lang ?? '').split('-')[0]?.toLowerCase().trim()
+    const localePrefix = rawPrefix || 'other'
 
     if (!groupedVoices[localePrefix]) {
       groupedVoices[localePrefix] = []
