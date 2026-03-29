@@ -8,7 +8,7 @@ import { useToast } from '@/components/ui'
 import { TopBar } from '@/components/ui/TopBar'
 import type { MatchAction, MatchFormat, MatchProjection, MatchSetup } from '@/core/match'
 import { clearCurrentMatch, createCurrentMatchSession } from '@/lib/current-match'
-import { isSupportedLocale } from '@/lib/i18n/types'
+import { defaultLocale, isSupportedLocale } from '@/lib/i18n/types'
 import { useSpeechService } from '@/lib/speech'
 import { prepareCurrentMatchRouteNavigation } from '@/lib/router/current-match-route-flow'
 import { getViewTransitionNavigationOptions } from '@/lib/utils/view-transitions'
@@ -207,7 +207,7 @@ export function MatchEndScreen({
 
     hasAnnouncedResultRef.current = true
 
-    const currentLocale = isSupportedLocale(i18n.language) ? i18n.language : 'en'
+    const currentLocale = isSupportedLocale(i18n.language) ? i18n.language : defaultLocale
     const message = summary.winnerName
       ? t('match.end.speech.victory', { teamName: summary.winnerName })
       : t('match.end.speech.tiedMatch')

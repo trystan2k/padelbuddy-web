@@ -1,4 +1,4 @@
-import { describe, expect, test, vi, beforeAll } from 'vitest'
+import { afterAll, beforeAll, describe, expect, test, vi } from 'vitest'
 import { renderToStaticMarkup } from 'react-dom/server'
 
 import { defaultTranslation, i18n, initializeI18n, resetI18nInitialization } from '@/lib/i18n'
@@ -9,6 +9,10 @@ beforeAll(async () => {
   await resetI18nInitialization()
   i18n.addResourceBundle('en', 'translation', defaultTranslation, true, true)
   await initializeI18n()
+})
+
+afterAll(async () => {
+  await resetI18nInitialization()
 })
 
 describe('getErrorMessage', () => {

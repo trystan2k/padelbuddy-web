@@ -311,6 +311,13 @@ export function ActiveMatchScreen({
       return
     }
 
+    if (!snapshot.projection.setup.audioAnnouncementsEnabled) {
+      previousProjectionRef.current = snapshot.projection
+      previousActionCountRef.current = snapshot.actions.length
+
+      return
+    }
+
     const announcement = createSpeechEvent(
       previousProjectionRef.current,
       snapshot.projection,
@@ -323,7 +330,7 @@ export function ActiveMatchScreen({
     previousProjectionRef.current = snapshot.projection
     previousActionCountRef.current = snapshot.actions.length
 
-    if (!snapshot.projection.setup.audioAnnouncementsEnabled || announcement === null) {
+    if (announcement === null) {
       return
     }
 
@@ -333,6 +340,7 @@ export function ActiveMatchScreen({
   useEffect(
     () => () => {
       cancelRef.current()
+      destroySpeechRef.current?.()
     },
     []
   )
