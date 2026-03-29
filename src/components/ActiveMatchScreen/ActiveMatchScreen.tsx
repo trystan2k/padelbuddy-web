@@ -340,7 +340,6 @@ export function ActiveMatchScreen({
   useEffect(
     () => () => {
       cancelRef.current()
-      destroySpeechRef.current?.()
     },
     []
   )
