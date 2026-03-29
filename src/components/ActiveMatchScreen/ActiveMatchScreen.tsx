@@ -73,6 +73,31 @@ function getGameWinner(
   return null
 }
 
+function getLeadingTeam(projection: MatchProjection): MatchTeamId | null {
+  if (projection.derived.scoreDisplay.kind !== 'standard') {
+    return null
+  }
+
+  const { points } = projection.derived.scoreDisplay
+  const team1Score = normalizeScoreValue(points['team-1'])
+  const team2Score = normalizeScoreValue(points['team-2'])
+
+  if (projection.setup.gameMode === 'golden-point' && team1Score === '40' && team2Score === '40') {
+    return null
+  }
+
+  const team1Leads =
+    team1Score === 'Ad' || (team1Score === '40' && ['0', '15', '30'].includes(team2Score))
+  const team2Leads =
+    team2Score === 'Ad' || (team2Score === '40' && ['0', '15', '30'].includes(team1Score))
+
+  if (team1Leads === team2Leads) {
+    return null
+  }
+
+  return team1Leads ? 'team-1' : 'team-2'
+}
+
 function getPointPressure(projection: MatchProjection): SpeechEventData['pointPressure'] {
   const matchPointTeam = getPressureTeam(projection, 'match')
 
@@ -86,31 +111,15 @@ function getPointPressure(projection: MatchProjection): SpeechEventData['pointPr
     return 'set-point'
   }
 
-  if (
-    projection.derived.scoreDisplay.kind !== 'standard' ||
-    projection.derived.servingTeam === null
-  ) {
+  const leadingTeam = getLeadingTeam(projection)
+
+  if (!leadingTeam) {
     return undefined
   }
 
-  const { points } = projection.derived.scoreDisplay
-  const team1Score = normalizeScoreValue(points['team-1'])
-  const team2Score = normalizeScoreValue(points['team-2'])
-
-  if (projection.setup.gameMode === 'golden-point' && team1Score === '40' && team2Score === '40') {
-    return undefined
+  if (projection.derived.servingTeam === null) {
+    return 'game-point'
   }
-
-  const team1Leads =
-    team1Score === 'Ad' || (team1Score === '40' && ['0', '15', '30'].includes(team2Score))
-  const team2Leads =
-    team2Score === 'Ad' || (team2Score === '40' && ['0', '15', '30'].includes(team1Score))
-
-  if (team1Leads === team2Leads) {
-    return undefined
-  }
-
-  const leadingTeam: MatchTeamId = team1Leads ? 'team-1' : 'team-2'
 
   return leadingTeam === projection.derived.servingTeam ? 'game-point' : 'break-point'
 }
@@ -152,10 +161,13 @@ function createPointScoredEvent(
   }
 
   const pointPressure = getPointPressure(projection)
+  const leadingTeam = getLeadingTeam(projection)
   const pointPressureTeam =
     pointPressure === 'set-point' || pointPressure === 'match-point'
       ? getPressureTeam(projection, pointPressure === 'match-point' ? 'match' : 'set')
-      : undefined
+      : pointPressure === 'game-point' && servingTeam === null
+        ? (leadingTeam ?? undefined)
+        : undefined
 
   return {
     eventType: 'point-scored',

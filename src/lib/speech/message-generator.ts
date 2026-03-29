@@ -75,17 +75,25 @@ function getPointPressureMessage(data: SpeechEventData): string | null {
     return t('score.announcements.breakPoint')
   }
 
-  if (data.pointPressure !== 'game-point' || !data.servingTeam) {
-    return null
+  if (data.pointPressure === 'game-point') {
+    const teamName = data.servingTeam
+      ? data.servingTeam === 'team-1'
+        ? data.team1Name
+        : data.team2Name
+      : data.pointPressureTeam
+        ? data.pointPressureTeam === 'team-1'
+          ? data.team1Name
+          : data.team2Name
+        : null
+
+    if (!teamName) {
+      return null
+    }
+
+    return t('score.announcements.gamePoint', { teamName })
   }
 
-  const servingTeamName = data.servingTeam === 'team-1' ? data.team1Name : data.team2Name
-
-  if (!servingTeamName) {
-    return null
-  }
-
-  return t('score.announcements.gamePoint', { teamName: servingTeamName })
+  return null
 }
 
 function withCorrectionPrefix(message: string, isCorrection?: boolean): string {
