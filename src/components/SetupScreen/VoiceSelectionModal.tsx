@@ -9,6 +9,7 @@ import { Select } from '@/components/ui'
 import { defaultLocale, isSupportedLocale } from '@/lib/i18n/types'
 import {
   findVoiceByName,
+  generateSpeechMessage,
   getAllVoicesGroupedByLocale,
   getDefaultVoiceForLocale
 } from '@/lib/speech'
@@ -24,12 +25,6 @@ export interface VoiceSelectionModalProps {
   locale: string
 }
 
-const previewTexts: Record<string, string> = {
-  en: 'Forty - Fifteen, match point',
-  es: 'Cuarenta - Quince, punto de partido',
-  pt: 'Quarenta - Quinze, ponto de partida'
-}
-
 export function VoiceSelectionModal({
   isOpen,
   onClose,
@@ -42,7 +37,23 @@ export function VoiceSelectionModal({
   const [previewVoice, setPreviewVoice] = useState<SpeechSynthesisVoice | null>(null)
 
   const localePrefix = isSupportedLocale(locale) ? locale : defaultLocale
-  const previewText = previewTexts[localePrefix] ?? previewTexts[defaultLocale]
+
+  // Derive preview text from the speech message generator for consistency
+  const previewText = useMemo(() => {
+    const message = generateSpeechMessage({
+      eventType: 'point-scored',
+      team1Score: '40',
+      team2Score: '15',
+      servingTeam: 'team-1',
+      team1Name: t('team.team1', { defaultValue: 'Team A' }),
+      team2Name: t('team.team2', { defaultValue: 'Team B' }),
+      pointPressure: 'match-point',
+      pointPressureTeam: 'team-1',
+      verbosity: 'standard'
+    })
+    // Fallback for minimal verbosity or if generation fails
+    return message ?? t('score.announcements.gamePoint', { teamName: '' })
+  }, [t])
 
   const voicesByLocale = useMemo(() => getAllVoicesGroupedByLocale(voices), [voices])
 

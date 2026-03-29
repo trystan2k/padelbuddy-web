@@ -36,7 +36,12 @@ function formatChairUmpireScore(
   const team1Word = getScoreWord(team1Score)
   const team2Word = getScoreWord(team2Score)
 
-  if (team1Word === 'Forty' && team2Word === 'Forty') {
+  // Compare raw score values (not translated words) to detect deuce/golden point
+  // This works correctly across all locales
+  const rawTeam1 = typeof team1Score === 'number' ? team1Score : parseInt(String(team1Score), 10)
+  const rawTeam2 = typeof team2Score === 'number' ? team2Score : parseInt(String(team2Score), 10)
+
+  if (rawTeam1 === 40 && rawTeam2 === 40) {
     return gameMode === 'golden-point'
       ? t('score.announcements.goldenPoint')
       : t('score.announcements.deuce')
@@ -73,12 +78,14 @@ function getPointPressureMessage(data: SpeechEventData): string | null {
   }
 
   if (data.pointPressure === 'game-point') {
-    const teamName = data.servingTeam
-      ? data.servingTeam === 'team-1'
+    // Prefer pointPressureTeam when present (e.g. when serving indicator is disabled)
+    // Fall back to servingTeam only when pointPressureTeam is not set
+    const teamName = data.pointPressureTeam
+      ? data.pointPressureTeam === 'team-1'
         ? data.team1Name
         : data.team2Name
-      : data.pointPressureTeam
-        ? data.pointPressureTeam === 'team-1'
+      : data.servingTeam
+        ? data.servingTeam === 'team-1'
           ? data.team1Name
           : data.team2Name
         : null
