@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.19.2](https://github.com/trystan2k/padelbuddy-web/compare/v0.19.1...v0.19.2) (2026-03-29)
+
+
+### Bug Fixes
+
+* **speech:** fix muted state access in speak function ([155b43c](https://github.com/trystan2k/padelbuddy-web/commit/155b43cfbd3af2eb1d52ac63959dae59ad0e65b3))
+
 ## [0.19.1](https://github.com/trystan2k/padelbuddy-web/compare/v0.19.0...v0.19.1) (2026-03-29)
 
 
