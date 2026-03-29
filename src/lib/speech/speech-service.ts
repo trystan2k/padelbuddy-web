@@ -391,7 +391,7 @@ export function createSpeechService(config: SpeechServiceConfig = {}): SpeechSer
   }
 
   const speak = (text: string, options?: SpeechOptions) => {
-    if (muted || !currentVoice || !text) {
+    if (muted || !text) {
       return
     }
 
@@ -407,7 +407,7 @@ export function createSpeechService(config: SpeechServiceConfig = {}): SpeechSer
 
     const utterance = new SpeechSynthesisUtterance(text)
     utterance.voice = currentVoice
-    utterance.lang = options?.lang ?? currentVoice.lang
+    utterance.lang = options?.lang ?? currentVoice?.lang ?? getSafeLocale(i18n.language)
     utterance.rate = 1.0
     utterance.pitch = 1.0
 
