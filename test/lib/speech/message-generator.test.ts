@@ -168,6 +168,61 @@ describe('message-generator', () => {
       ).toBe('Forty - Fifteen. Match point Team A')
     })
 
+    it('announces serving team score first when team-1 serves', () => {
+      expect(
+        generateSpeechMessage({
+          eventType: 'point-scored',
+          team1Score: '15',
+          team2Score: '0',
+          servingTeam: 'team-1',
+          team1Name: 'Team A',
+          team2Name: 'Team B',
+          verbosity: 'standard'
+        })
+      ).toBe('Fifteen - Love')
+    })
+
+    it('announces serving team score first when team-2 serves and team-2 leads', () => {
+      expect(
+        generateSpeechMessage({
+          eventType: 'point-scored',
+          team1Score: '0',
+          team2Score: '15',
+          servingTeam: 'team-2',
+          team1Name: 'Team A',
+          team2Name: 'Team B',
+          verbosity: 'standard'
+        })
+      ).toBe('Fifteen - Love')
+    })
+
+    it('announces receiving team score first when team-2 serves and team-1 leads', () => {
+      expect(
+        generateSpeechMessage({
+          eventType: 'point-scored',
+          team1Score: '15',
+          team2Score: '0',
+          servingTeam: 'team-2',
+          team1Name: 'Team A',
+          team2Name: 'Team B',
+          verbosity: 'standard'
+        })
+      ).toBe('Love - Fifteen')
+    })
+
+    it('does not change tiebreak score order based on serving team', () => {
+      expect(
+        generateSpeechMessage({
+          eventType: 'point-scored',
+          team1Score: 7,
+          team2Score: 5,
+          servingTeam: 'team-2',
+          isTiebreak: true,
+          verbosity: 'standard'
+        })
+      ).toBe('7-5')
+    })
+
     it('keeps tiebreak announcements numeric', () => {
       expect(
         generateSpeechMessage({

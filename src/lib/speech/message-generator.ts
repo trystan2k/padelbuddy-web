@@ -125,7 +125,7 @@ export function generateSpeechMessage(data: SpeechEventData): string | null {
 }
 
 function generatePointScoreMessage(data: SpeechEventData): string | null {
-  const { team1Score, team2Score, isTiebreak, verbosity, gameMode } = data
+  const { team1Score, team2Score, isTiebreak, verbosity, gameMode, servingTeam } = data
 
   if (verbosity === 'minimal') {
     return null
@@ -151,7 +151,9 @@ function generatePointScoreMessage(data: SpeechEventData): string | null {
     )
   }
 
-  const baseMessage = formatChairUmpireScore(team1Score, team2Score, gameMode)
+  const score1 = servingTeam === 'team-2' ? team2Score : team1Score
+  const score2 = servingTeam === 'team-2' ? team1Score : team2Score
+  const baseMessage = formatChairUmpireScore(score1, score2, gameMode)
 
   return withCorrectionPrefix(
     pointPressureMessage ? `${baseMessage}. ${pointPressureMessage}` : baseMessage,

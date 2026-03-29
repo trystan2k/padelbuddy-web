@@ -123,10 +123,10 @@ export default {
       deuce: 'Deuce',
       goldenPoint: 'Punto de Oro',
       correction: 'Corrección.',
-      gamePoint: 'Punto de juego {{teamName}}',
+      gamePoint: 'Game Point {{teamName}}',
       breakPoint: 'Break point',
-      setPoint: 'Punto de set {{teamName}}',
-      matchPoint: 'Punto de partido {{teamName}}'
+      setPoint: 'Set Point {{teamName}}',
+      matchPoint: 'Match point {{teamName}}'
     }
   },
   share: {

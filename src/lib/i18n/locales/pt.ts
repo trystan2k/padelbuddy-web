@@ -115,7 +115,7 @@ export default {
       Ad: 'Vantagem'
     },
     announcements: {
-      game: 'Jogo',
+      game: 'Game',
       set: 'Set',
       match: 'Partida',
       serving: 'Sacando',
@@ -123,10 +123,10 @@ export default {
       deuce: 'Deuce',
       goldenPoint: 'Ponto de Ouro',
       correction: 'Correção.',
-      gamePoint: 'Ponto do game {{teamName}}',
+      gamePoint: 'Game point {{teamName}}',
       breakPoint: 'Break point',
-      setPoint: 'Ponto do set {{teamName}}',
-      matchPoint: 'Ponto da partida {{teamName}}'
+      setPoint: 'Set point {{teamName}}',
+      matchPoint: 'Match point {{teamName}}'
     }
   },
   share: {
