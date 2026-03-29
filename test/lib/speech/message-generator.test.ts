@@ -230,6 +230,50 @@ describe('message-generator', () => {
         })
       ).toBe('Thirty - Fifteen')
     })
+
+    it('returns null when team1Score is undefined', () => {
+      expect(
+        generateSpeechMessage({
+          eventType: 'point-scored',
+          team1Score: undefined as unknown as '15',
+          team2Score: '0',
+          verbosity: 'standard'
+        })
+      ).toBeNull()
+    })
+
+    it('returns null when team1Score is null', () => {
+      expect(
+        generateSpeechMessage({
+          eventType: 'point-scored',
+          team1Score: null as unknown as '15',
+          team2Score: '0',
+          verbosity: 'standard'
+        })
+      ).toBeNull()
+    })
+
+    it('returns null when team2Score is undefined', () => {
+      expect(
+        generateSpeechMessage({
+          eventType: 'point-scored',
+          team1Score: '15',
+          team2Score: undefined as unknown as '0',
+          verbosity: 'standard'
+        })
+      ).toBeNull()
+    })
+
+    it('returns null when team2Score is null', () => {
+      expect(
+        generateSpeechMessage({
+          eventType: 'point-scored',
+          team1Score: '15',
+          team2Score: null as unknown as '0',
+          verbosity: 'standard'
+        })
+      ).toBeNull()
+    })
   })
 
   describe('game-won', () => {
@@ -255,6 +299,42 @@ describe('message-generator', () => {
           verbosity: 'standard'
         })
       ).toBe('Game, Team B')
+    })
+
+    it('announces game won by team-2 with name', () => {
+      expect(
+        generateSpeechMessage({
+          eventType: 'game-won',
+          winningTeam: 'team-2',
+          team1Name: 'Team A',
+          team2Name: 'Team B',
+          verbosity: 'standard'
+        })
+      ).toBe('Game, Team B')
+    })
+
+    it('returns Game when winningTeam is invalid', () => {
+      expect(
+        generateSpeechMessage({
+          eventType: 'game-won',
+          winningTeam: 'invalid-team' as 'team-1',
+          team1Name: 'Team A',
+          team2Name: 'Team B',
+          verbosity: 'standard'
+        })
+      ).toBe('Game')
+    })
+
+    it('returns Game when winner name is missing despite non-minimal verbosity', () => {
+      expect(
+        generateSpeechMessage({
+          eventType: 'game-won',
+          winningTeam: 'team-1',
+          team1Name: '',
+          team2Name: 'Team B',
+          verbosity: 'standard'
+        })
+      ).toBe('Game')
     })
   })
 
@@ -282,6 +362,42 @@ describe('message-generator', () => {
         })
       ).toBe('Set, Team A')
     })
+
+    it('announces set won by team-2 with name', () => {
+      expect(
+        generateSpeechMessage({
+          eventType: 'set-won',
+          winningTeam: 'team-2',
+          team1Name: 'Team A',
+          team2Name: 'Team B',
+          verbosity: 'standard'
+        })
+      ).toBe('Set, Team B')
+    })
+
+    it('returns Set when winningTeam is invalid', () => {
+      expect(
+        generateSpeechMessage({
+          eventType: 'set-won',
+          winningTeam: 'invalid-team' as 'team-1',
+          team1Name: 'Team A',
+          team2Name: 'Team B',
+          verbosity: 'standard'
+        })
+      ).toBe('Set')
+    })
+
+    it('returns Set when winner name is missing despite non-minimal verbosity', () => {
+      expect(
+        generateSpeechMessage({
+          eventType: 'set-won',
+          winningTeam: 'team-1',
+          team1Name: '',
+          team2Name: 'Team B',
+          verbosity: 'standard'
+        })
+      ).toBe('Set')
+    })
   })
 
   describe('match-won', () => {
@@ -307,6 +423,42 @@ describe('message-generator', () => {
           verbosity: 'standard'
         })
       ).toBe('Match, Team A')
+    })
+
+    it('announces match won by team-2 with name', () => {
+      expect(
+        generateSpeechMessage({
+          eventType: 'match-won',
+          winningTeam: 'team-2',
+          team1Name: 'Team A',
+          team2Name: 'Team B',
+          verbosity: 'standard'
+        })
+      ).toBe('Match, Team B')
+    })
+
+    it('returns Match when winningTeam is invalid', () => {
+      expect(
+        generateSpeechMessage({
+          eventType: 'match-won',
+          winningTeam: 'invalid-team' as 'team-1',
+          team1Name: 'Team A',
+          team2Name: 'Team B',
+          verbosity: 'standard'
+        })
+      ).toBe('Match')
+    })
+
+    it('returns Match when winner name is missing despite non-minimal verbosity', () => {
+      expect(
+        generateSpeechMessage({
+          eventType: 'match-won',
+          winningTeam: 'team-1',
+          team1Name: '',
+          team2Name: 'Team B',
+          verbosity: 'standard'
+        })
+      ).toBe('Match')
     })
   })
 
@@ -355,6 +507,43 @@ describe('message-generator', () => {
           verbosity: 'standard'
         })
       ).toBeNull()
+    })
+
+    it('announces server change for team-2', () => {
+      expect(
+        generateSpeechMessage({
+          eventType: 'server-change',
+          servingTeam: 'team-2',
+          team1Name: 'Team A',
+          team2Name: 'Team B',
+          verbosity: 'standard'
+        })
+      ).toBe('Serving Team B')
+    })
+
+    it('returns null when servingTeam name is empty string', () => {
+      expect(
+        generateSpeechMessage({
+          eventType: 'server-change',
+          servingTeam: 'team-1',
+          team1Name: '',
+          team2Name: 'Team B',
+          verbosity: 'standard'
+        })
+      ).toBeNull()
+    })
+  })
+
+  describe('getScoreWord fallback', () => {
+    it('returns String(score) for unknown score values', () => {
+      expect(
+        generateSpeechMessage({
+          eventType: 'point-scored',
+          team1Score: 'unknown' as '15',
+          team2Score: '0',
+          verbosity: 'standard'
+        })
+      ).toBe('unknown - Love')
     })
   })
 

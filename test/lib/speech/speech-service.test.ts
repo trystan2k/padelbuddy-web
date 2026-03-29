@@ -1,6 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { i18n } from '@/lib/i18n/i18n'
 import { createSpeechService } from '@/lib/speech/speech-service'
+import * as voiceSelector from '@/lib/speech/voice-selector'
 
 describe('createSpeechService', () => {
   let mockSpeechSynthesis: {
@@ -464,6 +466,487 @@ describe('createSpeechService', () => {
       expect(onError).toHaveBeenCalled()
       // Queue should continue processing
       expect(mockSpeechSynthesis.speak).toHaveBeenCalledTimes(2)
+    })
+  })
+
+  describe('setMuted(false) - else path', () => {
+    it('does not cancel speech when unmuting', async () => {
+      const service = createSpeechService({ muted: true })
+
+      await vi.waitFor(() => {
+        expect(service.getVoice()).not.toBeNull()
+      })
+
+      service.setMuted(false)
+
+      // cancel should NOT be called when unmuting
+      expect(mockSpeechSynthesis.cancel).not.toHaveBeenCalled()
+      expect(service.getMuted()).toBe(false)
+    })
+  })
+
+  describe('processQueue edge cases', () => {
+    it('skips processing when already speaking', async () => {
+      // We need to simulate isSpeaking=true state.
+      // If we call speak() while the first utterance is being spoken (isSpeaking=true),
+      // processQueue will be skipped because isSpeaking is true.
+      const utterances: { text: string; triggerEvent: (type: string) => void }[] = []
+
+      class MockSpeechSynthesisUtterance {
+        text: string
+        voice: SpeechSynthesisVoice | null = null
+        lang = ''
+        rate = 1.0
+        pitch = 1.0
+        private listeners: Map<string, EventListener[]> = new Map()
+
+        addEventListener = vi.fn((type: string, listener: EventListener) => {
+          const existing = this.listeners.get(type) ?? []
+          existing.push(listener)
+          this.listeners.set(type, existing)
+        })
+
+        removeEventListener = vi.fn()
+
+        constructor(text: string) {
+          this.text = text
+          utterances.push({
+            text,
+            triggerEvent: (type: string) => {
+              const listeners = this.listeners.get(type) ?? []
+              for (const listener of listeners) {
+                listener(new Event(type))
+              }
+            }
+          })
+        }
+      }
+      vi.stubGlobal('SpeechSynthesisUtterance', MockSpeechSynthesisUtterance)
+
+      const service = createSpeechService()
+
+      await vi.waitFor(() => {
+        expect(service.getVoice()).not.toBeNull()
+      })
+
+      // First speak sets isSpeaking=true
+      service.speak('First message')
+      // At this point isSpeaking is true (no 'end' event triggered yet)
+      expect(mockSpeechSynthesis.speak).toHaveBeenCalledTimes(1)
+
+      // Second speak should add to queue but NOT process (isSpeaking=true)
+      service.speak('Second message')
+
+      // Still only one call because processQueue is skipped
+      expect(mockSpeechSynthesis.speak).toHaveBeenCalledTimes(1)
+
+      // Trigger 'end' event to process the queue
+      utterances[0]!.triggerEvent('end')
+
+      // Now the second message should be processed
+      expect(mockSpeechSynthesis.speak).toHaveBeenCalledTimes(2)
+    })
+
+    it('skips processing when queue is empty', async () => {
+      const service = createSpeechService()
+
+      await vi.waitFor(() => {
+        expect(service.getVoice()).not.toBeNull()
+      })
+
+      // Cancel to clear everything
+      service.cancel()
+      mockSpeechSynthesis.speak.mockClear()
+
+      // Call speak and then cancel — queue is now empty
+      // Calling processQueue indirectly by having isSpeaking=false and an empty queue
+      // This tests the `utteranceQueue.length === 0` branch
+      service.cancel()
+
+      // speak should not be called since queue is empty
+      expect(mockSpeechSynthesis.speak).not.toHaveBeenCalled()
+    })
+
+    it('does not call speechSynthesis.speak when speechSynthesis is undefined in processQueue', async () => {
+      // Set up with voices so initialization works
+      const utterances: { text: string; triggerEvent: (type: string) => void }[] = []
+
+      class MockSpeechSynthesisUtterance {
+        text: string
+        voice: SpeechSynthesisVoice | null = null
+        lang = ''
+        rate = 1.0
+        pitch = 1.0
+        private listeners: Map<string, EventListener[]> = new Map()
+
+        addEventListener = vi.fn((type: string, listener: EventListener) => {
+          const existing = this.listeners.get(type) ?? []
+          existing.push(listener)
+          this.listeners.set(type, existing)
+        })
+
+        removeEventListener = vi.fn()
+
+        constructor(text: string) {
+          this.text = text
+          utterances.push({
+            text,
+            triggerEvent: (type: string) => {
+              const listeners = this.listeners.get(type) ?? []
+              for (const listener of listeners) {
+                listener(new Event(type))
+              }
+            }
+          })
+        }
+      }
+      vi.stubGlobal('SpeechSynthesisUtterance', MockSpeechSynthesisUtterance)
+
+      const service = createSpeechService()
+
+      await vi.waitFor(() => {
+        expect(service.getVoice()).not.toBeNull()
+      })
+
+      // Queue an utterance while speechSynthesis exists
+      service.speak('First message')
+      expect(mockSpeechSynthesis.speak).toHaveBeenCalledTimes(1)
+
+      // Now remove speechSynthesis so the 'end' handler's processQueue
+      // encounters undefined speechSynthesis
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ;(globalThis as any).speechSynthesis = undefined
+
+      // Trigger 'end' — processQueue should not throw
+      // The utterance is shifted, but speechSynthesis is undefined, so speak is not called
+      expect(() => {
+        utterances[0]!.triggerEvent('end')
+      }).not.toThrow()
+    })
+  })
+
+  describe('handleLanguageChanged', () => {
+    it('does not update voice when service is destroyed', async () => {
+      const onVoiceChange = vi.fn()
+      const service = createSpeechService({ onVoiceChange })
+
+      // Wait for initial voice
+      await vi.waitFor(() => {
+        expect(onVoiceChange).toHaveBeenCalled()
+      })
+
+      onVoiceChange.mockClear()
+
+      // Destroy the service
+      service.destroy()
+
+      // Trigger language change via i18n
+      i18n.emit('languageChanged', 'pt')
+
+      // Give time for any async operations
+      await new Promise((resolve) => setTimeout(resolve, 100))
+
+      // onVoiceChange should not be called again since service is destroyed
+      // (handleLanguageChanged returns early when destroyed or signal.aborted)
+      expect(onVoiceChange).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('speak with voice lang fallback', () => {
+    it('uses getSafeLocale fallback when voice has no lang property', async () => {
+      const utterances: Array<{ lang: string }> = []
+
+      class MockSpeechSynthesisUtterance {
+        text: string
+        voice: SpeechSynthesisVoice | null = null
+        lang = ''
+        rate = 1.0
+        pitch = 1.0
+        private listeners: Map<string, EventListener[]> = new Map()
+
+        addEventListener = vi.fn()
+        removeEventListener = vi.fn()
+
+        constructor(text: string) {
+          this.text = text
+          utterances.push(this)
+        }
+      }
+      vi.stubGlobal('SpeechSynthesisUtterance', MockSpeechSynthesisUtterance)
+
+      // Mock selectVoice to return a voice with an empty lang
+      const voiceWithEmptyLang = { lang: '', name: 'EmptyLangVoice' } as SpeechSynthesisVoice
+      vi.spyOn(voiceSelector, 'selectVoice').mockReturnValue(voiceWithEmptyLang)
+      // Also mock getAvailableVoices to return the voice
+      vi.spyOn(voiceSelector, 'getAvailableVoices').mockResolvedValue([voiceWithEmptyLang])
+      // findVoiceByName returns undefined (no preferred voice)
+      vi.spyOn(voiceSelector, 'findVoiceByName').mockReturnValue(undefined)
+
+      const service = createSpeechService()
+
+      await vi.waitFor(() => {
+        expect(service.getVoice()).not.toBeNull()
+      })
+
+      service.speak('Hello')
+
+      expect(mockSpeechSynthesis.speak).toHaveBeenCalled()
+      // voice.lang is '' (empty string), ?? does NOT trigger for empty string,
+      // so utterance.lang should be ''
+      expect(utterances[0]!.lang).toBe('')
+    })
+
+    it('uses getSafeLocale fallback when voice lang is undefined', async () => {
+      const utterances: Array<{ lang: string }> = []
+
+      class MockSpeechSynthesisUtterance {
+        text: string
+        voice: SpeechSynthesisVoice | null = null
+        lang = ''
+        rate = 1.0
+        pitch = 1.0
+        private listeners: Map<string, EventListener[]> = new Map()
+
+        addEventListener = vi.fn()
+        removeEventListener = vi.fn()
+
+        constructor(text: string) {
+          this.text = text
+          utterances.push(this)
+        }
+      }
+      vi.stubGlobal('SpeechSynthesisUtterance', MockSpeechSynthesisUtterance)
+
+      // Mock selectVoice to return a voice with undefined lang
+      const voiceWithUndefinedLang = {
+        lang: undefined as unknown as string,
+        name: 'NoLangVoice'
+      } as SpeechSynthesisVoice
+      vi.spyOn(voiceSelector, 'selectVoice').mockReturnValue(voiceWithUndefinedLang)
+      vi.spyOn(voiceSelector, 'getAvailableVoices').mockResolvedValue([voiceWithUndefinedLang])
+      vi.spyOn(voiceSelector, 'findVoiceByName').mockReturnValue(undefined)
+
+      const service = createSpeechService()
+
+      await vi.waitFor(() => {
+        expect(service.getVoice()).not.toBeNull()
+      })
+
+      service.speak('Hello')
+
+      expect(mockSpeechSynthesis.speak).toHaveBeenCalled()
+      // voice.lang is undefined, so ?? falls through to getSafeLocale(i18n.language)
+      // i18n.language is 'en', so getSafeLocale returns 'en'
+      expect(utterances[0]!.lang).toBe('en')
+    })
+
+    it('uses provided lang option over voice lang', async () => {
+      const utterances: Array<{ lang: string }> = []
+
+      class MockSpeechSynthesisUtterance {
+        text: string
+        voice: SpeechSynthesisVoice | null = null
+        lang = ''
+        rate = 1.0
+        pitch = 1.0
+        private listeners: Map<string, EventListener[]> = new Map()
+
+        addEventListener = vi.fn()
+        removeEventListener = vi.fn()
+
+        constructor(text: string) {
+          this.text = text
+          utterances.push(this)
+        }
+      }
+      vi.stubGlobal('SpeechSynthesisUtterance', MockSpeechSynthesisUtterance)
+
+      const service = createSpeechService()
+
+      await vi.waitFor(() => {
+        expect(service.getVoice()).not.toBeNull()
+      })
+
+      service.speak('Hello', { lang: 'es' })
+
+      expect(mockSpeechSynthesis.speak).toHaveBeenCalled()
+      expect(utterances[0]!.lang).toBe('es')
+    })
+  })
+
+  describe('getSafeLocale branches', () => {
+    it('falls back to default locale when i18n.language is not a supported locale', async () => {
+      // Mock i18n.language to return an unsupported locale
+      vi.spyOn(i18n, 'language', 'get').mockReturnValue('fr')
+
+      const utterances: Array<{ lang: string }> = []
+
+      class MockSpeechSynthesisUtterance {
+        text: string
+        voice: SpeechSynthesisVoice | null = null
+        lang = ''
+        rate = 1.0
+        pitch = 1.0
+        private listeners: Map<string, EventListener[]> = new Map()
+
+        addEventListener = vi.fn()
+        removeEventListener = vi.fn()
+
+        constructor(text: string) {
+          this.text = text
+          utterances.push(this)
+        }
+      }
+      vi.stubGlobal('SpeechSynthesisUtterance', MockSpeechSynthesisUtterance)
+
+      // Mock selectVoice to return a voice with undefined lang to force getSafeLocale fallback
+      const voiceWithUndefinedLang = {
+        lang: undefined as unknown as string,
+        name: 'NoLangVoice'
+      } as SpeechSynthesisVoice
+      vi.spyOn(voiceSelector, 'selectVoice').mockReturnValue(voiceWithUndefinedLang)
+      vi.spyOn(voiceSelector, 'getAvailableVoices').mockResolvedValue([voiceWithUndefinedLang])
+      vi.spyOn(voiceSelector, 'findVoiceByName').mockReturnValue(undefined)
+
+      const service = createSpeechService()
+
+      await vi.waitFor(() => {
+        expect(service.getVoice()).not.toBeNull()
+      })
+
+      service.speak('Hello')
+
+      // getSafeLocale('fr') should fall back to defaultLocale 'en'
+      expect(utterances[0]!.lang).toBe('en')
+    })
+
+    it('returns matching supported locale when i18n.language matches', async () => {
+      const utterances: Array<{ lang: string }> = []
+
+      class MockSpeechSynthesisUtterance {
+        text: string
+        voice: SpeechSynthesisVoice | null = null
+        lang = ''
+        rate = 1.0
+        pitch = 1.0
+        private listeners: Map<string, EventListener[]> = new Map()
+
+        addEventListener = vi.fn()
+        removeEventListener = vi.fn()
+
+        constructor(text: string) {
+          this.text = text
+          utterances.push(this)
+        }
+      }
+      vi.stubGlobal('SpeechSynthesisUtterance', MockSpeechSynthesisUtterance)
+
+      // Mock selectVoice to return a voice with undefined lang to force getSafeLocale fallback
+      const voiceWithUndefinedLang = {
+        lang: undefined as unknown as string,
+        name: 'NoLangVoice'
+      } as SpeechSynthesisVoice
+      vi.spyOn(voiceSelector, 'selectVoice').mockReturnValue(voiceWithUndefinedLang)
+      vi.spyOn(voiceSelector, 'getAvailableVoices').mockResolvedValue([voiceWithUndefinedLang])
+      vi.spyOn(voiceSelector, 'findVoiceByName').mockReturnValue(undefined)
+
+      // i18n.language should be 'en' by default (supported locale)
+      const service = createSpeechService()
+
+      await vi.waitFor(() => {
+        expect(service.getVoice()).not.toBeNull()
+      })
+
+      service.speak('Hello')
+
+      // getSafeLocale('en') should return 'en' (early return path - locale === language)
+      expect(utterances[0]!.lang).toBe('en')
+    })
+
+    it('handles non-string i18n.language gracefully', async () => {
+      // Mock i18n.language to return a non-string value
+      const originalLanguage = Object.getOwnPropertyDescriptor(i18n, 'language')
+      Object.defineProperty(i18n, 'language', {
+        get: vi.fn(() => undefined),
+        configurable: true
+      })
+
+      const utterances: Array<{ lang: string }> = []
+
+      class MockSpeechSynthesisUtterance {
+        text: string
+        voice: SpeechSynthesisVoice | null = null
+        lang = ''
+        rate = 1.0
+        pitch = 1.0
+        private listeners: Map<string, EventListener[]> = new Map()
+
+        addEventListener = vi.fn()
+        removeEventListener = vi.fn()
+
+        constructor(text: string) {
+          this.text = text
+          utterances.push(this)
+        }
+      }
+      vi.stubGlobal('SpeechSynthesisUtterance', MockSpeechSynthesisUtterance)
+
+      // Mock selectVoice to return a voice with undefined lang to force getSafeLocale fallback
+      const voiceWithUndefinedLang = {
+        lang: undefined as unknown as string,
+        name: 'NoLangVoice'
+      } as SpeechSynthesisVoice
+      vi.spyOn(voiceSelector, 'selectVoice').mockReturnValue(voiceWithUndefinedLang)
+      vi.spyOn(voiceSelector, 'getAvailableVoices').mockResolvedValue([voiceWithUndefinedLang])
+      vi.spyOn(voiceSelector, 'findVoiceByName').mockReturnValue(undefined)
+
+      const service = createSpeechService()
+
+      await vi.waitFor(() => {
+        expect(service.getVoice()).not.toBeNull()
+      })
+
+      service.speak('Hello')
+
+      // getSafeLocale(undefined) should return defaultLocale 'en'
+      expect(utterances[0]!.lang).toBe('en')
+
+      // Restore original property descriptor
+      if (originalLanguage) {
+        Object.defineProperty(i18n, 'language', originalLanguage)
+      }
+    })
+  })
+
+  describe('speak returns early when no currentVoice', () => {
+    it('does not create utterance when currentVoice is null', () => {
+      vi.unstubAllGlobals()
+      vi.stubGlobal('speechSynthesis', undefined)
+
+      const service = createSpeechService()
+
+      // Voice will never be set since speechSynthesis is undefined
+      expect(service.getVoice()).toBeNull()
+
+      // speak should return early
+      expect(() => service.speak('Hello')).not.toThrow()
+      expect(service.isSupported()).toBe(false)
+    })
+
+    it('returns early when speechSynthesis becomes undefined after voice init', async () => {
+      const service = createSpeechService()
+
+      // Wait for voice initialization with speechSynthesis available
+      await vi.waitFor(() => {
+        expect(service.getVoice()).not.toBeNull()
+      })
+
+      // Now remove speechSynthesis after voice was loaded
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ;(globalThis as any).speechSynthesis = undefined
+
+      // speak should return early at the speechSynthesis undefined check (line 478-479)
+      expect(() => service.speak('Hello')).not.toThrow()
     })
   })
 })
