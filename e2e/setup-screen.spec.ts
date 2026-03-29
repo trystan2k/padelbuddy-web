@@ -5,8 +5,11 @@ import { test, expect } from './fixtures'
 async function closeDebugPwaIfVisible(page: Page) {
   const closeButton = page.getByRole('button', { name: /^close$/i })
 
-  if (await closeButton.isVisible().catch(() => false)) {
-    await closeButton.click()
+  try {
+    await closeButton.waitFor({ state: 'visible', timeout: 2000 })
+    await closeButton.click({ timeout: 5000 })
+  } catch {
+    // DebugPwa was not visible or already closed
   }
 }
 
