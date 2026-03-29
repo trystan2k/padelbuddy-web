@@ -30,7 +30,9 @@ describe('utterance-cancellation', () => {
       speak: vi.fn(),
       cancel: vi.fn(),
       getVoices: vi.fn(() => [{ lang: 'en-US', name: 'English' }]),
-      onvoiceschanged: null
+      onvoiceschanged: null,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn()
     }
 
     vi.stubGlobal('speechSynthesis', mockSpeechSynthesis)

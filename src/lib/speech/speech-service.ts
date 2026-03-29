@@ -45,6 +45,9 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
     config.verbosity ?? defaultVerbosity
   )
   const [voice, setVoice] = useState<SpeechSynthesisVoice | null>(null)
+  // Keep a ref in sync with voice state so speak() always reads the current value
+  // even if called with a stale closure (e.g. from test references captured before re-render)
+  const voiceRef = useRef<SpeechSynthesisVoice | null>(null)
   const pendingAnnouncementsRef = useRef<
     Array<{ text: string; options: SpeechOptions | undefined }>
   >([])
@@ -105,6 +108,7 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
       }
 
       setVoice(preferredVoice)
+      voiceRef.current = preferredVoice
       onVoiceChangeRef.current?.(preferredVoice)
       clearVoicesChangedListener()
     }
@@ -171,6 +175,7 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
 
         if (!destroyedRef.current) {
           setVoice(selectedVoice)
+          voiceRef.current = selectedVoice
           onVoiceChangeRef.current?.(selectedVoice)
 
           if (preferredVoiceNameRef.current && !preferredVoice) {
@@ -213,6 +218,7 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
           : undefined
         const selectedVoice = preferredVoice ?? selectVoice(currentLocale, voices)
         setVoice(selectedVoice)
+        voiceRef.current = selectedVoice
         onVoiceChangeRef.current?.(selectedVoice)
 
         if (preferredVoiceNameRef.current && !preferredVoice) {
@@ -258,11 +264,14 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
 
   const speak = useCallback(
     (text: string, options?: SpeechOptions) => {
+      // Read current voice from voiceRef to avoid stale closure issues
+      // voiceRef is kept in sync with state via setVoice calls
+      const currentVoice = voiceRef.current ?? voice
       if (destroyedRef.current || muted || !text) {
         return
       }
 
-      if (!voice) {
+      if (!currentVoice) {
         if (options?.immediate) {
           pendingAnnouncementsRef.current = []
         }
@@ -286,8 +295,8 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
       }
 
       const utterance = new SpeechSynthesisUtterance(text)
-      utterance.voice = voice
-      utterance.lang = options?.lang || voice?.lang || getSafeLocale(i18n.language)
+      utterance.voice = currentVoice
+      utterance.lang = options?.lang || currentVoice?.lang || getSafeLocale(i18n.language)
       utterance.rate = 1.0
       utterance.pitch = 1.0
 
