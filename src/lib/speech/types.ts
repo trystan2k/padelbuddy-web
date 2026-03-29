@@ -1,3 +1,5 @@
+import type { MatchGameMode, MatchTeamId } from '@/core/match'
+
 export const verbosityLevels = ['minimal', 'standard', 'verbose'] as const
 export type VerbosityLevel = (typeof verbosityLevels)[number]
 
@@ -31,6 +33,7 @@ export interface SpeechService {
 
 export interface SpeechOptions {
   immediate?: boolean // Skip queue, speak immediately
+  lang?: string
 }
 
 export type SpeechEventType =
@@ -46,8 +49,12 @@ export interface SpeechEventData {
   team2Score?: number | string
   team1Name?: string
   team2Name?: string
-  winningTeam?: 'team-1' | 'team-2'
-  servingTeam?: 'team-1' | 'team-2'
+  winningTeam?: MatchTeamId
+  servingTeam?: MatchTeamId
   isTiebreak?: boolean
+  gameMode?: MatchGameMode
+  isCorrection?: boolean
+  pointPressure?: 'game-point' | 'break-point' | 'set-point' | 'match-point'
+  pointPressureTeam?: MatchTeamId
   verbosity: VerbosityLevel
 }

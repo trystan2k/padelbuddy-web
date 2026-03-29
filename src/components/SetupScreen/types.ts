@@ -7,6 +7,7 @@ export interface SetupFormData {
   gameMode: MatchGameMode
   initialServer: MatchTeamId
   decidingSetSuperTiebreak: boolean
+  audioAnnouncementsEnabled: boolean
   servingIndicatorEnabled: boolean
   countdownTimerEnabled: boolean
   countdownTimerDuration: CountdownTimerDuration

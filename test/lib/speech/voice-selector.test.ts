@@ -17,6 +17,17 @@ const mockVoices = [
 
 describe('voice-selector', () => {
   describe('selectVoice', () => {
+    it('prefers Google voice when available for locale', () => {
+      const voicesWithGoogle = [
+        { lang: 'es-MX', name: 'Spanish Mexico' },
+        { lang: 'es-ES', name: 'Google español' }
+      ] as SpeechSynthesisVoice[]
+
+      const result = selectVoice('es', voicesWithGoogle)
+
+      expect(result?.name).toBe('Google español')
+    })
+
     it('selects voice matching locale (pt)', () => {
       const result = selectVoice('pt', mockVoices)
       expect(result?.lang).toBe('pt-BR')

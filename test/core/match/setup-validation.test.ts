@@ -7,6 +7,7 @@ const baseInput: MatchSetupInput = {
   gameMode: 'advantage',
   initialServer: 'team-1',
   decidingSetSuperTiebreak: false,
+  audioAnnouncementsEnabled: true,
   servingIndicatorEnabled: true,
   countdownTimerEnabled: false,
   countdownTimerDuration: 90,
@@ -245,6 +246,7 @@ describe('match setup validation', () => {
           ...baseInput,
           sideSwitchPrompts: 'true',
           decidingSetSuperTiebreak: 1,
+          audioAnnouncementsEnabled: 'true',
           servingIndicatorEnabled: 'true',
           countdownTimerEnabled: 'false'
         })
@@ -256,6 +258,7 @@ describe('match setup validation', () => {
       expect.arrayContaining([
         expect.objectContaining({ field: 'sideSwitchPrompts' }),
         expect.objectContaining({ field: 'decidingSetSuperTiebreak' }),
+        expect.objectContaining({ field: 'audioAnnouncementsEnabled' }),
         expect.objectContaining({ field: 'servingIndicatorEnabled' }),
         expect.objectContaining({ field: 'countdownTimerEnabled' })
       ])

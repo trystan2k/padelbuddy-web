@@ -224,6 +224,7 @@ export function validateMatchSetup(input: unknown): MatchSetupValidationResult {
   const gameModeValue = input.gameMode
   const initialServerValue = input.initialServer
   const decidingSetSuperTiebreakValue = input.decidingSetSuperTiebreak
+  const audioAnnouncementsEnabledValue = input.audioAnnouncementsEnabled
   const servingIndicatorEnabledValue = input.servingIndicatorEnabled
   const countdownTimerEnabledValue = input.countdownTimerEnabled
   const countdownTimerDurationValue = input.countdownTimerDuration
@@ -235,6 +236,7 @@ export function validateMatchSetup(input: unknown): MatchSetupValidationResult {
   let gameMode: MatchGameMode | null = null
   let initialServer: MatchTeamId | null = null
   let decidingSetSuperTiebreak: boolean | null = null
+  let audioAnnouncementsEnabled: boolean | null = null
   let servingIndicatorEnabled: boolean | null = null
   let countdownTimerEnabled: boolean | null = null
   let countdownTimerDuration: CountdownTimerDuration | null = null
@@ -283,6 +285,17 @@ export function validateMatchSetup(input: unknown): MatchSetupValidationResult {
   } else {
     issues.push(
       createIssue('servingIndicatorEnabled', 'Serving indicator enabled must be a boolean value.')
+    )
+  }
+
+  if (typeof audioAnnouncementsEnabledValue === 'boolean') {
+    audioAnnouncementsEnabled = audioAnnouncementsEnabledValue
+  } else {
+    issues.push(
+      createIssue(
+        'audioAnnouncementsEnabled',
+        'Audio announcements enabled must be a boolean value.'
+      )
     )
   }
 
@@ -357,6 +370,7 @@ export function validateMatchSetup(input: unknown): MatchSetupValidationResult {
     gameMode === null ||
     initialServer === null ||
     decidingSetSuperTiebreak === null ||
+    audioAnnouncementsEnabled === null ||
     servingIndicatorEnabled === null ||
     countdownTimerEnabled === null ||
     countdownTimerDuration === null ||
@@ -390,6 +404,7 @@ export function validateMatchSetup(input: unknown): MatchSetupValidationResult {
       gameMode,
       initialServer,
       decidingSetSuperTiebreak,
+      audioAnnouncementsEnabled,
       servingIndicatorEnabled,
       countdownTimerEnabled,
       countdownTimerDuration,

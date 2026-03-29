@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
+  defaultAudioAnnouncementsEnabled,
   defaultCountdownTimerDuration,
   defaultCountdownTimerEnabled,
   defaultMatchFormat,
@@ -32,6 +33,7 @@ export function useSetupForm() {
     gameMode: defaultGameMode,
     initialServer: defaultInitialServer,
     decidingSetSuperTiebreak: false,
+    audioAnnouncementsEnabled: defaultAudioAnnouncementsEnabled,
     servingIndicatorEnabled: defaultServingIndicatorEnabled,
     countdownTimerEnabled: defaultCountdownTimerEnabled,
     countdownTimerDuration: defaultCountdownTimerDuration,
@@ -114,6 +116,13 @@ export function useSetupForm() {
     [updateField]
   )
 
+  const updateAudioAnnouncementsEnabled = useCallback(
+    (enabled: boolean) => {
+      updateField('audioAnnouncementsEnabled', enabled)
+    },
+    [updateField]
+  )
+
   const updateCountdownTimerEnabled = useCallback(
     (enabled: boolean) => {
       updateField('countdownTimerEnabled', enabled)
@@ -156,6 +165,7 @@ export function useSetupForm() {
     updateGameMode,
     updateInitialServer,
     updateDecidingSetSuperTiebreak,
+    updateAudioAnnouncementsEnabled,
     updateSideSwitchPrompts,
     updateServingIndicatorEnabled,
     updateCountdownTimerEnabled,

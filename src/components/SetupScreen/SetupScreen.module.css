@@ -6,6 +6,8 @@
   display: flex;
   flex-direction: column;
   gap: var(--base-space-24);
+  min-height: 0;
+  overflow: hidden;
 }
 
 /* Left column (teams section) */
@@ -22,6 +24,7 @@
   flex-direction: column;
   gap: var(--base-space-16);
   min-height: 0;
+  overflow: hidden;
 }
 
 /* Team cards */
@@ -111,10 +114,13 @@
 .rulesCard {
   padding: var(--component-card-rules-padding);
   display: flex;
-  flex: 1;
   flex-direction: column;
-  justify-content: space-between;
+  gap: var(--component-card-rules-gap);
+  justify-content: flex-start;
+  flex: 1;
   min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .countdownSection {

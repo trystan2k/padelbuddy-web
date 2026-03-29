@@ -66,6 +66,7 @@ export function SetupScreen() {
     updateGameMode,
     updateInitialServer,
     updateDecidingSetSuperTiebreak,
+    updateAudioAnnouncementsEnabled,
     updateSideSwitchPrompts,
     updateServingIndicatorEnabled,
     updateCountdownTimerEnabled,
@@ -92,6 +93,7 @@ export function SetupScreen() {
         gameMode: formData.gameMode,
         initialServer: formData.initialServer,
         decidingSetSuperTiebreak: formData.decidingSetSuperTiebreak,
+        audioAnnouncementsEnabled: formData.audioAnnouncementsEnabled,
         servingIndicatorEnabled: formData.servingIndicatorEnabled,
         countdownTimerEnabled: formData.countdownTimerEnabled,
         countdownTimerDuration: formData.countdownTimerDuration,
@@ -374,7 +376,16 @@ export function SetupScreen() {
           </div>
 
           {/* Rules Card */}
-          <Card className={styles.rulesCard}>
+          <Card className={styles.rulesCard} data-testid="rules-card">
+            <Toggle
+              checked={formData.audioAnnouncementsEnabled}
+              onChange={updateAudioAnnouncementsEnabled}
+              label={t('setup.rules.audioAnnouncements')}
+              hint={t('setup.rules.audioAnnouncementsHint')}
+            />
+
+            <Divider />
+
             {/* Golden Point */}
             <Toggle
               checked={isGoldenPointEnabled}

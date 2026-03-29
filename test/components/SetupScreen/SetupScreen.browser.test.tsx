@@ -61,6 +61,27 @@ describe('SetupScreen', () => {
     await expect.element(twoHourOption).toBeDisabled()
   })
 
+  test('shows audio announcements enabled by default before the golden point toggle', async () => {
+    const screen = await render(<SetupScreen />)
+
+    const audioAnnouncementsToggle = screen.getByRole('switch', { name: /audio announcements/i })
+    const goldenPointToggle = screen.getByRole('switch', { name: /golden point/i })
+
+    await expect.element(audioAnnouncementsToggle).toHaveAttribute('aria-checked', 'true')
+    expect(
+      audioAnnouncementsToggle.element().compareDocumentPosition(goldenPointToggle.element()) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy()
+  })
+
+  test('keeps the rules card internally scrollable', async () => {
+    const screen = await render(<SetupScreen />)
+
+    const rulesCard = screen.getByTestId('rules-card')
+
+    expect(getComputedStyle(rulesCard.element()).overflowY).toBe('auto')
+  })
+
   test('enables duration selection when countdown is turned on', async () => {
     const screen = await render(<SetupScreen />)
 

@@ -1,8 +1,19 @@
+import type { Page } from '@playwright/test'
+
 import { test, expect } from './fixtures'
+
+async function closeDebugPwaIfVisible(page: Page) {
+  const closeButton = page.getByRole('button', { name: /^close$/i })
+
+  if (await closeButton.isVisible().catch(() => false)) {
+    await closeButton.click()
+  }
+}
 
 test.describe('Setup Screen', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/')
+    await closeDebugPwaIfVisible(page)
   })
 
   test('page renders correctly with all sections', async ({ page }) => {
@@ -110,6 +121,7 @@ test.describe('Setup Screen', () => {
     await servingIndicatorToggle.click()
     await expect(servingIndicatorToggle).toHaveAttribute('aria-checked', 'false')
 
+    const countdownDurationRow = page.getByTestId('countdown-duration-row')
     const ninetyMinuteDuration = page.getByRole('radio', { name: '1:30 h' })
     const twoHourDuration = page.getByRole('radio', { name: '2:00 h' })
 
@@ -117,7 +129,7 @@ test.describe('Setup Screen', () => {
     await countdownToggle.click()
     await expect(countdownToggle).toHaveAttribute('aria-checked', 'true')
     await expect(ninetyMinuteDuration).toBeEnabled()
-    await twoHourDuration.click()
+    await countdownDurationRow.dispatchEvent('keydown', { key: 'ArrowRight', bubbles: true })
     await expect(twoHourDuration).toHaveAttribute('aria-checked', 'true')
 
     // For best-of-3 format (default), verify Super Tiebreak option is visible

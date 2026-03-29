@@ -8,6 +8,10 @@ import { useToast } from '@/components/ui'
 import { TopBar } from '@/components/ui/TopBar'
 import type { MatchAction, MatchFormat, MatchProjection, MatchSetup } from '@/core/match'
 import { clearCurrentMatch, createCurrentMatchSession } from '@/lib/current-match'
+import enLocale from '@/lib/i18n/locales/en'
+import esLocale from '@/lib/i18n/locales/es'
+import ptLocale from '@/lib/i18n/locales/pt'
+import { useSpeechService } from '@/lib/speech'
 import { prepareCurrentMatchRouteNavigation } from '@/lib/router/current-match-route-flow'
 import { getViewTransitionNavigationOptions } from '@/lib/utils/view-transitions'
 
@@ -41,6 +45,25 @@ const hiddenScreenStyle = {
   pointerEvents: 'none'
 } as const
 
+const matchEndSpeechTranslations = {
+  en: enLocale.match.end.speech,
+  es: esLocale.match.end.speech,
+  pt: ptLocale.match.end.speech
+} as const
+
+function createMatchEndSpeechMessage(
+  locale: keyof typeof matchEndSpeechTranslations,
+  winnerName?: string
+) {
+  const translations = matchEndSpeechTranslations[locale]
+
+  if (!winnerName) {
+    return translations.tiedMatch
+  }
+
+  return translations.victory.replace('{{teamName}}', winnerName)
+}
+
 export function MatchEndScreen({
   matchId,
   setup,
@@ -57,6 +80,8 @@ export function MatchEndScreen({
   const [shareScreenReady, setShareScreenReady] = useState(false)
   const [debugShareOpen, setDebugShareOpen] = useState(false)
   const captureRef = useRef<HTMLDivElement | null>(null)
+  const hasAnnouncedResultRef = useRef(false)
+  const speechService = useSpeechService()
 
   const summary = useMemo(
     () =>
@@ -192,6 +217,28 @@ export function MatchEndScreen({
   })
 
   const { addErrorToast, addInfoToast } = useToast()
+
+  useEffect(() => {
+    if (hasAnnouncedResultRef.current || !setup.audioAnnouncementsEnabled) {
+      return
+    }
+
+    hasAnnouncedResultRef.current = true
+
+    for (const locale of ['en', 'es', 'pt'] as const) {
+      speechService.speak(createMatchEndSpeechMessage(locale, summary.winnerName), {
+        immediate: locale === 'en',
+        lang: locale
+      })
+    }
+  }, [setup.audioAnnouncementsEnabled, speechService, summary.winnerName])
+
+  useEffect(
+    () => () => {
+      speechService.destroy()
+    },
+    [speechService]
+  )
 
   // Trigger toasts when error/download messages appear
   useEffect(() => {

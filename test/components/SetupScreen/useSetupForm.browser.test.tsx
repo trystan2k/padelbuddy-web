@@ -42,6 +42,7 @@ describe('useSetupForm', () => {
     expect(capturedState!.formData.gameMode).toBe('advantage')
     expect(capturedState!.formData.initialServer).toBe('team-1')
     expect(capturedState!.formData.decidingSetSuperTiebreak).toBe(false)
+    expect(capturedState!.formData.audioAnnouncementsEnabled).toBe(true)
     expect(capturedState!.formData.servingIndicatorEnabled).toBe(true)
     expect(capturedState!.formData.countdownTimerEnabled).toBe(false)
     expect(capturedState!.formData.countdownTimerDuration).toBe(90)
@@ -188,6 +189,22 @@ function SetupFormController({
         }}
       >
         Side Switch ON
+      </button>
+      <button
+        data-testid="update-audio-announcements-enabled"
+        onClick={() => {
+          formState.updateAudioAnnouncementsEnabled(true)
+        }}
+      >
+        Audio ON
+      </button>
+      <button
+        data-testid="update-audio-announcements-disabled"
+        onClick={() => {
+          formState.updateAudioAnnouncementsEnabled(false)
+        }}
+      >
+        Audio OFF
       </button>
       <button
         data-testid="update-serving-indicator-enabled"
@@ -428,6 +445,21 @@ describe('useSetupForm interactions', () => {
     await screen.getByTestId('get-state').click()
 
     expect(formState!.formData.servingIndicatorEnabled).toBe(false)
+  })
+
+  test('updateAudioAnnouncementsEnabled updates value to false', async () => {
+    const screen = await render(
+      <SetupFormController
+        onGetState={(s) => {
+          formState = s
+        }}
+      />
+    )
+
+    await screen.getByTestId('update-audio-announcements-disabled').click()
+    await screen.getByTestId('get-state').click()
+
+    expect(formState!.formData.audioAnnouncementsEnabled).toBe(false)
   })
 
   test('updateCountdownTimerEnabled updates value to true', async () => {

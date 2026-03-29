@@ -119,7 +119,14 @@ export default {
       set: 'Set',
       match: 'Partida',
       serving: 'Sacando',
-      all: 'iguais'
+      all: 'Iguais',
+      deuce: 'Deuce',
+      goldenPoint: 'Ponto de Ouro',
+      correction: 'Correção.',
+      gamePoint: 'Ponto do game {{teamName}}',
+      breakPoint: 'Break point',
+      setPoint: 'Ponto do set {{teamName}}',
+      matchPoint: 'Ponto da partida {{teamName}}'
     }
   },
   share: {
@@ -166,6 +173,8 @@ export default {
       bestOf5: 'Melhor de 5'
     },
     rules: {
+      audioAnnouncements: 'Anúncios de áudio',
+      audioAnnouncementsHint: 'Narra a pontuação como árbitro de cadeira',
       goldenPoint: 'Ponto de Ouro',
       goldenPointHint: 'Sem vantagem no deuce',
       superTiebreak: 'Super Tiebreak',
@@ -284,6 +293,10 @@ export default {
         download: 'A imagem da partida foi baixada.',
         textFinishedEarly:
           'A partida {{formatLabel}} do Padel Buddy entre {{teamOneName}} e {{teamTwoName}} terminou mais cedo após {{durationValue}} e {{totalGames}} games.'
+      },
+      speech: {
+        victory: 'Vitória {{teamName}}',
+        tiedMatch: 'Jogo empatado'
       },
       aria: {
         summaryRegion: 'Resumo do resultado da partida',

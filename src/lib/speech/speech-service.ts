@@ -43,6 +43,9 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
     config.verbosity ?? defaultVerbosity
   )
   const [voice, setVoice] = useState<SpeechSynthesisVoice | null>(null)
+  const pendingAnnouncementsRef = useRef<
+    Array<{ text: string; options: SpeechOptions | undefined }>
+  >([])
   const utteranceQueueRef = useRef<SpeechSynthesisUtterance[]>([])
   const isSpeakingRef = useRef(false)
   const initializedRef = useRef(false)
@@ -170,7 +173,16 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
 
   const speak = useCallback(
     (text: string, options?: SpeechOptions) => {
-      if (destroyedRef.current || muted || !voice || !text) {
+      if (destroyedRef.current || muted || !text) {
+        return
+      }
+
+      if (!voice) {
+        if (options?.immediate) {
+          pendingAnnouncementsRef.current = []
+        }
+
+        pendingAnnouncementsRef.current.push({ text, options })
         return
       }
 
@@ -187,6 +199,7 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
 
       const utterance = new SpeechSynthesisUtterance(text)
       utterance.voice = voice
+      utterance.lang = options?.lang ?? voice.lang
       utterance.rate = 1.0
       utterance.pitch = 1.0
 
@@ -210,10 +223,23 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
     [muted, voice, processQueue]
   )
 
+  useEffect(() => {
+    if (!voice || pendingAnnouncementsRef.current.length === 0) {
+      return
+    }
+
+    const pending = pendingAnnouncementsRef.current.splice(0)
+
+    for (const { text, options } of pending) {
+      speak(text, options)
+    }
+  }, [voice, speak])
+
   const cancel = useCallback(() => {
     if (typeof speechSynthesis !== 'undefined') {
       speechSynthesis.cancel()
     }
+    pendingAnnouncementsRef.current = []
     utteranceQueueRef.current = []
     isSpeakingRef.current = false
   }, [])
@@ -265,6 +291,7 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
 
       if (message) {
         speak(message, { immediate: true })
+        return
       }
     },
     [verbosity, speak]
@@ -283,6 +310,7 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
     destroy: () => {
       // Cancel any ongoing speech and prevent further speaking
       destroyedRef.current = true
+      pendingAnnouncementsRef.current = []
       cancel()
       abortControllerRef.current?.abort()
       languageUnsubscribeRef.current?.()
@@ -364,6 +392,7 @@ export function createSpeechService(config: SpeechServiceConfig = {}): SpeechSer
 
     const utterance = new SpeechSynthesisUtterance(text)
     utterance.voice = currentVoice
+    utterance.lang = options?.lang ?? currentVoice.lang
     utterance.rate = 1.0
     utterance.pitch = 1.0
 
