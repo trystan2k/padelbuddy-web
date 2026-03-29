@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.19.1](https://github.com/trystan2k/padelbuddy-web/compare/v0.19.0...v0.19.1) (2026-03-29)
+
+
+### Bug Fixes
+
+* **speech:** add optional chaining to speechSynthesis event listener ([eef8471](https://github.com/trystan2k/padelbuddy-web/commit/eef84718dedf1a142fa95b63a0abe13c53b026d6))
+* **speech:** use ref for voice in speak callback to prevent stale closure ([7489265](https://github.com/trystan2k/padelbuddy-web/commit/7489265b68008cb237e8ee0ac78997426f797a59))
+
 ## [0.19.0](https://github.com/trystan2k/padelbuddy-web/compare/v0.18.0...v0.19.0) (2026-03-29)
 
 
