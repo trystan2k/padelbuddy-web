@@ -117,7 +117,7 @@ function getPointPressure(projection: MatchProjection): SpeechEventData['pointPr
     return undefined
   }
 
-  if (projection.derived.servingTeam === null) {
+  if (!projection.setup.servingIndicatorEnabled) {
     return 'game-point'
   }
 
@@ -165,7 +165,7 @@ function createPointScoredEvent(
   const pointPressureTeam =
     pointPressure === 'set-point' || pointPressure === 'match-point'
       ? getPressureTeam(projection, pointPressure === 'match-point' ? 'match' : 'set')
-      : pointPressure === 'game-point' && servingTeam === null
+      : pointPressure === 'game-point' && !projection.setup.servingIndicatorEnabled
         ? (leadingTeam ?? undefined)
         : undefined
 
