@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.19.0](https://github.com/trystan2k/padelbuddy-web/compare/v0.18.0...v0.19.0) (2026-03-29)
+
+
+### Features
+
+* implement chair umpire audio announcements ([d388c98](https://github.com/trystan2k/padelbuddy-web/commit/d388c985dd88a1a3f66759a5e5a0dd81a60616f7))
+
 ## [0.18.0](https://github.com/trystan2k/padelbuddy-web/compare/v0.17.0...v0.18.0) (2026-03-28)
 
 
