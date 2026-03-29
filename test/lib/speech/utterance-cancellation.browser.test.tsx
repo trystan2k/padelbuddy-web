@@ -3,6 +3,22 @@ import { render } from 'vitest-browser-react'
 
 import { useSpeechService } from '@/lib/speech'
 
+vi.mock('@/lib/speech/speech-storage', () => ({
+  createSpeechStorage: vi.fn(() => ({
+    saveSpeechPreferences: vi.fn(() => Promise.resolve()),
+    loadSpeechPreferences: vi.fn(() => Promise.resolve(null)),
+    clearSpeechPreferences: vi.fn(() => Promise.resolve())
+  })),
+  speechStorage: {
+    saveSpeechPreferences: vi.fn(() => Promise.resolve()),
+    loadSpeechPreferences: vi.fn(() => Promise.resolve(null)),
+    clearSpeechPreferences: vi.fn(() => Promise.resolve())
+  },
+  saveSpeechPreferences: vi.fn(() => Promise.resolve()),
+  loadSpeechPreferences: vi.fn(() => Promise.resolve(null)),
+  clearSpeechPreferences: vi.fn(() => Promise.resolve())
+}))
+
 // Helper component to test the hook
 function SpeechTestComponent({
   onService,

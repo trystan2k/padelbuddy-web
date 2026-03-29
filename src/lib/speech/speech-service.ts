@@ -45,9 +45,9 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
     config.verbosity ?? defaultVerbosity
   )
   const [voice, setVoice] = useState<SpeechSynthesisVoice | null>(null)
-  // Keep a ref in sync with voice state so speak() always reads the current value
-  // even if called with a stale closure (e.g. from test references captured before re-render)
   const voiceRef = useRef<SpeechSynthesisVoice | null>(null)
+  const mutedRef = useRef(muted)
+  mutedRef.current = muted
   const pendingAnnouncementsRef = useRef<
     Array<{ text: string; options: SpeechOptions | undefined }>
   >([])
@@ -267,7 +267,7 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
   const speak = useCallback(
     (text: string, options?: SpeechOptions) => {
       const currentVoice = voiceRef.current
-      if (destroyedRef.current || muted || !text) {
+      if (destroyedRef.current || mutedRef.current || !text) {
         return
       }
 
@@ -317,7 +317,7 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
         processQueue()
       }
     },
-    [muted, processQueue]
+    [processQueue]
   )
 
   useEffect(() => {
