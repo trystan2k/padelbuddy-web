@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useMemo, useRef, type KeyboardEvent } from 'react'
+import { useState, useCallback, useEffect, useMemo, type KeyboardEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate, useRouter } from '@tanstack/react-router'
 
@@ -67,7 +67,6 @@ export function SetupScreen() {
   const [isVoiceSelectionOpen, setIsVoiceSelectionOpen] = useState(false)
   const [selectedVoiceName, setSelectedVoiceName] = useState<string | null>(null)
   const [availableVoices, setAvailableVoices] = useState<SpeechSynthesisVoice[]>([])
-  const isMountedRef = useRef(true)
 
   const {
     formData,
@@ -91,12 +90,6 @@ export function SetupScreen() {
   useEffect(() => {
     setSelectedVoiceName(formData.voiceName)
   }, [formData.voiceName])
-
-  useEffect(() => {
-    return () => {
-      isMountedRef.current = false
-    }
-  }, [])
 
   const hasErrors = Object.keys(errors).length > 0
   const currentLocale = isSupportedLocale(i18n.language) ? i18n.language : defaultLocale
@@ -221,24 +214,10 @@ export function SetupScreen() {
   const handleOpenVoiceSelection = useCallback(async () => {
     try {
       const voices = await getAvailableVoices()
-
-      if (!isMountedRef.current) {
-        return
-      }
-
       setAvailableVoices(voices)
     } catch (error) {
       console.error('Failed to load available voices.', error)
-
-      if (!isMountedRef.current) {
-        return
-      }
-
       setAvailableVoices([])
-    }
-
-    if (!isMountedRef.current) {
-      return
     }
 
     setIsVoiceSelectionOpen(true)
