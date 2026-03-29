@@ -189,6 +189,7 @@ function createPointScoredEvent(
     isTiebreak: scoreDisplay.kind === 'tiebreak',
     gameMode: projection.setup.gameMode,
     isCorrection,
+    servingIndicatorEnabled: projection.setup.servingIndicatorEnabled,
     ...(servingTeam === null ? {} : { servingTeam }),
     ...(pointPressure ? { pointPressure } : {}),
     ...(pointPressureTeam ? { pointPressureTeam } : {})

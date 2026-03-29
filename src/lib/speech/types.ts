@@ -52,6 +52,7 @@ export interface SpeechEventData {
   team2Name?: string
   winningTeam?: MatchTeamId
   servingTeam?: MatchTeamId
+  servingIndicatorEnabled?: boolean
   isTiebreak?: boolean
   gameMode?: MatchGameMode
   isCorrection?: boolean

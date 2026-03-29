@@ -132,7 +132,15 @@ export function generateSpeechMessage(data: SpeechEventData): string | null {
 }
 
 function generatePointScoreMessage(data: SpeechEventData): string | null {
-  const { team1Score, team2Score, isTiebreak, verbosity, gameMode, servingTeam } = data
+  const {
+    team1Score,
+    team2Score,
+    isTiebreak,
+    verbosity,
+    gameMode,
+    servingTeam,
+    servingIndicatorEnabled
+  } = data
 
   if (verbosity === 'minimal') {
     return null
@@ -158,8 +166,18 @@ function generatePointScoreMessage(data: SpeechEventData): string | null {
     )
   }
 
-  const score1 = servingTeam === 'team-2' ? team2Score : team1Score
-  const score2 = servingTeam === 'team-2' ? team1Score : team2Score
+  // When serving indicator is disabled, announce team A's score first
+  // Otherwise, announce serving team's score first
+  let score1: number | string
+  let score2: number | string
+  if (servingIndicatorEnabled === false) {
+    score1 = team1Score
+    score2 = team2Score
+  } else {
+    score1 = servingTeam === 'team-2' ? team2Score : team1Score
+    score2 = servingTeam === 'team-2' ? team1Score : team2Score
+  }
+
   const baseMessage = formatChairUmpireScore(score1, score2, gameMode)
 
   return withCorrectionPrefix(
