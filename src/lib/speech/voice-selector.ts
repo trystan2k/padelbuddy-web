@@ -63,7 +63,7 @@ export function getAvailableVoices(signal?: AbortSignal): Promise<SpeechSynthesi
       if (settled) return
       settled = true
       clearTimeout(timeout)
-      speechSynthesis.removeEventListener('voiceschanged', handleVoicesChanged)
+      speechSynthesis?.removeEventListener('voiceschanged', handleVoicesChanged)
       signal?.removeEventListener('abort', handleAbort)
     }
 

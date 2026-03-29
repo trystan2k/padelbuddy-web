@@ -23,6 +23,8 @@ describe('utterance-cancellation', () => {
     cancel: ReturnType<typeof vi.fn>
     getVoices: ReturnType<typeof vi.fn>
     onvoiceschanged: ((this: SpeechSynthesis, ev: Event) => unknown) | null
+    addEventListener: ReturnType<typeof vi.fn>
+    removeEventListener: ReturnType<typeof vi.fn>
   }
 
   beforeEach(() => {
@@ -30,7 +32,9 @@ describe('utterance-cancellation', () => {
       speak: vi.fn(),
       cancel: vi.fn(),
       getVoices: vi.fn(() => [{ lang: 'en-US', name: 'English' }]),
-      onvoiceschanged: null
+      onvoiceschanged: null,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn()
     }
 
     vi.stubGlobal('speechSynthesis', mockSpeechSynthesis)
