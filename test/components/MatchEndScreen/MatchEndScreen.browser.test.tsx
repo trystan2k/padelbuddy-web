@@ -225,45 +225,29 @@ describe('MatchEndScreen', () => {
     await expect.element(shareButton).toBeEnabled()
   })
 
-  test('announces the match result in English, Spanish, and Portuguese', async () => {
+  test('announces the match result once for the current i18n language', async () => {
     await renderCompletedMatchEndScreen()
 
     await vi.waitFor(() => {
-      expect(mockSpeechSpeak).toHaveBeenCalledTimes(3)
+      expect(mockSpeechSpeak).toHaveBeenCalledTimes(1)
     })
 
-    expect(mockSpeechSpeak).toHaveBeenNthCalledWith(1, 'Victory Alvaro & Enrique', {
+    expect(mockSpeechSpeak).toHaveBeenCalledWith('Victory Alvaro & Enrique', {
       immediate: true,
       lang: 'en'
-    })
-    expect(mockSpeechSpeak).toHaveBeenNthCalledWith(2, 'Victoria Alvaro & Enrique', {
-      immediate: false,
-      lang: 'es'
-    })
-    expect(mockSpeechSpeak).toHaveBeenNthCalledWith(3, 'Vitória Alvaro & Enrique', {
-      immediate: false,
-      lang: 'pt'
     })
   })
 
-  test('announces tied matches in three languages when no winner exists', async () => {
+  test('announces tied matches once for the current i18n language when no winner exists', async () => {
     await renderFinishedEarlyMatchEndScreen()
 
     await vi.waitFor(() => {
-      expect(mockSpeechSpeak).toHaveBeenCalledTimes(3)
+      expect(mockSpeechSpeak).toHaveBeenCalledTimes(1)
     })
 
-    expect(mockSpeechSpeak).toHaveBeenNthCalledWith(1, 'Tied match', {
+    expect(mockSpeechSpeak).toHaveBeenCalledWith('Tied match', {
       immediate: true,
       lang: 'en'
-    })
-    expect(mockSpeechSpeak).toHaveBeenNthCalledWith(2, 'Partido empatado', {
-      immediate: false,
-      lang: 'es'
-    })
-    expect(mockSpeechSpeak).toHaveBeenNthCalledWith(3, 'Jogo empatado', {
-      immediate: false,
-      lang: 'pt'
     })
   })
 

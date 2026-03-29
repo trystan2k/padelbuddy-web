@@ -8,9 +8,7 @@ import { useToast } from '@/components/ui'
 import { TopBar } from '@/components/ui/TopBar'
 import type { MatchAction, MatchFormat, MatchProjection, MatchSetup } from '@/core/match'
 import { clearCurrentMatch, createCurrentMatchSession } from '@/lib/current-match'
-import enLocale from '@/lib/i18n/locales/en'
-import esLocale from '@/lib/i18n/locales/es'
-import ptLocale from '@/lib/i18n/locales/pt'
+import { isSupportedLocale } from '@/lib/i18n/types'
 import { useSpeechService } from '@/lib/speech'
 import { prepareCurrentMatchRouteNavigation } from '@/lib/router/current-match-route-flow'
 import { getViewTransitionNavigationOptions } from '@/lib/utils/view-transitions'
@@ -45,25 +43,6 @@ const hiddenScreenStyle = {
   pointerEvents: 'none'
 } as const
 
-const matchEndSpeechTranslations = {
-  en: enLocale.match.end.speech,
-  es: esLocale.match.end.speech,
-  pt: ptLocale.match.end.speech
-} as const
-
-function createMatchEndSpeechMessage(
-  locale: keyof typeof matchEndSpeechTranslations,
-  winnerName?: string
-) {
-  const translations = matchEndSpeechTranslations[locale]
-
-  if (!winnerName) {
-    return translations.tiedMatch
-  }
-
-  return translations.victory.replace('{{teamName}}', winnerName)
-}
-
 export function MatchEndScreen({
   matchId,
   setup,
@@ -82,6 +61,9 @@ export function MatchEndScreen({
   const captureRef = useRef<HTMLDivElement | null>(null)
   const hasAnnouncedResultRef = useRef(false)
   const speechService = useSpeechService()
+  const destroyRef = useRef(() => speechService.destroy())
+
+  destroyRef.current = () => speechService.destroy()
 
   const summary = useMemo(
     () =>
@@ -225,19 +207,22 @@ export function MatchEndScreen({
 
     hasAnnouncedResultRef.current = true
 
-    for (const locale of ['en', 'es', 'pt'] as const) {
-      speechService.speak(createMatchEndSpeechMessage(locale, summary.winnerName), {
-        immediate: locale === 'en',
-        lang: locale
-      })
-    }
-  }, [setup.audioAnnouncementsEnabled, speechService, summary.winnerName])
+    const currentLocale = isSupportedLocale(i18n.language) ? i18n.language : 'en'
+    const message = summary.winnerName
+      ? t('match.end.speech.victory', { teamName: summary.winnerName })
+      : t('match.end.speech.tiedMatch')
+
+    speechService.speak(message, {
+      immediate: true,
+      lang: currentLocale
+    })
+  }, [i18n.language, setup.audioAnnouncementsEnabled, speechService, summary.winnerName, t])
 
   useEffect(
     () => () => {
-      speechService.destroy()
+      destroyRef.current()
     },
-    [speechService]
+    []
   )
 
   // Trigger toasts when error/download messages appear

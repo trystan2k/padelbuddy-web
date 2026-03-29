@@ -7,7 +7,9 @@ export function normalizeScoreValue(score: number | string): string {
     return String(score)
   }
 
-  return score.trim().toLowerCase() === 'ad' ? 'Ad' : score
+  const trimmed = score.trim()
+
+  return trimmed.toLowerCase() === 'ad' ? 'Ad' : trimmed
 }
 
 function getScoreWord(score: number | string): string {

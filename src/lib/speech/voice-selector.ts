@@ -1,11 +1,5 @@
 import { type SupportedLocale } from '@/lib/i18n/types'
 
-const GOOGLE_VOICE_NAMES: Partial<Record<SupportedLocale, string>> = {
-  en: 'Google US English',
-  es: 'Google español',
-  pt: 'Google português do Brasil'
-}
-
 /**
  * Selects the best available voice for the given locale.
  * Priority: Google locale voice > locale voice > English voice > null (graceful mute)
@@ -14,14 +8,12 @@ export function selectVoice(
   locale: SupportedLocale,
   voices: SpeechSynthesisVoice[]
 ): SpeechSynthesisVoice | null {
-  const googleVoiceName = GOOGLE_VOICE_NAMES[locale]
+  const googleVoice = voices.find(
+    (voice) => voice.name.includes('Google') && voice.lang.startsWith(locale)
+  )
 
-  if (googleVoiceName) {
-    const googleVoice = voices.find((voice) => voice.name === googleVoiceName)
-
-    if (googleVoice) {
-      return googleVoice
-    }
+  if (googleVoice) {
+    return googleVoice
   }
 
   // Try to find voice matching locale
