@@ -266,9 +266,7 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
 
   const speak = useCallback(
     (text: string, options?: SpeechOptions) => {
-      // Read voice from state - the dependency array ensures speak is recreated when voice changes
-      // This prevents stale closure issues where speak captured a null voice from initial render
-      const currentVoice = voice
+      const currentVoice = voiceRef.current
       if (destroyedRef.current || muted || !text) {
         return
       }
@@ -319,7 +317,7 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
         processQueue()
       }
     },
-    [muted, voice, processQueue]
+    [muted, processQueue]
   )
 
   useEffect(() => {
