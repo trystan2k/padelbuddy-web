@@ -54,6 +54,7 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
   const destroyedRef = useRef(false)
   const abortControllerRef = useRef<AbortController | null>(null)
   const languageUnsubscribeRef = useRef<(() => void) | null>(null)
+  const voicesChangedUnsubscribeRef = useRef<(() => void) | null>(null)
   const preferredVoiceNameRef = useRef<string | null>(null)
 
   const onErrorRef = useRef(config.onError)
@@ -64,11 +65,60 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
     onVoiceChangeRef.current = config.onVoiceChange
   }, [config.onError, config.onVoiceChange])
 
+  const clearVoicesChangedListener = useCallback(() => {
+    voicesChangedUnsubscribeRef.current?.()
+    voicesChangedUnsubscribeRef.current = null
+  }, [])
+
+  const waitForPreferredVoice = useCallback(() => {
+    if (typeof speechSynthesis === 'undefined' || destroyedRef.current) {
+      return
+    }
+
+    const preferredVoiceName = preferredVoiceNameRef.current
+
+    if (!preferredVoiceName) {
+      clearVoicesChangedListener()
+      return
+    }
+
+    clearVoicesChangedListener()
+
+    const handleVoicesChanged = () => {
+      if (destroyedRef.current) {
+        clearVoicesChangedListener()
+        return
+      }
+
+      const nextPreferredVoiceName = preferredVoiceNameRef.current
+
+      if (!nextPreferredVoiceName) {
+        clearVoicesChangedListener()
+        return
+      }
+
+      const voices = speechSynthesis.getVoices()
+      const preferredVoice = findVoiceByName(nextPreferredVoiceName, voices)
+
+      if (!preferredVoice) {
+        return
+      }
+
+      setVoice(preferredVoice)
+      onVoiceChangeRef.current?.(preferredVoice)
+      clearVoicesChangedListener()
+    }
+
+    speechSynthesis.addEventListener('voiceschanged', handleVoicesChanged)
+    voicesChangedUnsubscribeRef.current = () => {
+      speechSynthesis.removeEventListener('voiceschanged', handleVoicesChanged)
+    }
+  }, [clearVoicesChangedListener])
+
   // Initialize from storage and load voices
   useEffect(() => {
     const abortController = new AbortController()
     abortControllerRef.current = abortController
-    const { signal } = abortController
 
     async function initialize() {
       if (initializedRef.current) return
@@ -77,20 +127,30 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
       try {
         const prefs = await loadSpeechPreferences()
 
-        if (signal.aborted) return
-
         if (prefs) {
-          setMutedState(prefs.muted)
-          setVerbosityState(prefs.verbosity)
+          // Always set the ref first — it is not React state and is safe even if the component
+          // has already re-mounted (e.g. due to SSR hydration recovery). The ref must be set
+          // before voice-selection so the preferred voice name is available.
           preferredVoiceNameRef.current = prefs.voiceName
+
+          // Guard React state updates: skip if the component has been destroyed (unmounted
+          // permanently). Note: a transient abort from hydration recovery is NOT a destroy —
+          // the component will re-mount and initialize again.
+          if (!destroyedRef.current) {
+            setMutedState(prefs.muted)
+            setVerbosityState(prefs.verbosity)
+          }
         }
       } catch (error) {
-        if (!signal.aborted) {
+        if (!destroyedRef.current) {
           onErrorRef.current?.(
             error instanceof Error ? error : new Error('Failed to load speech preferences')
           )
         }
       }
+
+      // Bail out only if the component has been permanently destroyed
+      if (destroyedRef.current) return
 
       if (typeof speechSynthesis === 'undefined') {
         setMutedState(true)
@@ -99,23 +159,32 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
       }
 
       try {
-        const voices = await getAvailableVoices(signal)
+        // Do NOT pass the signal here: voices must be selected even if a transient abort
+        // happened (e.g. SSR hydration recovery). The destroyedRef guard below handles the
+        // true "component is gone" case.
+        const voices = await getAvailableVoices()
         const currentLocale = getSafeLocale(i18n.language)
         const preferredVoice = preferredVoiceNameRef.current
           ? findVoiceByName(preferredVoiceNameRef.current, voices)
           : undefined
         const selectedVoice = preferredVoice ?? selectVoice(currentLocale, voices)
 
-        if (!signal.aborted) {
+        if (!destroyedRef.current) {
           setVoice(selectedVoice)
           onVoiceChangeRef.current?.(selectedVoice)
+
+          if (preferredVoiceNameRef.current && !preferredVoice) {
+            waitForPreferredVoice()
+          } else {
+            clearVoicesChangedListener()
+          }
 
           if (!selectedVoice) {
             onErrorRef.current?.(new Error('No suitable voice found'))
           }
         }
       } catch {
-        // Operation was aborted or failed - ignore
+        // getAvailableVoices failed — ignore
       }
     }
 
@@ -123,10 +192,11 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
 
     return () => {
       abortController.abort()
+      clearVoicesChangedListener()
     }
-  }, [])
+  }, [clearVoicesChangedListener, waitForPreferredVoice])
 
-  // Update voice when locale changes
+  // Update voice when locale changes (do NOT run on mount — Effect 1 handles initial voice selection)
   useEffect(() => {
     const abortController = new AbortController()
     const { signal } = abortController
@@ -144,12 +214,16 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
         const selectedVoice = preferredVoice ?? selectVoice(currentLocale, voices)
         setVoice(selectedVoice)
         onVoiceChangeRef.current?.(selectedVoice)
+
+        if (preferredVoiceNameRef.current && !preferredVoice) {
+          waitForPreferredVoice()
+        } else {
+          clearVoicesChangedListener()
+        }
       } catch {
         // Operation was aborted or failed - ignore
       }
     }
-
-    void updateVoice()
 
     const handleLanguageChanged = () => {
       void updateVoice()
@@ -166,8 +240,9 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
       abortController.abort()
       languageUnsubscribeRef.current?.()
       languageUnsubscribeRef.current = null
+      clearVoicesChangedListener()
     }
-  }, [])
+  }, [clearVoicesChangedListener, waitForPreferredVoice])
 
   const processQueue = useCallback(() => {
     if (isSpeakingRef.current || utteranceQueueRef.current.length === 0) {
@@ -330,6 +405,7 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
       abortControllerRef.current?.abort()
       languageUnsubscribeRef.current?.()
       languageUnsubscribeRef.current = null
+      clearVoicesChangedListener()
     }
   }
 }
@@ -392,6 +468,10 @@ export function createSpeechService(config: SpeechServiceConfig = {}): SpeechSer
 
   const speak = (text: string, options?: SpeechOptions) => {
     if (muted || !text) {
+      return
+    }
+
+    if (!currentVoice) {
       return
     }
 
