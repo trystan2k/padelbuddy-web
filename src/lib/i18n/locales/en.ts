@@ -225,6 +225,7 @@ export default {
       title: 'Select voice',
       selectVoice: 'Select a voice',
       preview: 'Preview',
+      previewLink: 'Setup voice',
       cancel: 'Cancel',
       accept: 'Accept'
     },

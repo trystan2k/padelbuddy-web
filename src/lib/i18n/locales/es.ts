@@ -226,6 +226,7 @@ export default {
       title: 'Seleccionar voz',
       selectVoice: 'Selecciona una voz',
       preview: 'Vista previa',
+      previewLink: 'Configurar voz',
       cancel: 'Cancelar',
       accept: 'Aceptar'
     },

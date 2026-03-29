@@ -206,25 +206,23 @@ export function SetupScreen() {
   }, [])
 
   const handleAudioAnnouncementsChange = useCallback(
-    async (enabled: boolean) => {
+    (enabled: boolean) => {
       updateAudioAnnouncementsEnabled(enabled)
-
-      if (!enabled) {
-        return
-      }
-
-      try {
-        const voices = await getAvailableVoices()
-        setAvailableVoices(voices)
-      } catch (error) {
-        console.error('Failed to load available voices.', error)
-        setAvailableVoices([])
-      }
-
-      setIsVoiceSelectionOpen(true)
     },
     [updateAudioAnnouncementsEnabled]
   )
+
+  const handleOpenVoiceSelection = useCallback(async () => {
+    try {
+      const voices = await getAvailableVoices()
+      setAvailableVoices(voices)
+    } catch (error) {
+      console.error('Failed to load available voices.', error)
+      setAvailableVoices([])
+    }
+
+    setIsVoiceSelectionOpen(true)
+  }, [])
 
   const handleVoiceSelectionAccept = useCallback(
     async (voiceName: string) => {
@@ -448,6 +446,16 @@ export function SetupScreen() {
               label={t('setup.rules.audioAnnouncements')}
               hint={t('setup.rules.audioAnnouncementsHint')}
             />
+
+            {formData.audioAnnouncementsEnabled && (
+              <button
+                type="button"
+                className={styles.voicePreviewButton}
+                onClick={handleOpenVoiceSelection}
+              >
+                {t('setup.voiceSelection.previewLink')}
+              </button>
+            )}
 
             <Divider />
 
