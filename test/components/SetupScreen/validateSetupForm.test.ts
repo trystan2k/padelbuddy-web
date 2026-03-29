@@ -12,6 +12,7 @@ describe('validateSetupForm', () => {
     initialServer: 'team-1',
     decidingSetSuperTiebreak: false,
     audioAnnouncementsEnabled: true,
+    voiceName: null,
     servingIndicatorEnabled: true,
     countdownTimerEnabled: false,
     countdownTimerDuration: 90,

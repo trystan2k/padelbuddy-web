@@ -222,6 +222,13 @@ export default {
         saveSuccess: 'Configuração do controle remoto salva.'
       }
     },
+    voiceSelection: {
+      title: 'Selecionar voz',
+      selectVoice: 'Selecione uma voz',
+      preview: 'Prévia',
+      cancel: 'Cancelar',
+      accept: 'Aceitar'
+    },
     startButton: 'Iniciar Partida',
     validation: {
       teamNamesRequired: 'Ambos os nomes dos times são obrigatórios',

@@ -56,6 +56,10 @@ export function createSpeechStorage(options: SpeechStorageOptions = {}): SpeechS
         return null
       }
 
+      if (typeof storedPrefs.voiceName !== 'string' && storedPrefs.voiceName !== null) {
+        return null
+      }
+
       return storedPrefs
     })
   }

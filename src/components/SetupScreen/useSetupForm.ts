@@ -14,6 +14,7 @@ import {
   type MatchGameMode,
   type MatchTeamId
 } from '@/core/match'
+import { loadSpeechPreferences } from '@/lib/speech'
 
 import type { SetupFormData, FieldErrors } from './types'
 import { validateSetupForm } from './validateSetupForm'
@@ -34,6 +35,7 @@ export function useSetupForm() {
     initialServer: defaultInitialServer,
     decidingSetSuperTiebreak: false,
     audioAnnouncementsEnabled: defaultAudioAnnouncementsEnabled,
+    voiceName: null,
     servingIndicatorEnabled: defaultServingIndicatorEnabled,
     countdownTimerEnabled: defaultCountdownTimerEnabled,
     countdownTimerDuration: defaultCountdownTimerDuration,
@@ -50,6 +52,29 @@ export function useSetupForm() {
       team2Name: team2Touched.current ? prev.team2Name : t('setup.teams.team2Default')
     }))
   }, [i18n.language, t])
+
+  useEffect(() => {
+    let isMounted = true
+
+    void (async () => {
+      try {
+        const speechPreferences = await loadSpeechPreferences()
+
+        if (!isMounted || !speechPreferences) {
+          return
+        }
+
+        setFormData((prev) => ({
+          ...prev,
+          voiceName: speechPreferences.voiceName
+        }))
+      } catch {}
+    })()
+
+    return () => {
+      isMounted = false
+    }
+  }, [])
 
   const updateField = useCallback(
     <K extends keyof SetupFormData>(field: K, value: SetupFormData[K]) => {
@@ -123,6 +148,13 @@ export function useSetupForm() {
     [updateField]
   )
 
+  const updateVoiceName = useCallback(
+    (voiceName: string | null) => {
+      updateField('voiceName', voiceName)
+    },
+    [updateField]
+  )
+
   const updateCountdownTimerEnabled = useCallback(
     (enabled: boolean) => {
       updateField('countdownTimerEnabled', enabled)
@@ -166,6 +198,7 @@ export function useSetupForm() {
     updateInitialServer,
     updateDecidingSetSuperTiebreak,
     updateAudioAnnouncementsEnabled,
+    updateVoiceName,
     updateSideSwitchPrompts,
     updateServingIndicatorEnabled,
     updateCountdownTimerEnabled,

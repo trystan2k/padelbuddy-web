@@ -17,6 +17,7 @@ describe('speech-storage', () => {
     const prefs: SpeechPreferences = {
       muted: true,
       verbosity: 'verbose',
+      voiceName: null,
       updatedAt: '2024-01-01T00:00:00.000Z'
     }
     await storage.saveSpeechPreferences(prefs)
@@ -41,6 +42,7 @@ describe('speech-storage', () => {
     const prefs: SpeechPreferences = {
       muted: false,
       verbosity: 'standard',
+      voiceName: null,
       updatedAt: '2024-01-01T00:00:00.000Z'
     }
     await storage.saveSpeechPreferences(prefs)
@@ -110,6 +112,7 @@ describe('speech-storage', () => {
     const prefs: SpeechPreferences = {
       muted: true,
       verbosity: 'minimal',
+      voiceName: null,
       updatedAt: '2024-01-01T00:00:00.000Z'
     }
     await expect(storage.saveSpeechPreferences(prefs)).rejects.toThrowError(
@@ -151,6 +154,7 @@ describe('speech-storage', () => {
     const minimalPrefs: SpeechPreferences = {
       muted: false,
       verbosity: 'minimal',
+      voiceName: null,
       updatedAt: '2024-01-01T00:00:00.000Z'
     }
     await storage.saveSpeechPreferences(minimalPrefs)
@@ -160,6 +164,7 @@ describe('speech-storage', () => {
     const standardPrefs: SpeechPreferences = {
       muted: false,
       verbosity: 'standard',
+      voiceName: null,
       updatedAt: '2024-01-01T00:01:00.000Z'
     }
     await storage.saveSpeechPreferences(standardPrefs)
@@ -169,6 +174,7 @@ describe('speech-storage', () => {
     const verbosePrefs: SpeechPreferences = {
       muted: false,
       verbosity: 'verbose',
+      voiceName: null,
       updatedAt: '2024-01-01T00:02:00.000Z'
     }
     await storage.saveSpeechPreferences(verbosePrefs)
@@ -185,6 +191,7 @@ describe('speech-storage', () => {
     const initialPrefs: SpeechPreferences = {
       muted: false,
       verbosity: 'standard',
+      voiceName: null,
       updatedAt: '2024-01-01T00:00:00.000Z'
     }
     await storage.saveSpeechPreferences(initialPrefs)
@@ -192,6 +199,7 @@ describe('speech-storage', () => {
     const updatedPrefs: SpeechPreferences = {
       muted: true,
       verbosity: 'minimal',
+      voiceName: null,
       updatedAt: '2024-01-02T00:00:00.000Z'
     }
     await storage.saveSpeechPreferences(updatedPrefs)

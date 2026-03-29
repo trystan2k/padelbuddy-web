@@ -2,6 +2,7 @@ export { createSpeechService, useSpeechService } from './speech-service'
 export { formatScoreDisplay, generateSpeechMessage } from './message-generator'
 export {
   findVoiceByName,
+  getAllVoicesGroupedByLocale,
   getAvailableVoices,
   getDefaultVoiceForLocale,
   selectVoice

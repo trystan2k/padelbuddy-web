@@ -8,6 +8,7 @@ export const defaultVerbosity: VerbosityLevel = 'standard'
 export interface SpeechPreferences {
   muted: boolean
   verbosity: VerbosityLevel
+  voiceName: string | null
   updatedAt: string
 }
 

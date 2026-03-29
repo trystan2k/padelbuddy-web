@@ -13,7 +13,7 @@ import {
   type SpeechServiceConfig,
   type VerbosityLevel
 } from './types'
-import { getAvailableVoices, selectVoice } from './voice-selector'
+import { findVoiceByName, getAvailableVoices, selectVoice } from './voice-selector'
 
 /**
  * Safely extracts a valid SupportedLocale from i18n.language.
@@ -52,6 +52,7 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
   const destroyedRef = useRef(false)
   const abortControllerRef = useRef<AbortController | null>(null)
   const languageUnsubscribeRef = useRef<(() => void) | null>(null)
+  const preferredVoiceNameRef = useRef<string | null>(null)
 
   const onErrorRef = useRef(config.onError)
   const onVoiceChangeRef = useRef(config.onVoiceChange)
@@ -79,6 +80,7 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
         if (prefs) {
           setMutedState(prefs.muted)
           setVerbosityState(prefs.verbosity)
+          preferredVoiceNameRef.current = prefs.voiceName
         }
       } catch (error) {
         if (!signal.aborted) {
@@ -97,7 +99,10 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
       try {
         const voices = await getAvailableVoices(signal)
         const currentLocale = getSafeLocale(i18n.language)
-        const selectedVoice = selectVoice(currentLocale, voices)
+        const preferredVoice = preferredVoiceNameRef.current
+          ? findVoiceByName(preferredVoiceNameRef.current, voices)
+          : undefined
+        const selectedVoice = preferredVoice ?? selectVoice(currentLocale, voices)
 
         if (!signal.aborted) {
           setVoice(selectedVoice)
@@ -131,7 +136,10 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
         const voices = await getAvailableVoices(signal)
         if (signal.aborted || destroyedRef.current) return
         const currentLocale = getSafeLocale(i18n.language)
-        const selectedVoice = selectVoice(currentLocale, voices)
+        const preferredVoice = preferredVoiceNameRef.current
+          ? findVoiceByName(preferredVoiceNameRef.current, voices)
+          : undefined
+        const selectedVoice = preferredVoice ?? selectVoice(currentLocale, voices)
         setVoice(selectedVoice)
         onVoiceChangeRef.current?.(selectedVoice)
       } catch {
@@ -251,6 +259,7 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
       saveSpeechPreferences({
         muted: newMuted,
         verbosity,
+        voiceName: preferredVoiceNameRef.current,
         updatedAt: new Date().toISOString()
       }).catch((error) => {
         onErrorRef.current?.(
@@ -272,6 +281,7 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
       saveSpeechPreferences({
         muted,
         verbosity: level,
+        voiceName: preferredVoiceNameRef.current,
         updatedAt: new Date().toISOString()
       }).catch((error) => {
         onErrorRef.current?.(

@@ -221,6 +221,13 @@ export default {
         saveSuccess: 'Remote controller bindings saved.'
       }
     },
+    voiceSelection: {
+      title: 'Select voice',
+      selectVoice: 'Select a voice',
+      preview: 'Preview',
+      cancel: 'Cancel',
+      accept: 'Accept'
+    },
     startButton: 'Start Match',
     validation: {
       teamNamesRequired: 'Both team names are required',

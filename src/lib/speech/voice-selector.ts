@@ -85,6 +85,21 @@ export function getAvailableVoices(signal?: AbortSignal): Promise<SpeechSynthesi
   })
 }
 
+export function getAllVoicesGroupedByLocale(
+  voices: SpeechSynthesisVoice[]
+): Record<string, SpeechSynthesisVoice[]> {
+  return voices.reduce<Record<string, SpeechSynthesisVoice[]>>((groupedVoices, voice) => {
+    const localePrefix = voice.lang.split('-')[0]?.toLowerCase() ?? 'other'
+
+    if (!groupedVoices[localePrefix]) {
+      groupedVoices[localePrefix] = []
+    }
+
+    groupedVoices[localePrefix].push(voice)
+    return groupedVoices
+  }, {})
+}
+
 /**
  * Finds a voice by its name.
  */
