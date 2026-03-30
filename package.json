@@ -14,9 +14,9 @@
   ],
   "type": "module",
   "scripts": {
-    "predev": "node update-version.js && pnpm tokens:build",
+    "predev": "pnpm tokens:build",
     "dev": "vite",
-    "prebuild": "node update-version.js && pnpm tokens:build",
+    "prebuild": "pnpm tokens:build",
     "build": "vite build",
     "tokens:build": "style-dictionary build --config design-tokens/style-dictionary.config.json",
     "prepare": "husky",
