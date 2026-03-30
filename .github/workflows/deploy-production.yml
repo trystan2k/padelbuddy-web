@@ -1,12 +1,21 @@
 name: Deploy Production
 
 on:
-  release:
-    types:
-      - published
+  workflow_call:
+    inputs:
+      tag_name:
+        description: 'Release tag to deploy (e.g. v1.2.3)'
+        required: true
+        type: string
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Release tag to deploy (e.g. v1.2.3)'
+        required: true
+        type: string
 
 concurrency:
-  group: deploy-production-${{ github.event.release.tag_name }}
+  group: deploy-production-${{ inputs.tag_name }}
   cancel-in-progress: true
 
 permissions:
@@ -18,7 +27,6 @@ env:
 jobs:
   deploy_production:
     name: Deploy production
-    if: github.event.release.draft == false && github.event.release.prerelease == false
     runs-on: ubuntu-latest
     environment:
       name: production
@@ -27,7 +35,7 @@ jobs:
       - name: Download dist artifact from release
         env:
           GH_TOKEN: ${{ github.token }}
-          TAG_NAME: ${{ github.event.release.tag_name }}
+          TAG_NAME: ${{ inputs.tag_name }}
         run: gh release download "$TAG_NAME" --repo "$GITHUB_REPOSITORY" --pattern "dist.tar.gz"
 
       - name: Extract dist artifact
@@ -54,7 +62,7 @@ jobs:
       - name: Summarize production deployment
         env:
           PRODUCTION_URL: ${{ steps.production_url.outputs.production_url }}
-          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          RELEASE_TAG: ${{ inputs.tag_name }}
         run: |
           {
             echo "## Production deployment"
