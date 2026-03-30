@@ -1,6 +1,20 @@
 import { type SupportedLocale } from '@/lib/i18n/types'
 
 /**
+ * Returns the native display name for a language code using Intl.DisplayNames.
+ * Falls back to the raw code if the API is unavailable or the code is unrecognised.
+ * Examples: 'es' → 'español', 'en' → 'English', 'pt' → 'português'
+ */
+export function getLanguageDisplayName(langCode: string): string {
+  try {
+    const name = new Intl.DisplayNames([langCode, 'en'], { type: 'language' }).of(langCode)
+    return name ?? langCode
+  } catch {
+    return langCode
+  }
+}
+
+/**
  * Selects the best available voice for the given locale.
  * Priority: Google locale voice > locale voice > English voice > null (graceful mute)
  */
@@ -104,6 +118,15 @@ export function getAllVoicesGroupedByLocale(
 }
 
 /**
+ * Produces a stable unique identifier for a voice based on its voiceURI and lang.
+ * This avoids the problem of multiple voices sharing the same human-readable name
+ * across locales or OS versions, where `name` alone is not unique.
+ */
+export function getVoiceId(voice: SpeechSynthesisVoice): string {
+  return `${voice.voiceURI}::${voice.lang}`
+}
+
+/**
  * Finds a voice by its name.
  */
 export function findVoiceByName(
@@ -111,6 +134,18 @@ export function findVoiceByName(
   voices: SpeechSynthesisVoice[]
 ): SpeechSynthesisVoice | undefined {
   return voices.find((voice) => voice.name === name)
+}
+
+/**
+ * Finds a voice by its unique ID (voiceURI::lang composite).
+ * Falls back to name-based lookup for backwards compatibility with stored preferences
+ * that pre-date this ID scheme.
+ */
+export function findVoiceById(
+  id: string,
+  voices: SpeechSynthesisVoice[]
+): SpeechSynthesisVoice | undefined {
+  return voices.find((voice) => getVoiceId(voice) === id)
 }
 
 /**

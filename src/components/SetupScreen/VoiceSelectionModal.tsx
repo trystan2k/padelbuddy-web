@@ -11,7 +11,9 @@ import {
   findVoiceByName,
   generateSpeechMessage,
   getAllVoicesGroupedByLocale,
-  getDefaultVoiceForLocale
+  getDefaultVoiceForLocale,
+  getLanguageDisplayName,
+  getVoiceId
 } from '@/lib/speech'
 
 import styles from './VoiceSelectionModal.module.css'
@@ -98,13 +100,13 @@ export function VoiceSelectionModal({
   )
 
   const handleVoiceChange = useCallback(
-    (voiceName: string | null) => {
-      if (voiceName === null) {
+    (voiceId: string | null) => {
+      if (voiceId === null) {
         setPreviewVoice(null)
         return
       }
 
-      setPreviewVoice(findVoiceByName(voiceName, voices) ?? null)
+      setPreviewVoice(voices.find((v) => getVoiceId(v) === voiceId) ?? null)
     },
     [voices]
   )
@@ -150,7 +152,10 @@ export function VoiceSelectionModal({
               </div>
 
               <div className={styles.field}>
-                <Select.Root value={previewVoice?.name ?? null} onValueChange={handleVoiceChange}>
+                <Select.Root
+                  value={previewVoice ? getVoiceId(previewVoice) : null}
+                  onValueChange={handleVoiceChange}
+                >
                   {/* oxlint-disable jsx-a11y/label-has-associated-control -- Base UI Select.Label and
                     Select.Trigger are associated through the component's ARIA pattern, not htmlFor */}
                   <Select.Label
@@ -162,7 +167,9 @@ export function VoiceSelectionModal({
                   <Select.Trigger
                     render={(triggerProps) => (
                       <button {...triggerProps} type="button" className={styles.trigger}>
-                        <Select.Value placeholder={t('setup.voiceSelection.selectVoice')} />
+                        <Select.Value placeholder={t('setup.voiceSelection.selectVoice')}>
+                          {previewVoice?.name ?? null}
+                        </Select.Value>
                         <span className={styles.triggerIcon} aria-hidden="true">
                           ▾
                         </span>
@@ -183,13 +190,13 @@ export function VoiceSelectionModal({
                                   <div {...groupLabelProps} className={styles.groupLabel} />
                                 )}
                               >
-                                {groupLocale}
+                                {getLanguageDisplayName(groupLocale)}
                               </Select.GroupLabel>
 
                               {voicesByLocale[groupLocale]?.map((voice) => (
                                 <Select.Item
-                                  key={voice.name}
-                                  value={voice.name}
+                                  key={getVoiceId(voice)}
+                                  value={getVoiceId(voice)}
                                   className={styles.item}
                                 >
                                   <span>{voice.name}</span>
