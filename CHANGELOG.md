@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.21.1](https://github.com/trystan2k/padelbuddy-web/compare/v0.21.0...v0.21.1) (2026-03-30)
+
+
+### Bug Fixes
+
+* **i18n:** correct Portuguese translation for remote config trigger ([f0e9c0b](https://github.com/trystan2k/padelbuddy-web/commit/f0e9c0bf4550b2208d07f1f6c4c3b553919c0525))
+
 ## [0.21.0](https://github.com/trystan2k/padelbuddy-web/compare/v0.20.0...v0.21.0) (2026-03-30)
 
 
