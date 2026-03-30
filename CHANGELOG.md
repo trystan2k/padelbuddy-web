@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.20.0](https://github.com/trystan2k/padelbuddy-web/compare/v0.19.2...v0.20.0) (2026-03-30)
+
+
+### Features
+
+* add automated version synchronization and display ([8453cfa](https://github.com/trystan2k/padelbuddy-web/commit/8453cfad66487d549ace2fc086d3c09288bffcfb))
+* **speech:** add stable voice identification and language display ([7c4b568](https://github.com/trystan2k/padelbuddy-web/commit/7c4b56839f12ccfff2fb0becb3511f27464488e5))
+
 ## [0.19.2](https://github.com/trystan2k/padelbuddy-web/compare/v0.19.1...v0.19.2) (2026-03-29)
 
 
