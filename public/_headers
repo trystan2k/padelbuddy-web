@@ -4,7 +4,11 @@
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=()
 
+/
+  Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0
+
 /index.html
+  Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0
   # Note: 'unsafe-inline' is required for production builds because Vite inlines critical CSS
   # and may inline code. To fully eliminate unsafe-inline, use nonces or hashes in a CSP-compliant build.
   Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self'

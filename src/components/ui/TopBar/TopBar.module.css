@@ -33,11 +33,22 @@
 
 .appName {
   margin: 0;
+  display: flex;
+  align-items: baseline;
+  gap: var(--base-space-4);
   font-family: var(--semantic-typography-family-display);
   font-size: var(--base-font-size-34);
   font-weight: var(--semantic-typography-weight-heading);
   color: var(--semantic-color-content-primary);
   letter-spacing: var(--base-font-letter-spacing-tight-xl);
+}
+
+.version {
+  font-family: var(--semantic-typography-family-body);
+  font-size: var(--base-font-size-11);
+  font-weight: var(--semantic-typography-weight-normal);
+  color: var(--semantic-color-content-secondary);
+  letter-spacing: normal;
 }
 
 .subtitle {

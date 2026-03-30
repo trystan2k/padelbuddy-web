@@ -1,4 +1,5 @@
 import { type HTMLAttributes, type ReactNode } from 'react'
+import { APP_VERSION } from '@/version'
 import { cn } from '@/lib/utils/cn'
 
 import styles from './TopBar.module.css'
@@ -40,7 +41,12 @@ export function TopBar({
                 className={styles.icon}
               />
             )}
-            {title && <h1 className={styles.appName}>{title}</h1>}
+            {title && (
+              <h1 className={styles.appName}>
+                {title}
+                <span className={styles.version}>({APP_VERSION})</span>
+              </h1>
+            )}
           </div>
           {subtitle && <p className={styles.subtitle}>{subtitle}</p>}
         </div>
