@@ -51,7 +51,7 @@
 .hero {
   display: grid;
   flex: 1;
-  min-height: 0;
+  min-height: calc(var(--base-space-8) * 54);
   overflow: hidden;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   grid-template-rows: minmax(0, 1fr);

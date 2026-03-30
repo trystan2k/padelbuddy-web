@@ -193,7 +193,7 @@ export default {
       }
     },
     remoteConfig: {
-      trigger: 'Configuración del control remoto',
+      trigger: 'Config. del control remoto',
       title: 'Control remoto Bluetooth',
       description:
         'Asigna un botón por acción. Los botones de revertir siempre eliminan solo la última acción de puntuación de ese equipo.',
