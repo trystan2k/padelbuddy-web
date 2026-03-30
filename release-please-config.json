@@ -12,15 +12,11 @@
       "extra-files": [
         {
           "type": "generic",
-          "path": "public/sw.js",
-          "search-value": "const SW_VERSION = '{{CURRENT_VERSION}}'",
-          "replace-value": "const SW_VERSION = '{{VERSION}}'"
+          "path": "public/sw.js"
         },
         {
           "type": "generic",
-          "path": "src/version.ts",
-          "search-value": "export const APP_VERSION = '{{CURRENT_VERSION}}'",
-          "replace-value": "export const APP_VERSION = '{{VERSION}}'"
+          "path": "src/version.ts"
         }
       ]
     }

@@ -1,5 +1,5 @@
 // Service Worker Version - update to force cache refresh
-const SW_VERSION = '0.21.1'
+const SW_VERSION = '0.21.1' // x-release-please-version
 const CACHE_NAME = `padel-buddy-${SW_VERSION}`
 
 // Assets to precache for full offline support
