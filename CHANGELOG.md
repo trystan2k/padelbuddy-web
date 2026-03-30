@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.21.2](https://github.com/trystan2k/padelbuddy-web/compare/v0.21.1...v0.21.2) (2026-03-30)
+
+
+### Bug Fixes
+
+* bump app and service worker version to 0.21.1 ([c72cc30](https://github.com/trystan2k/padelbuddy-web/commit/c72cc30e2761dc9378db52035f297c21254645fe))
+* simplify release-please configuration for version updates ([d02b02c](https://github.com/trystan2k/padelbuddy-web/commit/d02b02c387604c8eeb99516aa88bcc6e8191d5df))
+
 ## [0.21.1](https://github.com/trystan2k/padelbuddy-web/compare/v0.21.0...v0.21.1) (2026-03-30)
 
 
