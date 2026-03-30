@@ -13,8 +13,6 @@ permissions:
   contents: read
 
 env:
-  NODE_VERSION: 24.14.0
-  PNPM_VERSION: 10.32.0
   PRODUCTION_BRANCH: main
 
 jobs:
@@ -26,27 +24,14 @@ jobs:
       name: production
       url: ${{ steps.production_url.outputs.production_url }}
     steps:
-      - name: Check out released tag
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.release.tag_name }}
+      - name: Download dist artifact from release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG_NAME: ${{ github.event.release.tag_name }}
+        run: gh release download "$TAG_NAME" --repo "$GITHUB_REPOSITORY" --pattern "dist.tar.gz"
 
-      - name: Set up pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          cache: pnpm
-          node-version: ${{ env.NODE_VERSION }}
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Build application
-        run: pnpm build
+      - name: Extract dist artifact
+        run: tar -xzf dist.tar.gz
 
       - name: Deploy production to Cloudflare Pages
         id: deploy

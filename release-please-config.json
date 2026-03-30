@@ -8,7 +8,8 @@
       "include-v-in-release-name": true,
       "pull-request-header": "🎯 A new release is created",
       "release-type": "node",
-      "pull-request-title-pattern": "chore(release): ${version}"
+      "pull-request-title-pattern": "chore(release): ${version}",
+      "draft": true
     }
   }
 }
