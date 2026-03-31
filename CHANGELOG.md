@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.22.2](https://github.com/trystan2k/padelbuddy-web/compare/v0.22.1...v0.22.2) (2026-03-31)
+
+
+### Bug Fixes
+
+* **sw:** add root path to precache and improve offline fallback ([16dd993](https://github.com/trystan2k/padelbuddy-web/commit/16dd9932091475769020d4c241ebd52ae807a5e2))
+
 ## [0.22.1](https://github.com/trystan2k/padelbuddy-web/compare/v0.22.0...v0.22.1) (2026-03-31)
 
 
