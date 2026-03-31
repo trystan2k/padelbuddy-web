@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.22.0](https://github.com/trystan2k/padelbuddy-web/compare/v0.21.2...v0.22.0) (2026-03-31)
+
+
+### Features
+
+* **speech:** add iOS/Safari speech engine unlock and resilience ([48448df](https://github.com/trystan2k/padelbuddy-web/commit/48448dfe8cb410d59d280c9bf14d7a073944b8ec))
+
 ## [0.21.2](https://github.com/trystan2k/padelbuddy-web/compare/v0.21.1...v0.21.2) (2026-03-30)
 
 
