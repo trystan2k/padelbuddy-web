@@ -2,26 +2,29 @@
 const SW_VERSION = '0.22.2' // x-release-please-version
 const CACHE_NAME = `padel-buddy-${SW_VERSION}`
 
-// Assets to precache for full offline support
-// Note: We intentionally do NOT precache hashed JS/CSS bundles (e.g., /assets/*.js)
-// because:
-//   1. Vite hashed filenames change on every build, making precache invalidation complex
-//   2. Runtime caching (cache-first on first fetch) handles these automatically
-//   3. The HTML shell + locales are sufficient for offline app initialization
 const PRECACHE_URLS = ['/index.html', '/icon.png', '/manifest.json', '/']
 
-// Install event - precache all assets
-// Note: caches.open() is called per-URL here. While this could be optimized to open
-// once and add all URLs, the current approach is simple and works correctly.
-// The overhead is minimal for our small precache list (~7 URLs).
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    Promise.allSettled(
-      PRECACHE_URLS.map((url) => caches.open(CACHE_NAME).then((cache) => cache.add(url)))
-    ).then(() => {
-      // Skip waiting to activate immediately
+    (async () => {
+      const cache = await caches.open(CACHE_NAME)
+
+      await Promise.allSettled(PRECACHE_URLS.map((url) => cache.add(url)))
+
+      try {
+        const manifestResponse = await fetch('/precache-manifest.json')
+        if (manifestResponse.ok) {
+          const manifest = await manifestResponse.json()
+          if (manifest && Array.isArray(manifest.assets)) {
+            await Promise.allSettled(manifest.assets.map((url) => cache.add(url).catch(() => null)))
+          }
+        }
+      } catch (e) {
+        console.warn('[SW] Failed to precache from manifest:', e)
+      }
+
       return self.skipWaiting()
-    })
+    })()
   )
 })
 
@@ -121,35 +124,21 @@ self.addEventListener('fetch', (event) => {
 
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        // Return cached response
-        return cachedResponse
-      }
-
-      // Not in cache, fetch from network
-      return fetch(event.request)
+      const fetchPromise = fetch(event.request)
         .then((networkResponse) => {
-          // Don't cache non-successful responses
-          if (!networkResponse || networkResponse.status !== 200) {
-            return networkResponse
+          if (networkResponse && networkResponse.status === 200) {
+            const responseToCache = networkResponse.clone()
+            return caches
+              .open(CACHE_NAME)
+              .then((cache) =>
+                cache.put(event.request, responseToCache).then(() => networkResponse)
+              )
           }
-
-          // Clone the response before caching
-          const responseToCache = networkResponse.clone()
-
-          // Tie cache write to fetch event lifetime so it completes reliably
-          event.waitUntil(
-            caches.open(CACHE_NAME).then((cache) => {
-              return cache.put(event.request, responseToCache)
-            })
-          )
-
           return networkResponse
         })
-        .catch(() => {
-          // Network failed and not in cache - return error for static assets
-          return new Response('Offline', { status: 503, statusText: 'Service Unavailable' })
-        })
+        .catch(() => null)
+
+      return cachedResponse || fetchPromise
     })
   )
 })
