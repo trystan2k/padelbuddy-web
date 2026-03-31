@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.22.1](https://github.com/trystan2k/padelbuddy-web/compare/v0.22.0...v0.22.1) (2026-03-31)
+
+
+### Bug Fixes
+
+* **sw:** handle redirects in offline fallback for navigation requests ([47cf0fd](https://github.com/trystan2k/padelbuddy-web/commit/47cf0fd9922698dbc3fb89c3915c99e50d20425d))
+
 ## [0.22.0](https://github.com/trystan2k/padelbuddy-web/compare/v0.21.2...v0.22.0) (2026-03-31)
 
 
