@@ -6,6 +6,12 @@ import tsconfigPaths from 'vite-tsconfig-paths'
 import { readFileSync, writeFileSync, existsSync } from 'fs'
 import { join } from 'path'
 
+interface ManifestEntry {
+  file?: string
+  css?: string[]
+  assets?: string[]
+}
+
 function generatePrecacheManifest() {
   return {
     name: 'vite-plugin-generate-precache-manifest',
@@ -14,22 +20,35 @@ function generatePrecacheManifest() {
       const outputPath = join(__dirname, 'dist/client/precache-manifest.json')
 
       if (existsSync(manifestPath)) {
-        const manifest = JSON.parse(readFileSync(manifestPath, 'utf-8'))
-        const assets = Object.values(manifest)
-          .flatMap((entry: any) => {
-            if (Array.isArray(entry)) {
-              return entry.map((e: any) => e.file)
-            }
-            return entry.file ? [entry.file] : []
-          })
-          .filter(Boolean)
-          .map((file) => {
-            if (file.startsWith('/')) return file
-            return `/${file}`
-          })
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        const manifestRaw: Record<string, ManifestEntry> = JSON.parse(
+          readFileSync(manifestPath, 'utf-8')
+        )
+        const assets: string[] = []
 
-        writeFileSync(outputPath, JSON.stringify({ assets }, null, 2))
-        console.log(`[precache-manifest] Generated with ${assets.length} assets`)
+        for (const entry of Object.values(manifestRaw)) {
+          if (entry.file) {
+            const file = entry.file.startsWith('/') ? entry.file : `/${entry.file}`
+            assets.push(file)
+          }
+          if (entry.css) {
+            for (const css of entry.css) {
+              const file = css.startsWith('/') ? css : `/${css}`
+              assets.push(file)
+            }
+          }
+          if (entry.assets) {
+            for (const asset of entry.assets) {
+              const file = asset.startsWith('/') ? asset : `/${asset}`
+              assets.push(file)
+            }
+          }
+        }
+
+        const uniqueAssets = [...new Set(assets)]
+
+        writeFileSync(outputPath, JSON.stringify({ assets: uniqueAssets }, null, 2))
+        console.log(`[precache-manifest] Generated with ${uniqueAssets.length} assets`)
       }
     }
   }
