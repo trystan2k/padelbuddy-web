@@ -8,7 +8,7 @@ const CACHE_NAME = `padel-buddy-${SW_VERSION}`
 //   1. Vite hashed filenames change on every build, making precache invalidation complex
 //   2. Runtime caching (cache-first on first fetch) handles these automatically
 //   3. The HTML shell + locales are sufficient for offline app initialization
-const PRECACHE_URLS = ['/', '/index.html', '/icon.png', '/manifest.json']
+const PRECACHE_URLS = ['/index.html', '/icon.png', '/manifest.json']
 
 // Install event - precache all assets
 // Note: caches.open() is called per-URL here. While this could be optimized to open
@@ -66,7 +66,24 @@ self.addEventListener('fetch', (event) => {
     event.request.mode === 'navigate' ||
     event.request.headers.get('Accept')?.includes('text/html')
   ) {
-    event.respondWith(fetch(event.request).catch(() => caches.match('/index.html')))
+    event.respondWith(
+      fetch(event.request).catch(async () => {
+        let response = await caches.match('/index.html')
+        if (response && (response.status === 301 || response.status === 302)) {
+          const location = response.headers.get('Location')
+          if (location) {
+            response = await caches.match(location)
+          }
+        }
+        return (
+          response ||
+          new Response('Offline - please connect', {
+            headers: { 'Content-Type': 'text/html' },
+            status: 200
+          })
+        )
+      })
+    )
     return
   }
 
