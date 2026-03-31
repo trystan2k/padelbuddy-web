@@ -8,7 +8,7 @@ const CACHE_NAME = `padel-buddy-${SW_VERSION}`
 //   1. Vite hashed filenames change on every build, making precache invalidation complex
 //   2. Runtime caching (cache-first on first fetch) handles these automatically
 //   3. The HTML shell + locales are sufficient for offline app initialization
-const PRECACHE_URLS = ['/index.html', '/icon.png', '/manifest.json']
+const PRECACHE_URLS = ['/index.html', '/icon.png', '/manifest.json', '/']
 
 // Install event - precache all assets
 // Note: caches.open() is called per-URL here. While this could be optimized to open
@@ -68,19 +68,38 @@ self.addEventListener('fetch', (event) => {
   ) {
     event.respondWith(
       fetch(event.request).catch(async () => {
-        let response = await caches.match('/index.html')
-        if (response && (response.status === 301 || response.status === 302)) {
-          const location = response.headers.get('Location')
-          if (location) {
-            response = await caches.match(location)
+        async function getCachedContent(url) {
+          const cache = await caches.open(CACHE_NAME)
+          const response = await cache.match(url)
+          if (!response) return null
+          if (response.status === 301 || response.status === 302) {
+            const location = response.headers.get('Location')
+            if (location) {
+              return getCachedContent(location)
+            }
+            return null
           }
+          if (response.status >= 300 && response.status < 400 && response.status !== 304) {
+            const location = response.headers.get('Location')
+            if (location) {
+              return getCachedContent(location)
+            }
+            return null
+          }
+          const body = await response.text()
+          return new Response(body, {
+            status: 200,
+            headers: { 'Content-Type': 'text/html' }
+          })
         }
-        return (
-          response ||
-          new Response('Offline - please connect', {
+        const response = await getCachedContent('/index.html')
+        if (response) return response
+        return new Response(
+          '<!DOCTYPE html><html><head><title>Offline</title></head><body><p>You are offline. Please connect to the internet to load this page.</p></body></html>',
+          {
             headers: { 'Content-Type': 'text/html' },
             status: 200
-          })
+          }
         )
       })
     )
