@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.23.0](https://github.com/trystan2k/padelbuddy-web/compare/v0.22.2...v0.23.0) (2026-03-31)
+
+
+### Features
+
+* **sw:** generate precache manifest and improve caching strategy ([7a6b2ce](https://github.com/trystan2k/padelbuddy-web/commit/7a6b2ce937bd162451d6d48f45586288582e1721))
+
 ## [0.22.2](https://github.com/trystan2k/padelbuddy-web/compare/v0.22.1...v0.22.2) (2026-03-31)
 
 
