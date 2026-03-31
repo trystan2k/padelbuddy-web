@@ -92,6 +92,74 @@ describe('remote-controller-storage', () => {
       'IndexedDB is not available in this environment.'
     )
   })
+
+  test('returns null when stored value is null', async () => {
+    const fakeIndexedDb = createFakeIndexedDb({
+      seedValue: null
+    })
+    vi.stubGlobal('indexedDB', fakeIndexedDb.factory)
+
+    const storage = createRemoteControllerStorage({ databaseName: 'null-seed-db' })
+
+    await expect(storage.loadRemoteControllerBindings()).resolves.toBeNull()
+  })
+
+  test('returns null when stored value is a primitive string', async () => {
+    const fakeIndexedDb = createFakeIndexedDb({
+      seedValue: 'not an object'
+    })
+    vi.stubGlobal('indexedDB', fakeIndexedDb.factory)
+
+    const storage = createRemoteControllerStorage({ databaseName: 'primitive-seed-db' })
+
+    await expect(storage.loadRemoteControllerBindings()).resolves.toBeNull()
+  })
+
+  test('returns null when stored bindings is missing', async () => {
+    const fakeIndexedDb = createFakeIndexedDb({
+      seedValue: {
+        updatedAt: '2024-01-01T00:00:00.000Z'
+      }
+    })
+    vi.stubGlobal('indexedDB', fakeIndexedDb.factory)
+
+    const storage = createRemoteControllerStorage({ databaseName: 'missing-bindings-db' })
+
+    await expect(storage.loadRemoteControllerBindings()).resolves.toBeNull()
+  })
+
+  test('returns null when stored bindings is a string instead of object', async () => {
+    const fakeIndexedDb = createFakeIndexedDb({
+      seedValue: {
+        bindings: 'not an object',
+        updatedAt: '2024-01-01T00:00:00.000Z'
+      }
+    })
+    vi.stubGlobal('indexedDB', fakeIndexedDb.factory)
+
+    const storage = createRemoteControllerStorage({ databaseName: 'string-bindings-db' })
+
+    await expect(storage.loadRemoteControllerBindings()).resolves.toBeNull()
+  })
+
+  test('returns null when stored binding value is a number instead of string', async () => {
+    const fakeIndexedDb = createFakeIndexedDb({
+      seedValue: {
+        bindings: {
+          'add-team-1': 123,
+          'revert-team-1': null,
+          'add-team-2': 'w',
+          'revert-team-2': null
+        },
+        updatedAt: '2024-01-01T00:00:00.000Z'
+      }
+    })
+    vi.stubGlobal('indexedDB', fakeIndexedDb.factory)
+
+    const storage = createRemoteControllerStorage({ databaseName: 'number-binding-db' })
+
+    await expect(storage.loadRemoteControllerBindings()).resolves.toBeNull()
+  })
 })
 
 function createFakeIndexedDb(

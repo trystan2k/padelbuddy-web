@@ -18,6 +18,23 @@ import { findVoiceByName, getAvailableVoices, selectVoice } from './voice-select
 const maxPendingAnnouncements = 10
 
 /**
+ * Issues a silent, zero-length utterance synchronously within a user-gesture event handler.
+ * This is the only reliable way to unlock the iOS/Safari speech synthesis engine so that
+ * subsequent async calls to speechSynthesis.speak() are not silently dropped.
+ *
+ * Must be called from a direct user-interaction event handler (e.g. a button click).
+ */
+export function unlockSpeechEngine(): void {
+  if (typeof speechSynthesis === 'undefined') {
+    return
+  }
+
+  const utterance = new SpeechSynthesisUtterance('')
+  utterance.volume = 0
+  speechSynthesis.speak(utterance)
+}
+
+/**
  * Safely extracts a valid SupportedLocale from i18n.language.
  * Falls back to defaultLocale if the language is not supported.
  */
@@ -259,6 +276,12 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
 
     const utterance = utteranceQueueRef.current.shift()
     if (utterance && typeof speechSynthesis !== 'undefined') {
+      // iOS can leave speechSynthesis in a paused state after a background/foreground
+      // cycle. Resume before speaking to avoid silent drops.
+      if (speechSynthesis.paused) {
+        speechSynthesis.resume()
+      }
+
       isSpeakingRef.current = true
       speechSynthesis.speak(utterance)
     }
@@ -396,8 +419,17 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
     [verbosity, speak]
   )
 
+  const unlock = useCallback(() => {
+    if (destroyedRef.current) {
+      return
+    }
+
+    unlockSpeechEngine()
+  }, [])
+
   return {
     speak,
+    unlock,
     cancel,
     getMuted: () => muted,
     setMuted,
@@ -470,6 +502,12 @@ export function createSpeechService(config: SpeechServiceConfig = {}): SpeechSer
 
     const utterance = utteranceQueue.shift()
     if (utterance && typeof speechSynthesis !== 'undefined') {
+      // iOS can leave speechSynthesis in a paused state after a background/foreground
+      // cycle. Resume before speaking to avoid silent drops.
+      if (speechSynthesis.paused) {
+        speechSynthesis.resume()
+      }
+
       isSpeaking = true
       speechSynthesis.speak(utterance)
     }
@@ -548,6 +586,14 @@ export function createSpeechService(config: SpeechServiceConfig = {}): SpeechSer
     }
   }
 
+  const unlock = () => {
+    if (destroyed) {
+      return
+    }
+
+    unlockSpeechEngine()
+  }
+
   const destroy = () => {
     destroyed = true
     abortController.abort()
@@ -557,6 +603,7 @@ export function createSpeechService(config: SpeechServiceConfig = {}): SpeechSer
 
   return {
     speak,
+    unlock,
     cancel,
     getMuted: () => muted,
     setMuted,

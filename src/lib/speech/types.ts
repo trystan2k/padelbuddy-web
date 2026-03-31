@@ -21,6 +21,12 @@ export interface SpeechServiceConfig {
 
 export interface SpeechService {
   speak(text: string, options?: SpeechOptions): void
+  /**
+   * Unlocks the speech synthesis engine on iOS/Safari by issuing a silent utterance
+   * within a user-gesture event handler. Must be called synchronously from a user
+   * interaction (e.g. a button click) before any async speech is expected.
+   */
+  unlock(): void
   cancel(): void
   getMuted(): boolean
   setMuted(muted: boolean): void

@@ -279,6 +279,23 @@ describe('PWA registration module', () => {
       await unregisterSW()
       expect(getRegistrations).toHaveBeenCalled()
     })
+
+    it('handles error during unregister gracefully', async () => {
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+      const unregisterSpy = vi.fn().mockRejectedValue(new Error('Unregister failed'))
+      const mockRegistration = createMockRegistration({ unregister: unregisterSpy })
+      const { register } = stubServiceWorker()
+      register.mockResolvedValue(mockRegistration)
+      const { registerSW, unregisterSW } = await importRegistration()
+
+      await registerSW()
+      await unregisterSW()
+
+      expect(consoleSpy).toHaveBeenCalledWith(
+        expect.stringContaining('[SW] Unregistration failed'),
+        expect.any(Error)
+      )
+    })
   })
 
   // ── getSWState ──────────────────────────────────────────────────────────
@@ -364,6 +381,32 @@ describe('PWA registration module', () => {
 
       expect(state.error).toBeInstanceOf(Error)
       expect(state.error?.message).toBe('string error')
+    })
+
+    it('finds registration by scope match', async () => {
+      const scopeReg = createMockRegistration({ scope: 'http://localhost:3000/' })
+      const otherReg = createMockRegistration({ scope: 'http://other.com/' })
+      const { getRegistrations } = stubServiceWorker()
+      getRegistrations.mockResolvedValue([otherReg, scopeReg])
+      const { getSWState } = await importRegistration()
+
+      const state = await getSWState()
+
+      expect(state.registered).toBe(true)
+    })
+
+    it('falls back to scriptURL matching when no scope match', async () => {
+      const scriptReg = createMockRegistration({ scope: 'http://other.com/' })
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ;(scriptReg.active as any).scriptURL = 'http://localhost:3000/sw.js'
+      const { getRegistrations } = stubServiceWorker()
+      getRegistrations.mockResolvedValue([scriptReg])
+      const { getSWState } = await importRegistration()
+
+      const state = await getSWState()
+
+      expect(state.registered).toBe(true)
+      expect(state.ready).toBe(true)
     })
   })
 
@@ -487,7 +530,7 @@ describe('PWA registration module', () => {
     })
   })
 
-  // ── getSWVersion ────────────────────────────────────────────────────────
+  // ── getSWVersion ───────────────────────────────────────────────────────
 
   describe('getSWVersion', () => {
     it('returns version and cacheName when SW responds with valid data', async () => {
@@ -600,7 +643,7 @@ describe('PWA registration module', () => {
     })
   })
 
-  // ── clearSWCache ────────────────────────────────────────────────────────
+  // ── clearSWCache ───────────────────────────────────────────────────────
 
   describe('clearSWCache', () => {
     it('returns true when cache cleared successfully', async () => {
@@ -640,6 +683,34 @@ describe('PWA registration module', () => {
       respondViaPort(port2, { success: true })
       await vi.advanceTimersByTimeAsync(0)
       await cachePromise
+    })
+
+    it('returns false when response success is not true', async () => {
+      const { controllerPostMessage } = stubServiceWorker()
+      const { clearSWCache } = await importRegistration()
+
+      const cachePromise = clearSWCache()
+      const port2 = getPort2FromCall(controllerPostMessage!)
+      respondViaPort(port2, { success: false })
+
+      await vi.advanceTimersByTimeAsync(0)
+
+      const result = await cachePromise
+      expect(result).toBe(false)
+    })
+
+    it('returns false when response has no success field', async () => {
+      const { controllerPostMessage } = stubServiceWorker()
+      const { clearSWCache } = await importRegistration()
+
+      const cachePromise = clearSWCache()
+      const port2 = getPort2FromCall(controllerPostMessage!)
+      respondViaPort(port2, { version: '1.0.0' })
+
+      await vi.advanceTimersByTimeAsync(0)
+
+      const result = await cachePromise
+      expect(result).toBe(false)
     })
   })
 })

@@ -1,4 +1,4 @@
-export { createSpeechService, useSpeechService } from './speech-service'
+export { createSpeechService, unlockSpeechEngine, useSpeechService } from './speech-service'
 export { formatScoreDisplay, generateSpeechMessage } from './message-generator'
 export {
   findVoiceById,

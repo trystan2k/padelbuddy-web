@@ -16,6 +16,7 @@ import {
   getAvailableVoices,
   loadSpeechPreferences,
   saveSpeechPreferences,
+  unlockSpeechEngine,
   type SpeechPreferences
 } from '@/lib/speech'
 import { prepareCurrentMatchRouteNavigation } from '@/lib/router/current-match-route-flow'
@@ -97,6 +98,13 @@ export function SetupScreen() {
   const handleStartMatch = useCallback(async () => {
     if (!validate()) {
       return
+    }
+
+    // iOS/Safari requires a user-gesture-scoped speechSynthesis.speak() call to unlock
+    // the speech engine. Without this, all async announcements in ActiveMatchScreen are
+    // silently dropped on the first session.
+    if (formData.audioAnnouncementsEnabled) {
+      unlockSpeechEngine()
     }
 
     setIsStarting(true)
