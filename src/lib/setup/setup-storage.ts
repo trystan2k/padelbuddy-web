@@ -1,0 +1,490 @@
+import {
+  countdownTimerDurations,
+  defaultAudioAnnouncementsEnabled,
+  defaultCountdownTimerDuration,
+  defaultCountdownTimerEnabled,
+  defaultGameMode,
+  defaultServingIndicatorEnabled,
+  gameModes,
+  type CountdownTimerDuration,
+  type MatchGameMode
+} from '@/core/match'
+import {
+  defaultVerbosity,
+  verbosityLevels,
+  type SpeechPreferences,
+  type VerbosityLevel
+} from '@/lib/speech/types'
+
+import {
+  type IndexedDbStorageOptions,
+  resolveIndexedDbStorageConfig,
+  setupPreferenceObjectStoreName,
+  speechPreferenceObjectStoreName,
+  waitForIndexedDbRequest,
+  waitForIndexedDbTransaction,
+  withIndexedDbDatabase,
+  type IndexedDbOpenMessages
+} from '../persistence/indexed-db'
+
+const defaultObjectStoreName = setupPreferenceObjectStoreName
+const setupPreferenceKey = 'setup-preference'
+const legacySpeechPreferenceKey = 'speech-preference'
+
+const indexedDbMessages: IndexedDbOpenMessages = {
+  blocked: 'Opening the setup preference database was blocked.',
+  openFailed: 'Unable to open the setup preference database.'
+}
+
+export interface SetupPreferences {
+  muted: boolean
+  verbosity: VerbosityLevel
+  voiceName: string | null
+  audioAnnouncementsEnabled: boolean
+  servingIndicatorEnabled: boolean
+  countdownTimerEnabled: boolean
+  countdownTimerDuration: CountdownTimerDuration
+  sideSwitchPrompts: boolean
+  gameMode: MatchGameMode
+  decidingSetSuperTiebreak: boolean
+}
+
+export type SetupPreferenceSlice = Partial<SetupPreferences>
+
+interface StoredSetupPreferences extends SetupPreferences {
+  updatedAt: string
+}
+
+type StoredRecordStatus =
+  | { status: 'missing' }
+  | { status: 'invalid' }
+  | { status: 'ok'; record: StoredSetupPreferences }
+
+export interface SetupStorage {
+  saveSetupPreferences(preferences: SetupPreferences): Promise<void>
+  saveSetupPreferenceSlice(preferences: SetupPreferenceSlice): Promise<void>
+  loadSetupPreferences(): Promise<SetupPreferences | null>
+  clearSetupPreferences(): Promise<void>
+  saveSpeechPreferences(preferences: SpeechPreferences): Promise<void>
+  loadSpeechPreferences(): Promise<SpeechPreferences | null>
+  clearSpeechPreferences(): Promise<void>
+}
+
+export const defaultSetupPreferences: SetupPreferences = {
+  muted: false,
+  verbosity: defaultVerbosity,
+  voiceName: null,
+  audioAnnouncementsEnabled: defaultAudioAnnouncementsEnabled,
+  servingIndicatorEnabled: defaultServingIndicatorEnabled,
+  countdownTimerEnabled: defaultCountdownTimerEnabled,
+  countdownTimerDuration: defaultCountdownTimerDuration,
+  sideSwitchPrompts: true,
+  gameMode: defaultGameMode,
+  decidingSetSuperTiebreak: false
+}
+
+export function createSetupStorage(options: IndexedDbStorageOptions = {}): SetupStorage {
+  const config = resolveIndexedDbStorageConfig(options, defaultObjectStoreName)
+
+  const saveSetupPreferences = async (preferences: SetupPreferences): Promise<void> => {
+    await writeSetupPreferencesRecord(config, createStoredSetupPreferences(preferences))
+  }
+
+  // NOTE: This is a non-atomic read-modify-write (two separate transactions).
+  // Two concurrent calls could clobber each other. In practice this is safe because
+  // the only concurrent callers — useSetupForm toggle effect and SetupScreen
+  // voice-accept handler — are driven by distinct, mutually exclusive user gestures.
+  const saveSetupPreferenceSlice = async (preferences: SetupPreferenceSlice): Promise<void> => {
+    await withIndexedDbDatabase(config, indexedDbMessages, async (database) => {
+      const currentRecordResult = await readStoredSetupPreferencesRecord(
+        database,
+        config.objectStoreName
+      )
+      const currentPreferences =
+        currentRecordResult.status === 'ok' ? toSetupPreferences(currentRecordResult.record) : null
+
+      const nextPreferences = mergeSetupPreferences(currentPreferences, preferences)
+
+      await putStoredSetupPreferencesRecord(database, config.objectStoreName, nextPreferences)
+    })
+  }
+
+  const loadSetupPreferences = async (): Promise<SetupPreferences | null> => {
+    return withIndexedDbDatabase(config, indexedDbMessages, async (database) => {
+      const storedRecord = await loadOrMigrateStoredRecord(database, config.objectStoreName)
+
+      if (!storedRecord) {
+        return null
+      }
+
+      return toSetupPreferences(storedRecord)
+    })
+  }
+
+  const clearSetupPreferences = async (): Promise<void> => {
+    await withIndexedDbDatabase(config, indexedDbMessages, async (database) => {
+      const transaction = database.transaction(config.objectStoreName, 'readwrite')
+
+      transaction.objectStore(config.objectStoreName).delete(setupPreferenceKey)
+      await waitForIndexedDbTransaction(transaction)
+    })
+  }
+
+  const saveSpeechPreferences = async (preferences: SpeechPreferences): Promise<void> => {
+    await saveSetupPreferenceSlice({
+      muted: preferences.muted,
+      verbosity: preferences.verbosity,
+      voiceName: preferences.voiceName
+    })
+  }
+
+  const loadSpeechPreferences = async (): Promise<SpeechPreferences | null> => {
+    return withIndexedDbDatabase(config, indexedDbMessages, async (database) => {
+      const storedRecord = await loadOrMigrateStoredRecord(database, config.objectStoreName)
+
+      if (!storedRecord) {
+        return null
+      }
+
+      return toSpeechPreferences(storedRecord)
+    })
+  }
+
+  const clearSpeechPreferences = async (): Promise<void> => {
+    await withIndexedDbDatabase(config, indexedDbMessages, async (database) => {
+      const currentRecordResult = await readStoredSetupPreferencesRecord(
+        database,
+        config.objectStoreName
+      )
+      if (currentRecordResult.status !== 'ok') {
+        return
+      }
+
+      const currentPreferences = toSetupPreferences(currentRecordResult.record)
+
+      await putStoredSetupPreferencesRecord(database, config.objectStoreName, {
+        ...currentPreferences,
+        muted: defaultSetupPreferences.muted,
+        verbosity: defaultSetupPreferences.verbosity,
+        voiceName: null
+      })
+    })
+  }
+
+  return {
+    saveSetupPreferences,
+    saveSetupPreferenceSlice,
+    loadSetupPreferences,
+    clearSetupPreferences,
+    saveSpeechPreferences,
+    loadSpeechPreferences,
+    clearSpeechPreferences
+  }
+}
+
+function mergeSetupPreferences(
+  currentPreferences: SetupPreferences | null,
+  nextPreferences: SetupPreferenceSlice
+): SetupPreferences {
+  return {
+    ...(currentPreferences ?? defaultSetupPreferences),
+    ...nextPreferences,
+    voiceName:
+      // voiceName is only updated if a truthy value is provided; null and undefined
+      // both mean "no change" and fall through to the current/default value.
+      nextPreferences.voiceName ??
+      currentPreferences?.voiceName ??
+      defaultSetupPreferences.voiceName
+  }
+}
+
+function createStoredSetupPreferences(preferences: SetupPreferences): StoredSetupPreferences {
+  return {
+    ...preferences,
+    updatedAt: new Date().toISOString()
+  }
+}
+
+function toSetupPreferences(record: StoredSetupPreferences): SetupPreferences {
+  return {
+    muted: record.muted,
+    verbosity: record.verbosity,
+    voiceName: record.voiceName,
+    audioAnnouncementsEnabled: record.audioAnnouncementsEnabled,
+    servingIndicatorEnabled: record.servingIndicatorEnabled,
+    countdownTimerEnabled: record.countdownTimerEnabled,
+    countdownTimerDuration: record.countdownTimerDuration,
+    sideSwitchPrompts: record.sideSwitchPrompts,
+    gameMode: record.gameMode,
+    decidingSetSuperTiebreak: record.decidingSetSuperTiebreak
+  }
+}
+
+function toSpeechPreferences(record: StoredSetupPreferences): SpeechPreferences {
+  return {
+    muted: record.muted,
+    verbosity: record.verbosity,
+    voiceName: record.voiceName,
+    updatedAt: record.updatedAt
+  }
+}
+
+async function writeSetupPreferencesRecord(
+  config: ReturnType<typeof resolveIndexedDbStorageConfig>,
+  record: StoredSetupPreferences
+): Promise<void> {
+  await withIndexedDbDatabase(config, indexedDbMessages, async (database) => {
+    const transaction = database.transaction(config.objectStoreName, 'readwrite')
+
+    transaction.objectStore(config.objectStoreName).put(record, setupPreferenceKey)
+    await waitForIndexedDbTransaction(transaction)
+  })
+}
+
+async function putStoredSetupPreferencesRecord(
+  database: IDBDatabase,
+  objectStoreName: string,
+  preferences: SetupPreferences
+): Promise<void> {
+  const transaction = database.transaction(objectStoreName, 'readwrite')
+
+  transaction
+    .objectStore(objectStoreName)
+    .put(createStoredSetupPreferences(preferences), setupPreferenceKey)
+  await waitForIndexedDbTransaction(transaction)
+}
+
+async function loadOrMigrateStoredRecord(
+  database: IDBDatabase,
+  objectStoreName: string
+): Promise<StoredSetupPreferences | null> {
+  const currentRecordResult = await readStoredSetupPreferencesRecord(database, objectStoreName)
+
+  if (currentRecordResult.status === 'ok') {
+    return currentRecordResult.record
+  }
+
+  if (currentRecordResult.status === 'invalid') {
+    return null
+  }
+
+  const legacyRecordResult = await readLegacySpeechPreferencesRecord(database)
+
+  if (legacyRecordResult.status !== 'ok') {
+    return null
+  }
+
+  const migratedPreferences = mergeSetupPreferences(null, {
+    muted: legacyRecordResult.record.muted,
+    verbosity: legacyRecordResult.record.verbosity,
+    voiceName: legacyRecordResult.record.voiceName
+  })
+  const migratedRecord = createStoredSetupPreferences(migratedPreferences)
+
+  // Intentionally keep the legacy speech record after migration. The unified
+  // setup-preference record already wins on subsequent loads, so retaining the
+  // legacy source avoids making the one-time migration irrecoverable.
+  await writeStoredSetupPreferencesRecord(database, objectStoreName, migratedRecord)
+
+  return migratedRecord
+}
+
+async function writeStoredSetupPreferencesRecord(
+  database: IDBDatabase,
+  objectStoreName: string,
+  record: StoredSetupPreferences
+): Promise<void> {
+  const transaction = database.transaction(objectStoreName, 'readwrite')
+
+  transaction.objectStore(objectStoreName).put(record, setupPreferenceKey)
+
+  await waitForIndexedDbTransaction(transaction)
+}
+
+async function readStoredSetupPreferencesRecord(
+  database: IDBDatabase,
+  objectStoreName: string
+): Promise<StoredRecordStatus> {
+  const transaction = database.transaction(objectStoreName, 'readonly')
+  const request = transaction.objectStore(objectStoreName).get(setupPreferenceKey)
+  const storedRecord = await waitForIndexedDbRequest<StoredSetupPreferences | undefined>(request)
+
+  await waitForIndexedDbTransaction(transaction)
+
+  if (typeof storedRecord === 'undefined') {
+    return { status: 'missing' }
+  }
+
+  const parsedRecord = parseStoredSetupPreferences(storedRecord)
+
+  if (!parsedRecord) {
+    return { status: 'invalid' }
+  }
+
+  return {
+    status: 'ok',
+    record: parsedRecord
+  }
+}
+
+async function readLegacySpeechPreferencesRecord(
+  database: IDBDatabase
+): Promise<StoredRecordStatus> {
+  if (!database.objectStoreNames.contains(speechPreferenceObjectStoreName)) {
+    return { status: 'missing' }
+  }
+
+  const transaction = database.transaction(speechPreferenceObjectStoreName, 'readonly')
+  const request = transaction
+    .objectStore(speechPreferenceObjectStoreName)
+    .get(legacySpeechPreferenceKey)
+  const storedRecord = await waitForIndexedDbRequest<SpeechPreferences | undefined>(request)
+
+  await waitForIndexedDbTransaction(transaction)
+
+  if (typeof storedRecord === 'undefined') {
+    return { status: 'missing' }
+  }
+
+  const parsedRecord = parseStoredSpeechPreferences(storedRecord)
+
+  if (!parsedRecord) {
+    return { status: 'invalid' }
+  }
+
+  return {
+    status: 'ok',
+    record: {
+      ...defaultSetupPreferences,
+      muted: parsedRecord.muted,
+      verbosity: parsedRecord.verbosity,
+      voiceName: parsedRecord.voiceName ?? null,
+      updatedAt: parsedRecord.updatedAt
+    }
+  }
+}
+
+function parseStoredSetupPreferences(value: unknown): StoredSetupPreferences | null {
+  if (!value || typeof value !== 'object') {
+    return null
+  }
+
+  const candidate = value as Partial<StoredSetupPreferences>
+
+  if (typeof candidate.updatedAt !== 'string') {
+    return null
+  }
+
+  if (typeof candidate.muted !== 'boolean') {
+    return null
+  }
+
+  if (!isVerbosityLevel(candidate.verbosity)) {
+    return null
+  }
+
+  if (typeof candidate.voiceName !== 'string' && candidate.voiceName !== null) {
+    return null
+  }
+
+  if (typeof candidate.audioAnnouncementsEnabled !== 'boolean') {
+    return null
+  }
+
+  if (typeof candidate.servingIndicatorEnabled !== 'boolean') {
+    return null
+  }
+
+  if (typeof candidate.countdownTimerEnabled !== 'boolean') {
+    return null
+  }
+
+  if (!isCountdownTimerDuration(candidate.countdownTimerDuration)) {
+    return null
+  }
+
+  if (typeof candidate.sideSwitchPrompts !== 'boolean') {
+    return null
+  }
+
+  if (!isMatchGameMode(candidate.gameMode)) {
+    return null
+  }
+
+  if (typeof candidate.decidingSetSuperTiebreak !== 'boolean') {
+    return null
+  }
+
+  return {
+    muted: candidate.muted,
+    verbosity: candidate.verbosity,
+    voiceName: candidate.voiceName,
+    audioAnnouncementsEnabled: candidate.audioAnnouncementsEnabled,
+    servingIndicatorEnabled: candidate.servingIndicatorEnabled,
+    countdownTimerEnabled: candidate.countdownTimerEnabled,
+    countdownTimerDuration: candidate.countdownTimerDuration,
+    sideSwitchPrompts: candidate.sideSwitchPrompts,
+    gameMode: candidate.gameMode,
+    decidingSetSuperTiebreak: candidate.decidingSetSuperTiebreak,
+    updatedAt: candidate.updatedAt
+  }
+}
+
+function parseStoredSpeechPreferences(value: unknown): SpeechPreferences | null {
+  if (!value || typeof value !== 'object') {
+    return null
+  }
+
+  const candidate = value as Partial<SpeechPreferences>
+
+  if (typeof candidate.updatedAt !== 'string') {
+    return null
+  }
+
+  if (typeof candidate.muted !== 'boolean') {
+    return null
+  }
+
+  if (!isVerbosityLevel(candidate.verbosity)) {
+    return null
+  }
+
+  if (
+    typeof candidate.voiceName !== 'string' &&
+    candidate.voiceName !== null &&
+    typeof candidate.voiceName !== 'undefined'
+  ) {
+    return null
+  }
+
+  return {
+    muted: candidate.muted,
+    verbosity: candidate.verbosity,
+    voiceName: candidate.voiceName ?? null,
+    updatedAt: candidate.updatedAt
+  }
+}
+
+function isVerbosityLevel(value: unknown): value is VerbosityLevel {
+  return typeof value === 'string' && verbosityLevels.some((level) => level === value)
+}
+
+function isCountdownTimerDuration(value: unknown): value is CountdownTimerDuration {
+  return typeof value === 'number' && countdownTimerDurations.some((duration) => duration === value)
+}
+
+function isMatchGameMode(value: unknown): value is MatchGameMode {
+  return typeof value === 'string' && gameModes.some((gameMode) => gameMode === value)
+}
+
+export const setupStorage = createSetupStorage()
+export const saveSetupPreferences = (preferences: SetupPreferences) =>
+  setupStorage.saveSetupPreferences(preferences)
+export const saveSetupPreferenceSlice = (preferences: SetupPreferenceSlice) =>
+  setupStorage.saveSetupPreferenceSlice(preferences)
+export const loadSetupPreferences = () => setupStorage.loadSetupPreferences()
+export const clearSetupPreferences = () => setupStorage.clearSetupPreferences()
+export const saveSpeechPreferences = (preferences: SpeechPreferences) =>
+  setupStorage.saveSpeechPreferences(preferences)
+export const loadSpeechPreferences = () => setupStorage.loadSpeechPreferences()
+export const clearSpeechPreferences = () => setupStorage.clearSpeechPreferences()

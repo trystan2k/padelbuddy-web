@@ -11,14 +11,8 @@ import {
 } from '@/core/match'
 import { saveCurrentMatch } from '@/lib/current-match'
 import { defaultLocale, isSupportedLocale } from '@/lib/i18n/types'
-import {
-  defaultVerbosity,
-  getAvailableVoices,
-  loadSpeechPreferences,
-  saveSpeechPreferences,
-  unlockSpeechEngine,
-  type SpeechPreferences
-} from '@/lib/speech'
+import { saveSetupPreferenceSlice } from '@/lib/setup/setup-storage'
+import { getAvailableVoices, unlockSpeechEngine } from '@/lib/speech'
 import { prepareCurrentMatchRouteNavigation } from '@/lib/router/current-match-route-flow'
 import { cn } from '@/lib/utils/cn'
 import { getViewTransitionNavigationOptions } from '@/lib/utils/view-transitions'
@@ -237,15 +231,7 @@ export function SetupScreen() {
       updateVoiceName(voiceName)
 
       try {
-        const existingPreferences = await loadSpeechPreferences()
-        const nextPreferences: SpeechPreferences = {
-          muted: existingPreferences?.muted ?? false,
-          verbosity: existingPreferences?.verbosity ?? defaultVerbosity,
-          voiceName,
-          updatedAt: new Date().toISOString()
-        }
-
-        await saveSpeechPreferences(nextPreferences)
+        await saveSetupPreferenceSlice({ voiceName })
       } catch (error) {
         console.error('Failed to save selected voice.', error)
       }

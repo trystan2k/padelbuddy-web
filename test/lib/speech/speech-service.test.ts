@@ -1126,8 +1126,8 @@ describe('createSpeechService', () => {
       }
       vi.stubGlobal('SpeechSynthesisUtterance', MockSpeechSynthesisUtterance)
 
-      // Mock speech-storage to reject
-      vi.doMock('@/lib/speech/speech-storage', () => ({
+      // Mock setup-storage to reject
+      vi.doMock('@/lib/setup/setup-storage', () => ({
         loadSpeechPreferences: vi.fn(() => Promise.resolve(null)),
         saveSpeechPreferences: vi.fn(() => Promise.reject(new Error('Storage error'))),
         clearSpeechPreferences: vi.fn(() => Promise.resolve())
@@ -1235,8 +1235,8 @@ describe('createSpeechService', () => {
       }
       vi.stubGlobal('SpeechSynthesisUtterance', MockSpeechSynthesisUtterance)
 
-      // Mock speech-storage to reject
-      vi.doMock('@/lib/speech/speech-storage', () => ({
+      // Mock setup-storage to reject
+      vi.doMock('@/lib/setup/setup-storage', () => ({
         loadSpeechPreferences: vi.fn(() => Promise.resolve(null)),
         saveSpeechPreferences: vi.fn(() => Promise.reject(new Error('Storage error'))),
         clearSpeechPreferences: vi.fn(() => Promise.resolve())
@@ -1285,8 +1285,8 @@ describe('createSpeechService', () => {
       }
       vi.stubGlobal('SpeechSynthesisUtterance', MockSpeechSynthesisUtterance)
 
-      // Mock speech-storage to return null (no saved preferences)
-      vi.doMock('@/lib/speech/speech-storage', () => ({
+      // Mock setup-storage to return null (no saved preferences)
+      vi.doMock('@/lib/setup/setup-storage', () => ({
         loadSpeechPreferences: vi.fn(() => Promise.resolve(null)),
         saveSpeechPreferences: vi.fn(() => Promise.resolve()),
         clearSpeechPreferences: vi.fn(() => Promise.resolve())
@@ -1357,7 +1357,7 @@ describe('createSpeechService', () => {
       }
       vi.stubGlobal('SpeechSynthesisUtterance', MockSpeechSynthesisUtterance)
 
-      vi.doMock('@/lib/speech/speech-storage', () => ({
+      vi.doMock('@/lib/setup/setup-storage', () => ({
         loadSpeechPreferences: vi.fn(() => Promise.resolve(null)),
         saveSpeechPreferences: vi.fn(() => Promise.resolve()),
         clearSpeechPreferences: vi.fn(() => Promise.resolve())
