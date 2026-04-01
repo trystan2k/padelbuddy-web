@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.25.0](https://github.com/trystan2k/padelbuddy-web/compare/v0.24.0...v0.25.0) (2026-04-01)
+
+
+### Features
+
+* persist Setup Screen toggles in client IndexedDB ([#63](https://github.com/trystan2k/padelbuddy-web/issues/63)) ([916dec1](https://github.com/trystan2k/padelbuddy-web/commit/916dec17b9e6d2afe7643424ccbf1dc10470083c))
+
 ## [0.24.0](https://github.com/trystan2k/padelbuddy-web/compare/v0.23.0...v0.24.0) (2026-04-01)
 
 
