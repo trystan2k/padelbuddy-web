@@ -90,22 +90,27 @@ export function createSetupStorage(options: IndexedDbStorageOptions = {}): Setup
     await writeSetupPreferencesRecord(config, createStoredSetupPreferences(preferences))
   }
 
-  // NOTE: This is a non-atomic read-modify-write (two separate transactions).
-  // Two concurrent calls could clobber each other. In practice this is safe because
-  // the only concurrent callers — useSetupForm toggle effect and SetupScreen
-  // voice-accept handler — are driven by distinct, mutually exclusive user gestures.
+  // Atomic read-modify-write within a single readwrite transaction so concurrent
+  // slice saves cannot clobber each other's updates.
   const saveSetupPreferenceSlice = async (preferences: SetupPreferenceSlice): Promise<void> => {
     await withIndexedDbDatabase(config, indexedDbMessages, async (database) => {
-      const currentRecordResult = await readStoredSetupPreferencesRecord(
-        database,
-        config.objectStoreName
+      const transaction = database.transaction(config.objectStoreName, 'readwrite')
+      const objectStore = transaction.objectStore(config.objectStoreName)
+
+      const getRequest = objectStore.get(setupPreferenceKey)
+      const storedRecord = await waitForIndexedDbRequest<StoredSetupPreferences | undefined>(
+        getRequest
       )
+      const parsedStoredRecord =
+        storedRecord != null ? parseStoredSetupPreferences(storedRecord) : null
+
       const currentPreferences =
-        currentRecordResult.status === 'ok' ? toSetupPreferences(currentRecordResult.record) : null
-
+        parsedStoredRecord != null ? toSetupPreferences(parsedStoredRecord) : null
       const nextPreferences = mergeSetupPreferences(currentPreferences, preferences)
+      const storedNextPreferences = createStoredSetupPreferences(nextPreferences)
 
-      await putStoredSetupPreferencesRecord(database, config.objectStoreName, nextPreferences)
+      objectStore.put(storedNextPreferences, setupPreferenceKey)
+      await waitForIndexedDbTransaction(transaction)
     })
   }
 
@@ -131,6 +136,8 @@ export function createSetupStorage(options: IndexedDbStorageOptions = {}): Setup
   }
 
   const saveSpeechPreferences = async (preferences: SpeechPreferences): Promise<void> => {
+    // Note: preferences.updatedAt is intentionally ignored — the unified storage
+    // manages its own updatedAt timestamp via createStoredSetupPreferences.
     await saveSetupPreferenceSlice({
       muted: preferences.muted,
       verbosity: preferences.verbosity,
@@ -190,8 +197,8 @@ function mergeSetupPreferences(
     ...(currentPreferences ?? defaultSetupPreferences),
     ...nextPreferences,
     voiceName:
-      // voiceName is only updated if a truthy value is provided; null and undefined
-      // both mean "no change" and fall through to the current/default value.
+      // voiceName is only updated if a non-null/undefined value is provided; null and
+      // undefined both mean "no change" and fall through to the current/default value.
       nextPreferences.voiceName ??
       currentPreferences?.voiceName ??
       defaultSetupPreferences.voiceName

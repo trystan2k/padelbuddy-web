@@ -34,7 +34,7 @@
   - Modify: `src/lib/speech/index.ts`
   - Remove: `src/lib/speech/speech-storage.ts`
   - Create/update tests: `test/lib/setup/setup-storage.test.ts`, `test/components/SetupScreen/useSetupForm.browser.test.tsx`, `test/components/SetupScreen/SetupScreen.browser.test.tsx`, `test/lib/speech/speech-service.test.ts`, `test/lib/speech/speech-service.browser.test.tsx`, `test/lib/speech/utterance-cancellation.browser.test.tsx`, `test/current-match/indexed-db.browser.test.ts`
-  - Plan document path: `/Users/trystan2k/Documents/Thiago/Repos/padelbuddy-web/docs/plans/PBW-86-setup-preferences-persistence.md`
+  - Plan document path: `docs/plans/PBW-86-setup-preferences-persistence.md`
 
 ## Implementation Steps
 
