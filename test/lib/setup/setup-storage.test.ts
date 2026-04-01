@@ -87,6 +87,19 @@ describe('setup-storage', () => {
       gameMode: 'golden-point',
       decidingSetSuperTiebreak: true
     })
+    expect(fakeIndexedDb.getRecord(setupPreferenceObjectStoreName, 'setup-preference')).toEqual({
+      muted: true,
+      verbosity: 'minimal',
+      voiceName: 'Alex',
+      audioAnnouncementsEnabled: false,
+      servingIndicatorEnabled: false,
+      countdownTimerEnabled: true,
+      countdownTimerDuration: 60,
+      sideSwitchPrompts: false,
+      gameMode: 'golden-point',
+      decidingSetSuperTiebreak: true,
+      updatedAt: '2024-01-01T00:00:00.000Z'
+    })
   })
 
   it('keeps speech preferences when setup toggles are saved', async () => {
@@ -116,6 +129,29 @@ describe('setup-storage', () => {
       muted: true,
       verbosity: 'verbose',
       voiceName: 'Alex',
+      updatedAt: expect.any(String)
+    })
+  })
+
+  it('allows voiceName to be explicitly cleared by a slice save', async () => {
+    const fakeIndexedDb = createFakeIndexedDb()
+    vi.stubGlobal('indexedDB', fakeIndexedDb.factory)
+
+    const storage = createSetupStorage({ databaseName: 'test-voice-clear-db' })
+
+    await storage.saveSpeechPreferences({
+      muted: false,
+      verbosity: 'standard',
+      voiceName: 'Alex',
+      updatedAt: '2024-01-01T00:00:00.000Z'
+    })
+
+    await storage.saveSetupPreferenceSlice({ voiceName: null })
+
+    await expect(storage.loadSpeechPreferences()).resolves.toEqual({
+      muted: false,
+      verbosity: 'standard',
+      voiceName: null,
       updatedAt: expect.any(String)
     })
   })
@@ -162,6 +198,51 @@ describe('setup-storage', () => {
     await storage.clearSpeechPreferences()
 
     await expect(storage.loadSetupPreferences()).resolves.toBeNull()
+  })
+
+  it('clears speech preferences while preserving setup fields and refreshing updatedAt', async () => {
+    const fakeIndexedDb = createFakeIndexedDb()
+    vi.stubGlobal('indexedDB', fakeIndexedDb.factory)
+
+    const storage = createSetupStorage({ databaseName: 'clear-speech-updated-at-db' })
+
+    await storage.saveSetupPreferences({
+      muted: true,
+      verbosity: 'verbose',
+      voiceName: 'Alex',
+      audioAnnouncementsEnabled: false,
+      servingIndicatorEnabled: false,
+      countdownTimerEnabled: true,
+      countdownTimerDuration: 120,
+      sideSwitchPrompts: false,
+      gameMode: 'golden-point',
+      decidingSetSuperTiebreak: true
+    })
+
+    const beforeClear = fakeIndexedDb.getRecord(
+      setupPreferenceObjectStoreName,
+      'setup-preference'
+    ) as SetupPreferences & { updatedAt: string }
+
+    await storage.clearSpeechPreferences()
+
+    expect(fakeIndexedDb.getRecord(setupPreferenceObjectStoreName, 'setup-preference')).toEqual({
+      ...defaultSetupPreferences,
+      audioAnnouncementsEnabled: false,
+      servingIndicatorEnabled: false,
+      countdownTimerEnabled: true,
+      countdownTimerDuration: 120,
+      sideSwitchPrompts: false,
+      gameMode: 'golden-point',
+      decidingSetSuperTiebreak: true,
+      updatedAt: expect.any(String)
+    })
+
+    const afterClear = fakeIndexedDb.getRecord(
+      setupPreferenceObjectStoreName,
+      'setup-preference'
+    ) as SetupPreferences & { updatedAt: string }
+    expect(afterClear.updatedAt >= beforeClear.updatedAt).toBe(true)
   })
 
   it('returns null when stored countdown duration is invalid', async () => {

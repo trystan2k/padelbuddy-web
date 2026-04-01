@@ -142,9 +142,25 @@ export function useSetupForm() {
       return
     }
 
-    lastPersistedSetupSlice.current = nextPersistedSetupSlice
+    let isCancelled = false
 
-    void saveSetupPreferenceSlice(nextPersistedSetupSlice).catch(() => {})
+    const persistSetupPreferences = async () => {
+      try {
+        await saveSetupPreferenceSlice(nextPersistedSetupSlice)
+
+        if (!isCancelled) {
+          lastPersistedSetupSlice.current = nextPersistedSetupSlice
+        }
+      } catch (error) {
+        console.error('[useSetupForm] Failed to persist setup preferences:', error)
+      }
+    }
+
+    void persistSetupPreferences()
+
+    return () => {
+      isCancelled = true
+    }
   }, [
     formData.audioAnnouncementsEnabled,
     formData.countdownTimerDuration,

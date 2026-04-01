@@ -62,7 +62,10 @@ type StoredRecordStatus =
 
 export interface SetupStorage {
   saveSetupPreferences(preferences: SetupPreferences): Promise<void>
-  saveSetupPreferenceSlice(preferences: SetupPreferenceSlice): Promise<void>
+  saveSetupPreferenceSlice(
+    preferences: SetupPreferenceSlice,
+    saveOptions?: { requireExistingRecord?: boolean; updatedAt?: string }
+  ): Promise<void>
   loadSetupPreferences(): Promise<SetupPreferences | null>
   clearSetupPreferences(): Promise<void>
   saveSpeechPreferences(preferences: SpeechPreferences): Promise<void>
@@ -92,7 +95,10 @@ export function createSetupStorage(options: IndexedDbStorageOptions = {}): Setup
 
   // Atomic read-modify-write within a single readwrite transaction so concurrent
   // slice saves cannot clobber each other's updates.
-  const saveSetupPreferenceSlice = async (preferences: SetupPreferenceSlice): Promise<void> => {
+  const saveSetupPreferenceSlice = async (
+    preferences: SetupPreferenceSlice,
+    saveOptions?: { requireExistingRecord?: boolean; updatedAt?: string }
+  ): Promise<void> => {
     await withIndexedDbDatabase(config, indexedDbMessages, async (database) => {
       const transaction = database.transaction(config.objectStoreName, 'readwrite')
       const objectStore = transaction.objectStore(config.objectStoreName)
@@ -101,13 +107,21 @@ export function createSetupStorage(options: IndexedDbStorageOptions = {}): Setup
       const storedRecord = await waitForIndexedDbRequest<StoredSetupPreferences | undefined>(
         getRequest
       )
+      if (typeof storedRecord === 'undefined' && saveOptions?.requireExistingRecord) {
+        await waitForIndexedDbTransaction(transaction)
+        return
+      }
+
       const parsedStoredRecord =
         storedRecord != null ? parseStoredSetupPreferences(storedRecord) : null
 
       const currentPreferences =
         parsedStoredRecord != null ? toSetupPreferences(parsedStoredRecord) : null
       const nextPreferences = mergeSetupPreferences(currentPreferences, preferences)
-      const storedNextPreferences = createStoredSetupPreferences(nextPreferences)
+      const storedNextPreferences = createStoredSetupPreferences(
+        nextPreferences,
+        saveOptions?.updatedAt
+      )
 
       objectStore.put(storedNextPreferences, setupPreferenceKey)
       await waitForIndexedDbTransaction(transaction)
@@ -136,13 +150,14 @@ export function createSetupStorage(options: IndexedDbStorageOptions = {}): Setup
   }
 
   const saveSpeechPreferences = async (preferences: SpeechPreferences): Promise<void> => {
-    // Note: preferences.updatedAt is intentionally ignored — the unified storage
-    // manages its own updatedAt timestamp via createStoredSetupPreferences.
-    await saveSetupPreferenceSlice({
-      muted: preferences.muted,
-      verbosity: preferences.verbosity,
-      voiceName: preferences.voiceName
-    })
+    await saveSetupPreferenceSlice(
+      {
+        muted: preferences.muted,
+        verbosity: preferences.verbosity,
+        voiceName: preferences.voiceName
+      },
+      { updatedAt: preferences.updatedAt }
+    )
   }
 
   const loadSpeechPreferences = async (): Promise<SpeechPreferences | null> => {
@@ -158,24 +173,14 @@ export function createSetupStorage(options: IndexedDbStorageOptions = {}): Setup
   }
 
   const clearSpeechPreferences = async (): Promise<void> => {
-    await withIndexedDbDatabase(config, indexedDbMessages, async (database) => {
-      const currentRecordResult = await readStoredSetupPreferencesRecord(
-        database,
-        config.objectStoreName
-      )
-      if (currentRecordResult.status !== 'ok') {
-        return
-      }
-
-      const currentPreferences = toSetupPreferences(currentRecordResult.record)
-
-      await putStoredSetupPreferencesRecord(database, config.objectStoreName, {
-        ...currentPreferences,
+    await saveSetupPreferenceSlice(
+      {
         muted: defaultSetupPreferences.muted,
         verbosity: defaultSetupPreferences.verbosity,
         voiceName: null
-      })
-    })
+      },
+      { requireExistingRecord: true, updatedAt: new Date().toISOString() }
+    )
   }
 
   return {
@@ -197,18 +202,21 @@ function mergeSetupPreferences(
     ...(currentPreferences ?? defaultSetupPreferences),
     ...nextPreferences,
     voiceName:
-      // voiceName is only updated if a non-null/undefined value is provided; null and
-      // undefined both mean "no change" and fall through to the current/default value.
-      nextPreferences.voiceName ??
-      currentPreferences?.voiceName ??
-      defaultSetupPreferences.voiceName
+      // voiceName is updated whenever the caller includes the property; explicit null
+      // clears the stored value, while an omitted property means "no change".
+      'voiceName' in nextPreferences
+        ? nextPreferences.voiceName
+        : (currentPreferences?.voiceName ?? defaultSetupPreferences.voiceName)
   }
 }
 
-function createStoredSetupPreferences(preferences: SetupPreferences): StoredSetupPreferences {
+function createStoredSetupPreferences(
+  preferences: SetupPreferences,
+  updatedAt = new Date().toISOString()
+): StoredSetupPreferences {
   return {
     ...preferences,
-    updatedAt: new Date().toISOString()
+    updatedAt
   }
 }
 
@@ -246,19 +254,6 @@ async function writeSetupPreferencesRecord(
     transaction.objectStore(config.objectStoreName).put(record, setupPreferenceKey)
     await waitForIndexedDbTransaction(transaction)
   })
-}
-
-async function putStoredSetupPreferencesRecord(
-  database: IDBDatabase,
-  objectStoreName: string,
-  preferences: SetupPreferences
-): Promise<void> {
-  const transaction = database.transaction(objectStoreName, 'readwrite')
-
-  transaction
-    .objectStore(objectStoreName)
-    .put(createStoredSetupPreferences(preferences), setupPreferenceKey)
-  await waitForIndexedDbTransaction(transaction)
 }
 
 async function loadOrMigrateStoredRecord(

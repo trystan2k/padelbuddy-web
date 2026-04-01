@@ -226,6 +226,56 @@ describe('useSetupForm', () => {
       warnSpy.mockRestore()
     }
   })
+
+  test('logs persistence errors and retries the same slice after a later retry', async () => {
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    mockSaveSetupPreferenceSlice
+      .mockRejectedValueOnce(new Error('save failed'))
+      .mockResolvedValueOnce(undefined)
+
+    try {
+      const screen = await render(<SetupFormController />)
+
+      await expect.element(screen.getByTestId('update-side-switch-false')).toBeInTheDocument()
+
+      await screen.getByTestId('update-side-switch-false').click()
+
+      await vi.waitFor(() => {
+        expect(mockSaveSetupPreferenceSlice).toHaveBeenCalledTimes(1)
+      })
+      expect(errorSpy).toHaveBeenCalledWith(
+        '[useSetupForm] Failed to persist setup preferences:',
+        expect.any(Error)
+      )
+
+      await screen.getByTestId('update-side-switch-true').click()
+      await screen.getByTestId('update-side-switch-false').click()
+
+      await vi.waitFor(() => {
+        expect(mockSaveSetupPreferenceSlice).toHaveBeenCalledTimes(2)
+      })
+      expect(mockSaveSetupPreferenceSlice).toHaveBeenNthCalledWith(1, {
+        audioAnnouncementsEnabled: true,
+        servingIndicatorEnabled: true,
+        countdownTimerEnabled: false,
+        countdownTimerDuration: 90,
+        sideSwitchPrompts: false,
+        gameMode: 'advantage',
+        decidingSetSuperTiebreak: false
+      })
+      expect(mockSaveSetupPreferenceSlice).toHaveBeenNthCalledWith(2, {
+        audioAnnouncementsEnabled: true,
+        servingIndicatorEnabled: true,
+        countdownTimerEnabled: false,
+        countdownTimerDuration: 90,
+        sideSwitchPrompts: false,
+        gameMode: 'advantage',
+        decidingSetSuperTiebreak: false
+      })
+    } finally {
+      errorSpy.mockRestore()
+    }
+  })
 })
 
 // Interactive test component for testing state changes
