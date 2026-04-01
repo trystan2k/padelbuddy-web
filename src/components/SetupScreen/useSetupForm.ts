@@ -14,10 +14,25 @@ import {
   type MatchGameMode,
   type MatchTeamId
 } from '@/core/match'
-import { loadSpeechPreferences } from '@/lib/speech'
+import {
+  defaultSetupPreferences,
+  loadSetupPreferences,
+  saveSetupPreferenceSlice,
+  type SetupPreferenceSlice
+} from '@/lib/setup/setup-storage'
 
 import type { SetupFormData, FieldErrors } from './types'
 import { validateSetupForm } from './validateSetupForm'
+
+const defaultPersistedSetupSlice: SetupPreferenceSlice = {
+  audioAnnouncementsEnabled: defaultSetupPreferences.audioAnnouncementsEnabled,
+  servingIndicatorEnabled: defaultSetupPreferences.servingIndicatorEnabled,
+  countdownTimerEnabled: defaultSetupPreferences.countdownTimerEnabled,
+  countdownTimerDuration: defaultSetupPreferences.countdownTimerDuration,
+  sideSwitchPrompts: defaultSetupPreferences.sideSwitchPrompts,
+  gameMode: defaultSetupPreferences.gameMode,
+  decidingSetSuperTiebreak: defaultSetupPreferences.decidingSetSuperTiebreak
+}
 
 export function useSetupForm() {
   const { t, i18n } = useTranslation()
@@ -25,6 +40,10 @@ export function useSetupForm() {
   // Track whether team names have been manually modified by the user
   const team1Touched = useRef(false)
   const team2Touched = useRef(false)
+  // Use a ref so hydration completion can flip synchronously in finally without
+  // waiting for a state update; the persistence effect sees the updated flag on re-render.
+  const hasHydratedPersistedPreferences = useRef(false)
+  const lastPersistedSetupSlice = useRef<SetupPreferenceSlice>(defaultPersistedSetupSlice)
 
   // Initialize form with defaults
   const [formData, setFormData] = useState<SetupFormData>({
@@ -58,23 +77,99 @@ export function useSetupForm() {
 
     void (async () => {
       try {
-        const speechPreferences = await loadSpeechPreferences()
+        const setupPreferences = await loadSetupPreferences()
 
-        if (!isMounted || !speechPreferences) {
+        if (!isMounted) {
           return
         }
 
-        setFormData((prev) => ({
-          ...prev,
-          voiceName: speechPreferences.voiceName
-        }))
-      } catch {}
+        if (setupPreferences) {
+          lastPersistedSetupSlice.current = {
+            audioAnnouncementsEnabled: setupPreferences.audioAnnouncementsEnabled,
+            servingIndicatorEnabled: setupPreferences.servingIndicatorEnabled,
+            countdownTimerEnabled: setupPreferences.countdownTimerEnabled,
+            countdownTimerDuration: setupPreferences.countdownTimerDuration,
+            sideSwitchPrompts: setupPreferences.sideSwitchPrompts,
+            gameMode: setupPreferences.gameMode,
+            decidingSetSuperTiebreak: setupPreferences.decidingSetSuperTiebreak
+          }
+
+          setFormData((prev) => ({
+            ...prev,
+            voiceName: setupPreferences.audioAnnouncementsEnabled
+              ? setupPreferences.voiceName
+              : null,
+            audioAnnouncementsEnabled: setupPreferences.audioAnnouncementsEnabled,
+            servingIndicatorEnabled: setupPreferences.servingIndicatorEnabled,
+            countdownTimerEnabled: setupPreferences.countdownTimerEnabled,
+            countdownTimerDuration: setupPreferences.countdownTimerDuration,
+            sideSwitchPrompts: setupPreferences.sideSwitchPrompts,
+            gameMode: setupPreferences.gameMode,
+            decidingSetSuperTiebreak: setupPreferences.decidingSetSuperTiebreak
+          }))
+          return
+        }
+
+        lastPersistedSetupSlice.current = defaultPersistedSetupSlice
+      } catch (error) {
+        console.warn('[useSetupForm] Failed to load preferences, using defaults:', error)
+      } finally {
+        hasHydratedPersistedPreferences.current = true
+      }
     })()
 
     return () => {
       isMounted = false
     }
   }, [])
+
+  useEffect(() => {
+    if (!hasHydratedPersistedPreferences.current) {
+      return
+    }
+
+    const nextPersistedSetupSlice: SetupPreferenceSlice = {
+      audioAnnouncementsEnabled: formData.audioAnnouncementsEnabled,
+      servingIndicatorEnabled: formData.servingIndicatorEnabled,
+      countdownTimerEnabled: formData.countdownTimerEnabled,
+      countdownTimerDuration: formData.countdownTimerDuration,
+      sideSwitchPrompts: formData.sideSwitchPrompts,
+      gameMode: formData.gameMode,
+      decidingSetSuperTiebreak: formData.decidingSetSuperTiebreak
+    }
+
+    if (areSetupPreferenceSlicesEqual(lastPersistedSetupSlice.current, nextPersistedSetupSlice)) {
+      return
+    }
+
+    let isCancelled = false
+
+    const persistSetupPreferences = async () => {
+      try {
+        await saveSetupPreferenceSlice(nextPersistedSetupSlice)
+
+        if (!isCancelled) {
+          lastPersistedSetupSlice.current = nextPersistedSetupSlice
+        }
+      } catch (error) {
+        console.error('[useSetupForm] Failed to persist setup preferences:', error)
+      }
+    }
+
+    void persistSetupPreferences()
+
+    return () => {
+      isCancelled = true
+    }
+  }, [
+    formData.audioAnnouncementsEnabled,
+    formData.countdownTimerDuration,
+    formData.countdownTimerEnabled,
+    formData.decidingSetSuperTiebreak,
+    formData.gameMode,
+    formData.servingIndicatorEnabled,
+    formData.sideSwitchPrompts
+  ])
 
   const updateField = useCallback(
     <K extends keyof SetupFormData>(field: K, value: SetupFormData[K]) => {
@@ -206,4 +301,19 @@ export function useSetupForm() {
     isGoldenPointEnabled,
     showSuperTiebreakOption
   }
+}
+
+function areSetupPreferenceSlicesEqual(
+  left: SetupPreferenceSlice,
+  right: SetupPreferenceSlice
+): boolean {
+  return (
+    left.audioAnnouncementsEnabled === right.audioAnnouncementsEnabled &&
+    left.servingIndicatorEnabled === right.servingIndicatorEnabled &&
+    left.countdownTimerEnabled === right.countdownTimerEnabled &&
+    left.countdownTimerDuration === right.countdownTimerDuration &&
+    left.sideSwitchPrompts === right.sideSwitchPrompts &&
+    left.gameMode === right.gameMode &&
+    left.decidingSetSuperTiebreak === right.decidingSetSuperTiebreak
+  )
 }

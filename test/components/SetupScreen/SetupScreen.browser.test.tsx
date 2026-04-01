@@ -6,13 +6,27 @@ import { render } from 'vitest-browser-react'
 import { SetupScreen } from '@/components/SetupScreen/SetupScreen'
 import { createEmptyRemoteControllerBindings, createRemoteControllerBindings } from '@/lib/input'
 
-const { mockInvalidate, mockNavigate, mockPreloadRoute, mockLoadRemoteControllerBindings } =
-  vi.hoisted(() => ({
-    mockInvalidate: vi.fn(),
-    mockNavigate: vi.fn(),
-    mockPreloadRoute: vi.fn(),
-    mockLoadRemoteControllerBindings: vi.fn()
-  }))
+const {
+  mockClearSpeechPreferences,
+  mockInvalidate,
+  mockLoadSetupPreferences,
+  mockLoadSpeechPreferences,
+  mockNavigate,
+  mockPreloadRoute,
+  mockLoadRemoteControllerBindings,
+  mockSaveSetupPreferenceSlice,
+  mockSaveSpeechPreferences
+} = vi.hoisted(() => ({
+  mockClearSpeechPreferences: vi.fn(),
+  mockInvalidate: vi.fn(),
+  mockLoadSetupPreferences: vi.fn(),
+  mockLoadSpeechPreferences: vi.fn(),
+  mockNavigate: vi.fn(),
+  mockPreloadRoute: vi.fn(),
+  mockLoadRemoteControllerBindings: vi.fn(),
+  mockSaveSetupPreferenceSlice: vi.fn(),
+  mockSaveSpeechPreferences: vi.fn()
+}))
 
 vi.mock('@tanstack/react-router', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@tanstack/react-router')>()
@@ -36,10 +50,52 @@ vi.mock('@/lib/input', async (importOriginal) => {
   }
 })
 
+vi.mock('@/lib/setup/setup-storage', () => ({
+  defaultSetupPreferences: {
+    muted: false,
+    verbosity: 'standard',
+    voiceName: null,
+    audioAnnouncementsEnabled: true,
+    servingIndicatorEnabled: true,
+    countdownTimerEnabled: false,
+    countdownTimerDuration: 90,
+    sideSwitchPrompts: true,
+    gameMode: 'advantage',
+    decidingSetSuperTiebreak: false
+  },
+  loadSetupPreferences: mockLoadSetupPreferences,
+  saveSetupPreferenceSlice: mockSaveSetupPreferenceSlice,
+  loadSpeechPreferences: mockLoadSpeechPreferences,
+  saveSpeechPreferences: mockSaveSpeechPreferences,
+  clearSpeechPreferences: mockClearSpeechPreferences
+}))
+
+vi.mock('@/components/SetupScreen/VoiceSelectionModal', () => ({
+  VoiceSelectionModal: ({
+    isOpen,
+    onAccept
+  }: {
+    isOpen: boolean
+    onAccept: (voiceName: string) => void
+  }) =>
+    isOpen ? (
+      <div data-testid="voice-selection-modal">
+        <button type="button" onClick={() => onAccept('Alex')}>
+          Accept
+        </button>
+      </div>
+    ) : null
+}))
+
 describe('SetupScreen', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockLoadRemoteControllerBindings.mockResolvedValue(createEmptyRemoteControllerBindings())
+    mockLoadSetupPreferences.mockResolvedValue(null)
+    mockLoadSpeechPreferences.mockResolvedValue(null)
+    mockSaveSetupPreferenceSlice.mockResolvedValue(undefined)
+    mockSaveSpeechPreferences.mockResolvedValue(undefined)
+    mockClearSpeechPreferences.mockResolvedValue(undefined)
   })
 
   afterEach(async () => {
@@ -206,5 +262,19 @@ describe('SetupScreen', () => {
       .toHaveTextContent('← Left')
 
     await screen.getByRole('button', { name: /cancel/i }).click()
+  })
+
+  test('saves the selected voice through setup storage', async () => {
+    const screen = await render(<SetupScreen />)
+
+    await screen.getByRole('button', { name: /setup voice/i }).click()
+
+    await expect.element(screen.getByTestId('voice-selection-modal')).toBeVisible()
+
+    await screen.getByRole('button', { name: /^accept$/i }).click()
+
+    await vi.waitFor(() => {
+      expect(mockSaveSetupPreferenceSlice).toHaveBeenCalledWith({ voiceName: 'Alex' })
+    })
   })
 })

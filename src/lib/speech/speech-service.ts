@@ -2,9 +2,9 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { i18n } from '@/lib/i18n/i18n'
 import { defaultLocale, supportedLocales, type SupportedLocale } from '@/lib/i18n/types'
+import { loadSpeechPreferences, saveSpeechPreferences } from '@/lib/setup/setup-storage'
 
 import { generateSpeechMessage } from './message-generator'
-import { loadSpeechPreferences, saveSpeechPreferences } from './speech-storage'
 import {
   defaultVerbosity,
   type SpeechEventData,

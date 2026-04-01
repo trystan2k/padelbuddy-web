@@ -1,15 +1,17 @@
 export const persistenceDatabaseName = 'padel-buddy-web'
-export const persistenceDatabaseVersion = 5
+export const persistenceDatabaseVersion = 6
 
 export const currentMatchObjectStoreName = 'current-match'
 export const localePreferenceObjectStoreName = 'locale-preference'
+export const setupPreferenceObjectStoreName = 'setup-preference'
+/** Legacy identifier used for migration check within setup-storage.ts. Not created for new databases. */
 export const speechPreferenceObjectStoreName = 'speech-preference'
 export const remoteControllerPreferenceObjectStoreName = 'remote-controller-preference'
 
 export const sharedIndexedDbObjectStoreNames = [
   currentMatchObjectStoreName,
   localePreferenceObjectStoreName,
-  speechPreferenceObjectStoreName,
+  setupPreferenceObjectStoreName,
   remoteControllerPreferenceObjectStoreName
 ] as const
 

@@ -12,12 +12,9 @@ export {
 } from './voice-selector'
 export {
   clearSpeechPreferences,
-  createSpeechStorage,
   loadSpeechPreferences,
-  saveSpeechPreferences,
-  speechStorage,
-  type SpeechStorageOptions
-} from './speech-storage'
+  saveSpeechPreferences
+} from '@/lib/setup/setup-storage'
 export {
   defaultVerbosity,
   verbosityLevels,
