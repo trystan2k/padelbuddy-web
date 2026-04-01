@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.24.0](https://github.com/trystan2k/padelbuddy-web/compare/v0.23.0...v0.24.0) (2026-04-01)
+
+
+### Features
+
+* **ActiveMatchScreen:** enable wake lock to prevent screen sleep ([fc9c61e](https://github.com/trystan2k/padelbuddy-web/commit/fc9c61e36f6b4ad470abcb0df36d2162e10d5344))
+
 ## [0.23.0](https://github.com/trystan2k/padelbuddy-web/compare/v0.22.2...v0.23.0) (2026-03-31)
 
 
