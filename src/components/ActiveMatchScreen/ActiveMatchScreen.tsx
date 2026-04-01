@@ -502,7 +502,8 @@ export function ActiveMatchScreen({
     {
       actions: snapshot.actions,
       bindings: remoteBindings,
-      enabled: !isMatchCompleted
+      enabled: !isMatchCompleted,
+      useWakeLock: true
     },
     {
       onAdd: handleRemoteAdd,
