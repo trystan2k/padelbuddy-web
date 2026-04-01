@@ -3,7 +3,7 @@ import { useEffect } from 'react'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import { render } from 'vitest-browser-react'
 
-import { type UseWakeLockReturn, useWakeLock } from '@/lib/input'
+import { type UseWakeLockReturn, useWakeLock, _resetModuleWakeLockRef } from '@/lib/input'
 
 // Test component to render the hook output
 function WakeLockTestComponent({
@@ -70,6 +70,7 @@ describe('wake-lock browser', () => {
       }
     }
     vi.restoreAllMocks()
+    _resetModuleWakeLockRef()
   })
   describe('request and release (not supported)', () => {
     test('does not request when API is not supported', async () => {

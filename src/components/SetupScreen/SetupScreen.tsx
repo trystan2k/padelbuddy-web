@@ -13,6 +13,7 @@ import { saveCurrentMatch } from '@/lib/current-match'
 import { defaultLocale, isSupportedLocale } from '@/lib/i18n/types'
 import { saveSetupPreferenceSlice } from '@/lib/setup/setup-storage'
 import { getAvailableVoices, unlockSpeechEngine } from '@/lib/speech'
+import { requestScreenWakeLock } from '@/lib/input'
 import { prepareCurrentMatchRouteNavigation } from '@/lib/router/current-match-route-flow'
 import { cn } from '@/lib/utils/cn'
 import { getViewTransitionNavigationOptions } from '@/lib/utils/view-transitions'
@@ -100,6 +101,9 @@ export function SetupScreen() {
     if (formData.audioAnnouncementsEnabled) {
       unlockSpeechEngine()
     }
+
+    // Request wake lock on user interaction (required by iOS Safari)
+    void requestScreenWakeLock()
 
     setIsStarting(true)
 

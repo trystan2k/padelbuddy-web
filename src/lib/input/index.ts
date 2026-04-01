@@ -27,7 +27,12 @@ export {
 export type { DebounceController, CreateDebounceOptions } from './debounce'
 export { createDebounce } from './debounce'
 
-export { useWakeLock } from './wake-lock'
+export {
+  _resetModuleWakeLockRef,
+  isScreenWakeLockActive,
+  requestScreenWakeLock,
+  useWakeLock
+} from './wake-lock'
 export type { UseWakeLockOptions, UseWakeLockReturn } from './wake-lock'
 
 export {

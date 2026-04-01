@@ -2,6 +2,42 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 
+let moduleWakeLockRef: WakeLockSentinel | null = null
+
+export async function requestScreenWakeLock(): Promise<WakeLockSentinel | null> {
+  if (moduleWakeLockRef) {
+    return moduleWakeLockRef
+  }
+
+  if (typeof navigator === 'undefined' || !navigator.wakeLock) {
+    console.warn('Wake Lock API is not supported in this browser')
+    return null
+  }
+
+  try {
+    const wakeLock = await navigator.wakeLock.request('screen')
+    moduleWakeLockRef = wakeLock
+
+    wakeLock.addEventListener('release', () => {
+      moduleWakeLockRef = null
+    })
+
+    return wakeLock
+  } catch (err) {
+    const error = err instanceof Error ? err : new Error(String(err))
+    console.warn('Wake Lock request failed:', error.message)
+    return null
+  }
+}
+
+export function isScreenWakeLockActive(): boolean {
+  return moduleWakeLockRef !== null
+}
+
+export function _resetModuleWakeLockRef(): void {
+  moduleWakeLockRef = null
+}
+
 export interface UseWakeLockOptions {
   enabled?: boolean
   onError?: (error: Error) => void
@@ -40,7 +76,11 @@ export function useWakeLock(options: UseWakeLockOptions = {}): UseWakeLockReturn
       return
     }
 
-    if (wakeLockRef.current) {
+    if (wakeLockRef.current || moduleWakeLockRef) {
+      if (isMountedRef.current) {
+        setIsActive(true)
+        setError(null)
+      }
       return
     }
 
@@ -61,12 +101,14 @@ export function useWakeLock(options: UseWakeLockOptions = {}): UseWakeLockReturn
         }
 
         wakeLockRef.current = wakeLock
+        moduleWakeLockRef = wakeLock
 
         const handleRelease = () => {
           if (isMountedRef.current) {
             setIsActive(false)
           }
           wakeLockRef.current = null
+          moduleWakeLockRef = null
         }
 
         wakeLock.addEventListener('release', handleRelease)
