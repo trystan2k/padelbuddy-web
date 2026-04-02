@@ -2,12 +2,12 @@
   "base": {
     "dimension": {
       "screen": {
-        "tablet-landscape-max-width": { "value": "1024px", "type": "dimension" },
-        "tablet-landscape-min-width": { "value": "375px", "type": "dimension" },
+        "tablet-landscape-max-width": { "value": "1366px", "type": "dimension" },
+        "tablet-landscape-min-width": { "value": "344px", "type": "dimension" },
         "header-height": { "value": "64px", "type": "dimension" },
         "min-body-height": { "value": "505px", "type": "dimension" },
         "max-body-height": { "value": "550px", "type": "dimension" },
-        "footer-height": { "value": "90px", "type": "dimension" },
+        "footer-height": { "value": "72px", "type": "dimension" },
         "header-icon-size": { "value": "40px", "type": "dimension" }
       },
       "scoreboard": {

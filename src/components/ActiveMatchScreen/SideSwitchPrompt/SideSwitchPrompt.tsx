@@ -84,7 +84,13 @@ export function SideSwitchPrompt({
                 )}
               />
 
-              <Button variant="solid" size="sm" accent="success" onClick={onClose}>
+              <Button
+                variant="solid"
+                size="sm"
+                accent="success"
+                onClick={onClose}
+                className={styles.confirmButton}
+              >
                 {t('match.sideSwitch.confirm')}
               </Button>
             </div>

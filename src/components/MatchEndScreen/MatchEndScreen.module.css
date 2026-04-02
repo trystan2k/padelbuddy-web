@@ -1,13 +1,12 @@
 .body,
 .content {
   display: flex;
-  min-height: 0;
   flex: 1;
   flex-direction: column;
 }
 
 .body {
-  overflow: hidden;
+  overflow: auto;
 }
 
 .content {
@@ -62,10 +61,16 @@
   min-height: 0;
 }
 
-@media (width <= 1023px) {
+@media (width < 768px) {
   .hero {
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: auto minmax(0, 1fr);
+    overflow: auto;
+  }
+
+  .hero > * {
+    min-height: 0;
+    overflow-y: auto;
   }
 }
 
@@ -118,7 +123,7 @@
   flex-shrink: 0;
 }
 
-@media (width <= 767px) {
+@media (width < 768px) {
   .content {
     gap: var(--base-space-12);
   }

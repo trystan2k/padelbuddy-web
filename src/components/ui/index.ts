@@ -15,6 +15,7 @@ export { TextInput, type TextInputProps, type TextInputAccent } from './TextInpu
 export { Toggle, type ToggleProps } from './Toggle'
 export { TopBar, type TopBarProps } from './TopBar'
 export { LocaleSelector, type LocaleSelectorProps } from './LocaleSelector'
+export { RotateDeviceBlocker } from './RotateDeviceBlocker'
 export { Select } from '@base-ui/react/select'
 export { ToastViewport, ToastProvider, useToast, type ToastType } from './Toast'
 export type { Accent } from './types'

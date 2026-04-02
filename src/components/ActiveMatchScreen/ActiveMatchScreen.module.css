@@ -3,10 +3,9 @@
 .scorePanel {
   position: relative;
   display: flex;
-  align-items: flex-start;
-  gap: var(--base-space-16);
+  align-items: center;
+  gap: var(--base-space-8);
   width: 100%;
-  min-height: var(--app-screen-shell-min-body-height);
   flex: 1;
 }
 
@@ -21,10 +20,10 @@
 
 .setsOverlay {
   position: absolute;
-  top: calc(var(--base-space-8) * 42);
+  bottom: 5%;
   left: 50%;
   z-index: var(--base-priority-s);
-  transform: translateX(-50%);
+  transform: translate(-50%, 0%);
 }
 
 .timerChip {
@@ -117,34 +116,56 @@
   opacity: 0.5;
 }
 
-@media (width <= 1023px) {
+@media (width < 768px) {
   .scorePanel {
-    min-height: auto;
-    flex-wrap: wrap;
-    justify-content: center;
+    align-items: stretch;
   }
 
   .teamColumn {
-    flex-basis: 100%;
-    padding-top: 0;
     gap: var(--base-space-12);
   }
 
-  .setsOverlay {
-    position: static;
+  .timerChip {
+    padding: var(--base-space-8) var(--base-space-12);
+    font-size: var(--base-font-size-18);
+  }
+
+  .revertButton {
     width: 100%;
-    transform: none;
+    max-width: none;
+    font-size: var(--base-font-size-16);
+    padding: var(--base-space-12) var(--base-space-16);
+  }
+
+  .finishButton {
+    padding: var(--base-space-16) var(--base-space-20);
+    font-size: var(--base-font-size-24);
   }
 }
 
-@media (width <= 767px) {
+@media (height <= 480px) {
   .scorePanel {
-    gap: var(--base-space-12);
+    align-items: stretch;
   }
 
-  .revertButton,
-  .finishButton,
-  .setsOverlay {
+  .teamColumn {
+    gap: var(--base-space-8);
+  }
+
+  .timerChip {
+    padding: var(--base-space-6) var(--base-space-10);
+    font-size: var(--base-font-size-16);
+  }
+
+  .revertButton {
     width: 100%;
+    max-width: none;
+    font-size: var(--base-font-size-14);
+    padding: var(--base-space-10) var(--base-space-12);
+  }
+
+  .finishButton {
+    padding: var(--base-space-12) var(--base-space-16);
+    font-size: var(--base-font-size-20);
   }
 }

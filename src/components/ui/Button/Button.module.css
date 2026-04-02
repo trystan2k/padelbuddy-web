@@ -121,3 +121,9 @@
   border: 1px solid var(--semantic-color-border-accent-danger);
   color: var(--semantic-color-content-danger);
 }
+
+@media (width < 768px) {
+  .sizeLg {
+    font-size: var(--base-font-size-24);
+  }
+}

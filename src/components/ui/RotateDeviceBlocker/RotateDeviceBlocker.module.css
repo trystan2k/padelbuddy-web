@@ -1,0 +1,100 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--base-priority-xxxl);
+  display: grid;
+  place-items: center;
+  padding: var(--base-space-24);
+  background: color-mix(in srgb, var(--semantic-color-content-primary) 62%, transparent);
+}
+
+.card {
+  width: min(28rem, 100%);
+  display: grid;
+  justify-items: center;
+  gap: var(--base-space-20);
+  padding: var(--component-card-form-padding);
+  border: 2px solid var(--component-card-overlay-border);
+  border-radius: var(--component-card-panel-radius);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--semantic-color-content-inverse) 92%, transparent),
+      color-mix(in srgb, var(--semantic-color-background-surface) 96%, transparent)
+    ),
+    var(--semantic-color-background-surface);
+  box-shadow: 0 24px 64px color-mix(in srgb, var(--semantic-color-content-primary) 20%, transparent);
+  text-align: center;
+}
+
+.iconWrapper {
+  display: grid;
+  place-items: center;
+  width: var(--base-space-90);
+  height: var(--base-space-90);
+  border-radius: 999px;
+  background: var(--semantic-color-background-accent-primary-subtle);
+  color: var(--semantic-color-content-accent-primary);
+}
+
+.icon {
+  width: 64px;
+  height: 64px;
+}
+
+.phone {
+  fill: var(--semantic-color-content-accent-primary);
+}
+
+.screen {
+  fill: var(--semantic-color-content-inverse);
+}
+
+.button {
+  fill: color-mix(in srgb, var(--semantic-color-content-inverse) 84%, transparent);
+}
+
+.arrow {
+  fill: var(--semantic-color-action-accent-secondary);
+}
+
+.content {
+  display: grid;
+  gap: var(--base-space-12);
+}
+
+.title {
+  margin: 0;
+  font-family: var(--semantic-typography-family-display);
+  font-size: var(--semantic-typography-size-title-lg);
+  font-weight: var(--semantic-typography-weight-heading);
+  letter-spacing: var(--semantic-typography-letter-spacing-heading);
+  color: var(--semantic-color-content-primary);
+}
+
+.description {
+  margin: 0;
+  font-size: var(--semantic-typography-size-body-lg);
+  font-weight: var(--semantic-typography-weight-body);
+  line-height: var(--semantic-typography-line-height-body);
+  color: var(--semantic-color-content-secondary);
+}
+
+@media (width < 480px) {
+  .overlay {
+    padding: var(--base-space-16);
+  }
+
+  .card {
+    gap: var(--base-space-16);
+    padding: var(--base-space-24) var(--base-space-20);
+  }
+
+  .title {
+    font-size: var(--semantic-typography-size-title-md);
+  }
+
+  .description {
+    font-size: var(--semantic-typography-size-body-md);
+  }
+}

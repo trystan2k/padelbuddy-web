@@ -266,6 +266,11 @@ export default {
       label: 'Current time: {{time}}',
       countdownLabel: 'Remaining match time: {{time}}'
     },
+    rotateDevice: {
+      title: 'Rotate your device',
+      description:
+        'This screen works best in landscape mode. Please rotate your device to continue.'
+    },
     end: {
       header: {
         appName: 'Padel Buddy',

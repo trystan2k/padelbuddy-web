@@ -3,6 +3,7 @@ import { useNavigate, useRouter } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 
 import { Layout } from '@/components/Layout/Layout'
+import { RotateDeviceBlocker } from '@/components/ui/RotateDeviceBlocker'
 import { TopBar } from '@/components/ui/TopBar'
 import {
   createEmptyRemoteControllerBindings,
@@ -11,6 +12,7 @@ import {
   type RemoteControllerBindings
 } from '@/lib/input'
 import { prepareCurrentMatchRouteNavigation } from '@/lib/router/current-match-route-flow'
+import { useOrientationDetection } from '@/lib/orientation'
 import { cn } from '@/lib/utils/cn'
 import { getViewTransitionNavigationOptions } from '@/lib/utils/view-transitions'
 
@@ -268,6 +270,7 @@ export function ActiveMatchScreen({
   const navigate = useNavigate()
   const router = useRouter()
   const { t } = useTranslation()
+  const { isPortrait } = useOrientationDetection()
   const [sideSwitchDismissed, setSideSwitchDismissed] = useState(false)
   const [isNavigatingToFinish, setIsNavigatingToFinish] = useState(false)
   const [remoteBindings, setRemoteBindings] = useState<RemoteControllerBindings>(
@@ -581,60 +584,64 @@ export function ActiveMatchScreen({
   )
 
   return (
-    <Layout header={headerContent} footer={footerContent}>
-      <div className={styles.scorePanel}>
-        <div className={styles.teamColumn}>
-          <TeamPanel
-            teamId="team-1"
-            teamName={team1Name}
-            score={getTeamScore('team-1')}
-            isServing={servingTeam === 'team-1'}
-            showServingIndicator={showServingIndicator}
-            onClick={handleScoreTeam1}
-            disabled={isLoading || isMatchCompleted}
-          />
-          <button
-            type="button"
-            className={cn(styles.revertButton, styles.revertButtonTeam1)}
-            onClick={handleRevertTeam1}
-            disabled={isUndoTeam1Disabled}
-            data-testid="revert-button-team-1"
-          >
-            {t('match.actions.revertPoint')}
-          </button>
+    <>
+      <Layout header={headerContent} footer={footerContent} inert={isPortrait}>
+        <div className={styles.scorePanel}>
+          <div className={styles.teamColumn}>
+            <TeamPanel
+              teamId="team-1"
+              teamName={team1Name}
+              score={getTeamScore('team-1')}
+              isServing={servingTeam === 'team-1'}
+              showServingIndicator={showServingIndicator}
+              onClick={handleScoreTeam1}
+              disabled={isLoading || isMatchCompleted}
+            />
+            <button
+              type="button"
+              className={cn(styles.revertButton, styles.revertButtonTeam1)}
+              onClick={handleRevertTeam1}
+              disabled={isUndoTeam1Disabled}
+              data-testid="revert-button-team-1"
+            >
+              {t('match.actions.revertPoint')}
+            </button>
+          </div>
+
+          <div className={styles.teamColumn}>
+            <TeamPanel
+              teamId="team-2"
+              teamName={team2Name}
+              score={getTeamScore('team-2')}
+              isServing={servingTeam === 'team-2'}
+              showServingIndicator={showServingIndicator}
+              onClick={handleScoreTeam2}
+              disabled={isLoading || isMatchCompleted}
+            />
+            <button
+              type="button"
+              className={cn(styles.revertButton, styles.revertButtonTeam2)}
+              onClick={handleRevertTeam2}
+              disabled={isUndoTeam2Disabled}
+              data-testid="revert-button-team-2"
+            >
+              {t('match.actions.revertPoint')}
+            </button>
+          </div>
+
+          <div className={styles.setsOverlay}>
+            <SetsCard sets={state.sets} currentSetIndex={activeSetIndex} />
+          </div>
         </div>
 
-        <div className={styles.teamColumn}>
-          <TeamPanel
-            teamId="team-2"
-            teamName={team2Name}
-            score={getTeamScore('team-2')}
-            isServing={servingTeam === 'team-2'}
-            showServingIndicator={showServingIndicator}
-            onClick={handleScoreTeam2}
-            disabled={isLoading || isMatchCompleted}
-          />
-          <button
-            type="button"
-            className={cn(styles.revertButton, styles.revertButtonTeam2)}
-            onClick={handleRevertTeam2}
-            disabled={isUndoTeam2Disabled}
-            data-testid="revert-button-team-2"
-          >
-            {t('match.actions.revertPoint')}
-          </button>
-        </div>
+        <SideSwitchPrompt
+          isOpen={shouldShowSideSwitch}
+          reason={sideSwitch.reason}
+          onClose={handleSideSwitchClose}
+        />
+      </Layout>
 
-        <div className={styles.setsOverlay}>
-          <SetsCard sets={state.sets} currentSetIndex={activeSetIndex} />
-        </div>
-      </div>
-
-      <SideSwitchPrompt
-        isOpen={shouldShowSideSwitch}
-        reason={sideSwitch.reason}
-        onClose={handleSideSwitchClose}
-      />
-    </Layout>
+      {isPortrait ? <RotateDeviceBlocker /> : null}
+    </>
   )
 }

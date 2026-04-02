@@ -67,3 +67,50 @@
 .divider {
   color: var(--semantic-color-content-secondary);
 }
+
+@media (width < 768px) {
+  .container {
+    width: clamp(144px, 28vw, var(--app-scoreboard-sets-overlay-width));
+    padding: var(--base-space-12) var(--base-space-14);
+  }
+
+  .setRow {
+    gap: var(--base-space-8);
+  }
+
+  .setNumber {
+    font-size: var(--base-font-size-14);
+  }
+}
+
+@media (height <= 480px) {
+  .container {
+    width: calc(var(--base-space-8) * 15);
+    max-height: calc(var(--base-space-8) * 18);
+    gap: var(--base-space-6);
+    padding: var(--base-space-10) var(--base-space-12);
+  }
+
+  .label {
+    font-size: var(--base-font-size-11);
+  }
+
+  .setsGrid {
+    gap: var(--base-space-4);
+    max-height: calc(var(--base-space-8) * 15);
+  }
+
+  .setRow {
+    gap: var(--base-space-8);
+  }
+
+  .setNumber {
+    font-size: var(--base-font-size-12);
+  }
+
+  .team1Games,
+  .team2Games,
+  .divider {
+    font-size: var(--base-font-size-24);
+  }
+}

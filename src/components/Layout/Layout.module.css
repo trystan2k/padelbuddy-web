@@ -30,6 +30,7 @@
 
 .body {
   min-height: 0;
+  overflow: auto;
   display: flex;
   flex: 1;
   flex-direction: column;
@@ -37,5 +38,16 @@
 
 .footer {
   margin-top: auto;
-  min-height: var(--app-screen-shell-footer-height);
+}
+
+/* Mobile landscape: smaller header, footer, and container spacing */
+@media (height <= 640px) and (orientation: landscape) {
+  .container {
+    gap: var(--base-space-8);
+    padding: var(--base-space-8);
+  }
+
+  .header {
+    min-height: var(--base-space-40);
+  }
 }

@@ -48,10 +48,12 @@ html {
 
 body {
   min-height: 100vh;
+  min-height: 100dvh;
   margin: 0;
   font-family: var(--semantic-typography-family-body);
   color: var(--semantic-color-content-primary);
   background: transparent;
+  overflow: hidden;
 }
 
 body::before {
