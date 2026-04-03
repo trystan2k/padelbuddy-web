@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.28.0](https://github.com/trystan2k/padelbuddy-web/compare/v0.27.0...v0.28.0) (2026-04-03)
+
+
+### Features
+
+* **analytics:** add mixpanel integration for user tracking ([2f2ac13](https://github.com/trystan2k/padelbuddy-web/commit/2f2ac13cb27726bc03037ee46ee1f5a7e39838e9))
+* **i18n:** add super tiebreak badge to match summary ([de95e01](https://github.com/trystan2k/padelbuddy-web/commit/de95e016fe4da5fa9fa771752295acd5b52586a9))
+
+
+### Bug Fixes
+
+* **MatchSummaryCard:** center team names and maintain grid alignment ([ceefaa7](https://github.com/trystan2k/padelbuddy-web/commit/ceefaa793bad1bbdc18be644166dc62401e13219))
+
 ## [0.27.0](https://github.com/trystan2k/padelbuddy-web/compare/v0.26.0...v0.27.0) (2026-04-03)
 
 
