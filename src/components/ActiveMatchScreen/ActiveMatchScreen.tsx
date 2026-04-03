@@ -3,33 +3,29 @@ import { useNavigate, useRouter } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 
 import { Layout } from '@/components/Layout/Layout'
-import { RotateDeviceBlocker } from '@/components/ui/RotateDeviceBlocker'
-import { TopBar } from '@/components/ui/TopBar'
+import { RotateDeviceBlocker } from '@/components/ui/RotateDeviceBlocker/RotateDeviceBlocker'
+import { TopBar } from '@/components/ui/TopBar/TopBar'
 import {
   createEmptyRemoteControllerBindings,
-  loadRemoteControllerBindingsWithFallback,
-  useInputHandler,
   type RemoteControllerBindings
-} from '@/lib/input'
+} from '@/lib/input/keyboard-aliases'
+import { loadRemoteControllerBindingsWithFallback } from '@/lib/input/remote-controller-storage'
+import { useInputHandler } from '@/lib/input/use-input-handler'
 import { prepareCurrentMatchRouteNavigation } from '@/lib/router/current-match-route-flow'
-import { useOrientationDetection } from '@/lib/orientation'
+import { useOrientationDetection } from '@/lib/orientation/useOrientationDetection'
 import { cn } from '@/lib/utils/cn'
 import { getViewTransitionNavigationOptions } from '@/lib/utils/view-transitions'
 
-import {
-  deriveMatchState,
-  scorePoint as projectScorePoint,
-  type MatchAction,
-  type MatchProjection,
-  type MatchSetup,
-  type MatchTeamId
-} from '@/core/match'
+import { deriveMatchState } from '@/core/match/derived-state'
+import { scorePoint as projectScorePoint } from '@/core/match/engine'
+import type { MatchAction, MatchProjection, MatchSetup, MatchTeamId } from '@/core/match/types'
 import { normalizeScoreValue } from '@/lib/speech/message-generator'
-import { useSpeechService, type SpeechEventData } from '@/lib/speech'
+import { useSpeechService } from '@/lib/speech/speech-service'
+import type { SpeechEventData } from '@/lib/speech/types'
 
-import { SetsCard } from './SetsCard'
-import { SideSwitchPrompt } from './SideSwitchPrompt'
-import { TeamPanel } from './TeamPanel'
+import { SetsCard } from './SetsCard/SetsCard'
+import { SideSwitchPrompt } from './SideSwitchPrompt/SideSwitchPrompt'
+import { TeamPanel } from './TeamPanel/TeamPanel'
 import { useMatchSession } from './useMatchSession'
 import { useMatchTimer } from './useMatchTimer'
 

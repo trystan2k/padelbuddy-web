@@ -6,7 +6,7 @@ import { render } from 'vitest-browser-react'
 
 import { ActiveMatchScreen } from '@/components/ActiveMatchScreen/ActiveMatchScreen'
 import teamPanelStyles from '@/components/ActiveMatchScreen/TeamPanel/TeamPanel.module.css'
-import { createRemoteControllerBindings } from '@/lib/input'
+import { createRemoteControllerBindings } from '@/lib/input/keyboard-aliases'
 
 import {
   createTestSetup,
@@ -56,8 +56,8 @@ vi.mock('@tanstack/react-router', async (importOriginal) => {
   }
 })
 
-vi.mock('@/lib/i18n', async (importOriginal) => {
-  const original = await importOriginal<typeof import('@/lib/i18n')>()
+vi.mock('@/lib/i18n/i18n', async (importOriginal) => {
+  const original = await importOriginal<typeof import('@/lib/i18n/i18n')>()
 
   return {
     ...original,
@@ -66,8 +66,8 @@ vi.mock('@/lib/i18n', async (importOriginal) => {
   }
 })
 
-vi.mock('@/lib/input', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@/lib/input')>()
+vi.mock('@/lib/input/remote-controller-storage', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/lib/input/remote-controller-storage')>()
 
   return {
     ...actual,
@@ -75,8 +75,8 @@ vi.mock('@/lib/input', async (importOriginal) => {
   }
 })
 
-vi.mock('@/lib/speech', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@/lib/speech')>()
+vi.mock('@/lib/speech/speech-service', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/lib/speech/speech-service')>()
 
   return {
     ...actual,
@@ -95,7 +95,7 @@ vi.mock('@/lib/speech', async (importOriginal) => {
   }
 })
 
-vi.mock('@/lib/orientation', () => ({
+vi.mock('@/lib/orientation/useOrientationDetection', () => ({
   useOrientationDetection: mockUseOrientationDetection
 }))
 

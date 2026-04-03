@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 
-import { TopBar } from '@/components/ui/TopBar'
+import { TopBar } from '@/components/ui/TopBar/TopBar'
 
 import styles from './ShareScreen.module.css'
 import { cn } from '@/lib/utils/cn'

@@ -4,7 +4,7 @@ import type {
   MatchSetState,
   MatchTeamId,
   TeamScore
-} from '@/core/match'
+} from '@/core/match/types'
 
 export interface MatchEndScreenSetRow {
   setNumber: number

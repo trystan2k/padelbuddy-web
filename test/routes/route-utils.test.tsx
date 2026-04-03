@@ -1,7 +1,8 @@
 import { afterAll, beforeAll, describe, expect, test, vi } from 'vitest'
 import { renderToStaticMarkup } from 'react-dom/server'
 
-import { defaultTranslation, i18n, initializeI18n, resetI18nInitialization } from '@/lib/i18n'
+import defaultTranslation from '@/lib/i18n/locales/en'
+import { i18n, initializeI18n, resetI18nInitialization } from '@/lib/i18n/i18n'
 
 import { getErrorMessage, RouteErrorState, RoutePendingBoundary } from '@/routes/-route-utils'
 

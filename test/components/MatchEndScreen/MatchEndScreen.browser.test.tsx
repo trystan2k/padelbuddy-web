@@ -4,8 +4,8 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import { render } from 'vitest-browser-react'
 
-import { MatchEndScreen } from '@/components/MatchEndScreen'
-import { projectMatch } from '@/core/match'
+import { MatchEndScreen } from '@/components/MatchEndScreen/MatchEndScreen'
+import { projectMatch } from '@/core/match/replay'
 import { createTestSetup, winQuickSet } from '../../core/match/test-helpers'
 
 const currentTime = new Date('2026-03-19T13:24:00.000Z')
@@ -73,13 +73,16 @@ vi.mock('@tanstack/react-router', () => ({
   })
 }))
 
-vi.mock('@/lib/current-match', () => ({
-  clearCurrentMatch: () => mockClearCurrentMatch(),
+vi.mock('@/lib/current-match/indexed-db', () => ({
+  clearCurrentMatch: () => mockClearCurrentMatch()
+}))
+
+vi.mock('@/lib/current-match/session', () => ({
   createCurrentMatchSession: mockCreateCurrentMatchSession
 }))
 
-vi.mock('@/lib/speech', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@/lib/speech')>()
+vi.mock('@/lib/speech/speech-service', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/lib/speech/speech-service')>()
 
   return {
     ...actual,
@@ -98,8 +101,8 @@ vi.mock('@/lib/speech', async (importOriginal) => {
   }
 })
 
-vi.mock('@/lib/i18n', async (importOriginal) => {
-  const original = await importOriginal<typeof import('@/lib/i18n')>()
+vi.mock('@/lib/i18n/i18n', async (importOriginal) => {
+  const original = await importOriginal<typeof import('@/lib/i18n/i18n')>()
 
   return {
     ...original,

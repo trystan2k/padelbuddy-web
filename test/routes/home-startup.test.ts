@@ -4,7 +4,7 @@ const { mockHydrateCurrentMatchStartup } = vi.hoisted(() => ({
   mockHydrateCurrentMatchStartup: vi.fn()
 }))
 
-vi.mock('@/lib/current-match', () => ({
+vi.mock('@/lib/current-match/startup', () => ({
   hydrateCurrentMatchStartup: mockHydrateCurrentMatchStartup
 }))
 

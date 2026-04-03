@@ -4,30 +4,31 @@ import { useNavigate, useRouter } from '@tanstack/react-router'
 
 import {
   countdownTimerDurations,
-  createMatchSetup,
   matchFormats,
   type CountdownTimerDuration,
   type MatchFormat
-} from '@/core/match'
-import { saveCurrentMatch } from '@/lib/current-match'
+} from '@/core/match/types'
+import { createMatchSetup } from '@/core/match/validation'
+import { saveCurrentMatch } from '@/lib/current-match/indexed-db'
 import { defaultLocale, isSupportedLocale } from '@/lib/i18n/types'
 import { saveSetupPreferenceSlice } from '@/lib/setup/setup-storage'
-import { getAvailableVoices, unlockSpeechEngine } from '@/lib/speech'
-import { requestScreenWakeLock } from '@/lib/input'
+import { getAvailableVoices } from '@/lib/speech/voice-selector'
+import { unlockSpeechEngine } from '@/lib/speech/speech-service'
+import { requestScreenWakeLock } from '@/lib/input/wake-lock'
 import { prepareCurrentMatchRouteNavigation } from '@/lib/router/current-match-route-flow'
 import { cn } from '@/lib/utils/cn'
 import { getViewTransitionNavigationOptions } from '@/lib/utils/view-transitions'
 
 import { Layout } from '@/components/Layout/Layout'
-import { Button } from '@/components/ui/Button'
-import { Card } from '@/components/ui/Card'
-import { Chip } from '@/components/ui/Chip'
-import { Divider } from '@/components/ui/Divider'
-import { SectionLabel } from '@/components/ui/SectionLabel'
-import { TextInput } from '@/components/ui/TextInput'
-import { Toggle } from '@/components/ui/Toggle'
-import { TopBar } from '@/components/ui/TopBar'
-import { LocaleSelector } from '@/components/ui/LocaleSelector'
+import { Button } from '@/components/ui/Button/Button'
+import { Card } from '@/components/ui/Card/Card'
+import { Chip } from '@/components/ui/Chip/Chip'
+import { Divider } from '@/components/ui/Divider/Divider'
+import { SectionLabel } from '@/components/ui/SectionLabel/SectionLabel'
+import { TextInput } from '@/components/ui/TextInput/TextInput'
+import { Toggle } from '@/components/ui/Toggle/Toggle'
+import { TopBar } from '@/components/ui/TopBar/TopBar'
+import { LocaleSelector } from '@/components/ui/LocaleSelector/LocaleSelector'
 
 import { RemoteConfigurationModal } from './RemoteConfigurationModal'
 import { VoiceSelectionModal } from './VoiceSelectionModal'

@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 
-import { createDebounce, type DebounceController } from '@/lib/input'
+import { createDebounce, type DebounceController } from '@/lib/input/debounce'
 
 describe('debounce', () => {
   let debounce: DebounceController

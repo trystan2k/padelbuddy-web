@@ -3,7 +3,7 @@ import { useEffect } from 'react'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import { render } from 'vitest-browser-react'
 
-import { type UseWakeLockReturn, useWakeLock, _resetModuleWakeLockRef } from '@/lib/input'
+import { type UseWakeLockReturn, useWakeLock, _resetModuleWakeLockRef } from '@/lib/input/wake-lock'
 
 // Test component to render the hook output
 function WakeLockTestComponent({

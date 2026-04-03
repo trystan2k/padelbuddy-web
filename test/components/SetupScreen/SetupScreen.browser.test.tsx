@@ -4,7 +4,10 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import { render } from 'vitest-browser-react'
 
 import { SetupScreen } from '@/components/SetupScreen/SetupScreen'
-import { createEmptyRemoteControllerBindings, createRemoteControllerBindings } from '@/lib/input'
+import {
+  createEmptyRemoteControllerBindings,
+  createRemoteControllerBindings
+} from '@/lib/input/keyboard-aliases'
 
 const {
   mockClearSpeechPreferences,
@@ -41,8 +44,8 @@ vi.mock('@tanstack/react-router', async (importOriginal) => {
   }
 })
 
-vi.mock('@/lib/input', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@/lib/input')>()
+vi.mock('@/lib/input/remote-controller-storage', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/lib/input/remote-controller-storage')>()
 
   return {
     ...actual,

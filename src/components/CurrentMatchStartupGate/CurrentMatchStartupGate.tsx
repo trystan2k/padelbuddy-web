@@ -3,12 +3,9 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate, useRouter } from '@tanstack/react-router'
 import { Dialog } from '@base-ui/react/dialog'
 
-import { Button } from '@/components/ui'
-import {
-  clearCurrentMatch,
-  type CurrentMatchPersistence,
-  type CurrentMatchStartupResult
-} from '@/lib/current-match'
+import { Button } from '@/components/ui/Button/Button'
+import { clearCurrentMatch, type CurrentMatchPersistence } from '@/lib/current-match/indexed-db'
+import type { CurrentMatchStartupResult } from '@/lib/current-match/startup'
 import {
   invalidateCurrentMatchPersistenceRoutes,
   prepareCurrentMatchRouteNavigation

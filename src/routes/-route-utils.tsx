@@ -1,7 +1,7 @@
 import type { ErrorComponentProps } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 
-import { Button } from '@/components/ui'
+import { Button } from '@/components/ui/Button/Button'
 
 export function getErrorMessage(error: unknown): string | null {
   if (error instanceof Error && error.message.length > 0) {

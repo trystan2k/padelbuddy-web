@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import { render } from 'vitest-browser-react'
 
 import { useMatchTimer } from '@/components/ActiveMatchScreen/useMatchTimer'
-import type { CountdownTimerDuration } from '@/core/match'
+import type { CountdownTimerDuration } from '@/core/match/types'
 
 function formatTimeOfDay(date: Date): string {
   return [date.getHours(), date.getMinutes(), date.getSeconds()]

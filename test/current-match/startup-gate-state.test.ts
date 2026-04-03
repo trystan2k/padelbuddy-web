@@ -5,7 +5,7 @@ import {
   dismissCurrentMatchStartupNotice,
   resumeCurrentMatchStartup
 } from '@/components/CurrentMatchStartupGate/CurrentMatchStartupGate'
-import { createCurrentMatchSessionSnapshot } from '@/lib/current-match'
+import { createCurrentMatchSessionSnapshot } from '@/lib/current-match/session'
 
 import { createTestSetup, scorePoints } from '../core/match/test-helpers'
 

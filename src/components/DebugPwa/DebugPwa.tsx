@@ -7,7 +7,7 @@ import {
   getSWVersion,
   requestSWUpdate,
   type SWRegistrationState
-} from '@/lib/pwa'
+} from '@/lib/pwa/registration'
 
 import styles from './DebugPwa.module.css'
 

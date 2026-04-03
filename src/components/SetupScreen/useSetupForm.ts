@@ -13,7 +13,7 @@ import {
   type MatchFormat,
   type MatchGameMode,
   type MatchTeamId
-} from '@/core/match'
+} from '@/core/match/types'
 import {
   defaultSetupPreferences,
   loadSetupPreferences,

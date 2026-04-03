@@ -1,10 +1,5 @@
-import {
-  createMatchSetup,
-  type MatchAction,
-  type MatchSetup,
-  type MatchSetupInput,
-  type MatchTeamId
-} from '@/core/match'
+import { createMatchSetup } from '@/core/match/validation'
+import type { MatchAction, MatchSetup, MatchSetupInput, MatchTeamId } from '@/core/match/types'
 
 const defaultSides: MatchSetupInput['sides'] = [
   {

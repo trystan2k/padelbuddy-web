@@ -1,12 +1,7 @@
 import { describe, expect, test } from 'vitest'
 
-import {
-  continueMatch,
-  getActiveSet,
-  getNextSetFirstServer,
-  getServingTeam,
-  projectMatch
-} from '@/core/match'
+import { continueMatch, projectMatch } from '@/core/match/replay'
+import { getActiveSet, getNextSetFirstServer, getServingTeam } from '@/core/match/derived-state'
 
 import {
   createTestSetup,

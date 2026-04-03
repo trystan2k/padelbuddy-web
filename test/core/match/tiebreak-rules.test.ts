@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest'
 
-import { projectMatch } from '@/core/match'
+import { projectMatch } from '@/core/match/replay'
 
 import {
   createTestSetup,

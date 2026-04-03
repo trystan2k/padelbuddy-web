@@ -1,7 +1,8 @@
 import { createFileRoute, redirect } from '@tanstack/react-router'
 
-import { ActiveMatchScreen } from '@/components/ActiveMatchScreen'
-import { loadCurrentMatch, type CurrentMatchRecord } from '@/lib/current-match'
+import { ActiveMatchScreen } from '@/components/ActiveMatchScreen/ActiveMatchScreen'
+import { loadCurrentMatch } from '@/lib/current-match/indexed-db'
+import type { CurrentMatchRecord } from '@/lib/current-match/persistence'
 import { currentMatchPersistenceRouteLoaderOptions } from '@/lib/router/current-match-route-flow'
 
 import { resolveMatchRouteState } from './-match-route-state'

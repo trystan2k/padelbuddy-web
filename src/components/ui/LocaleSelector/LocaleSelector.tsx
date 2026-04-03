@@ -1,15 +1,10 @@
 import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Chip } from '@/components/ui/Chip'
-import {
-  changeLocale,
-  isSupportedLocale,
-  LOCALE_FLAGS,
-  LOCALE_LABELS,
-  supportedLocales,
-  type SupportedLocale
-} from '@/lib/i18n'
+import { Chip } from '@/components/ui/Chip/Chip'
+import { changeLocale } from '@/lib/i18n/i18n'
+import { isSupportedLocale, supportedLocales, type SupportedLocale } from '@/lib/i18n/types'
+import { LOCALE_FLAGS, LOCALE_LABELS } from '@/lib/i18n/locale-display'
 
 import styles from './LocaleSelector.module.css'
 

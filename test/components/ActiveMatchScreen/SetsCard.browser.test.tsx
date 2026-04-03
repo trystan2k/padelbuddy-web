@@ -6,7 +6,7 @@ import { render } from 'vitest-browser-react'
 
 import { SetsCard } from '@/components/ActiveMatchScreen/SetsCard/SetsCard'
 import { createTestSetup, winQuickSet } from '../../core/match/test-helpers'
-import { projectMatch } from '@/core/match'
+import { projectMatch } from '@/core/match/replay'
 
 describe('SetsCard', () => {
   test('renders with label', async () => {

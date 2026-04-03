@@ -1,18 +1,18 @@
 import {
   countdownTimerDurations,
-  createMatchSetup,
   defaultAudioAnnouncementsEnabled,
   defaultCountdownTimerDuration,
   defaultCountdownTimerEnabled,
   defaultServingIndicatorEnabled,
   matchTeamIds,
-  projectMatch,
   type MatchAction,
   type CountdownTimerDuration,
   type MatchProjection,
   type MatchSetup,
   type MatchTeamId
-} from '@/core/match'
+} from '@/core/match/types'
+import { createMatchSetup } from '@/core/match/validation'
+import { projectMatch } from '@/core/match/replay'
 
 function isCountdownTimerDuration(value: unknown): value is CountdownTimerDuration {
   return countdownTimerDurations.some((duration) => duration === value)

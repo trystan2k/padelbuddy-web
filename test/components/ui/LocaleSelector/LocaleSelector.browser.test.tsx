@@ -3,9 +3,9 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 import { render } from 'vitest-browser-react'
 
-import { LocaleSelector } from '@/components/ui/LocaleSelector'
-import { TopBar } from '@/components/ui/TopBar'
-import * as i18nModule from '@/lib/i18n'
+import { LocaleSelector } from '@/components/ui/LocaleSelector/LocaleSelector'
+import { TopBar } from '@/components/ui/TopBar/TopBar'
+import * as i18nModule from '@/lib/i18n/i18n'
 
 describe('LocaleSelector', () => {
   beforeEach(async () => {

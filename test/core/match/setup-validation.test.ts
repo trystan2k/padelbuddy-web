@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'vitest'
 
-import { createMatchSetup, validateMatchSetup, type MatchSetupInput } from '@/core/match'
+import { createMatchSetup, validateMatchSetup } from '@/core/match/validation'
+import type { MatchSetupInput } from '@/core/match/types'
 
 const baseInput: MatchSetupInput = {
   format: 'best-of-3',

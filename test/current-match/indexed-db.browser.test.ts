@@ -1,14 +1,18 @@
 import { afterEach, beforeEach, describe, expect, test } from 'vitest'
 
+import { consumeCurrentMatchResetNotice } from '@/lib/current-match/reset-notice'
 import {
-  consumeCurrentMatchResetNotice,
   createCurrentMatchPersistence,
-  currentMatchSchemaVersion,
-  replayCurrentMatchRecord,
   type CurrentMatchPersistence
-} from '@/lib/current-match'
-import { createLocaleStorage, type SupportedLocale } from '@/lib/i18n'
-import { createRemoteControllerBindings, createRemoteControllerStorage } from '@/lib/input'
+} from '@/lib/current-match/indexed-db'
+import {
+  currentMatchSchemaVersion,
+  replayCurrentMatchRecord
+} from '@/lib/current-match/persistence'
+import { createLocaleStorage } from '@/lib/i18n/locale-storage'
+import type { SupportedLocale } from '@/lib/i18n/types'
+import { createRemoteControllerBindings } from '@/lib/input/keyboard-aliases'
+import { createRemoteControllerStorage } from '@/lib/input/remote-controller-storage'
 import { createSetupStorage, type SetupPreferences } from '@/lib/setup/setup-storage'
 
 import { createTestSetup, scorePoints, winQuickGame } from '../core/match/test-helpers'

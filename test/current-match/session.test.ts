@@ -1,13 +1,13 @@
 import { describe, expect, test, vi } from 'vitest'
 
-import { continueMatch, projectMatch, undoLastScoringAction } from '@/core/match'
+import { continueMatch, projectMatch, undoLastScoringAction } from '@/core/match/replay'
 import {
   createCurrentMatchSession,
-  createCurrentMatchSessionSnapshot,
-  currentMatchSchemaVersion,
-  undoLastScoringActionForTeam,
-  type CurrentMatchPersistence
-} from '@/lib/current-match'
+  createCurrentMatchSessionSnapshot
+} from '@/lib/current-match/session'
+import { currentMatchSchemaVersion } from '@/lib/current-match/persistence'
+import { undoLastScoringActionForTeam } from '@/lib/current-match/helpers'
+import type { CurrentMatchPersistence } from '@/lib/current-match/indexed-db'
 
 import { createTestSetup, scorePoints, winQuickGame, winQuickSet } from '../core/match/test-helpers'
 

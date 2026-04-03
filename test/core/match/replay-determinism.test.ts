@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest'
 
-import { continueMatch, projectMatch, undoLastScoringAction } from '@/core/match'
+import { continueMatch, projectMatch, undoLastScoringAction } from '@/core/match/replay'
 
 import { createTestSetup, scorePoints, winQuickGame, winQuickSet } from './test-helpers'
 

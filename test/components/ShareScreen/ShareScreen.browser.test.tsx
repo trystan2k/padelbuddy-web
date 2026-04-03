@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { render } from 'vitest-browser-react'
-import { ShareScreen } from '@/components/ShareScreen'
+import { ShareScreen } from '@/components/ShareScreen/ShareScreen'
 
 describe('ShareScreen', () => {
   const defaultProps = {

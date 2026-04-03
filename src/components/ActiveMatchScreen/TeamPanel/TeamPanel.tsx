@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 
 import { cn } from '@/lib/utils/cn'
 
-import type { MatchTeamId } from '@/core/match'
+import type { MatchTeamId } from '@/core/match/types'
 
 import styles from './TeamPanel.module.css'
 

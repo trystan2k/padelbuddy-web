@@ -4,8 +4,9 @@ import { useEffect, useState } from 'react'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import { render } from 'vitest-browser-react'
 
-import { useInputHandler, type RemoteControllerBindings } from '@/lib/input'
-import type { MatchAction, MatchTeamId } from '@/core/match'
+import { useInputHandler } from '@/lib/input/use-input-handler'
+import type { RemoteControllerBindings } from '@/lib/input/keyboard-aliases'
+import type { MatchAction, MatchTeamId } from '@/core/match/types'
 
 function removeLastTeamAction(actions: MatchAction[], teamId: MatchTeamId): MatchAction[] {
   const actionIndex = actions.findLastIndex((action) => action.teamId === teamId)

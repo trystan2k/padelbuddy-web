@@ -8,7 +8,7 @@ import {
   gameModes,
   type CountdownTimerDuration,
   type MatchGameMode
-} from '@/core/match'
+} from '@/core/match/types'
 import {
   defaultVerbosity,
   verbosityLevels,
@@ -25,7 +25,7 @@ import {
   waitForIndexedDbTransaction,
   withIndexedDbDatabase,
   type IndexedDbOpenMessages
-} from '../persistence/indexed-db'
+} from '@/lib/persistence/indexed-db'
 
 const defaultObjectStoreName = setupPreferenceObjectStoreName
 const setupPreferenceKey = 'setup-preference'

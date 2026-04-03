@@ -20,15 +20,17 @@ vi.mock('@tanstack/react-router', () => ({
 import { CurrentMatchStartupGate } from '@/components/CurrentMatchStartupGate/CurrentMatchStartupGate'
 import {
   clearCurrentMatch,
-  consumeCurrentMatchResetNotice,
   createCurrentMatchPersistence,
-  createCurrentMatchSessionSnapshot,
-  currentMatchSchemaVersion,
-  hydrateCurrentMatchStartup,
   saveCurrentMatch,
-  type CurrentMatchPersistence,
+  type CurrentMatchPersistence
+} from '@/lib/current-match/indexed-db'
+import { consumeCurrentMatchResetNotice } from '@/lib/current-match/reset-notice'
+import { createCurrentMatchSessionSnapshot } from '@/lib/current-match/session'
+import { currentMatchSchemaVersion } from '@/lib/current-match/persistence'
+import {
+  hydrateCurrentMatchStartup,
   type CurrentMatchStartupResult
-} from '@/lib/current-match'
+} from '@/lib/current-match/startup'
 
 import { createTestSetup, scorePoints } from '../core/match/test-helpers'
 

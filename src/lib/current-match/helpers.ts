@@ -1,4 +1,4 @@
-import type { MatchAction, MatchTeamId } from '@/core/match'
+import type { MatchAction, MatchTeamId } from '@/core/match/types'
 
 export function undoLastScoringActionForTeam(
   actions: MatchAction[],

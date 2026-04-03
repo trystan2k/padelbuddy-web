@@ -5,15 +5,17 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import { render } from 'vitest-browser-react'
 import type { ComponentType } from 'react'
 
-import { SetupScreen } from '@/components/SetupScreen'
-import { ToastProvider } from '@/components/ui/Toast'
+import { SetupScreen } from '@/components/SetupScreen/SetupScreen'
+import { ToastProvider } from '@/components/ui/Toast/useToast'
 import {
   clearCurrentMatch,
-  hydrateCurrentMatchStartup,
   loadCurrentMatch,
-  saveCurrentMatch,
+  saveCurrentMatch
+} from '@/lib/current-match/indexed-db'
+import {
+  hydrateCurrentMatchStartup,
   type CurrentMatchStartupResult
-} from '@/lib/current-match'
+} from '@/lib/current-match/startup'
 import { HomeRoute, Route as HomeIndexRoute } from '@/routes/index'
 import { Route as MatchRoute } from '@/routes/match.$id'
 import { Route as MatchFinishRoute } from '@/routes/match.finish.$id'

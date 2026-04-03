@@ -1,8 +1,9 @@
 import { createFileRoute, redirect } from '@tanstack/react-router'
 
-import { MatchEndScreen } from '@/components/MatchEndScreen'
-import type { MatchProjection } from '@/core/match'
-import { loadCurrentMatch, type CurrentMatchRecord } from '@/lib/current-match'
+import { MatchEndScreen } from '@/components/MatchEndScreen/MatchEndScreen'
+import type { MatchProjection } from '@/core/match/types'
+import { loadCurrentMatch } from '@/lib/current-match/indexed-db'
+import type { CurrentMatchRecord } from '@/lib/current-match/persistence'
 import { currentMatchPersistenceRouteLoaderOptions } from '@/lib/router/current-match-route-flow'
 
 import { resolveMatchRouteState } from './-match-route-state'

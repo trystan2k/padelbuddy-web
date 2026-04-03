@@ -12,16 +12,17 @@ import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import mixpanel from 'mixpanel-browser'
 
-import { DebugPwa } from '@/components/DebugPwa'
+import { DebugPwa } from '@/components/DebugPwa/DebugPwa'
 import { NotFoundPage } from '@/components/NotFoundPage/NotFoundPage'
-import { Button, ToastProvider } from '@/components/ui'
-import { i18n, initializeI18n } from '@/lib/i18n'
-import { registerSW } from '@/lib/pwa'
+import { Button } from '@/components/ui/Button/Button'
+import { ToastProvider } from '@/components/ui/Toast/useToast'
+import { i18n, initializeI18n } from '@/lib/i18n/i18n'
+import { registerSW } from '@/lib/pwa/registration'
 import { getOrCreateUserId } from '@/lib/user/id'
 
 import { getErrorMessage } from './-route-utils'
 import styles from './RootDocument.module.css'
-import { PadelCourtSpinner } from '../components/PadelCourtSpinner'
+import { PadelCourtSpinner } from '@/components/PadelCourtSpinner/PadelCourtSpinner'
 
 export const Route = createRootRoute({
   head: () => ({

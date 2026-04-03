@@ -1,14 +1,14 @@
 import { describe, expect, test } from 'vitest'
 
+import { createMatchSetup } from '@/core/match/validation'
 import {
-  createMatchSetup,
   countdownTimerDurations,
   defaultCountdownTimerDuration,
   defaultMatchFormat,
   gameModes,
-  matchFormats,
-  projectMatch
-} from '@/core/match'
+  matchFormats
+} from '@/core/match/types'
+import { projectMatch } from '@/core/match/replay'
 
 describe('match domain public exports', () => {
   test('exposes the supported setup baselines and replay entrypoint', () => {

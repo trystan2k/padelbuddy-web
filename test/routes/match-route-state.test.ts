@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest'
 
-import { currentMatchSchemaVersion } from '@/lib/current-match'
+import { currentMatchSchemaVersion } from '@/lib/current-match/persistence'
 import { parseMatchRouteErrorType, resolveMatchRouteState } from '@/routes/-match-route-state'
 
 import { createTestSetup, winQuickSet } from '../core/match/test-helpers'

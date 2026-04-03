@@ -1,4 +1,4 @@
-import type { MatchGameMode, MatchTeamId } from '@/core/match'
+import type { MatchGameMode, MatchTeamId } from '@/core/match/types'
 
 export const verbosityLevels = ['minimal', 'standard', 'verbose'] as const
 export type VerbosityLevel = (typeof verbosityLevels)[number]

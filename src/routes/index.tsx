@@ -2,9 +2,9 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { SetupScreen } from '@/components/SetupScreen'
+import { SetupScreen } from '@/components/SetupScreen/SetupScreen'
 import { CurrentMatchStartupGate } from '@/components/CurrentMatchStartupGate/CurrentMatchStartupGate'
-import { useToast } from '@/components/ui/Toast'
+import { useToast } from '@/components/ui/Toast/useToast'
 import { currentMatchPersistenceRouteLoaderOptions } from '@/lib/router/current-match-route-flow'
 
 import { loadHomeStartup } from './-home-startup'

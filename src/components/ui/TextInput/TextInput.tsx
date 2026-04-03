@@ -4,7 +4,7 @@ import { Input } from '@base-ui/react/input'
 
 import { cn } from '@/lib/utils/cn'
 
-import type { Accent } from '../types'
+import type { Accent } from '@/components/ui/types'
 import styles from './TextInput.module.css'
 
 export type TextInputAccent = Accent
