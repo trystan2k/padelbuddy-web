@@ -10,12 +10,14 @@ import {
 } from '@tanstack/react-router'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import mixpanel from 'mixpanel-browser'
 
 import { DebugPwa } from '@/components/DebugPwa'
 import { NotFoundPage } from '@/components/NotFoundPage/NotFoundPage'
 import { Button, ToastProvider } from '@/components/ui'
 import { i18n, initializeI18n } from '@/lib/i18n'
 import { registerSW } from '@/lib/pwa'
+import { getOrCreateUserId } from '@/lib/user/id'
 
 import { getErrorMessage } from './-route-utils'
 import styles from './RootDocument.module.css'
@@ -180,6 +182,17 @@ export function RoutePendingOverlay() {
 
 function RootDocument() {
   useEffect(() => {
+    if (import.meta.env.PROD) {
+      mixpanel.init('21d2e2fd8e6c4eeca02abb794fb90c7a', {
+        autocapture: true,
+        record_sessions_percent: 100,
+        api_host: 'https://api-eu.mixpanel.com'
+      })
+
+      const userId = getOrCreateUserId()
+      mixpanel.identify(userId)
+    }
+
     void initializeI18n().catch((error) => {
       console.error('Failed to initialize i18n:', error)
     })
