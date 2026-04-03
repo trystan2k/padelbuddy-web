@@ -9,18 +9,16 @@ import {
   type ErrorComponentProps
 } from '@tanstack/react-router'
 import { useEffect, useRef, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 import mixpanel from 'mixpanel-browser'
 
 import { DebugPwa } from '@/components/DebugPwa/DebugPwa'
 import { NotFoundPage } from '@/components/NotFoundPage/NotFoundPage'
-import { Button } from '@/components/ui/Button/Button'
 import { ToastProvider } from '@/components/ui/Toast/useToast'
 import { i18n, initializeI18n } from '@/lib/i18n/i18n'
 import { registerSW } from '@/lib/pwa/registration'
 import { getOrCreateUserId } from '@/lib/user/id'
 
-import { getErrorMessage } from './-route-utils'
+import { RouteErrorCard } from './-route-utils'
 import styles from './RootDocument.module.css'
 import { PadelCourtSpinner } from '@/components/PadelCourtSpinner/PadelCourtSpinner'
 
@@ -74,10 +72,7 @@ export const Route = createRootRoute({
   notFoundComponent: NotFoundPage
 })
 
-function RootErrorState({ error, reset }: ErrorComponentProps) {
-  const { t } = useTranslation()
-  const errorMessage = getErrorMessage(error)
-
+function RootErrorState(props: ErrorComponentProps) {
   return (
     <html lang={i18n.resolvedLanguage ?? i18n.language ?? 'en'}>
       <head>
@@ -85,21 +80,7 @@ function RootErrorState({ error, reset }: ErrorComponentProps) {
       </head>
       <body>
         <main className="appStatusPage">
-          <section className="appStatusCard" aria-live="assertive">
-            <p className="appStatusEyebrow">{t('error.unexpectedLabel')}</p>
-            <h1 className="appStatusTitle">{t('error.unexpectedTitle')}</h1>
-            <p className="appStatusBody">{t('error.unexpectedBody')}</p>
-            {errorMessage ? (
-              <p className="appStatusDetail" role="alert">
-                {errorMessage}
-              </p>
-            ) : null}
-            <div className="appStatusActions">
-              <Button variant="outline" size="sm" accent="secondary" onClick={reset}>
-                {t('common.retry')}
-              </Button>
-            </div>
-          </section>
+          <RouteErrorCard {...props} eyebrowKey="error.unexpectedLabel" />
         </main>
         <Scripts />
       </body>

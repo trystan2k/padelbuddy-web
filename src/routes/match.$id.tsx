@@ -1,40 +1,17 @@
-import { createFileRoute, redirect } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 
 import { ActiveMatchScreen } from '@/components/ActiveMatchScreen/ActiveMatchScreen'
-import { loadCurrentMatch } from '@/lib/current-match/indexed-db'
 import type { CurrentMatchRecord } from '@/lib/current-match/persistence'
 import { currentMatchPersistenceRouteLoaderOptions } from '@/lib/router/current-match-route-flow'
 
-import { resolveMatchRouteState } from './-match-route-state'
-import { RouteErrorState } from './-route-utils'
+import { RouteErrorState, loadReadyMatchRouteState } from './-route-utils'
 
 export const Route = createFileRoute('/match/$id')({
   ...currentMatchPersistenceRouteLoaderOptions,
   component: MatchRoute,
   errorComponent: RouteErrorState,
   loader: async ({ params }) => {
-    const matchData = await loadCurrentMatch()
-    const routeState = resolveMatchRouteState(params.id, matchData, 'active')
-
-    if (routeState.status === 'redirect-home') {
-      throw redirect({
-        to: '/',
-        replace: true,
-        search: { error: routeState.error }
-      })
-    }
-
-    if (routeState.status === 'redirect-finish') {
-      throw redirect({
-        to: '/match/finish/$id',
-        params: { id: routeState.matchId },
-        replace: true
-      })
-    }
-
-    if (routeState.status !== 'ready') {
-      throw new Error('Expected active match route state to be ready after redirect guards.')
-    }
+    const routeState = await loadReadyMatchRouteState(params.id, 'active')
 
     return {
       matchId: params.id,
