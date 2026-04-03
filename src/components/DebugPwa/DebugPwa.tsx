@@ -8,6 +8,7 @@ import {
   requestSWUpdate,
   type SWRegistrationState
 } from '@/lib/pwa/registration'
+import { cn } from '@/lib/utils/cn'
 
 import styles from './DebugPwa.module.css'
 
@@ -157,7 +158,7 @@ export function DebugPwa() {
 
         <button
           type="button"
-          className={`${styles.button} ${styles.buttonDanger}`}
+          className={cn(styles.button, styles.buttonDanger)}
           onClick={handleClearCache}
           disabled={isClearing || !swState?.registered}
         >
