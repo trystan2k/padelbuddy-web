@@ -56,8 +56,9 @@
 
 .teamHeader {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
   gap: var(--base-space-16);
+  text-align: center;
 }
 
 .teamName,
@@ -66,10 +67,6 @@
   font-family: var(--semantic-typography-family-body);
   font-size: var(--base-font-size-18);
   font-weight: var(--base-font-weight-bold);
-}
-
-.teamName:last-child {
-  text-align: right;
 }
 
 .teamPrimary {
@@ -89,6 +86,8 @@
 }
 
 .setRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
   gap: var(--base-space-16);
 }
 
@@ -156,14 +155,6 @@
     padding: var(--base-space-20);
   }
 
-  .teamHeader {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .teamName:last-child {
-    text-align: left;
-  }
-
   .header,
   .setRow {
     align-items: flex-start;
@@ -171,10 +162,5 @@
 
   .header {
     flex-direction: column;
-  }
-
-  .setRow {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto auto auto;
   }
 }

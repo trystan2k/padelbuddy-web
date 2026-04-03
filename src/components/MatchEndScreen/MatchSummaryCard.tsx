@@ -27,6 +27,7 @@ export function MatchSummaryCard({ formatLabel, teamNames, setRows }: MatchSumma
         <div className={styles.teamHeader} aria-hidden="true">
           <span />
           <span className={cn(styles.teamName, styles.teamPrimary)}>{teamNames['team-1']}</span>
+          <span />
           <span className={cn(styles.teamName, styles.teamSecondary)}>{teamNames['team-2']}</span>
         </div>
 
