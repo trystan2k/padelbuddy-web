@@ -9,12 +9,18 @@ async function startMatch(page: import('@playwright/test').Page) {
 
   // Disable side-switch prompts to avoid dialog interruptions
   const sideSwitchToggle = page.getByRole('switch', { name: /side-switch prompts/i })
-  await sideSwitchToggle.click()
+  const sideSwitchInitialState = await sideSwitchToggle.getAttribute('aria-checked')
+  if (sideSwitchInitialState === 'true') {
+    await sideSwitchToggle.click()
+  }
   await expect(sideSwitchToggle).toHaveAttribute('aria-checked', 'false')
 
   // Disable serving indicator to simplify the match screen
   const servingIndicatorToggle = page.getByRole('switch', { name: /serving indicator/i })
-  await servingIndicatorToggle.click()
+  const servingIndicatorInitialState = await servingIndicatorToggle.getAttribute('aria-checked')
+  if (servingIndicatorInitialState === 'true') {
+    await servingIndicatorToggle.click()
+  }
   await expect(servingIndicatorToggle).toHaveAttribute('aria-checked', 'false')
 
   // Start the match

@@ -1,29 +1,28 @@
 .overlay {
   position: fixed;
   inset: 0;
-  z-index: var(--base-priority-xxxl);
-  display: grid;
-  place-items: center;
-  padding: var(--base-space-24);
-  background: color-mix(in srgb, var(--semantic-color-content-primary) 62%, transparent);
+  z-index: var(--overlay-z-index);
+  background: var(--overlay-background);
 }
 
-.card {
-  width: min(28rem, 100%);
-  display: grid;
-  justify-items: center;
+.container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: var(--base-priority-xxl);
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   gap: var(--base-space-20);
-  padding: var(--component-card-form-padding);
-  border: 2px solid var(--component-card-overlay-border);
-  border-radius: var(--component-card-panel-radius);
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--semantic-color-content-inverse) 92%, transparent),
-      color-mix(in srgb, var(--semantic-color-background-surface) 96%, transparent)
-    ),
-    var(--semantic-color-background-surface);
-  box-shadow: 0 24px 64px color-mix(in srgb, var(--semantic-color-content-primary) 20%, transparent);
+  width: min(calc(100vw - (var(--base-space-16) * 2)), 24rem);
+  max-width: 100%;
+  max-height: calc(100dvh - (var(--base-space-16) * 2));
+  overflow: auto;
+  padding: var(--base-space-28) var(--base-space-24);
+  background-color: var(--semantic-color-background-surface);
+  border-radius: var(--base-radius-24);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
   text-align: center;
 }
 
@@ -81,13 +80,36 @@
 }
 
 @media (width < 480px) {
-  .overlay {
-    padding: var(--base-space-16);
+  .container {
+    gap: var(--base-space-16);
+    width: min(calc(100vw - (var(--base-space-12) * 2)), 22rem);
+    padding: var(--base-space-24) var(--base-space-20);
   }
 
-  .card {
-    gap: var(--base-space-16);
-    padding: var(--base-space-24) var(--base-space-20);
+  .title {
+    font-size: var(--semantic-typography-size-title-md);
+  }
+
+  .description {
+    font-size: var(--semantic-typography-size-body-md);
+  }
+}
+
+@media (height <= 480px) {
+  .container {
+    gap: var(--base-space-12);
+    max-height: calc(100dvh - (var(--base-space-12) * 2));
+    padding: var(--base-space-20);
+  }
+
+  .iconWrapper {
+    width: var(--base-space-72);
+    height: var(--base-space-72);
+  }
+
+  .icon {
+    width: 52px;
+    height: 52px;
   }
 
   .title {

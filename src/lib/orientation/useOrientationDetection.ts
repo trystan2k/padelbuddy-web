@@ -10,6 +10,24 @@ const defaultOrientationState: OrientationState = {
   isLandscape: false
 }
 
+function subscribeToOrientationChange(query: MediaQueryList, handler: () => void) {
+  if (typeof query.addEventListener === 'function') {
+    query.addEventListener('change', handler)
+    return
+  }
+
+  query.addListener(handler)
+}
+
+function unsubscribeFromOrientationChange(query: MediaQueryList, handler: () => void) {
+  if (typeof query.removeEventListener === 'function') {
+    query.removeEventListener('change', handler)
+    return
+  }
+
+  query.removeListener(handler)
+}
+
 function getOrientationState(): OrientationState {
   if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
     return defaultOrientationState
@@ -36,8 +54,8 @@ export function useOrientationDetection(): OrientationState {
       setOrientation(getOrientationState())
     }
 
-    query.addEventListener('change', update)
-    return () => query.removeEventListener('change', update)
+    subscribeToOrientationChange(query, update)
+    return () => unsubscribeFromOrientationChange(query, update)
   }, [])
 
   return orientation

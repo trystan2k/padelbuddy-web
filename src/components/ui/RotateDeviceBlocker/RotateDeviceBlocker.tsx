@@ -1,37 +1,54 @@
-import { useEffect, useId, useRef } from 'react'
+import { Dialog } from '@base-ui/react/dialog'
+import { useCallback, useRef, type ComponentProps } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import styles from './RotateDeviceBlocker.module.css'
 
+type DialogBackdropRenderProps = Parameters<
+  Extract<ComponentProps<typeof Dialog.Backdrop>['render'], (...args: never[]) => unknown>
+>[0]
+type DialogPopupRenderProps = Parameters<
+  Extract<ComponentProps<typeof Dialog.Popup>['render'], (...args: never[]) => unknown>
+>[0]
+type DialogTitleRenderProps = Parameters<
+  Extract<ComponentProps<typeof Dialog.Title>['render'], (...args: never[]) => unknown>
+>[0]
+type DialogDescriptionRenderProps = Parameters<
+  Extract<ComponentProps<typeof Dialog.Description>['render'], (...args: never[]) => unknown>
+>[0]
+
 export function RotateDeviceBlocker() {
   const { t } = useTranslation()
-  const titleId = useId()
-  const descriptionId = useId()
-  const cardRef = useRef<HTMLDivElement>(null)
+  const portalContainerRef = useRef<HTMLDivElement | null>(null)
+  const title = t('match.rotateDevice.title')
+  const description = t('match.rotateDevice.description')
 
-  useEffect(() => {
-    // NOTE: document.activeElement may already be document.body here because the
-    // parent Layout's inert attribute is applied synchronously before this effect runs.
-    // Full focus restoration would require the parent to capture focus before re-render.
-    const previouslyFocused =
-      document.activeElement instanceof HTMLElement ? document.activeElement : null
-    cardRef.current?.focus()
-    return () => {
-      previouslyFocused?.focus()
-    }
-  }, [])
+  const renderBackdrop = useCallback(
+    (props: DialogBackdropRenderProps) => <div {...props} className={styles.overlay} />,
+    []
+  )
 
-  return (
-    <div className={styles.overlay} data-testid="rotate-device-blocker">
-      <div
-        ref={cardRef}
-        className={styles.card}
-        role="alertdialog"
-        aria-modal="true"
-        aria-labelledby={titleId}
-        aria-describedby={descriptionId}
-        tabIndex={-1}
-      >
+  const renderTitle = useCallback(
+    (props: DialogTitleRenderProps) => (
+      <h2 {...props} className={styles.title}>
+        {title}
+      </h2>
+    ),
+    [title]
+  )
+
+  const renderDescription = useCallback(
+    (props: DialogDescriptionRenderProps) => (
+      <p {...props} className={styles.description}>
+        {description}
+      </p>
+    ),
+    [description]
+  )
+
+  const renderPopup = useCallback(
+    (props: DialogPopupRenderProps) => (
+      <div {...props} className={styles.container} data-testid="rotate-device-blocker">
         <div className={styles.iconWrapper} aria-hidden="true">
           <svg
             className={styles.icon}
@@ -54,14 +71,23 @@ export function RotateDeviceBlocker() {
         </div>
 
         <div className={styles.content}>
-          <h2 id={titleId} className={styles.title}>
-            {t('match.rotateDevice.title')}
-          </h2>
-          <p id={descriptionId} className={styles.description}>
-            {t('match.rotateDevice.description')}
-          </p>
+          <Dialog.Title render={renderTitle} />
+          <Dialog.Description render={renderDescription} />
         </div>
       </div>
-    </div>
+    ),
+    [renderDescription, renderTitle]
+  )
+
+  return (
+    <>
+      <div ref={portalContainerRef} />
+      <Dialog.Root open={true}>
+        <Dialog.Portal container={portalContainerRef}>
+          <Dialog.Backdrop render={renderBackdrop} />
+          <Dialog.Popup render={renderPopup} />
+        </Dialog.Portal>
+      </Dialog.Root>
+    </>
   )
 }

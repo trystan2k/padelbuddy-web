@@ -585,7 +585,7 @@ export function ActiveMatchScreen({
 
   return (
     <>
-      <Layout header={headerContent} footer={footerContent} inert={isPortrait}>
+      <Layout header={headerContent} footer={footerContent}>
         <div className={styles.scorePanel}>
           <div className={styles.teamColumn}>
             <TeamPanel
