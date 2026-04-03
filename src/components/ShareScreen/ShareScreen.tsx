@@ -66,7 +66,9 @@ export function ShareScreen({
           </div>
 
           <div className={styles.teamHeaders}>
+            <span />
             <span className={styles.teamAHeader}>{team1Name}</span>
+            <span />
             <span className={styles.teamBHeader}>{team2Name}</span>
           </div>
 

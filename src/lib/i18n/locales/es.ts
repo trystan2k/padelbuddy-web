@@ -138,7 +138,7 @@ export default {
       winners: 'GANADORES'
     },
     score: {
-      title: 'Resultado Final',
+      title: 'Resultado',
       set: 'Set {{number}}'
     },
     stats: {
@@ -284,7 +284,7 @@ export default {
         finishedEarlyName: 'Sin ganador (Empate)'
       },
       summary: {
-        title: 'Resumen de sets',
+        title: 'Resultado',
         setLabel: 'Set {{number}}',
         setScoreRow:
           'Set {{setNumber}}: {{teamOneName}} {{teamOneScore}}, {{teamTwoName}} {{teamTwoScore}}'

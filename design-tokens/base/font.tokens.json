@@ -13,6 +13,8 @@
         "black": { "value": "900", "type": "fontWeights" }
       },
       "size": {
+        "8": { "value": "8px", "type": "fontSizes" },
+        "10": { "value": "10px", "type": "fontSizes" },
         "11": { "value": "11px", "type": "fontSizes" },
         "12": { "value": "12px", "type": "fontSizes" },
         "13": { "value": "13px", "type": "fontSizes" },

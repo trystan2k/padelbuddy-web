@@ -6,7 +6,7 @@
 .shareScreen {
   display: flex;
   flex-direction: column;
-  width: 414px;
+  width: calc(var(--base-space-8) * 52);
   height: auto;
   padding: var(--base-space-16);
   gap: var(--base-space-16);
@@ -91,7 +91,7 @@
 .scoreTitle {
   color: var(--semantic-color-content-primary);
   font-family: var(--semantic-typography-family-display);
-  font-size: var(--base-font-size-32);
+  font-size: var(--base-font-size-28);
   font-weight: var(--semantic-typography-weight-heading);
 }
 
@@ -102,15 +102,17 @@
   border-radius: var(--base-radius-18);
   color: var(--semantic-color-content-primary);
   font-family: var(--semantic-typography-family-body);
-  font-size: var(--base-font-size-13);
+  font-size: var(--base-font-size-10);
   font-weight: var(--semantic-typography-weight-strong);
   letter-spacing: 1.2px;
   text-transform: uppercase;
 }
 
 .teamHeaders {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--base-space-16);
+  text-align: center;
 }
 
 .teamAHeader {
@@ -134,37 +136,39 @@
 }
 
 .setRow {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--base-space-8);
   align-items: center;
+  text-align: center;
 }
 
 .setLabel {
   color: var(--semantic-color-content-secondary);
   font-family: var(--semantic-typography-family-body);
   font-size: var(--base-font-size-18);
-  font-weight: 600;
+  font-weight: var(--semantic-typography-weight-strong);
 }
 
 .winnerScore {
   color: var(--semantic-color-items-primary-content);
   font-family: var(--semantic-typography-family-display);
-  font-size: 46px;
-  font-weight: 900;
+  font-size: var(--base-font-size-46);
+  font-weight: var(--semantic-typography-weight-heading);
 }
 
 .loserScore {
   color: var(--semantic-color-items-secondary-content);
   font-family: var(--semantic-typography-family-display);
-  font-size: 46px;
-  font-weight: 900;
+  font-size: var(--base-font-size-46);
+  font-weight: var(--semantic-typography-weight-heading);
 }
 
 .setDash {
   color: var(--semantic-color-content-secondary);
   font-family: var(--semantic-typography-family-display);
-  font-size: 34px;
-  font-weight: 700;
+  font-size: var(--base-font-size-28);
+  font-weight: var(--semantic-typography-weight-strong);
 }
 
 /* Stats Row */
@@ -196,6 +200,6 @@
 .statValue {
   color: var(--semantic-color-content-primary);
   font-family: var(--semantic-typography-family-display);
-  font-size: 34px;
-  font-weight: 800;
+  font-size: var(--base-font-size-28);
+  font-weight: var(--semantic-typography-weight-heading);
 }
