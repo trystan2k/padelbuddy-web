@@ -37,13 +37,6 @@ const formatTranslationKeys: Record<MatchFormat, 'bestOf1' | 'bestOf3' | 'bestOf
   'best-of-5': 'bestOf5'
 }
 
-const hiddenScreenStyle = {
-  position: 'fixed',
-  top: 0,
-  left: '-9999px',
-  pointerEvents: 'none'
-} as const
-
 export function MatchEndScreen({
   matchId,
   setup,
@@ -332,7 +325,7 @@ export function MatchEndScreen({
     <>
       {/* ShareScreen is rendered off-screen when share button is clicked, then unmounted after capture */}
       {shareScreenReady && (
-        <div aria-hidden="true" style={hiddenScreenStyle}>
+        <div aria-hidden="true" className={styles.hiddenCaptureRegion}>
           <ShareScreen ref={captureRef} {...shareScreenProps} />
         </div>
       )}

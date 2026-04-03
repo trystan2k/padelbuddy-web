@@ -47,6 +47,13 @@
   border: 0;
 }
 
+.hiddenCaptureRegion {
+  position: fixed;
+  top: 0;
+  left: -9999px;
+  pointer-events: none;
+}
+
 .hero {
   display: grid;
   flex: 1;
