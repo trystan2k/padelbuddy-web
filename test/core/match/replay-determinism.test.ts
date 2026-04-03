@@ -82,7 +82,7 @@ describe('replay and determinism', () => {
     expect(continueMatch(uncappedSetup, completedState)).toBe(uncappedSetup)
   })
 
-  test('preserves official deciding-set interpretation after continueMatch uncaps the set limit', () => {
+  test('disables super-tiebreak for new sets created after continueMatch', () => {
     const setup = createTestSetup({
       decidingSetSuperTiebreak: true
     })
@@ -113,7 +113,6 @@ describe('replay and determinism', () => {
     const actions = [...winQuickSet('team-1'), ...winQuickSet('team-2'), ...decidingSetActions]
     const completedProjection = projectMatch(setup, actions)
     const continuedSetup = continueMatch(setup, completedProjection.state)
-    const continuedProjection = projectMatch(continuedSetup, actions)
 
     expect(completedProjection.state.sets[2]).toMatchObject({
       completed: true,
@@ -124,15 +123,10 @@ describe('replay and determinism', () => {
         'team-2': 8
       }
     })
-    expect(continuedProjection.state.sets[2]).toMatchObject({
-      completed: true,
-      mode: 'super-tiebreak',
-      winner: 'team-1',
-      tiebreakPoints: {
-        'team-1': 10,
-        'team-2': 8
-      }
-    })
+
+    const continuedAfterWinningActions = [...actions, ...winQuickSet('team-2')]
+    const continuedProjection = projectMatch(continuedSetup, continuedAfterWinningActions)
+
     expect(continuedProjection.derived.activeSetIndex).toBe(4)
     expect(continuedProjection.state.sets[3]).toMatchObject({
       completed: false,

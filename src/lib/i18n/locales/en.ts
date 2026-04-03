@@ -260,7 +260,8 @@ export default {
     sets: {
       label: 'Sets',
       setLabel: 'Set {{number}}',
-      currentShort: 'Current'
+      currentShort: 'Current',
+      superTiebreakBadge: 'ST'
     },
     timer: {
       label: 'Current time: {{time}}',

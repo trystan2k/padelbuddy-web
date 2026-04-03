@@ -261,7 +261,8 @@ export default {
     sets: {
       label: 'Sets',
       setLabel: 'Set {{number}}',
-      currentShort: 'Atual'
+      currentShort: 'Atual',
+      superTiebreakBadge: 'S-TB'
     },
     timer: {
       label: 'Hora atual: {{time}}',

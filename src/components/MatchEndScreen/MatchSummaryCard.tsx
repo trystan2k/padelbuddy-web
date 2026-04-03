@@ -46,8 +46,19 @@ export function MatchSummaryCard({ formatLabel, teamNames, setRows }: MatchSumma
                   teamTwoScore: setRow.scores['team-2']
                 })}
               </span>
-              <span aria-hidden="true" className={styles.setLabel}>
+              <span
+                aria-hidden="true"
+                className={cn(
+                  styles.setLabel,
+                  setRow.isSuperTiebreak && styles.setLabelSuperTiebreak
+                )}
+              >
                 {t('match.end.summary.setLabel', { number: setRow.setNumber })}
+                {setRow.isSuperTiebreak && (
+                  <span className={styles.superTiebreakBadge}>
+                    {t('match.sets.superTiebreakBadge')}
+                  </span>
+                )}
               </span>
               <span aria-hidden="true" className={cn(styles.setScore, styles.teamPrimary)}>
                 {setRow.scores['team-1']}

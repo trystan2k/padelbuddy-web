@@ -9,6 +9,7 @@ import type {
 export interface MatchEndScreenSetRow {
   setNumber: number
   scores: TeamScore<number>
+  isSuperTiebreak: boolean
 }
 
 export interface MatchEndScreenSummary {
@@ -53,13 +54,22 @@ export function createMatchEndScreenSummary(
     isFinishedEarly: !winner,
     teamNames,
     format: projection.setup.format,
-    setRows: projection.state.sets.map((set) => ({
-      setNumber: set.index,
-      scores: {
-        'team-1': set.games['team-1'],
-        'team-2': set.games['team-2']
+    setRows: projection.state.sets.map((set) => {
+      const isSuperTiebreak = set.completed && set.mode === 'super-tiebreak'
+      const tiebreakPoints = isSuperTiebreak ? set.tiebreakPoints : null
+
+      return {
+        setNumber: set.index,
+        scores:
+          tiebreakPoints !== null
+            ? tiebreakPoints
+            : {
+                'team-1': set.games['team-1'],
+                'team-2': set.games['team-2']
+              },
+        isSuperTiebreak
       }
-    })),
+    }),
     totalGames: projection.state.sets.reduce(
       (total, set) => total + set.games['team-1'] + set.games['team-2'],
       0

@@ -2,7 +2,13 @@ import { describe, expect, test } from 'vitest'
 
 import { projectMatch } from '@/core/match'
 import { createMatchEndScreenSummary, getMatchDurationParts } from '@/components/MatchEndScreen'
-import { createTestSetup, winQuickGame, winQuickSet } from '../../core/match/test-helpers'
+import {
+  createTestSetup,
+  repeatAction,
+  scorePoints,
+  winQuickGame,
+  winQuickSet
+} from '../../core/match/test-helpers'
 
 describe('MatchEndScreen view model', () => {
   test('builds a completed match summary from the projected match state', () => {
@@ -38,21 +44,24 @@ describe('MatchEndScreen view model', () => {
           scores: {
             'team-1': 6,
             'team-2': 0
-          }
+          },
+          isSuperTiebreak: false
         },
         {
           setNumber: 2,
           scores: {
             'team-1': 0,
             'team-2': 6
-          }
+          },
+          isSuperTiebreak: false
         },
         {
           setNumber: 3,
           scores: {
             'team-1': 6,
             'team-2': 0
-          }
+          },
+          isSuperTiebreak: false
         }
       ],
       totalGames: 18,
@@ -83,7 +92,8 @@ describe('MatchEndScreen view model', () => {
           scores: {
             'team-1': 0,
             'team-2': 0
-          }
+          },
+          isSuperTiebreak: false
         }
       ],
       totalGames: 0,
@@ -125,14 +135,16 @@ describe('MatchEndScreen view model', () => {
           scores: {
             'team-1': 6,
             'team-2': 0
-          }
+          },
+          isSuperTiebreak: false
         },
         {
           setNumber: 2,
           scores: {
             'team-1': 1,
             'team-2': 1
-          }
+          },
+          isSuperTiebreak: false
         }
       ],
       totalGames: 8,
@@ -270,5 +282,47 @@ describe('MatchEndScreen view model', () => {
 
   test('getMatchDurationParts handles exactly one hour', () => {
     expect(getMatchDurationParts(3600)).toEqual({ hours: 1, minutes: 0 })
+  })
+
+  test('displays super-tiebreak points instead of games for super-tiebreak sets', () => {
+    const setup = createTestSetup({
+      decidingSetSuperTiebreak: true,
+      sides: [
+        { id: 'team-1', playerNames: ['Alvaro', 'Enrique'] },
+        { id: 'team-2', playerNames: ['Pablo', 'Thiago'] }
+      ]
+    })
+    const projection = projectMatch(setup, [
+      ...winQuickSet('team-1'),
+      ...winQuickSet('team-2'),
+      ...repeatAction('team-1', 9),
+      ...repeatAction('team-2', 8),
+      ...scorePoints('team-1')
+    ])
+
+    const summary = createMatchEndScreenSummary({
+      projection,
+      startedAt: 1_000,
+      finishedAt: 10_000
+    })
+
+    expect(summary.winnerTeamId).toBe('team-1')
+    expect(summary.setRows).toEqual([
+      {
+        setNumber: 1,
+        scores: { 'team-1': 6, 'team-2': 0 },
+        isSuperTiebreak: false
+      },
+      {
+        setNumber: 2,
+        scores: { 'team-1': 0, 'team-2': 6 },
+        isSuperTiebreak: false
+      },
+      {
+        setNumber: 3,
+        scores: { 'team-1': 10, 'team-2': 8 },
+        isSuperTiebreak: true
+      }
+    ])
   })
 })
