@@ -81,8 +81,6 @@
 }
 
 .setRows {
-  overflow: hidden auto;
-  overscroll-behavior: contain;
   flex: 1;
   margin: 0;
   padding: 0;
@@ -132,14 +130,9 @@
   border: 0;
 }
 
-@media (width <= 1023px) {
+@media (width < 768px) {
   .card {
     min-height: auto;
-  }
-}
-
-@media (width <= 767px) {
-  .card {
     padding: var(--base-space-20);
   }
 

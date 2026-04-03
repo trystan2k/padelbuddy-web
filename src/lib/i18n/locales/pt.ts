@@ -267,6 +267,11 @@ export default {
       label: 'Hora atual: {{time}}',
       countdownLabel: 'Tempo restante da partida: {{time}}'
     },
+    rotateDevice: {
+      title: 'Gire o seu dispositivo',
+      description:
+        'Esta tela funciona melhor no modo paisagem. Gire o seu dispositivo para continuar.'
+    },
     end: {
       header: {
         appName: 'Padel Buddy',

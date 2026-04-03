@@ -4,7 +4,7 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  height: var(--app-scoreboard-team-panel-height);
+  min-height: 0;
   border-radius: var(--component-card-scoreboard-team-radius);
   padding: var(--component-card-scoreboard-team-padding-top)
     var(--component-card-scoreboard-team-padding-x)
@@ -70,7 +70,11 @@
   justify-content: center;
   flex: 1;
   font-family: var(--semantic-typography-family-display);
-  font-size: var(--semantic-typography-size-display-score);
+  font-size: clamp(
+    var(--semantic-typography-size-display-score-small),
+    50vmin,
+    var(--semantic-typography-size-display-score)
+  );
   font-weight: var(--semantic-typography-weight-display);
   letter-spacing: -10px;
   line-height: var(--semantic-typography-line-height-display);
@@ -93,14 +97,9 @@
   border: 0;
 }
 
-@media (width <= 767px) {
-  .panel {
-    min-height: 280px;
-    height: auto;
-    padding: var(--base-space-16);
-  }
-
+@media (height <= 480px) {
   .score {
-    font-size: var(--semantic-typography-size-display-score);
+    font-size: clamp(232px, 65vmin, 500px);
+    letter-spacing: -6px;
   }
 }

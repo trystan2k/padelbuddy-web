@@ -4,11 +4,10 @@
 
 .card {
   width: 100%;
-  min-height: 5.625rem;
   border-radius: var(--base-radius-24);
   border: 1px solid var(--semantic-color-border-subtle);
   background-color: var(--semantic-color-background-surface);
-  padding: var(--base-space-16) var(--base-space-22);
+  padding: var(--base-space-16);
   box-shadow: 0 16px 40px color-mix(in srgb, var(--semantic-color-content-primary) 7%, transparent);
 }
 
@@ -50,24 +49,8 @@
 
 .statValue {
   font-family: var(--semantic-typography-family-display);
-  font-size: var(--base-font-size-34);
+  font-size: var(--base-font-size-28);
   font-weight: var(--semantic-typography-weight-heading);
   line-height: 1;
   color: var(--semantic-color-content-primary);
-}
-
-@media (width <= 767px) {
-  .inner {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .statBlockAlignEnd {
-    align-items: flex-start;
-    text-align: left;
-  }
-
-  .card {
-    padding: var(--base-space-16);
-  }
 }

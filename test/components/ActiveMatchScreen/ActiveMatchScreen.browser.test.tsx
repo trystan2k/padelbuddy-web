@@ -28,14 +28,19 @@ const {
   mockPreloadRoute,
   mockLoadRemoteControllerBindings,
   mockSpeechAnnounce,
-  mockSpeechDestroy
+  mockSpeechDestroy,
+  mockUseOrientationDetection
 } = vi.hoisted(() => ({
   mockInvalidate: vi.fn(async () => undefined),
   mockNavigate: vi.fn(),
   mockPreloadRoute: vi.fn(async () => undefined),
   mockLoadRemoteControllerBindings: vi.fn(),
   mockSpeechAnnounce: vi.fn(),
-  mockSpeechDestroy: vi.fn()
+  mockSpeechDestroy: vi.fn(),
+  mockUseOrientationDetection: vi.fn(() => ({
+    isPortrait: false,
+    isLandscape: true
+  }))
 }))
 
 vi.mock('@tanstack/react-router', async (importOriginal) => {
@@ -90,6 +95,10 @@ vi.mock('@/lib/speech', async (importOriginal) => {
   }
 })
 
+vi.mock('@/lib/orientation', () => ({
+  useOrientationDetection: mockUseOrientationDetection
+}))
+
 describe('ActiveMatchScreen', () => {
   const defaultStartedAt = Date.now() - 5 * 60 * 1000
 
@@ -100,6 +109,10 @@ describe('ActiveMatchScreen', () => {
     mockLoadRemoteControllerBindings.mockResolvedValue(null)
     mockSpeechAnnounce.mockReset()
     mockSpeechDestroy.mockReset()
+    mockUseOrientationDetection.mockReturnValue({
+      isPortrait: false,
+      isLandscape: true
+    })
   })
 
   afterEach(() => {
@@ -758,6 +771,24 @@ describe('ActiveMatchScreen', () => {
     )
 
     await expect.element(screen.getByTestId('finish-button')).toBeDisabled()
+  })
+
+  test('renders the rotate device blocker in portrait orientation', async () => {
+    mockUseOrientationDetection.mockReturnValue({
+      isPortrait: true,
+      isLandscape: false
+    })
+
+    const screen = await render(
+      <ActiveMatchScreen
+        matchId="test-match"
+        initialSetup={createTestSetup()}
+        initialActions={[]}
+        startedAt={defaultStartedAt}
+      />
+    )
+
+    await expect.element(screen.getByTestId('rotate-device-blocker')).toBeInTheDocument()
   })
 })
 

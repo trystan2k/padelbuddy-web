@@ -5,8 +5,8 @@
         "background": { "value": "{semantic.color.action.primary}", "type": "color" },
         "text": { "value": "{semantic.color.content.inverse}", "type": "color" },
         "radius": { "value": "{base.radius.28}", "type": "borderRadius" },
-        "padding-y": { "value": "{base.space.20}", "type": "spacing" },
-        "padding-x": { "value": "{base.space.24}", "type": "spacing" }
+        "padding-y": { "value": "{base.space.16}", "type": "spacing" },
+        "padding-x": { "value": "{base.space.16}", "type": "spacing" }
       },
       "revert": {
         "text": { "value": "{semantic.color.content.secondary}", "type": "color" },

@@ -44,7 +44,7 @@
   line-height: 1.7;
 }
 
-@media (width >= 48rem) {
+@media (width >= 768px) {
   .notice {
     grid-template-columns: 1fr auto;
     align-items: center;

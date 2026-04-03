@@ -19,7 +19,9 @@
   flex-direction: column;
   align-items: center;
   gap: var(--base-space-16);
-  max-width: 320px;
+  width: min(calc(100vw - (var(--base-space-16) * 2)), 320px);
+  max-height: calc(100dvh - (var(--base-space-16) * 2));
+  overflow: auto;
   padding: var(--base-space-24);
   background-color: var(--semantic-color-background-surface);
   border-radius: var(--base-radius-24);
@@ -41,4 +43,23 @@
   font-size: var(--semantic-typography-size-body-md);
   color: var(--semantic-color-content-secondary);
   text-align: center;
+}
+
+.confirmButton {
+  width: 100%;
+}
+
+@media (height <= 480px) {
+  .container {
+    gap: var(--base-space-12);
+    padding: var(--base-space-16);
+  }
+
+  .title {
+    font-size: var(--base-font-size-24);
+  }
+
+  .description {
+    font-size: var(--base-font-size-14);
+  }
 }

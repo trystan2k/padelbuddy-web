@@ -34,7 +34,8 @@
         "64": { "value": "64px", "type": "fontSizes" },
         "232": { "value": "232px", "type": "fontSizes" },
         "264": { "value": "264px", "type": "fontSizes" },
-        "352": { "value": "352px", "type": "fontSizes" }
+        "352": { "value": "352px", "type": "fontSizes" },
+        "500": { "value": "500px", "type": "fontSizes" }
       },
       "letterSpacing": {
         "tight-xl": { "value": "-1px", "type": "letterSpacing" },

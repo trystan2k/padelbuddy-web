@@ -8,20 +8,23 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: var(--base-space-12);
   width: 100%;
-  height: var(--app-screen-shell-header-height);
+  min-width: 0;
 }
 
 .branding {
   display: flex;
   flex-direction: column;
   gap: var(--base-space-2);
+  min-width: 0;
 }
 
 .titleRow {
   display: flex;
   align-items: center;
   gap: var(--app-screen-header-title-gap);
+  min-width: 0;
 }
 
 .icon {
@@ -36,11 +39,13 @@
   display: flex;
   align-items: baseline;
   gap: var(--base-space-4);
+  min-width: 0;
   font-family: var(--semantic-typography-family-display);
   font-size: var(--base-font-size-34);
   font-weight: var(--semantic-typography-weight-heading);
   color: var(--semantic-color-content-primary);
   letter-spacing: var(--base-font-letter-spacing-tight-xl);
+  line-height: 1;
 }
 
 .version {
@@ -65,4 +70,37 @@
   display: flex;
   align-items: center;
   margin-left: auto;
+  flex-shrink: 0;
+}
+
+@media (width < 480px) {
+  .icon {
+    width: var(--base-space-32);
+    height: var(--base-space-32);
+  }
+
+  .appName {
+    font-size: var(--base-font-size-24);
+  }
+
+  .subtitle {
+    font-size: var(--base-font-size-12);
+  }
+}
+
+/* Mobile landscape: smaller header elements */
+@media (height <= 640px) and (orientation: landscape) {
+  .icon {
+    width: var(--base-space-32);
+    height: var(--base-space-32);
+  }
+
+  .appName {
+    font-size: var(--base-font-size-24);
+  }
+
+  .version,
+  .subtitle {
+    display: none;
+  }
 }
