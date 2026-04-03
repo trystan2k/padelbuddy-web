@@ -125,12 +125,12 @@ export function CurrentMatchStartupGate({
       setStartupState((currentState) => clearCurrentMatchStartup(currentState))
     } catch (error) {
       setClearErrorMessage(
-        error instanceof Error ? error.message : 'Unable to clear the saved match right now.'
+        error instanceof Error ? error.message : t('startupGate.errors.clearSavedMatch')
       )
     } finally {
       setIsClearing(false)
     }
-  }, [persistence, router])
+  }, [persistence, router, t])
 
   const resumeSavedMatch = useCallback(() => {
     setClearErrorMessage(null)

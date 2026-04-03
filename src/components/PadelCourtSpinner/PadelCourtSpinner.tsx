@@ -6,6 +6,7 @@ import {
   type ComponentPropsWithoutRef,
   type Ref
 } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { cn } from '@/lib/utils/cn'
 
@@ -49,11 +50,13 @@ function generateKeyTimes(count: number): string {
 
 export function PadelCourtSpinner({
   className,
-  label = 'Loading, please wait...',
+  label,
   silent = false,
   ref,
   ...props
 }: PadelCourtSpinnerProps) {
+  const { t } = useTranslation()
+  const resolvedLabel = label ?? t('common.loadingPleaseWait')
   const [ballPath, setBallPath] = useState(INITIAL_PATH)
   const animRef = useRef<SVGAnimateMotionElement>(null)
 
@@ -74,7 +77,7 @@ export function PadelCourtSpinner({
         className={cn(styles.container, className)}
         {...(silent ? {} : { role: 'status', 'aria-live': 'polite' })}
         aria-busy="true"
-        aria-label={label}
+        aria-label={resolvedLabel}
         {...props}
       >
         <svg
@@ -135,8 +138,8 @@ export function PadelCourtSpinner({
           <circle className={styles.ballStatic} cx="142" cy="67" r="7" />
         </svg>
 
-        <span className={styles.label}>{label}</span>
-        <span className={styles.visuallyHidden}>{label}</span>
+        <span className={styles.label}>{resolvedLabel}</span>
+        <span className={styles.visuallyHidden}>{resolvedLabel}</span>
       </div>
     </div>
   )

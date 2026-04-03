@@ -33,11 +33,11 @@ export const Route = createRootRoute({
         content: 'width=device-width, initial-scale=1'
       },
       {
-        title: 'Padel Buddy'
+        title: i18n.t('app.title')
       },
       {
         name: 'description',
-        content: 'Client-only TanStack Start foundation for the Padel Buddy score tracker.'
+        content: i18n.t('app.description')
       },
       {
         name: 'theme-color',
@@ -53,7 +53,7 @@ export const Route = createRootRoute({
       },
       {
         name: 'apple-mobile-web-app-title',
-        content: 'Padel Buddy'
+        content: i18n.t('app.title')
       }
     ],
     links: [

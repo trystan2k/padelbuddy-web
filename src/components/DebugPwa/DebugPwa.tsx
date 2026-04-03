@@ -103,7 +103,7 @@ export function DebugPwa() {
   if (!isVisible) {
     return (
       <button type="button" className={styles.reopenButton} onClick={handleReopen}>
-        {t('debugPwa.reopen', { defaultValue: 'Open PWA Debug' })}
+        {t('debugPwa.reopen')}
       </button>
     )
   }
@@ -112,36 +112,34 @@ export function DebugPwa() {
     <div className={styles.container} role="region" aria-labelledby="debug-pwa-title">
       <div className={styles.header}>
         <h3 id="debug-pwa-title" className={styles.title}>
-          {t('debugPwa.title', { defaultValue: 'PWA Debug' })}
+          {t('debugPwa.title')}
         </h3>
         <button
           type="button"
           className={styles.closeButton}
           onClick={handleClose}
-          aria-label={t('debugPwa.close', { defaultValue: 'Close' })}
+          aria-label={t('common.close')}
         >
           ✕
         </button>
       </div>
 
       <dl className={styles.list}>
-        <dt className={styles.term}>{t('debugPwa.supported', { defaultValue: 'SW Supported' })}</dt>
+        <dt className={styles.term}>{t('debugPwa.supported')}</dt>
         <dd className={styles.value}>{swState?.supported ? '✓' : '✗'}</dd>
 
-        <dt className={styles.term}>
-          {t('debugPwa.registered', { defaultValue: 'SW Registered' })}
-        </dt>
+        <dt className={styles.term}>{t('debugPwa.registered')}</dt>
         <dd className={styles.value}>{swState?.registered ? '✓' : '✗'}</dd>
 
-        <dt className={styles.term}>{t('debugPwa.ready', { defaultValue: 'SW Ready' })}</dt>
+        <dt className={styles.term}>{t('debugPwa.ready')}</dt>
         <dd className={styles.value}>{swState?.ready ? '✓' : '✗'}</dd>
 
         {cacheInfo && (
           <>
-            <dt className={styles.term}>{t('debugPwa.version', { defaultValue: 'Version' })}</dt>
+            <dt className={styles.term}>{t('debugPwa.version')}</dt>
             <dd className={styles.value}>{cacheInfo.version}</dd>
 
-            <dt className={styles.term}>{t('debugPwa.cache', { defaultValue: 'Cache' })}</dt>
+            <dt className={styles.term}>{t('debugPwa.cache')}</dt>
             <dd className={styles.value}>{cacheInfo.cacheName}</dd>
           </>
         )}
@@ -154,9 +152,7 @@ export function DebugPwa() {
           onClick={handleUpdate}
           disabled={isUpdating || !swState?.registered}
         >
-          {isUpdating
-            ? t('debugPwa.updating', { defaultValue: 'Updating...' })
-            : t('debugPwa.update', { defaultValue: 'Update SW' })}
+          {isUpdating ? t('debugPwa.updating') : t('debugPwa.update')}
         </button>
 
         <button
@@ -165,9 +161,7 @@ export function DebugPwa() {
           onClick={handleClearCache}
           disabled={isClearing || !swState?.registered}
         >
-          {isClearing
-            ? t('debugPwa.clearing', { defaultValue: 'Clearing...' })
-            : t('debugPwa.clearCache', { defaultValue: 'Clear Cache' })}
+          {isClearing ? t('debugPwa.clearing') : t('debugPwa.clearCache')}
         </button>
       </div>
     </div>

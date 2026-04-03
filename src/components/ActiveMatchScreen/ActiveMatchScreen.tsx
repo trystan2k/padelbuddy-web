@@ -313,8 +313,8 @@ export function ActiveMatchScreen({
   const { setup, state, derived } = snapshot.projection
   const team1Side = setup.sides.find((side) => side.id === 'team-1')
   const team2Side = setup.sides.find((side) => side.id === 'team-2')
-  const team1Name = team1Side?.playerNames.join(' & ') || 'Team 1'
-  const team2Name = team2Side?.playerNames.join(' & ') || 'Team 2'
+  const team1Name = team1Side?.playerNames.join(' & ') || t('setup.firstServer.team1')
+  const team2Name = team2Side?.playerNames.join(' & ') || t('setup.firstServer.team2')
 
   const { scoreDisplay, activeSetIndex, sideSwitch, servingTeam } = derived
   const showServingIndicator = setup.servingIndicatorEnabled

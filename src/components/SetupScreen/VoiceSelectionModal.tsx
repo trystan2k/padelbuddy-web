@@ -47,8 +47,8 @@ export function VoiceSelectionModal({
       team1Score: '40',
       team2Score: '15',
       servingTeam: 'team-1',
-      team1Name: t('team.team1', { defaultValue: 'Team A' }),
-      team2Name: t('team.team2', { defaultValue: 'Team B' }),
+      team1Name: t('setup.teams.team1Default'),
+      team2Name: t('setup.teams.team2Default'),
       pointPressure: 'match-point',
       pointPressureTeam: 'team-1',
       verbosity: 'standard'

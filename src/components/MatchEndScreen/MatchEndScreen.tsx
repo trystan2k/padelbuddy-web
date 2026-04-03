@@ -385,15 +385,15 @@ export function MatchEndScreen({
             className={styles.debugModalContent}
             role="dialog"
             aria-modal="true"
-            aria-label="Share screen debug preview"
+            aria-label={t('match.end.debug.previewLabel')}
           >
             <div className={styles.debugModalHeader}>
-              <span>DEBUG — ShareScreen Preview</span>
+              <span>{t('match.end.debug.previewTitle')}</span>
               <button
                 type="button"
                 className={styles.debugModalClose}
                 onClick={handleDebugShareClose}
-                aria-label="Close debug modal"
+                aria-label={t('match.end.debug.closeModal')}
               >
                 ✕
               </button>
