@@ -3,7 +3,7 @@
     "dimension": {
       "screen": {
         "tablet-landscape-max-width": { "value": "1366px", "type": "dimension" },
-        "tablet-landscape-min-width": { "value": "344px", "type": "dimension" },
+        "tablet-landscape-min-width": { "value": "320px", "type": "dimension" },
         "header-height": { "value": "64px", "type": "dimension" },
         "min-body-height": { "value": "505px", "type": "dimension" },
         "max-body-height": { "value": "550px", "type": "dimension" },

@@ -14,7 +14,7 @@ The app was designed for iPad 6th gen resolution (1024x768). Smaller devices (ph
 | Decision                | Choice                                                                |
 | ----------------------- | --------------------------------------------------------------------- |
 | Landscape enforcement   | CSS + JavaScript orientation detection only (no Orientation API lock) |
-| Breakpoint strategy     | Width-based: phone < 640px, tablet 640-1023px, desktop ≥ 1024px       |
+| Breakpoint strategy     | Width-based: phone < 480px, tablet 768-1023px, desktop ≥ 1024px       |
 | Rotate blocker style    | Full takeover - blocks interaction, auto-dismisses on landscape       |
 | Header on small screens | Collapses to ~48px instead of 64px                                    |
 | Breakpoint token file   | `design-tokens/app/breakpoint.tokens.json`                            |

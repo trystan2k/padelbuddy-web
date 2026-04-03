@@ -114,11 +114,6 @@
 @media (width < 768px) {
   .card {
     min-height: auto;
-  }
-}
-
-@media (width < 768px) {
-  .card {
     padding: var(--base-space-20);
   }
 
