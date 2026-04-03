@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.27.0](https://github.com/trystan2k/padelbuddy-web/compare/v0.26.0...v0.27.0) (2026-04-03)
+
+
+### Features
+
+* Responsive overhaul - Active Match landscape-only, app-wide mobile support ([a970816](https://github.com/trystan2k/padelbuddy-web/commit/a97081628b9dd0cfa34dafcf9f661083d193a01b))
+
 ## [0.26.0](https://github.com/trystan2k/padelbuddy-web/compare/v0.25.0...v0.26.0) (2026-04-01)
 
 
