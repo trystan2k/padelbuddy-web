@@ -1,8 +1,8 @@
 import { useTranslation } from 'react-i18next'
 
-import { Button } from '@/components/ui/Button'
-import { Card } from '@/components/ui/Card'
-import type { MatchTeamId } from '@/core/match'
+import { Button } from '@/components/ui/Button/Button'
+import { Card } from '@/components/ui/Card/Card'
+import type { MatchTeamId } from '@/core/match/types'
 import { cn } from '@/lib/utils/cn'
 
 import styles from './WinnerCard.module.css'

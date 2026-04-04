@@ -3,7 +3,7 @@ import { describe, expect, test, vi } from 'vitest'
 import { currentMatchSchemaVersion } from '@/lib/current-match/persistence'
 import { hydrateCurrentMatchStartup } from '@/lib/current-match/startup'
 import { queueCurrentMatchResetNotice } from '@/lib/current-match/reset-notice'
-import { type CurrentMatchPersistence } from '@/lib/current-match'
+import type { CurrentMatchPersistence } from '@/lib/current-match/indexed-db'
 
 import { createTestSetup, winQuickSet } from '../core/match/test-helpers'
 

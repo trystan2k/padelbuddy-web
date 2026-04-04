@@ -4,17 +4,17 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Dialog } from '@base-ui/react/dialog'
 import { useTranslation } from 'react-i18next'
 
-import { Button } from '@/components/ui/Button'
-import { Select } from '@/components/ui'
+import { Button } from '@/components/ui/Button/Button'
+import { Select } from '@base-ui/react/select'
 import { defaultLocale, isSupportedLocale } from '@/lib/i18n/types'
 import {
   findVoiceByName,
-  generateSpeechMessage,
   getAllVoicesGroupedByLocale,
   getDefaultVoiceForLocale,
   getLanguageDisplayName,
   getVoiceId
-} from '@/lib/speech'
+} from '@/lib/speech/voice-selector'
+import { generateSpeechMessage } from '@/lib/speech/message-generator'
 
 import styles from './VoiceSelectionModal.module.css'
 
@@ -47,8 +47,8 @@ export function VoiceSelectionModal({
       team1Score: '40',
       team2Score: '15',
       servingTeam: 'team-1',
-      team1Name: t('team.team1', { defaultValue: 'Team A' }),
-      team2Name: t('team.team2', { defaultValue: 'Team B' }),
+      team1Name: t('setup.teams.team1Default'),
+      team2Name: t('setup.teams.team2Default'),
       pointPressure: 'match-point',
       pointPressureTeam: 'team-1',
       verbosity: 'standard'

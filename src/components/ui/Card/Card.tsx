@@ -2,7 +2,7 @@ import type { ReactNode, HTMLAttributes } from 'react'
 
 import { cn } from '@/lib/utils/cn'
 
-import type { Accent } from '../types'
+import type { Accent } from '@/components/ui/types'
 import styles from './Card.module.css'
 
 export type CardAccent = Accent

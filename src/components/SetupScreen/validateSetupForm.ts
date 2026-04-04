@@ -1,4 +1,4 @@
-import { countdownTimerDurations } from '@/core/match'
+import { countdownTimerDurations } from '@/core/match/types'
 
 import type { SetupFormData, FieldErrors } from './types'
 

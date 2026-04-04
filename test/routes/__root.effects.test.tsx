@@ -38,16 +38,16 @@ vi.mock('react-i18next', () => ({
   })
 }))
 
-vi.mock('@/lib/i18n', () => ({
+vi.mock('@/lib/i18n/i18n', () => ({
   i18n: i18nMock,
   initializeI18n: initializeI18nMock
 }))
 
-vi.mock('@/lib/pwa', () => ({
+vi.mock('@/lib/pwa/registration', () => ({
   registerSW: registerSWMock
 }))
 
-vi.mock('@/components/DebugPwa', () => ({
+vi.mock('@/components/DebugPwa/DebugPwa', () => ({
   DebugPwa: () => <div>debug pwa</div>
 }))
 

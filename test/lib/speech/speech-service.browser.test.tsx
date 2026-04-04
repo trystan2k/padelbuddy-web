@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { render } from 'vitest-browser-react'
 
-import { useSpeechService } from '@/lib/speech'
+import { useSpeechService } from '@/lib/speech/speech-service'
 
 vi.mock('@/lib/setup/setup-storage', () => ({
   saveSpeechPreferences: vi.fn(() => Promise.resolve()),

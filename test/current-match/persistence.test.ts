@@ -1,13 +1,13 @@
 import { describe, expect, test } from 'vitest'
 
-import { continueMatch, projectMatch } from '@/core/match'
+import { continueMatch, projectMatch } from '@/core/match/replay'
 import {
   createCurrentMatchRecord,
   currentMatchSchemaVersion,
   decodeCurrentMatchRecord,
   parseCurrentMatchRecord,
   replayCurrentMatchRecord
-} from '@/lib/current-match'
+} from '@/lib/current-match/persistence'
 
 import { createTestSetup, scorePoints, winQuickGame } from '../core/match/test-helpers'
 

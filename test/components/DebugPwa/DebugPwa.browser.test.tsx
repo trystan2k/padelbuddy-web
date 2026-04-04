@@ -10,7 +10,7 @@ const mockGetSWVersion = vi.fn()
 const mockRequestSWUpdate = vi.fn()
 const mockClearSWCache = vi.fn()
 
-vi.mock('@/lib/pwa', () => ({
+vi.mock('@/lib/pwa/registration', () => ({
   getSWState: () => mockGetSWState(),
   getSWVersion: () => mockGetSWVersion(),
   requestSWUpdate: () => mockRequestSWUpdate(),

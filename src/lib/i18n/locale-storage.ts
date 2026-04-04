@@ -6,7 +6,7 @@ import {
   waitForIndexedDbTransaction,
   withIndexedDbDatabase,
   type IndexedDbOpenMessages
-} from '../persistence/indexed-db'
+} from '@/lib/persistence/indexed-db'
 
 const defaultObjectStoreName = localePreferenceObjectStoreName
 const localePreferenceKey = 'locale-preference'

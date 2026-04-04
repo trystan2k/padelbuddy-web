@@ -1,45 +1,24 @@
-import { createFileRoute, redirect } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 
-import { ActiveMatchScreen } from '@/components/ActiveMatchScreen'
-import { loadCurrentMatch, type CurrentMatchRecord } from '@/lib/current-match'
+import { ActiveMatchScreen } from '@/components/ActiveMatchScreen/ActiveMatchScreen'
+import type { CurrentMatchRecord } from '@/lib/current-match/persistence'
 import { currentMatchPersistenceRouteLoaderOptions } from '@/lib/router/current-match-route-flow'
 
-import { resolveMatchRouteState } from './-match-route-state'
-import { RouteErrorState } from './-route-utils'
+import {
+  getOptionalFinishedAt,
+  RouteErrorState,
+  loadMappedReadyMatchRouteState
+} from './-route-utils'
 
 export const Route = createFileRoute('/match/$id')({
   ...currentMatchPersistenceRouteLoaderOptions,
   component: MatchRoute,
   errorComponent: RouteErrorState,
-  loader: async ({ params }) => {
-    const matchData = await loadCurrentMatch()
-    const routeState = resolveMatchRouteState(params.id, matchData, 'active')
-
-    if (routeState.status === 'redirect-home') {
-      throw redirect({
-        to: '/',
-        replace: true,
-        search: { error: routeState.error }
-      })
-    }
-
-    if (routeState.status === 'redirect-finish') {
-      throw redirect({
-        to: '/match/finish/$id',
-        params: { id: routeState.matchId },
-        replace: true
-      })
-    }
-
-    if (routeState.status !== 'ready') {
-      throw new Error('Expected active match route state to be ready after redirect guards.')
-    }
-
-    return {
+  loader: ({ params }) =>
+    loadMappedReadyMatchRouteState(params.id, 'active', (routeState) => ({
       matchId: params.id,
       record: routeState.record
-    }
-  }
+    }))
 })
 
 function MatchRoute() {
@@ -62,7 +41,9 @@ function MatchRouteReadyContent({ matchId, record }: MatchRouteReadyContentProps
       initialSetup={setup}
       initialActions={actions}
       startedAt={startedAt}
-      {...(typeof record.finishedAt === 'number' ? { finishedAt: record.finishedAt } : {})}
+      // PBW-68 Item 5 follow-up: both match routes now share the exact optional-prop
+      // wrapper so they stay aligned without duplicating the same conditional spread.
+      {...getOptionalFinishedAt(record.finishedAt)}
     />
   )
 }

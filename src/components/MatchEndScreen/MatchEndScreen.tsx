@@ -3,13 +3,14 @@ import { useNavigate, useRouter } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 
 import { Layout } from '@/components/Layout/Layout'
-import { ShareScreen } from '@/components/ShareScreen'
-import { useToast } from '@/components/ui'
-import { TopBar } from '@/components/ui/TopBar'
-import type { MatchAction, MatchFormat, MatchProjection, MatchSetup } from '@/core/match'
-import { clearCurrentMatch, createCurrentMatchSession } from '@/lib/current-match'
+import { ShareScreen } from '@/components/ShareScreen/ShareScreen'
+import { useToast } from '@/components/ui/Toast/useToast'
+import { TopBar } from '@/components/ui/TopBar/TopBar'
+import type { MatchAction, MatchFormat, MatchProjection, MatchSetup } from '@/core/match/types'
+import { clearCurrentMatch } from '@/lib/current-match/indexed-db'
+import { createCurrentMatchSession } from '@/lib/current-match/session'
 import { defaultLocale, isSupportedLocale } from '@/lib/i18n/types'
-import { useSpeechService } from '@/lib/speech'
+import { useSpeechService } from '@/lib/speech/speech-service'
 import { prepareCurrentMatchRouteNavigation } from '@/lib/router/current-match-route-flow'
 import { getViewTransitionNavigationOptions } from '@/lib/utils/view-transitions'
 
@@ -35,13 +36,6 @@ const formatTranslationKeys: Record<MatchFormat, 'bestOf1' | 'bestOf3' | 'bestOf
   'best-of-3': 'bestOf3',
   'best-of-5': 'bestOf5'
 }
-
-const hiddenScreenStyle = {
-  position: 'fixed',
-  top: 0,
-  left: '-9999px',
-  pointerEvents: 'none'
-} as const
 
 export function MatchEndScreen({
   matchId,
@@ -331,7 +325,7 @@ export function MatchEndScreen({
     <>
       {/* ShareScreen is rendered off-screen when share button is clicked, then unmounted after capture */}
       {shareScreenReady && (
-        <div aria-hidden="true" style={hiddenScreenStyle}>
+        <div aria-hidden="true" className={styles.hiddenCaptureRegion}>
           <ShareScreen ref={captureRef} {...shareScreenProps} />
         </div>
       )}
@@ -384,15 +378,15 @@ export function MatchEndScreen({
             className={styles.debugModalContent}
             role="dialog"
             aria-modal="true"
-            aria-label="Share screen debug preview"
+            aria-label={t('match.end.debug.previewLabel')}
           >
             <div className={styles.debugModalHeader}>
-              <span>DEBUG — ShareScreen Preview</span>
+              <span>{t('match.end.debug.previewTitle')}</span>
               <button
                 type="button"
                 className={styles.debugModalClose}
                 onClick={handleDebugShareClose}
-                aria-label="Close debug modal"
+                aria-label={t('match.end.debug.closeModal')}
               >
                 ✕
               </button>

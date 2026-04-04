@@ -5,9 +5,9 @@ import {
   getCurrentLocale,
   i18n,
   initializeI18n,
-  resetI18nInitialization,
-  saveLocalePreference
-} from '@/lib/i18n'
+  resetI18nInitialization
+} from '@/lib/i18n/i18n'
+import { saveLocalePreference } from '@/lib/i18n/locale-storage'
 
 describe('i18n initialization', () => {
   afterEach(async () => {

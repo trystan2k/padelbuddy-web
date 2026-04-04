@@ -5,7 +5,7 @@ import {
   createCurrentMatchPersistence,
   loadCurrentMatch,
   saveCurrentMatch
-} from '@/lib/current-match'
+} from '@/lib/current-match/indexed-db'
 
 import { createTestSetup, scorePoints } from '../core/match/test-helpers'
 

@@ -4,8 +4,7 @@
 import { afterEach, describe, expect, test, vi } from 'vitest'
 import { cleanup, render } from 'vitest-browser-react'
 
-import { ToastProvider, useToast } from '@/components/ui/Toast'
-import { globalToastManager } from '@/components/ui/Toast/useToast'
+import { ToastProvider, globalToastManager, useToast } from '@/components/ui/Toast/useToast'
 
 async function cleanupToasts() {
   globalToastManager.close()

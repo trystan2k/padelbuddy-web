@@ -3,7 +3,7 @@
 import { describe, expect, test } from 'vitest'
 import { render } from 'vitest-browser-react'
 
-import { Spinner } from '@/components/ui/Spinner'
+import { Spinner } from '@/components/ui/Spinner/Spinner'
 
 describe('Spinner', () => {
   test('renders with default size (md), primary color, and accessible role', async () => {

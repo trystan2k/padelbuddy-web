@@ -2,9 +2,9 @@ import { afterEach, describe, expect, test, vi } from 'vitest'
 
 import {
   createRemoteControllerBindings,
-  createRemoteControllerStorage,
   type RemoteControllerBindings
-} from '@/lib/input'
+} from '@/lib/input/keyboard-aliases'
+import { createRemoteControllerStorage } from '@/lib/input/remote-controller-storage'
 import { sharedIndexedDbObjectStoreNames } from '@/lib/persistence/indexed-db'
 
 describe('remote-controller-storage', () => {

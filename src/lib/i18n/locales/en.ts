@@ -1,6 +1,9 @@
 export default {
   common: {
     loading: 'Loading...',
+    loadingLabel: 'Loading',
+    loadingPleaseWait: 'Loading, please wait...',
+    close: 'Close',
     retry: 'Try again',
     dismiss: 'Dismiss'
   },
@@ -25,7 +28,20 @@ export default {
   },
   app: {
     title: 'Padel Buddy',
-    description: 'A deliberately styled starter shell for the live score tracker.'
+    description: 'Client-only TanStack Start foundation for the Padel Buddy score tracker.'
+  },
+  debugPwa: {
+    reopen: 'Open PWA Debug',
+    title: 'PWA Debug',
+    supported: 'SW Supported',
+    registered: 'SW Registered',
+    ready: 'SW Ready',
+    version: 'Version',
+    cache: 'Cache',
+    updating: 'Updating...',
+    update: 'Update SW',
+    clearing: 'Clearing...',
+    clearCache: 'Clear Cache'
   },
   appShell: {
     eyebrow: 'App foundation',
@@ -89,6 +105,9 @@ export default {
       title: 'Saved match was reset',
       body: 'An older saved match was cleared because it no longer matches the current app schema.',
       dismiss: 'Dismiss'
+    },
+    errors: {
+      clearSavedMatch: 'Unable to clear the saved match right now.'
     },
     resume: {
       eyebrow: 'Saved match found',
@@ -314,6 +333,11 @@ export default {
       aria: {
         summaryRegion: 'Match result summary',
         statisticsRegion: 'Match statistics'
+      },
+      debug: {
+        previewLabel: 'Share screen debug preview',
+        previewTitle: 'DEBUG — ShareScreen Preview',
+        closeModal: 'Close debug modal'
       }
     },
     actions: {

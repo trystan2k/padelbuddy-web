@@ -2,10 +2,10 @@ import { useState, useCallback } from 'react'
 
 import {
   createCurrentMatchSession,
-  type CurrentMatchSessionSnapshot,
-  type CurrentMatchPersistence
-} from '@/lib/current-match'
-import type { MatchAction, MatchSetup, MatchTeamId } from '@/core/match'
+  type CurrentMatchSessionSnapshot
+} from '@/lib/current-match/session'
+import type { CurrentMatchPersistence } from '@/lib/current-match/indexed-db'
+import type { MatchAction, MatchSetup, MatchTeamId } from '@/core/match/types'
 
 export interface UseMatchSessionOptions {
   matchId: string

@@ -1,6 +1,7 @@
 import { describe, expect, test, vi, beforeAll } from 'vitest'
 
-import { defaultTranslation, i18n, initializeI18n, resetI18nInitialization } from '@/lib/i18n'
+import defaultTranslation from '@/lib/i18n/locales/en'
+import { i18n, initializeI18n, resetI18nInitialization } from '@/lib/i18n/i18n'
 
 const { routerStateMock } = vi.hoisted(() => ({
   routerStateMock: {

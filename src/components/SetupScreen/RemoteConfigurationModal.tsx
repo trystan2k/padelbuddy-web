@@ -4,20 +4,22 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Dialog } from '@base-ui/react/dialog'
 import { useTranslation } from 'react-i18next'
 
-import { Button } from '@/components/ui/Button'
-import { useToast } from '@/components/ui/Toast'
+import { Button } from '@/components/ui/Button/Button'
+import { useToast } from '@/components/ui/Toast/useToast'
 import {
   assignRemoteControllerBinding,
-  clearRemoteControllerBindings,
   configurableKeyboardActions,
   createEmptyRemoteControllerBindings,
   createRemoteControllerBindings,
   getKeyboardBindingDisplayLabel,
-  loadRemoteControllerBindingsWithFallback,
-  saveRemoteControllerBindings,
   type ConfigurableKeyboardAction,
   type RemoteControllerBindings
-} from '@/lib/input'
+} from '@/lib/input/keyboard-aliases'
+import {
+  clearRemoteControllerBindings,
+  loadRemoteControllerBindingsWithFallback,
+  saveRemoteControllerBindings
+} from '@/lib/input/remote-controller-storage'
 import { cn } from '@/lib/utils/cn'
 
 import styles from './RemoteConfigurationModal.module.css'

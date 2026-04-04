@@ -6,7 +6,7 @@ import {
   getActionFromKey,
   getKeyboardBindingDisplayLabel,
   type KeyboardAction
-} from '@/lib/input'
+} from '@/lib/input/keyboard-aliases'
 
 describe('keyboard-aliases', () => {
   test.each(['ArrowLeft', 'a', 'A', '1', 'Home', 'PageUp'])('maps %s to add-team-1', (key) => {

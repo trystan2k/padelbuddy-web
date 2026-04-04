@@ -2,7 +2,7 @@ import {
   hydrateCurrentMatchStartup,
   type CurrentMatchStartupOptions,
   type CurrentMatchStartupResult
-} from '@/lib/current-match'
+} from '@/lib/current-match/startup'
 
 export interface HomeStartupLoaderData {
   startupState: CurrentMatchStartupResult

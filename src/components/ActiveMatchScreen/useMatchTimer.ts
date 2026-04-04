@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-import type { CountdownTimerDuration } from '@/core/match'
+import type { CountdownTimerDuration } from '@/core/match/types'
 
 interface UseMatchTimerOptions {
   startedAt: number | null

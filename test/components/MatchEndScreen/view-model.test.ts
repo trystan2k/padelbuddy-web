@@ -1,7 +1,10 @@
 import { describe, expect, test } from 'vitest'
 
-import { projectMatch } from '@/core/match'
-import { createMatchEndScreenSummary, getMatchDurationParts } from '@/components/MatchEndScreen'
+import { projectMatch } from '@/core/match/replay'
+import {
+  createMatchEndScreenSummary,
+  getMatchDurationParts
+} from '@/components/MatchEndScreen/view-model'
 import {
   createTestSetup,
   repeatAction,

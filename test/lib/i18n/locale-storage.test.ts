@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
-import { createLocaleStorage, type SupportedLocale } from '@/lib/i18n'
+import { createLocaleStorage } from '@/lib/i18n/locale-storage'
+import type { SupportedLocale } from '@/lib/i18n/types'
 import { sharedIndexedDbObjectStoreNames } from '@/lib/persistence/indexed-db'
 
 describe('locale-storage', () => {

@@ -1,4 +1,9 @@
-import type { CountdownTimerDuration, MatchFormat, MatchGameMode, MatchTeamId } from '@/core/match'
+import type {
+  CountdownTimerDuration,
+  MatchFormat,
+  MatchGameMode,
+  MatchTeamId
+} from '@/core/match/types'
 
 export interface SetupFormData {
   team1Name: string

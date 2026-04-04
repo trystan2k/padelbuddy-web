@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 
-import { Card } from '@/components/ui/Card'
-import type { TeamScore } from '@/core/match'
+import { Card } from '@/components/ui/Card/Card'
+import type { TeamScore } from '@/core/match/types'
 import { cn } from '@/lib/utils/cn'
 
 import type { MatchEndScreenSetRow } from './view-model'

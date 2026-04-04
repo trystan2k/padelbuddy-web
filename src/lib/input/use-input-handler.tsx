@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef } from 'react'
 
-import type { MatchAction, MatchTeamId } from '@/core/match'
+import type { MatchAction, MatchTeamId } from '@/core/match/types'
 
 import { getActionFromKey, type RemoteControllerBindings } from './keyboard-aliases'
 import { type UseWakeLockReturn, useWakeLock } from './wake-lock'

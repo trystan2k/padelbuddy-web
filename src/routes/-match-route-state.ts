@@ -1,5 +1,7 @@
-import { projectMatch, type MatchProjection } from '@/core/match'
-import type { CurrentMatchLoadResult, CurrentMatchRecord } from '@/lib/current-match'
+import { projectMatch } from '@/core/match/replay'
+import type { MatchProjection } from '@/core/match/types'
+import type { CurrentMatchLoadResult } from '@/lib/current-match/indexed-db'
+import type { CurrentMatchRecord } from '@/lib/current-match/persistence'
 
 export type MatchRouteMode = 'active' | 'finish'
 

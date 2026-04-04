@@ -1,9 +1,12 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 
-import { projectMatch, type MatchTeamId } from '@/core/match'
+import { projectMatch } from '@/core/match/replay'
+import type { MatchTeamId } from '@/core/match/types'
 import { currentMatchSchemaVersion } from '@/lib/current-match/persistence'
-import { createCurrentMatchSession, type CurrentMatchPersistence } from '@/lib/current-match'
-import { createDebounce, createRemoteControllerBindings, getActionFromKey } from '@/lib/input'
+import { createCurrentMatchSession } from '@/lib/current-match/session'
+import type { CurrentMatchPersistence } from '@/lib/current-match/indexed-db'
+import { createDebounce } from '@/lib/input/debounce'
+import { createRemoteControllerBindings, getActionFromKey } from '@/lib/input/keyboard-aliases'
 
 import { createTestSetup, scorePoints } from '../core/match/test-helpers'
 

@@ -1,10 +1,12 @@
 import { Toast as BaseToast } from '@base-ui/react/toast'
+import { useTranslation } from 'react-i18next'
 
 import styles from './ToastViewport.module.css'
 
 // ToastViewport — renders Toast.Viewport inside ToastProvider.
 // Uses BaseToast.useToastManager() which must be called within a Toast.Provider.
 export function ToastViewport() {
+  const { t } = useTranslation()
   const { toasts } = BaseToast.useToastManager()
 
   return (
@@ -23,7 +25,7 @@ export function ToastViewport() {
                 {toast.description}
               </BaseToast.Description>
             ) : null}
-            <BaseToast.Close className={styles.close} aria-label="Close">
+            <BaseToast.Close className={styles.close} aria-label={t('common.close')}>
               ✕
             </BaseToast.Close>
           </BaseToast.Content>

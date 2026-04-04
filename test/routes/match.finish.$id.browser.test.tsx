@@ -9,8 +9,8 @@ const { mockLoadCurrentMatch, mockUseLoaderData } = vi.hoisted(() => ({
   mockUseLoaderData: vi.fn()
 }))
 
-vi.mock('@/lib/current-match', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@/lib/current-match')>()
+vi.mock('@/lib/current-match/indexed-db', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/lib/current-match/indexed-db')>()
 
   return {
     ...actual,
@@ -38,7 +38,7 @@ vi.mock('@tanstack/react-router', async (importOriginal) => {
   }
 })
 
-import { currentMatchSchemaVersion } from '@/lib/current-match'
+import { currentMatchSchemaVersion } from '@/lib/current-match/persistence'
 import { Route } from '@/routes/match.finish.$id'
 
 import { createTestSetup, winQuickSet } from '../core/match/test-helpers'

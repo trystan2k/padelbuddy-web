@@ -1,4 +1,5 @@
 import { type ComponentPropsWithoutRef, type Ref } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { cn } from '@/lib/utils/cn'
 
@@ -19,11 +20,13 @@ export function Spinner({
   className,
   size = 'md',
   color = 'primary',
-  label = 'Loading',
+  label,
   silent = false,
   ref,
   ...props
 }: SpinnerProps) {
+  const { t } = useTranslation()
+  const resolvedLabel = label ?? t('common.loadingLabel')
   const sizeClass = size === 'sm' ? styles.sizeSm : size === 'lg' ? styles.sizeLg : styles.sizeMd
   const colorClass = color === 'secondary' ? styles.colorSecondary : styles.colorPrimary
 
@@ -33,11 +36,11 @@ export function Spinner({
       className={cn(styles.spinner, sizeClass, colorClass, className)}
       {...(silent ? {} : { role: 'status', 'aria-live': 'polite' })}
       aria-busy="true"
-      aria-label={label}
+      aria-label={resolvedLabel}
       {...props}
     >
       <span className={styles.indicator} aria-hidden="true" />
-      <span className={styles.visuallyHidden}>{label}</span>
+      <span className={styles.visuallyHidden}>{resolvedLabel}</span>
     </span>
   )
 }

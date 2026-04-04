@@ -16,7 +16,7 @@ import {
   waitForIndexedDbTransaction,
   withIndexedDbDatabase,
   type IndexedDbOpenMessages
-} from '../persistence/indexed-db'
+} from '@/lib/persistence/indexed-db'
 
 export const defaultDatabaseName = persistenceDatabaseName
 export const defaultDatabaseVersion = persistenceDatabaseVersion

@@ -1,12 +1,5 @@
-import {
-  continueMatch,
-  projectMatch,
-  undoLastScoringAction,
-  type MatchAction,
-  type MatchProjection,
-  type MatchSetup,
-  type MatchTeamId
-} from '@/core/match'
+import { continueMatch, projectMatch, undoLastScoringAction } from '@/core/match/replay'
+import type { MatchAction, MatchProjection, MatchSetup, MatchTeamId } from '@/core/match/types'
 
 import { currentMatchPersistence, type CurrentMatchPersistence } from './indexed-db'
 import { undoLastScoringActionForTeam } from './helpers'

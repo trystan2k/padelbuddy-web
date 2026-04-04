@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 
-import type { MatchSetState } from '@/core/match'
-import { Card } from '@/components/ui/Card'
+import type { MatchSetState } from '@/core/match/types'
+import { Card } from '@/components/ui/Card/Card'
 
 import styles from './SetsCard.module.css'
 import { useEffect, useRef } from 'react'

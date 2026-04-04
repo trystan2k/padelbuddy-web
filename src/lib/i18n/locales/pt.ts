@@ -1,6 +1,9 @@
 export default {
   common: {
     loading: 'Carregando...',
+    loadingLabel: 'Carregando',
+    loadingPleaseWait: 'Carregando, por favor aguarde...',
+    close: 'Fechar',
     retry: 'Tentar novamente',
     dismiss: 'Dispensar'
   },
@@ -25,7 +28,20 @@ export default {
   },
   app: {
     title: 'Padel Buddy',
-    description: 'Uma base estilizada para o rastreador de pontuação ao vivo.'
+    description: 'Base client-only do TanStack Start para o placar do Padel Buddy.'
+  },
+  debugPwa: {
+    reopen: 'Abrir depuração PWA',
+    title: 'Depuração PWA',
+    supported: 'SW compatível',
+    registered: 'SW registrado',
+    ready: 'SW pronto',
+    version: 'Versão',
+    cache: 'Cache',
+    updating: 'Atualizando...',
+    update: 'Atualizar SW',
+    clearing: 'Limpando...',
+    clearCache: 'Limpar cache'
   },
   appShell: {
     eyebrow: 'Base do aplicativo',
@@ -90,6 +106,9 @@ export default {
       title: 'Partida salva foi reiniciada',
       body: 'Uma partida salva mais antiga foi limpa porque não corresponde mais ao esquema atual do aplicativo.',
       dismiss: 'Dispensar'
+    },
+    errors: {
+      clearSavedMatch: 'Não foi possível limpar a partida salva agora.'
     },
     resume: {
       eyebrow: 'Partida salva encontrada',
@@ -315,6 +334,11 @@ export default {
       aria: {
         summaryRegion: 'Resumo do resultado da partida',
         statisticsRegion: 'Estatísticas da partida'
+      },
+      debug: {
+        previewLabel: 'Pré-visualização de depuração da tela de compartilhamento',
+        previewTitle: 'DEPURAÇÃO — Pré-visualização da ShareScreen',
+        closeModal: 'Fechar modal de depuração'
       }
     },
     actions: {

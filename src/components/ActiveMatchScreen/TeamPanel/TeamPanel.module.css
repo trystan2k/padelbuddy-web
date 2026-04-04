@@ -99,7 +99,11 @@
 
 @media (height <= 480px) {
   .score {
-    font-size: clamp(232px, 65vmin, 500px);
+    font-size: clamp(
+      var(--semantic-typography-size-display-score-small),
+      65vmin,
+      var(--semantic-typography-size-display-score)
+    );
     letter-spacing: -6px;
   }
 }

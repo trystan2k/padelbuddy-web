@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react'
 
 import { useMatchSession } from '@/components/ActiveMatchScreen/useMatchSession'
 import { createTestSetup } from '../../core/match/test-helpers'
-import type { CurrentMatchPersistence } from '@/lib/current-match'
+import type { CurrentMatchPersistence } from '@/lib/current-match/indexed-db'
 
 const testMatchId = 'test-match'
 

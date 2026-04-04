@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'vitest'
 
-import { getActiveSet, projectMatch } from '@/core/match'
+import { getActiveSet } from '@/core/match/derived-state'
+import { projectMatch } from '@/core/match/replay'
 
 import { createTestSetup, scorePoints, winQuickSet } from './test-helpers'
 
