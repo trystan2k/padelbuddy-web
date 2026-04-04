@@ -18,6 +18,7 @@ import { getViewTransitionNavigationOptions } from '@/lib/utils/view-transitions
 
 import { deriveMatchState } from '@/core/match/derived-state'
 import { scorePoint as projectScorePoint } from '@/core/match/engine'
+import { getMatchTeamName } from '@/core/match/team-name'
 import type { MatchAction, MatchProjection, MatchSetup, MatchTeamId } from '@/core/match/types'
 import { normalizeScoreValue } from '@/lib/speech/message-generator'
 import { useSpeechService } from '@/lib/speech/speech-service'
@@ -311,10 +312,12 @@ export function ActiveMatchScreen({
   })
 
   const { setup, state, derived } = snapshot.projection
-  const team1Side = setup.sides.find((side) => side.id === 'team-1')
-  const team2Side = setup.sides.find((side) => side.id === 'team-2')
-  const team1Name = team1Side?.playerNames.join(' & ') || t('setup.firstServer.team1')
-  const team2Name = team2Side?.playerNames.join(' & ') || t('setup.firstServer.team2')
+  const resolvedTeam1Name = getMatchTeamName(setup, 'team-1')
+  const resolvedTeam2Name = getMatchTeamName(setup, 'team-2')
+  const team1Name =
+    resolvedTeam1Name === 'team-1' ? t('setup.firstServer.team1') : resolvedTeam1Name
+  const team2Name =
+    resolvedTeam2Name === 'team-2' ? t('setup.firstServer.team2') : resolvedTeam2Name
 
   const { scoreDisplay, activeSetIndex, sideSwitch, servingTeam } = derived
   const showServingIndicator = setup.servingIndicatorEnabled

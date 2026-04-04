@@ -1,5 +1,4 @@
 import {
-  countdownTimerDurations,
   defaultAudioAnnouncementsEnabled,
   defaultCountdownTimerDuration,
   defaultCountdownTimerEnabled,
@@ -9,6 +8,7 @@ import {
   type CountdownTimerDuration,
   type MatchGameMode
 } from '@/core/match/types'
+import { isCountdownTimerDuration } from '@/core/match/guards'
 import {
   defaultVerbosity,
   verbosityLevels,
@@ -469,10 +469,6 @@ function parseStoredSpeechPreferences(value: unknown): SpeechPreferences | null 
 
 function isVerbosityLevel(value: unknown): value is VerbosityLevel {
   return typeof value === 'string' && verbosityLevels.some((level) => level === value)
-}
-
-function isCountdownTimerDuration(value: unknown): value is CountdownTimerDuration {
-  return typeof value === 'number' && countdownTimerDurations.some((duration) => duration === value)
 }
 
 function isMatchGameMode(value: unknown): value is MatchGameMode {
