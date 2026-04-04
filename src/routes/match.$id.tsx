@@ -4,20 +4,21 @@ import { ActiveMatchScreen } from '@/components/ActiveMatchScreen/ActiveMatchScr
 import type { CurrentMatchRecord } from '@/lib/current-match/persistence'
 import { currentMatchPersistenceRouteLoaderOptions } from '@/lib/router/current-match-route-flow'
 
-import { RouteErrorState, loadReadyMatchRouteState } from './-route-utils'
+import {
+  getOptionalFinishedAt,
+  RouteErrorState,
+  loadMappedReadyMatchRouteState
+} from './-route-utils'
 
 export const Route = createFileRoute('/match/$id')({
   ...currentMatchPersistenceRouteLoaderOptions,
   component: MatchRoute,
   errorComponent: RouteErrorState,
-  loader: async ({ params }) => {
-    const routeState = await loadReadyMatchRouteState(params.id, 'active')
-
-    return {
+  loader: ({ params }) =>
+    loadMappedReadyMatchRouteState(params.id, 'active', (routeState) => ({
       matchId: params.id,
       record: routeState.record
-    }
-  }
+    }))
 })
 
 function MatchRoute() {
@@ -40,7 +41,9 @@ function MatchRouteReadyContent({ matchId, record }: MatchRouteReadyContentProps
       initialSetup={setup}
       initialActions={actions}
       startedAt={startedAt}
-      {...(typeof record.finishedAt === 'number' ? { finishedAt: record.finishedAt } : {})}
+      // PBW-68 Item 5 follow-up: both match routes now share the exact optional-prop
+      // wrapper so they stay aligned without duplicating the same conditional spread.
+      {...getOptionalFinishedAt(record.finishedAt)}
     />
   )
 }

@@ -4,7 +4,11 @@ import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/Button/Button'
 import { loadCurrentMatch } from '@/lib/current-match/indexed-db'
 
-import { resolveMatchRouteState, type MatchRouteMode } from './-match-route-state'
+import {
+  resolveMatchRouteState,
+  type MatchRouteMode,
+  type MatchRouteState
+} from './-match-route-state'
 
 export function getErrorMessage(error: unknown): string | null {
   if (error instanceof Error && error.message.length > 0) {
@@ -63,6 +67,28 @@ export function RouteErrorState(props: RouteErrorStateProps) {
       <RouteErrorCard {...props} />
     </main>
   )
+}
+
+type ReadyMatchRouteState = Extract<MatchRouteState, { status: 'ready' }>
+
+// PBW-68 Item 5 follow-up: keep the active and finish route loaders on the same
+// ready-state mapping path so future redirect/loader changes stay aligned in one place.
+export async function loadMappedReadyMatchRouteState<T>(
+  matchId: string,
+  mode: MatchRouteMode,
+  mapReadyState: (routeState: ReadyMatchRouteState) => T
+): Promise<T> {
+  const routeState = await loadReadyMatchRouteState(matchId, mode)
+
+  return mapReadyState(routeState)
+}
+
+// PBW-68 Item 5 follow-up: exactOptionalPropertyTypes means the routes cannot pass
+// `finishedAt: undefined`, so this helper keeps the optional prop handling shared too.
+export function getOptionalFinishedAt(
+  finishedAt: number | undefined
+): { finishedAt: number } | Record<string, never> {
+  return typeof finishedAt === 'number' ? { finishedAt } : {}
 }
 
 export async function loadReadyMatchRouteState(matchId: string, mode: MatchRouteMode) {
