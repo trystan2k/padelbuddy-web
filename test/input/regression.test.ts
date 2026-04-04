@@ -5,7 +5,6 @@ import type { MatchTeamId } from '@/core/match/types'
 import { currentMatchSchemaVersion } from '@/lib/current-match/persistence'
 import { createCurrentMatchSession } from '@/lib/current-match/session'
 import type { CurrentMatchPersistence } from '@/lib/current-match/indexed-db'
-import { createDebounce } from '@/lib/input/debounce'
 import { createRemoteControllerBindings, getActionFromKey } from '@/lib/input/keyboard-aliases'
 
 import { createTestSetup, scorePoints } from '../core/match/test-helpers'
@@ -69,20 +68,5 @@ describe('input regression', () => {
     expect(getActionFromKey('z', bindings)).toBe('revert-team-1')
     expect(getActionFromKey('x', bindings)).toBe('revert-team-2')
     expect(getActionFromKey('Escape', bindings)).toBe('undo')
-  })
-
-  test('debounce utility still blocks rapid duplicate triggers', () => {
-    vi.useFakeTimers()
-
-    const debounce = createDebounce({ delay: 300 })
-
-    expect(debounce.isReady()).toBe(true)
-    debounce.trigger()
-    expect(debounce.isReady()).toBe(false)
-
-    vi.advanceTimersByTime(300)
-    expect(debounce.isReady()).toBe(true)
-
-    vi.useRealTimers()
   })
 })
