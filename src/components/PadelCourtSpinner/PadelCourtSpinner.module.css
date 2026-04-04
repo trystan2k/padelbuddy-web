@@ -8,9 +8,18 @@
 .court {
   width: 284px;
   height: 140px;
-  stroke: var(--base-color-brand-primary);
+  stroke: var(--semantic-color-border-accent-primary);
   filter: drop-shadow(0 0 24px color-mix(in srgb, var(--base-color-brand-primary) 25%, transparent))
     drop-shadow(0 -8px 20px rgb(255 255 255 / 30%)) drop-shadow(0 -2px 6px rgb(255 255 255 / 20%));
+}
+
+.courtSurface {
+  fill: #1a3a5c;
+  stroke: var(--semantic-color-border-accent-primary);
+}
+
+.courtLine {
+  stroke: var(--semantic-color-content-inverse);
 }
 
 /* Ball */

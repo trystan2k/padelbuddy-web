@@ -88,34 +88,33 @@ export function PadelCourtSpinner({
         >
           {/* Court background */}
           <rect
+            className={styles.courtSurface}
             x="1.5"
             y="1.5"
             width="281"
             height="137"
             rx="10.5"
-            fill="#1a3a5c"
-            stroke="#2f7cf6"
             strokeWidth="3"
           />
 
           {/* Net - center dashed line */}
           <line
+            className={styles.courtLine}
             x1="142"
             y1="5"
             x2="142"
             y2="135"
-            stroke="white"
             strokeWidth="2"
             strokeDasharray="4 4"
           />
 
           {/* Service lines */}
-          <line x1="56" y1="5" x2="56" y2="135" stroke="white" strokeWidth="2" />
-          <line x1="228" y1="5" x2="228" y2="135" stroke="white" strokeWidth="2" />
+          <line className={styles.courtLine} x1="56" y1="5" x2="56" y2="135" strokeWidth="2" />
+          <line className={styles.courtLine} x1="228" y1="5" x2="228" y2="135" strokeWidth="2" />
 
           {/* Center service lines - horizontal */}
-          <line x1="56" y1="67" x2="140" y2="67" stroke="white" strokeWidth="2" />
-          <line x1="144" y1="67" x2="228" y2="67" stroke="white" strokeWidth="2" />
+          <line className={styles.courtLine} x1="56" y1="67" x2="140" y2="67" strokeWidth="2" />
+          <line className={styles.courtLine} x1="144" y1="67" x2="228" y2="67" strokeWidth="2" />
 
           {/* Ball trajectory path (hidden, for animateMotion) */}
           <path id="ballPath" d={ballPath} fill="none" stroke="none" />
