@@ -1,0 +1,274 @@
+## Task Analysis
+
+- Main objective:
+  - Implement an incremental, approval-ready architecture refactor for PBW-93 that improves maintainability and testability across the whole app without changing runtime behavior, tech choices, or UX.
+  - Prioritize the highest-impact issues first: `ActiveMatchScreen.tsx`, duplicated match guards, duplicated speech-service implementations, missing React-level runtime containment, and fragile module-scoped state.
+- Identified dependencies:
+  - Approval gate: implementation should start only after the re-baselined scope is approved, because the original findings set is partially stale.
+  - Existing regression suite is the primary safety net: `test/components/ActiveMatchScreen/*.test*`, `test/lib/speech/*.test*`, `test/routes/__root*.test.tsx`, `test/current-match/*.test*`, `test/lib/setup/setup-storage.test.ts`, `test/components/MatchEndScreen/view-model.test.ts`, and `test/lib/speech/message-generator.test.ts`.
+  - Linear dependency verification still needs to happen before implementation starts if PBW-93 has blockers; that check was not available from repository inspection.
+  - Current repository patterns to preserve:
+    - Route-local helper files under `src/routes/-*.ts(x)`.
+    - Shared pure logic under `src/core/**` and `src/lib/**`.
+    - UI primitives under `src/components/ui/**`.
+    - CSS Modules with shared composition helpers like `src/styles/shared-a11y.module.css`.
+- System impact:
+  - High-impact runtime areas: live scoring, speech announcements, wake-lock behavior, current-match recovery, root-shell initialization, and route error handling.
+  - The repo scan confirmed several findings are already partially or fully addressed, so Step 1 must re-baseline before broad edits:
+    - `test/lib/speech/message-generator.test.ts` already exists.
+    - `test/components/MatchEndScreen/view-model.test.ts` already exists.
+    - `src/styles/shared-score-layout.module.css` is in use.
+    - Shared `sharedsronly` composition is already adopted in some components, but not all.
+  - Additional duplication still exists beyond the original report, including another `isCountdownTimerDuration()` in `src/lib/current-match/persistence.ts`.
+
+## Chosen Approach
+
+- Proposed solution:
+  - Use a phased refactor that extracts pure, reusable modules first, flips call sites second, and deletes redundant code only after tests cover the new structure.
+  - Keep the current architecture style intact: TanStack Start routes, CSS Modules, Base UI, domain logic in `src/core`, reusable runtime utilities in `src/lib`, and component composition in `src/components`.
+  - Treat PBW-93 as a sequence of independently shippable subtasks, each ending with `pnpm complete-check`.
+- Justification for simplicity:
+  - Rejected approach 1: a big-bang “architecture rewrite” touching all screens and services at once. It creates unnecessary risk, harder review, and poor rollback.
+  - Rejected approach 2: introducing new global frameworks/providers for every shared concern. That would overengineer the app and fight current patterns.
+  - Chosen approach: small, cohesive refactors around existing seams (pure helpers, route-local helpers, UI primitives, focused stores/managers). This is the simplest path that still fixes the real architectural problems.
+- Components to be modified/created:
+  - Likely new modules:
+    - `src/core/match/guards.ts`
+    - `src/core/match/team-name.ts` (or equivalent shared match naming helper)
+    - `src/lib/speech/match-announcer.ts`
+    - `src/lib/speech/speech-runtime.ts` or `src/lib/speech/speech-queue.ts` if needed to preserve testable speech internals after removing the factory
+    - `src/components/AppStatus/AppStatusPage.tsx`
+    - `src/components/AppStatus/AppStatusPage.module.css`
+    - `src/components/ErrorBoundary/AppErrorBoundary.tsx`
+    - `src/lib/current-match/reset-notice-store.ts`
+    - `src/lib/input/wake-lock-manager.ts` or an equivalent non-module-global manager abstraction
+    - `src/components/ui/Icon/TrophyIcon.tsx`
+    - `src/lib/errors/log-runtime-error.ts` or `src/lib/utils/error.ts`
+  - Likely modified files:
+    - `src/components/ActiveMatchScreen/ActiveMatchScreen.tsx`
+    - `src/lib/speech/speech-service.ts`
+    - `src/core/match/validation.ts`
+    - `src/lib/current-match/persistence.ts`
+    - `src/lib/setup/setup-storage.ts`
+    - `src/components/MatchEndScreen/view-model.ts`
+    - `src/routes/__root.tsx`
+    - `src/routes/-route-utils.tsx`
+    - `src/lib/current-match/indexed-db.ts`
+    - `src/lib/current-match/startup.ts`
+    - `src/lib/input/wake-lock.tsx`
+    - `src/components/SetupScreen/SetupScreen.tsx`
+    - `src/components/MatchEndScreen/WinnerCard.tsx`
+    - `src/components/ShareScreen/ShareScreen.tsx`
+    - remaining CSS Modules with local `.srOnly` rules
+    - affected unit/browser tests under `test/**`
+
+## Implementation Steps
+
+1. Re-baseline the findings and lock behavior with regression coverage before refactoring.
+   - Complexity: Small.
+   - Goal: convert the architecture-review findings into a verified “open issues” list so implementation does not rework already-fixed items or accidentally remove coverage.
+   - Files to create/modify:
+     - `test/lib/orientation/useOrientationDetection.test.ts` or `test/lib/orientation/useOrientationDetection.browser.test.tsx`
+     - `test/components/ActiveMatchScreen/ActiveMatchScreen.browser.test.tsx`
+     - `test/lib/speech/speech-service.browser.test.tsx`
+     - `test/routes/__root.effects.test.tsx`
+     - optionally this plan file / PBW-93 checklist notes during execution
+   - Concrete work:
+     - Verify every finding against `src/` and trim the live scope at the start of implementation.
+     - Add or strengthen regression tests only where upcoming refactors would otherwise be under-protected, especially:
+       - `useOrientationDetection`
+       - Active match speech-announcement sequencing / finish navigation guardrails
+       - root-route initialization side effects
+     - Explicitly mark already-closed findings so they are not reopened accidentally (for example `message-generator` and `view-model` coverage).
+   - Risk / rollback:
+     - Very low risk. If a regression test is flaky, fix or narrow the test before touching production code.
+   - Re-baselined finding status (2026-04-04):
+     - ✅ CONFIRMED — duplicated type guards still exist across `src/core/match/validation.ts`, `src/lib/current-match/persistence.ts`, and `src/lib/setup/setup-storage.ts` (`isMatchTeamId`, `isRecord`, and/or `isCountdownTimerDuration` remain duplicated).
+     - ✅ CONFIRMED — duplicated local `.srOnly` CSS still exists in `src/components/ActiveMatchScreen/TeamPanel/TeamPanel.module.css` and `src/components/MatchEndScreen/MatchEndScreen.module.css`; `src/styles/shared-a11y.module.css` exists and exports `.sharedsronly`.
+     - ✅ CONFIRMED — trophy SVG duplication still exists in both `src/components/ShareScreen/ShareScreen.tsx` and `src/components/MatchEndScreen/WinnerCard.tsx`.
+     - ✅ CONFIRMED — `createSpeechService()` still exists in `src/lib/speech/speech-service.ts`; it is not used by current `src/**` runtime code.
+     - ✅ CONFIRMED — `createDebounce` is unused by runtime `src/**` code and only referenced by tests; dead-code cleanup is still relevant for that utility.
+     - ❌ ALREADY RESOLVED — `src/styles/shared-score-layout.module.css` is still actively consumed and is not dead code.
+     - ✅ CONFIRMED — module-level mutable state still exists in `src/lib/current-match/reset-notice.ts` and `src/lib/input/wake-lock.tsx`.
+     - ✅ CONFIRMED — `src/components/ActiveMatchScreen/ActiveMatchScreen.tsx` is still a 643-line god component and still keeps `createSpeechEvent()` inline.
+     - ✅ CONFIRMED — no React error boundary component exists anywhere in `src/**`.
+     - ❌ ALREADY RESOLVED — `test/lib/speech/message-generator.test.ts` already exists.
+     - ❌ ALREADY RESOLVED — `test/components/MatchEndScreen/view-model.test.ts` already exists.
+     - ✅ CONFIRMED — no orientation detection regression test existed before Phase 1 (`test/lib/orientation/useOrientationDetection.browser.test.tsx` was added in this phase).
+     - ✅ CONFIRMED — global status page classes `.appStatusPage` and `.appStatusCard` still live in `src/styles.css`.
+     - ✅ CONFIRMED — shared UI components still use mixed prop typing patterns (`HTMLAttributes` in `Card`, `TopBar`, `Divider` vs `ComponentPropsWithoutRef` in `Button`).
+     - ❌ ALREADY RESOLVED — focused regression coverage for ActiveMatchScreen speech announcements already exists in `test/components/ActiveMatchScreen/ActiveMatchScreen.browser.test.tsx`.
+     - ❌ ALREADY RESOLVED — root-route initialization side effects are already covered in `test/routes/__root.effects.test.tsx`.
+
+2. Extract shared pure match helpers and remove duplicated type guards first.
+   - Complexity: Medium.
+   - Goal: remove duplicated runtime validation and name-resolution logic before higher-risk component/service refactors start.
+   - Files to create/modify:
+     - `src/core/match/guards.ts`
+     - `src/core/match/team-name.ts` (or similarly named helper)
+     - `src/core/match/validation.ts`
+     - `src/lib/current-match/persistence.ts`
+     - `src/lib/setup/setup-storage.ts`
+     - `src/components/ActiveMatchScreen/ActiveMatchScreen.tsx`
+     - `src/components/MatchEndScreen/view-model.ts`
+     - related tests:
+       - `test/core/match/setup-validation.test.ts`
+       - `test/current-match/persistence.test.ts`
+       - `test/lib/setup/setup-storage.test.ts`
+       - `test/components/MatchEndScreen/view-model.test.ts`
+   - Concrete work:
+     - Move `isRecord`, `isMatchTeamId`, and `isCountdownTimerDuration` into one shared guard module and update all consumers.
+     - Reuse the shared helper in `validation.ts` instead of keeping local duplicate definitions.
+     - Extract shared team-name resolution so `ActiveMatchScreen` and `MatchEndScreen/view-model.ts` stop joining names independently.
+     - Keep the new helpers pure and framework-free so they remain easy to test.
+   - Risk / rollback:
+     - Low risk. If any persistence/setup decoding behavior changes, revert just the helper adoption and keep the helper file in place until call sites are corrected.
+
+3. Decompose `ActiveMatchScreen` by extracting the speech-announcement/projection concern.
+   - Complexity: High.
+   - Goal: break the largest component at its cleanest seam while also removing the expensive score-change computation from JSX-adjacent code.
+   - Files to create/modify:
+     - `src/lib/speech/match-announcer.ts`
+     - optionally `src/components/ActiveMatchScreen/useMatchAnnouncements.ts`
+     - `src/components/ActiveMatchScreen/ActiveMatchScreen.tsx`
+     - related tests:
+       - `test/components/ActiveMatchScreen/ActiveMatchScreen.browser.test.tsx`
+       - `test/lib/speech/message-generator.test.ts`
+       - new focused unit tests for the extracted announcement module, for example `test/lib/speech/match-announcer.test.ts`
+   - Concrete work:
+     - Move `createSpeechEvent`, point-pressure detection, set/game/match winner detection, and related projection helpers out of `ActiveMatchScreen.tsx` into a dedicated pure module.
+     - Keep `ActiveMatchScreen` responsible only for orchestration: screen state, hook wiring, and rendering.
+     - If needed, add a thin `useMatchAnnouncements` hook so previous-projection refs and service calls live outside the screen component.
+     - Preserve the exact announcement payload contract so `message-generator.ts` remains unchanged.
+     - Memoize or structurally isolate the pressure-calculation path so the expensive next-state projections are not embedded inside the component body.
+   - Risk / rollback:
+     - Medium/high risk because this touches live scoring announcements.
+     - Roll back by keeping the extracted pure module and temporarily restoring the old call site if any announcement-order regression appears.
+
+4. Collapse speech service behavior onto one implementation and remove dead speech code safely.
+   - Complexity: High.
+   - Goal: eliminate the unused `createSpeechService()` path without losing confidence in queue/cancellation/voice-selection behavior.
+   - Files to create/modify:
+     - `src/lib/speech/speech-service.ts`
+     - `src/lib/speech/speech-runtime.ts` or `src/lib/speech/speech-queue.ts` only if needed for pure unit coverage
+     - `test/lib/speech/speech-service.test.ts` (replace, shrink, or rename if its only purpose is the deleted factory)
+     - `test/lib/speech/speech-service.browser.test.tsx`
+     - `test/lib/speech/utterance-cancellation.browser.test.tsx`
+   - Concrete work:
+     - Remove `createSpeechService()` after coverage has been moved to either:
+       - a shared pure speech-runtime helper, or
+       - stronger `useSpeechService()` browser tests, depending on which yields the smaller diff.
+     - Keep one authoritative implementation for queue management, utterance construction, iOS resume behavior, and persistence integration.
+     - Delete dead factory-only branches and update tests to target the surviving public API.
+     - During the same pass, confirm whether `src/lib/utils/debounce.ts` is truly removable; only delete it if no runtime code and no intentional test contract depend on it.
+   - Risk / rollback:
+     - High risk because the current unused factory has a very large dedicated test file (`test/lib/speech/speech-service.test.ts`, ~1444 lines).
+     - Do not delete the factory until replacement coverage is green; if coverage migration becomes too large, extract a pure internal runtime and keep the hook surface stable.
+
+5. Add runtime containment and simplify root-route orchestration around shared status UI.
+   - Complexity: Medium.
+   - Goal: prevent full-app crashes from render errors and reduce the number of unrelated concerns living directly in `src/routes/__root.tsx`.
+   - Files to create/modify:
+     - `src/components/AppStatus/AppStatusPage.tsx`
+     - `src/components/AppStatus/AppStatusPage.module.css`
+     - `src/components/ErrorBoundary/AppErrorBoundary.tsx`
+     - `src/routes/__root.tsx`
+     - `src/routes/-route-utils.tsx`
+     - route-local extracted helpers such as `src/routes/-root-effects.ts` or `src/routes/-root-shell.tsx`
+     - tests:
+       - `test/routes/__root.test.tsx`
+       - `test/routes/__root.effects.test.tsx`
+       - `test/routes/route-pending.browser.test.tsx`
+   - Concrete work:
+     - Extract the global status-page styling out of `src/styles.css` into a shared CSS Module-backed status component.
+     - Reuse that component for route error UI and the new React error boundary fallback so runtime failure surfaces stay visually consistent.
+     - Move i18n init, service-worker registration, Mixpanel bootstrapping, and shell-only effects into route-local helpers/hooks, leaving `__root.tsx` as a composition file.
+     - Wrap the route viewport in a shared React error boundary without changing current copy or recovery affordances.
+   - Risk / rollback:
+     - Medium risk because root-shell rendering and startup effects are critical.
+     - Preserve current translation keys, current markup contract where tests depend on it, and current route error messaging during the extraction.
+
+6. Replace fragile module-scoped mutable state with explicit stores/managers.
+   - Complexity: Medium.
+   - Goal: remove hidden cross-test and HMR-sensitive state without introducing heavy new architecture.
+   - Files to create/modify:
+     - `src/lib/current-match/reset-notice-store.ts`
+     - `src/lib/current-match/indexed-db.ts`
+     - `src/lib/current-match/startup.ts`
+     - `src/lib/input/wake-lock.tsx`
+     - `src/lib/input/wake-lock-manager.ts` or equivalent
+     - `src/components/SetupScreen/SetupScreen.tsx`
+     - `src/lib/input/use-input-handler.tsx`
+     - tests:
+       - `test/current-match/startup.test.ts`
+       - `test/current-match/indexed-db.browser.test.ts`
+       - `test/current-match/CurrentMatchStartupGate.browser.test.tsx`
+       - `test/input/wake-lock.browser.test.tsx`
+   - Concrete work:
+     - Replace `pendingCurrentMatchResetNotice` with an explicit store object/factory and use a default instance where app code needs singleton semantics.
+     - Replace `moduleWakeLockRef` with a manager abstraction that keeps the shared wake-lock lifecycle explicit and test-resettable.
+     - Preserve the current user flow where Setup requests wake lock on direct user interaction and the active match keeps it alive.
+     - Avoid a broad app-wide provider unless the manager approach proves insufficient; prefer the smallest abstraction that removes hidden mutable state.
+   - Risk / rollback:
+     - Medium risk because these changes affect resume flow and device integration.
+     - Validate each concern independently before combining them in one commit.
+
+7. Finish with a consistency and dead-code cleanup sweep, scoped to verified open items only.
+   - Complexity: Medium.
+   - Goal: close the remaining medium/low-priority issues after the high-risk refactors are stable.
+   - Files to create/modify:
+     - `src/components/ui/Icon/TrophyIcon.tsx`
+     - `src/components/MatchEndScreen/WinnerCard.tsx`
+     - `src/components/ShareScreen/ShareScreen.tsx`
+     - CSS Modules still defining local `.srOnly` rules, especially:
+       - `src/components/ActiveMatchScreen/TeamPanel/TeamPanel.module.css`
+       - `src/components/MatchEndScreen/MatchEndScreen.module.css`
+     - shared error utility such as `src/lib/errors/log-runtime-error.ts` or `src/lib/utils/error.ts`
+     - shared UI components using inconsistent prop typing, especially:
+       - `src/components/ui/TopBar/TopBar.tsx`
+       - `src/components/ui/Divider/Divider.tsx`
+       - `src/components/CurrentMatchStartupGate/CurrentMatchStartupGate.tsx`
+     - any confirmed dead-code targets that remain after Steps 1–6
+   - Concrete work:
+     - Standardize remaining `.srOnly` usages onto `shared-a11y.module.css` with `composes`.
+     - Extract duplicated trophy SVG into one shared icon component.
+     - Introduce a minimal shared error-logging helper and use it to eliminate unlabelled bare catches or inconsistent ad hoc logging in touched modules.
+     - Standardize low-risk shared component prop typing toward the existing `ComponentPropsWithoutRef` pattern already used across much of `src/components/ui/**`.
+     - Remove only dead code that is still confirmed unused after the earlier refactors; do not delete code solely because it was listed in the original report.
+   - Risk / rollback:
+     - Low/medium risk because this step is mostly mechanical cleanup.
+     - Keep it as the final pass so any cleanup rollback does not affect core architecture changes.
+
+## Validation
+
+- Success criteria:
+  - Every implementation step is independently releasable, behavior-preserving, and ends with `pnpm complete-check` passing.
+  - The following user-visible flows behave identically before and after the refactor:
+    - setup -> start match -> active scoring -> finish match
+    - audio announcements across point/game/set/match events
+    - current-match resume/clear flows
+    - wake-lock activation during match flow
+    - root-shell initialization and route error display
+  - High-risk modules are measurably improved:
+    - `src/components/ActiveMatchScreen/ActiveMatchScreen.tsx` no longer owns announcement/projection logic directly.
+    - `src/lib/speech/speech-service.ts` exposes only one real implementation path.
+    - duplicated match guard logic is consolidated to one shared source.
+    - render-time crashes are caught by a shared React error boundary.
+    - module-level mutable state is replaced by explicit state holders.
+- Checkpoints:
+  - Pre-implementation:
+    - Re-baseline the findings list and get approval on the trimmed scope before changing production code.
+    - Verify PBW-93 has no unresolved Linear blockers.
+  - During implementation:
+    - After Step 2: grep confirms duplicated guard bodies are removed from non-shared modules.
+    - After Step 3: targeted ActiveMatchScreen + announcement tests pass before any speech-service cleanup starts.
+    - After Step 4: no app code or tests depend on `createSpeechService()` anymore, and replacement coverage is green.
+    - After Step 5: injected render failures show the shared fallback instead of crashing the entire app shell.
+    - After Step 6: current-match reset notice and wake-lock tests prove state isolation across test runs.
+    - After Step 7: grep confirms no duplicate trophy SVG implementation remains, and local `.srOnly` duplication is gone or intentionally documented.
+  - Post-implementation:
+    - Run the full `pnpm complete-check` suite.
+    - Sanity-test the mobile-first critical path manually in dev: start a match, score points, undo, finish, resume/clear saved match, and confirm speech/wake-lock still behave correctly.
+    - Review the diff for reversibility: each step should be extract-first, flip-call-site, then delete-dead-code.
+  - Plan file:
+    - `/Users/trystan2k/Documents/Thiago/Repos/padelbuddy-web/docs/plan/Plan PBW-93 Architecture Review.md`
