@@ -2,10 +2,7 @@
 
 /* Backdrop overlay - uses shared CSS variables */
 .overlay {
-  position: fixed;
-  inset: 0;
-  z-index: var(--overlay-z-index);
-  background: var(--overlay-background);
+  composes: sharedoverlay from '../../../styles/shared-overlays.module.css';
 }
 
 /* Popup - centered content box */

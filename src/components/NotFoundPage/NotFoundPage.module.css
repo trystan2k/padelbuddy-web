@@ -1,8 +1,5 @@
 .page {
-  min-height: 100vh;
-  display: grid;
-  place-items: center;
-  padding: clamp(1rem, 0.6rem + 2vw, 2rem);
+  composes: centeredpage from '../../styles/shared-notice.module.css';
 }
 
 .card {
@@ -29,15 +26,7 @@
 }
 
 .eyebrow {
-  margin: 0;
-  font-size: 0.8rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: color-mix(
-    in srgb,
-    var(--semantic-color-content-accent-secondary) 72%,
-    var(--semantic-color-content-primary)
-  );
+  composes: noticeeyebrow from '../../styles/shared-notice.module.css';
 }
 
 .title {
@@ -51,10 +40,8 @@
 }
 
 .description {
-  margin: 0;
-  color: var(--semantic-color-content-secondary);
+  composes: noticebody from '../../styles/shared-notice.module.css';
   font-size: 1rem;
-  line-height: 1.7;
 }
 
 .link {

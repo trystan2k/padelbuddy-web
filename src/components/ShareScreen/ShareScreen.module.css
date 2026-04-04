@@ -109,10 +109,7 @@
 }
 
 .teamHeaders {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
-  gap: var(--base-space-16);
-  text-align: center;
+  composes: fourcolumnteamgrid from '../../styles/shared-score-layout.module.css';
 }
 
 .teamAHeader {

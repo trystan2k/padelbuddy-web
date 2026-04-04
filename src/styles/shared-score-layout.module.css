@@ -1,0 +1,6 @@
+.fourcolumnteamgrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--base-space-16);
+  text-align: center;
+}
