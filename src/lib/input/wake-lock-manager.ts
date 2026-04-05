@@ -9,6 +9,9 @@ export interface WakeLockManager {
   subscribe(listener: () => void): () => void
 }
 
+const isSupported = () =>
+  typeof navigator !== 'undefined' && typeof navigator.wakeLock?.request === 'function'
+
 export function createWakeLockManager(): WakeLockManager {
   let wakeLock: WakeLockSentinel | null = null
   let pendingRequest: Promise<WakeLockSentinel | null> | null = null
@@ -37,14 +40,14 @@ export function createWakeLockManager(): WakeLockManager {
       return wakeLock !== null
     },
     isSupported() {
-      return typeof navigator !== 'undefined' && typeof navigator.wakeLock?.request === 'function'
+      return isSupported()
     },
     async request() {
       if (wakeLock) {
         return wakeLock
       }
 
-      if (!this.isSupported()) {
+      if (!isSupported()) {
         return null
       }
 
@@ -75,8 +78,11 @@ export function createWakeLockManager(): WakeLockManager {
 
       const activeWakeLock = wakeLock
 
-      detachWakeLock()
-      await activeWakeLock.release()
+      try {
+        await activeWakeLock.release()
+      } finally {
+        detachWakeLock()
+      }
     },
     reset() {
       pendingRequest = null

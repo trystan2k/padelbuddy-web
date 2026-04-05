@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 
 import type { MatchProjection } from '@/core/match/types'
 import { createMatchSpeechEvent } from '@/lib/speech/match-announcer'
@@ -27,7 +27,7 @@ export function useMatchAnnouncements({
   )
   const cancelRef = useRef<() => void>(() => {})
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     announceSpeechRef.current = (event) => {
       speechService.announce(event)
     }

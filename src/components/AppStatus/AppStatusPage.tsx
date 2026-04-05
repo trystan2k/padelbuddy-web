@@ -26,11 +26,11 @@ export function AppStatusPage({
         aria-labelledby={titleId}
         aria-live={liveRegion === 'off' ? undefined : liveRegion}
       >
-        <p className={styles.eyebrow}>{eyebrow}</p>
+        <div className={styles.eyebrow}>{eyebrow}</div>
         <h1 className={styles.title} id={titleId}>
           {title}
         </h1>
-        <p className={styles.body}>{body}</p>
+        <div className={styles.body}>{body}</div>
         {children}
       </section>
     </main>
