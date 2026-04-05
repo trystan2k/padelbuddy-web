@@ -7,14 +7,15 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   workers: 1,
   reporter: [
-    ['html', { outputFolder: 'playwright-report' }],
+    ['html', { outputFolder: 'playwright-report/html' }],
     ['json', { outputFile: 'playwright-report/results.json' }]
   ],
+  outputDir: 'playwright-report/test-results',
   use: {
     baseURL: 'http://localhost:4000',
     trace: 'on-first-retry',
-    screenshot: 'only-on-failure',
-    video: 'retain-on-failure'
+    screenshot: 'off',
+    video: 'on'
   },
   projects: [
     {
