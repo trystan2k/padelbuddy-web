@@ -1,6 +1,11 @@
 import { redirect, type ErrorComponentProps } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 
+import {
+  AppStatusActions,
+  AppStatusDetail,
+  AppStatusPage
+} from '@/components/AppStatus/AppStatusPage'
 import { Button } from '@/components/ui/Button/Button'
 import { loadCurrentMatch } from '@/lib/current-match/indexed-db'
 
@@ -41,32 +46,26 @@ export function RouteErrorCard({
   const errorMessage = getErrorMessage(error)
 
   return (
-    <section className="appStatusCard" aria-live="assertive">
-      <p className="appStatusEyebrow">{t(eyebrowKey)}</p>
-      <h1 className="appStatusTitle">{t('error.unexpectedTitle')}</h1>
-      <p className="appStatusBody">{t('error.unexpectedBody')}</p>
-      {errorMessage ? (
-        <p className="appStatusDetail" role="alert">
-          {errorMessage}
-        </p>
-      ) : null}
-      <div className="appStatusActions">
+    <AppStatusPage
+      eyebrow={t(eyebrowKey)}
+      title={t('error.unexpectedTitle')}
+      body={t('error.unexpectedBody')}
+      liveRegion="assertive"
+    >
+      {errorMessage ? <AppStatusDetail role="alert">{errorMessage}</AppStatusDetail> : null}
+      <AppStatusActions>
         <Button variant="outline" size="sm" accent="secondary" onClick={reset}>
           {t('common.retry')}
         </Button>
-      </div>
-    </section>
+      </AppStatusActions>
+    </AppStatusPage>
   )
 }
 
 type RouteErrorStateProps = RouteErrorCardProps
 
 export function RouteErrorState(props: RouteErrorStateProps) {
-  return (
-    <main className="appStatusPage">
-      <RouteErrorCard {...props} />
-    </main>
-  )
+  return <RouteErrorCard {...props} />
 }
 
 type ReadyMatchRouteState = Extract<MatchRouteState, { status: 'ready' }>
