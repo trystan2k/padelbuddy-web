@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.30.0](https://github.com/trystan2k/padelbuddy-web/compare/v0.29.0...v0.30.0) (2026-04-05)
+
+
+### Features
+
+* comprehensive E2E test suite with Playwright (PBW-18) ([#72](https://github.com/trystan2k/padelbuddy-web/issues/72)) ([d360784](https://github.com/trystan2k/padelbuddy-web/commit/d360784ff31bb93c3293c8fbe66a44e6e1478d91))
+
 ## [0.29.0](https://github.com/trystan2k/padelbuddy-web/compare/v0.28.0...v0.29.0) (2026-04-05)
 
 
