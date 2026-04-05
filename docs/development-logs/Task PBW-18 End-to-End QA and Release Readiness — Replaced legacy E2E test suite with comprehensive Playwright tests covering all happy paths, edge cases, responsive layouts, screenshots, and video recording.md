@@ -41,8 +41,7 @@ permalink: development-logs/task-pbw-18-end-to-end-qa-and-release-readiness-repl
 - Modified:
   - (video on, output path changes)
   - (screenshots via fixture, cleanup/teardown protection)
-- Created:
-  -
+- ## Created:
   -
   -
   - 9 new spec files under (3 happy-path, 5 edge-case, 1 responsive-layout)
