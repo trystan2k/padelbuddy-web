@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.29.0](https://github.com/trystan2k/padelbuddy-web/compare/v0.28.0...v0.29.0) (2026-04-05)
+
+
+### Features
+
+* **view-transitions:** move transition root from route shell to layout body ([b5e564a](https://github.com/trystan2k/padelbuddy-web/commit/b5e564abbef35988a86e9b0c31cebc03760bd6dc))
+
 ## [0.28.0](https://github.com/trystan2k/padelbuddy-web/compare/v0.27.0...v0.28.0) (2026-04-03)
 
 
