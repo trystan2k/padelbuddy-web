@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.0.0](https://github.com/trystan2k/padelbuddy-web/compare/v0.30.0...v1.0.0) (2026-04-05)
+
+
+### ⚠ BREAKING CHANGES
+
+* update Node.js and pnpm versions to latest patch releases
+* update README with comprehensive project overview
+
+### Features
+
+* update README with comprehensive project overview ([cf6a9a8](https://github.com/trystan2k/padelbuddy-web/commit/cf6a9a8c9cd7fd32a40fb471560f2d7da4e67849))
+
+
+### Miscellaneous Chores
+
+* update Node.js and pnpm versions to latest patch releases ([a1158d0](https://github.com/trystan2k/padelbuddy-web/commit/a1158d00bade1c2db3f1b2587360b1e727c23ba9))
+
 ## [0.30.0](https://github.com/trystan2k/padelbuddy-web/compare/v0.29.0...v0.30.0) (2026-04-05)
 
 
