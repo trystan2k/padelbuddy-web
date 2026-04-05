@@ -1,8 +1,8 @@
-import { describe, expect, test, vi } from 'vitest'
+import { afterEach, describe, expect, test, vi } from 'vitest'
 
 import { currentMatchSchemaVersion } from '@/lib/current-match/persistence'
 import { hydrateCurrentMatchStartup } from '@/lib/current-match/startup'
-import { queueCurrentMatchResetNotice } from '@/lib/current-match/reset-notice'
+import currentMatchResetNoticeStore from '@/lib/current-match/reset-notice-store'
 import type { CurrentMatchPersistence } from '@/lib/current-match/indexed-db'
 
 import { createTestSetup, winQuickSet } from '../core/match/test-helpers'
@@ -10,6 +10,10 @@ import { createTestSetup, winQuickSet } from '../core/match/test-helpers'
 describe('current match startup', () => {
   const testMatchId = 'test-match'
   const testStartedAt = Date.now()
+
+  afterEach(() => {
+    currentMatchResetNoticeStore.reset()
+  })
 
   test('returns ready with serializable completed match data', async () => {
     const setup = createTestSetup({
@@ -61,7 +65,7 @@ describe('current match startup', () => {
   })
 
   test('consumes the one-time reset notice after a reset-required load', async () => {
-    queueCurrentMatchResetNotice({
+    currentMatchResetNoticeStore.set({
       reason: 'schema-version'
     })
 

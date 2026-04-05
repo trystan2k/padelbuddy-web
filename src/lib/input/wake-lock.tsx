@@ -1,28 +1,16 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-
-let moduleWakeLockRef: WakeLockSentinel | null = null
+import wakeLockManager from './wake-lock-manager'
 
 export async function requestScreenWakeLock(): Promise<WakeLockSentinel | null> {
-  if (moduleWakeLockRef) {
-    return moduleWakeLockRef
-  }
-
-  if (typeof navigator === 'undefined' || !navigator.wakeLock) {
+  if (!wakeLockManager.isSupported()) {
     console.warn('Wake Lock API is not supported in this browser')
     return null
   }
 
   try {
-    const wakeLock = await navigator.wakeLock.request('screen')
-    moduleWakeLockRef = wakeLock
-
-    wakeLock.addEventListener('release', () => {
-      moduleWakeLockRef = null
-    })
-
-    return wakeLock
+    return await wakeLockManager.request()
   } catch (err) {
     const error = err instanceof Error ? err : new Error(String(err))
     console.warn('Wake Lock request failed:', error.message)
@@ -31,11 +19,11 @@ export async function requestScreenWakeLock(): Promise<WakeLockSentinel | null> 
 }
 
 export function isScreenWakeLockActive(): boolean {
-  return moduleWakeLockRef !== null
+  return wakeLockManager.isActive()
 }
 
-export function _resetModuleWakeLockRef(): void {
-  moduleWakeLockRef = null
+export function _resetWakeLockManager(): void {
+  wakeLockManager.reset()
 }
 
 export interface UseWakeLockOptions {
@@ -54,16 +42,14 @@ export interface UseWakeLockReturn {
 export function useWakeLock(options: UseWakeLockOptions = {}): UseWakeLockReturn {
   const { enabled = true, onError } = options
 
-  const isSupportedValue =
-    typeof navigator !== 'undefined' && typeof navigator.wakeLock?.request === 'function'
+  const isSupportedValue = wakeLockManager.isSupported()
   const [isSupported] = useState(() => isSupportedValue)
-  const [isActive, setIsActive] = useState(false)
+  const [isActive, setIsActive] = useState(() => wakeLockManager.isActive())
   const [error, setError] = useState<Error | null>(null)
 
-  const wakeLockRef = useRef<WakeLockSentinel | null>(null)
-  const pendingRequestRef = useRef<Promise<WakeLockSentinel | null> | null>(null)
   const isMountedRef = useRef(true)
   const enabledRef = useRef(enabled)
+  const ownsWakeLockRef = useRef(false)
 
   // Keep the ref in sync with the latest enabled value
   useEffect(() => {
@@ -76,7 +62,7 @@ export function useWakeLock(options: UseWakeLockOptions = {}): UseWakeLockReturn
       return
     }
 
-    if (wakeLockRef.current || moduleWakeLockRef) {
+    if (wakeLockManager.isActive()) {
       if (isMountedRef.current) {
         setIsActive(true)
         setError(null)
@@ -84,79 +70,65 @@ export function useWakeLock(options: UseWakeLockOptions = {}): UseWakeLockReturn
       return
     }
 
-    // Guard against concurrent requests
-    if (pendingRequestRef.current) {
-      await pendingRequestRef.current
-      return
-    }
+    try {
+      const wakeLock = await wakeLockManager.request()
 
-    const requestPromise = (async () => {
-      try {
-        const wakeLock = await navigator.wakeLock.request('screen')
-
-        // Re-check enabled after the await to handle race condition
-        if (!enabledRef.current) {
-          await wakeLock.release()
-          return null
-        }
-
-        wakeLockRef.current = wakeLock
-        moduleWakeLockRef = wakeLock
-
-        const handleRelease = () => {
-          if (isMountedRef.current) {
-            setIsActive(false)
-          }
-          wakeLockRef.current = null
-          moduleWakeLockRef = null
-        }
-
-        wakeLock.addEventListener('release', handleRelease)
-        if (isMountedRef.current) {
-          setIsActive(true)
-          setError(null)
-        }
-        return wakeLock
-      } catch (err) {
-        const wakeLockError = err instanceof Error ? err : new Error(String(err))
-        if (isMountedRef.current) {
-          setError(wakeLockError)
-        }
-        if (onError) {
-          onError(wakeLockError)
-        }
-        console.warn('Wake Lock request failed:', wakeLockError.message)
-        return null
+      if (!enabledRef.current && wakeLock) {
+        ownsWakeLockRef.current = true
+        await wakeLockManager.release()
+        ownsWakeLockRef.current = false
+        return
       }
-    })()
 
-    pendingRequestRef.current = requestPromise
-    await requestPromise
-    pendingRequestRef.current = null
+      ownsWakeLockRef.current = wakeLock !== null
+
+      if (isMountedRef.current) {
+        setIsActive(wakeLockManager.isActive())
+        setError(null)
+      }
+    } catch (err) {
+      const wakeLockError = err instanceof Error ? err : new Error(String(err))
+      if (isMountedRef.current) {
+        setError(wakeLockError)
+      }
+      onError?.(wakeLockError)
+      console.warn('Wake Lock request failed:', wakeLockError.message)
+    }
   }, [isSupportedValue, onError])
 
   const releaseWakeLock = useCallback(async () => {
-    if (wakeLockRef.current) {
-      try {
-        await wakeLockRef.current.release()
-        if (isMountedRef.current) {
-          setIsActive(false)
-        }
-        wakeLockRef.current = null
-      } catch (err) {
-        const releaseError = err instanceof Error ? err : new Error(String(err))
-        console.warn('Wake Lock release failed:', releaseError.message)
-        if (isMountedRef.current) {
-          setIsActive(false)
-          setError(releaseError)
-        }
-        if (onError) {
-          onError(releaseError)
-        }
-        wakeLockRef.current = null
+    if (!ownsWakeLockRef.current || !wakeLockManager.isActive()) {
+      return
+    }
+
+    try {
+      await wakeLockManager.release()
+      ownsWakeLockRef.current = false
+      if (isMountedRef.current) {
+        setIsActive(false)
       }
+    } catch (err) {
+      const releaseError = err instanceof Error ? err : new Error(String(err))
+      console.warn('Wake Lock release failed:', releaseError.message)
+      if (isMountedRef.current) {
+        setIsActive(false)
+        setError(releaseError)
+      }
+      onError?.(releaseError)
     }
   }, [onError])
+
+  useEffect(() => {
+    return wakeLockManager.subscribe(() => {
+      if (!wakeLockManager.isActive()) {
+        ownsWakeLockRef.current = false
+      }
+
+      if (isMountedRef.current) {
+        setIsActive(wakeLockManager.isActive())
+      }
+    })
+  }, [])
 
   useEffect(() => {
     if (!isSupportedValue || !enabled) {
@@ -164,7 +136,7 @@ export function useWakeLock(options: UseWakeLockOptions = {}): UseWakeLockReturn
     }
 
     const handleVisibilityChange = async () => {
-      if (document.visibilityState === 'visible' && !wakeLockRef.current) {
+      if (document.visibilityState === 'visible' && !wakeLockManager.isActive()) {
         await requestWakeLock()
       }
     }
@@ -179,7 +151,7 @@ export function useWakeLock(options: UseWakeLockOptions = {}): UseWakeLockReturn
   useEffect(() => {
     if (enabled && isSupportedValue) {
       void requestWakeLock()
-    } else if (!enabled && wakeLockRef.current) {
+    } else if (!enabled && ownsWakeLockRef.current && wakeLockManager.isActive()) {
       void releaseWakeLock()
     }
   }, [enabled, isSupportedValue, requestWakeLock, releaseWakeLock])
@@ -187,11 +159,10 @@ export function useWakeLock(options: UseWakeLockOptions = {}): UseWakeLockReturn
   useEffect(() => {
     return () => {
       isMountedRef.current = false
-      if (wakeLockRef.current) {
-        wakeLockRef.current.release().catch(() => {
+      if (ownsWakeLockRef.current && wakeLockManager.isActive()) {
+        wakeLockManager.release().catch(() => {
           // Silently ignore cleanup errors
         })
-        wakeLockRef.current = null
       }
     }
   }, [])

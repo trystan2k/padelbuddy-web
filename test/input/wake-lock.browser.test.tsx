@@ -3,7 +3,8 @@ import { useEffect } from 'react'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import { render } from 'vitest-browser-react'
 
-import { type UseWakeLockReturn, useWakeLock, _resetModuleWakeLockRef } from '@/lib/input/wake-lock'
+import wakeLockManager, { createWakeLockManager } from '@/lib/input/wake-lock-manager'
+import { type UseWakeLockReturn, useWakeLock, _resetWakeLockManager } from '@/lib/input/wake-lock'
 
 // Test component to render the hook output
 function WakeLockTestComponent({
@@ -70,7 +71,55 @@ describe('wake-lock browser', () => {
       }
     }
     vi.restoreAllMocks()
-    _resetModuleWakeLockRef()
+    _resetWakeLockManager()
+  })
+
+  test('manager reset clears singleton state', async () => {
+    const mockSentinel = {
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      release: vi.fn().mockResolvedValue(undefined)
+    }
+    const mockWakeLock = {
+      request: vi.fn().mockResolvedValue(mockSentinel)
+    }
+
+    Object.defineProperty(navigator, 'wakeLock', {
+      value: mockWakeLock,
+      writable: true,
+      configurable: true
+    })
+
+    await wakeLockManager.request()
+    expect(wakeLockManager.isActive()).toBe(true)
+
+    wakeLockManager.reset()
+
+    expect(wakeLockManager.isActive()).toBe(false)
+  })
+
+  test('manager factory keeps isolated state per instance', async () => {
+    const firstManager = createWakeLockManager()
+    const secondManager = createWakeLockManager()
+    const mockSentinel = {
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      release: vi.fn().mockResolvedValue(undefined)
+    }
+    const mockWakeLock = {
+      request: vi.fn().mockResolvedValue(mockSentinel)
+    }
+
+    Object.defineProperty(navigator, 'wakeLock', {
+      value: mockWakeLock,
+      writable: true,
+      configurable: true
+    })
+
+    await firstManager.request()
+
+    expect(firstManager.isActive()).toBe(true)
+    expect(secondManager.isActive()).toBe(false)
   })
   describe('request and release (not supported)', () => {
     test('does not request when API is not supported', async () => {
@@ -104,6 +153,7 @@ describe('wake-lock browser', () => {
     test('returns true when Wake Lock API is available', async () => {
       const mockSentinel = {
         addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
         release: vi.fn().mockResolvedValue(undefined)
       }
       const mockWakeLock = {
@@ -126,6 +176,7 @@ describe('wake-lock browser', () => {
     test('requests wake lock successfully', async () => {
       const mockSentinel = {
         addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
         release: vi.fn().mockResolvedValue(undefined)
       }
       const mockWakeLock = {
@@ -152,6 +203,7 @@ describe('wake-lock browser', () => {
     test('releases wake lock successfully', async () => {
       const mockSentinel = {
         addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
         release: vi.fn().mockResolvedValue(undefined)
       }
       const mockWakeLock = {
@@ -180,6 +232,7 @@ describe('wake-lock browser', () => {
     test('does not request wake lock if already active', async () => {
       const mockSentinel = {
         addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
         release: vi.fn().mockResolvedValue(undefined)
       }
       const mockWakeLock = {
@@ -207,6 +260,7 @@ describe('wake-lock browser', () => {
     test('does not request wake lock when enabled is false', async () => {
       const mockSentinel = {
         addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
         release: vi.fn().mockResolvedValue(undefined)
       }
       const mockWakeLock = {
@@ -233,6 +287,7 @@ describe('wake-lock browser', () => {
     test('does not re-request wake lock when already active', async () => {
       const mockSentinel = {
         addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
         release: vi.fn().mockResolvedValue(undefined)
       }
       const mockWakeLock = {
@@ -269,6 +324,7 @@ describe('wake-lock browser', () => {
       const releaseFn = vi.fn().mockRejectedValue(new Error('Release failed'))
       const mockSentinel = {
         addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
         release: releaseFn
       }
       const mockWakeLock = {
@@ -326,6 +382,7 @@ describe('wake-lock browser', () => {
     test('returns correct interface shape', async () => {
       const mockSentinel = {
         addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
         release: vi.fn().mockResolvedValue(undefined)
       }
       const mockWakeLock = {

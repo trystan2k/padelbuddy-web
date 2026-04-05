@@ -1,5 +1,6 @@
 import { currentMatchPersistence, type CurrentMatchPersistence } from './indexed-db'
-import { consumeCurrentMatchResetNotice, type CurrentMatchResetNotice } from './reset-notice'
+import type { CurrentMatchResetNotice } from './reset-notice'
+import currentMatchResetNoticeStore from './reset-notice-store'
 import { createCurrentMatchSessionSnapshot, type CurrentMatchSessionSnapshot } from './session'
 
 export interface CurrentMatchStartupOptions {
@@ -45,7 +46,7 @@ export async function hydrateCurrentMatchStartup(
 ): Promise<CurrentMatchStartupResult> {
   const persistence = options.persistence ?? currentMatchPersistence
   const loadResult = await persistence.loadCurrentMatch()
-  const notice = consumeCurrentMatchResetNotice()
+  const notice = currentMatchResetNoticeStore.clear()
 
   if (loadResult.status === 'empty' || loadResult.status === 'reset-required') {
     return {

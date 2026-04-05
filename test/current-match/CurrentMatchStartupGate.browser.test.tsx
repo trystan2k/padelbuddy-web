@@ -24,7 +24,7 @@ import {
   saveCurrentMatch,
   type CurrentMatchPersistence
 } from '@/lib/current-match/indexed-db'
-import { consumeCurrentMatchResetNotice } from '@/lib/current-match/reset-notice'
+import currentMatchResetNoticeStore from '@/lib/current-match/reset-notice-store'
 import { createCurrentMatchSessionSnapshot } from '@/lib/current-match/session'
 import { currentMatchSchemaVersion } from '@/lib/current-match/persistence'
 import {
@@ -54,7 +54,7 @@ describe('CurrentMatchStartupGate browser', () => {
   })
 
   afterEach(async () => {
-    consumeCurrentMatchResetNotice()
+    currentMatchResetNoticeStore.reset()
     await clearCurrentMatch()
     await deleteDatabase(databaseName)
     portalContainer.remove()
