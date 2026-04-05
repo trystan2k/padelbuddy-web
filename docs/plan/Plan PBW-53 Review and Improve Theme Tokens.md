@@ -16,7 +16,7 @@
 ### Phase 1: PBW-54 — Audit (Complete)
 
 1. Run the audit: compare Pencil colors and current token files, search the repo for all places where team surfaces use `brand`, `accent`, or shared accent props.
-2. Capture concrete findings in `docs/development-logs/PBW-54-token-audit.md`.
+2. Capture concrete findings in `docs/development-logs/Task PBW-54 Token Audit.md`.
 3. Present findings to the user and receive approval — including corrected semantic token naming (`items.{primary|secondary}.{content|background|border}`, NOT team-coupled).
 
 ### Phase 2: PBW-55 — Add Tokens
