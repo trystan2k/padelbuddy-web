@@ -15,8 +15,8 @@ A mobile-first, client-only Padel score tracker optimized for courtside use. Sup
 
 ## Requirements
 
-- Node `24.14.0`
-- pnpm `10.32.0`
+- Node `24.14.1`
+- pnpm `10.33.0`
 
 Use `mise` for automatic Node version switching — `package.json` declares the required version.
 

@@ -14,8 +14,8 @@ Repository size: medium; primary app code in `src/`, tests in `test/`, build con
 
 ## Environment & Tooling
 
-- Node: 24.14.0 (see `mise.toml`)
-- pnpm: 10.32.0 (set in `package.json` → `packageManager`; CI uses this)
+- Node: 24.14.1 (see `mise.toml`)
+- pnpm: 10.33.0 (set in `package.json` → `packageManager`; CI uses this)
 - Browsers (tests): Chromium via Playwright
   - If browser tests report missing binaries: `pnpm exec playwright install chromium`
 - Dev server: Vite on port `4000` with `strictPort: true`
