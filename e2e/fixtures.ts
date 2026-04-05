@@ -52,6 +52,10 @@ export const test = base.extend({
         )
 
         await mkdir(path.dirname(screenshotPath), { recursive: true })
+
+        // Wait for view transitions and animations to complete before screenshot
+        await page.waitForTimeout(1000)
+
         await page.screenshot({ path: screenshotPath, fullPage: true })
         await testInfo.attach('final-screenshot', {
           path: screenshotPath,
