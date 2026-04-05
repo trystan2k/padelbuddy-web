@@ -1,13 +1,24 @@
 # Padel Buddy Web
 
-TanStack Start client-only scaffold for a mobile-first padel score tracker.
+A mobile-first, client-only Padel score tracker optimized for courtside use. Supports Bluetooth remote controllers, touch scoring, match persistence, and multi-language (English, Spanish, Portuguese).
+
+## Tech Stack
+
+- **Framework**: TanStack Start (SSR-capable but deployed as static SPA)
+- **UI**: React 19 + Base UI + CSS Modules
+- **Routing**: TanStack Router (code-split, type-safe)
+- **Build**: Vite 8
+- **Testing**: Vitest (unit) + Playwright (E2E)
+- **i18n**: react-i18next
+- **Persistence**: IndexedDB
+- **Deployment**: Cloudflare Pages
 
 ## Requirements
 
 - Node `24.14.0`
 - pnpm `10.32.0`
 
-Node version source of truth is `package.json` `engines.node` and is compatible with `mise`.
+Use `mise` for automatic Node version switching — `package.json` declares the required version.
 
 ## Local Development
 
@@ -16,68 +27,81 @@ pnpm install
 pnpm dev
 ```
 
-## Testing
+The app runs at `http://localhost:3000`.
 
-Automated tests use Vitest and stay aligned with the app's Vite and TanStack Start configuration through `vitest.config.ts`.
+## Scripts
 
-- `vitest.config.ts` merges the main `vite.config.ts` and keeps separate `unit` and `browser` projects.
-- Browser component smoke tests render with `vitest-browser-react` inside the browser project instead of a shared browser mounting helper.
-- Shared setup still lives in `test/setup`, while unit/server-side markup assertions stay lightweight and non-browser-only.
-- Coverage enforces the PBW-9 quality gate with per-file `80%` minimums (via `thresholds.perFile: true`).
+| Command               | Description                                                       |
+| --------------------- | ----------------------------------------------------------------- |
+| `pnpm dev`            | Start dev server with hot reload                                  |
+| `pnpm build`          | Build for production (outputs to `dist/client`)                   |
+| `pnpm test`           | Run unit tests with coverage                                      |
+| `pnpm test:e2e`       | Run E2E tests (requires Chromium)                                 |
+| `pnpm test:e2e:ui`    | Open Playwright UI for debugging                                  |
+| `pnpm lint`           | Lint with Oxlint + Stylelint                                      |
+| `pnpm lint:fix`       | Auto-fix lint issues                                              |
+| `pnpm format`         | Format with Oxfmt                                                 |
+| `pnpm typecheck`      | TypeScript type check                                             |
+| `pnpm complete-check` | Full verification: typecheck → lint → format → test → e2e → build |
 
-Run tests locally with:
+## App Structure
 
-```bash
-pnpm test
+```
+src/
+├── components/     # React components (screens, UI primitives)
+├── core/           # Match engine, scoring logic, game state
+├── lib/            # Utilities (i18n, persistence, speech, input)
+├── routes/         # TanStack Router route definitions
+└── styles.css      # Global styles + design tokens
 ```
 
-If Playwright browser binaries are missing, install Chromium once with:
+### Routes
+
+- `/` — Home/Setup screen (new match configuration)
+- `/match/:id` — Active match scoring
+- `/match/finish/:id` — Match end summary and stats
+
+### Key Features
+
+- **Score tracking**: Real-time padel scoring with game/set/match logic
+- **Side-switch prompts**: Alerts at 1-1 in deciding set
+- **Bluetooth remote**: Web Bluetooth API for physical scoring buttons
+- **Match persistence**: IndexedDB stores in-progress matches
+- **i18n**: English, Spanish, Portuguese
+- **PWA**: Installable, offline-capable
+- **Share**: Export match stats as image
+
+## Testing
+
+Install Playwright browsers once:
 
 ```bash
 pnpm exec playwright install chromium
 ```
 
-`pnpm test` runs the combined local suite, while `pnpm test:watch` stays focused on day-to-day iteration.
-
-## Local Quality Checks
-
-- `pnpm lint` runs `oxlint --deny-warnings` plus Stylelint for `src/**/*.css`, and `pnpm lint:fix` applies Oxlint fixes plus Stylelint fixes for CSS Modules.
-- `pnpm format` applies Oxfmt, and `pnpm format:check` verifies formatting without changing files.
-- Husky installs a `pre-commit`, `pre-push` and `commit-msg` hooks through `pnpm install`, and `lint-staged` reads `.lintstagedrc.json` to run staged JS/TS lint fixes, staged CSS Module Stylelint fixes, then a final Oxfmt pass in sequence.
-
-For the full local verification flow used in this repo:
+Run tests:
 
 ```bash
-pnpm run complete-check
+pnpm test          # Unit tests
+pnpm test:e2e     # E2E tests
+pnpm test:e2e:headed  # Watch tests run in browser
 ```
 
-`pnpm run complete-check` runs the repo's full verification flow, including linting, formatting, tests, and build; it may rewrite files when applying fixes before the test and build steps.
+## Production Deployment
 
-`pnpm run complete-check` is intentionally local-only. GitHub Actions uses non-mutating checks in this order: `pnpm typecheck`, `pnpm lint`, `pnpm format:check`, `pnpm test`, and `pnpm build`.
+Production deploys to Cloudflare Pages on GitHub release. The `dist/client` folder is uploaded as a static artifact.
 
-## CI/CD and Releases
+- **Production URL**: `https://padelbuddyweb.pages.dev`
+- **Preview releases**: Deployed automatically for `release-please--branches--main` branch
 
-- `CI` runs on pull requests and `main` pushes, cancels superseded runs, and keeps the full verification order as `typecheck` -> `lint` -> `format:check` -> `test` -> `build`.
-- Docs-only changes are limited to `docs/**`, root `*.md`, and markdown files under `.github/`; they take the reduced path and run `pnpm format:check` instead of the full verification sequence.
-- `Release Please` opens and updates the release PR, bumps `package.json`, maintains `CHANGELOG.md`, and publishes the GitHub release after the release PR is merged.
-- Release Please uses the dedicated `RELEASE_PLEASE_TOKEN` secret so the release PR and published release can trigger downstream GitHub workflows.
-- Releasable non-breaking commit types follow Release Please's Node strategy: `feat`, `fix`, and `chore(deps)`; breaking changes such as `refactor!` still trigger a major release.
-- `Preview Release PR` deploys only the Release Please branch (`release-please--branches--main`) to a stable Cloudflare Pages preview alias.
-- `Deploy Production` runs only when a GitHub release is published and deploys the static `dist/client` Pages artifact, never the SSR bundle.
-- CI and deploy workflows upload or deploy `dist/client` directly as the Cloudflare Pages payload.
+## CI/CD
 
-## GitHub Actions Secrets
+GitHub Actions runs on every PR and push to `main`:
 
-- `RELEASE_PLEASE_TOKEN` - personal access token used by Release Please so release PR and release events can trigger downstream workflows
+1. `typecheck` → `lint` → `format:check` → `test` → `build`
 
-- `CLOUDFLARE_API_TOKEN`
-- `CLOUDFLARE_ACCOUNT_ID`
-- `CLOUDFLARE_PAGES_PROJECT_NAME`
+Release Please manages versioning and changelog. Merging a release PR triggers the production deployment workflow.
 
-## Production Build
+## Design
 
-```bash
-pnpm build
-```
-
-Cloudflare Pages workflows use `dist/client` directly as the deployable static artifact produced by `pnpm build`.
+Visual design uses design tokens defined in `design-tokens/` and compiled to `src/styles.css` via Style Dictionary. See `docs/design/padelbuddyweb.pen` for the Pencil source file.
