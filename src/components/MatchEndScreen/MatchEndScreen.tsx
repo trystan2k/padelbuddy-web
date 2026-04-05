@@ -267,14 +267,6 @@ export function MatchEndScreen({
       })
 
       await session.continuePlaying()
-      await prepareCurrentMatchRouteNavigation(
-        router,
-        {
-          to: '/match/$id',
-          params: { id: matchId }
-        },
-        { invalidate: true }
-      )
       await navigate({
         to: '/match/$id',
         params: { id: matchId },
@@ -285,7 +277,7 @@ export function MatchEndScreen({
       logRuntimeError('Failed to continue the current match.', error)
       setIsContinuingMatch(false)
     }
-  }, [actions, finishedAt, isContinuingMatch, matchId, navigate, router, setup, startedAt])
+  }, [actions, finishedAt, isContinuingMatch, matchId, navigate, setup, startedAt])
 
   const handleShareButtonClick = useCallback(() => {
     handleShareClick()

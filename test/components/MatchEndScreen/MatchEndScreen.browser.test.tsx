@@ -489,11 +489,6 @@ describe('MatchEndScreen', () => {
         finishedAt
       })
       expect(mockContinuePlaying).toHaveBeenCalledTimes(1)
-      expect(mockInvalidate).toHaveBeenCalledTimes(1)
-      expect(mockPreloadRoute).toHaveBeenCalledWith({
-        to: '/match/$id',
-        params: { id: 'test-match' }
-      })
       expect(mockNavigate).toHaveBeenCalledWith({
         to: '/match/$id',
         params: { id: 'test-match' },
@@ -501,17 +496,6 @@ describe('MatchEndScreen', () => {
         viewTransition: true
       })
     })
-
-    const invalidateCall = mockInvalidate.mock.calls.at(0)
-    const invalidateArgs = invalidateCall?.at(0) as
-      | {
-          filter: (routeMatch: { routeId: string }) => boolean
-        }
-      | undefined
-    expect(invalidateArgs?.filter({ routeId: '/match/$id' })).toBe(true)
-    expect(invalidateArgs?.filter({ routeId: '/match/finish/$id' })).toBe(true)
-    expect(invalidateArgs?.filter({ routeId: '/' })).toBe(true)
-    expect(invalidateArgs?.filter({ routeId: '/settings' })).toBe(false)
   })
 
   test('re-enables continue when continuation fails', async () => {

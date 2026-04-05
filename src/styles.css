@@ -99,49 +99,50 @@ svg {
     0 0 0 6px color-mix(in srgb, var(--semantic-color-content-accent-secondary) 90%, black);
 }
 
-[data-view-transition-root='true'] {
-  view-transition-name: route-shell;
+[data-view-transition-body='true'] {
+  view-transition-name: layout-body;
 }
 
-@supports (view-transition-name: route-shell) {
+@supports (view-transition-name: layout-body) {
   @media (prefers-reduced-motion: no-preference) {
-    ::view-transition-old(route-shell),
-    ::view-transition-new(route-shell) {
-      animation-duration: 220ms;
-      animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    ::view-transition-group(layout-body) {
+      overflow: hidden;
     }
 
-    ::view-transition-old(route-shell) {
-      animation-name: route-fade-out;
+    ::view-transition-old(layout-body),
+    ::view-transition-new(layout-body) {
+      animation-duration: 200ms;
+      animation-timing-function: ease-in-out;
+      mix-blend-mode: normal;
     }
 
-    ::view-transition-new(route-shell) {
-      animation-name: route-fade-in;
+    ::view-transition-old(layout-body) {
+      animation-name: simple-fade-out;
+    }
+
+    ::view-transition-new(layout-body) {
+      animation-name: simple-fade-in;
     }
   }
 }
 
-@keyframes route-fade-in {
+@keyframes simple-fade-in {
   from {
     opacity: 0;
-    transform: translateY(1rem) scale(0.985);
   }
 
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
   }
 }
 
-@keyframes route-fade-out {
+@keyframes simple-fade-out {
   from {
     opacity: 1;
-    transform: translateY(0) scale(1);
   }
 
   to {
     opacity: 0;
-    transform: translateY(-0.5rem) scale(0.99);
   }
 }
 

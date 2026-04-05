@@ -111,7 +111,7 @@ function AppShell() {
         <ToastProvider>
           <div className={styles.routeShell}>
             <RoutePendingOverlay />
-            <div className={styles.routeViewport} data-view-transition-root="true">
+            <div className={styles.routeViewport}>
               <AppErrorBoundary>
                 <Outlet />
               </AppErrorBoundary>

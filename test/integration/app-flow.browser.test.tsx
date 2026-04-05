@@ -250,11 +250,6 @@ describe('app flow integration', () => {
     await matchEndScreen.getByTestId('continue-match-button').click()
 
     await vi.waitFor(() => {
-      expect(mockInvalidate).toHaveBeenCalledTimes(1)
-      expect(mockPreloadRoute).toHaveBeenCalledWith({
-        to: '/match/$id',
-        params: { id: matchId }
-      })
       expect(mockNavigate).toHaveBeenCalledWith({
         to: '/match/$id',
         params: { id: matchId },

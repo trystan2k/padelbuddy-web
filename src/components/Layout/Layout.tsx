@@ -29,7 +29,11 @@ export function Layout({
     <main ref={ref} className={cn(styles.layout, className)} {...props}>
       <div className={styles.container}>
         {header && <header className={styles.header}>{header}</header>}
-        <div className={cn(styles.body, bodyClassName)} data-testid="layout-body">
+        <div
+          className={cn(styles.body, bodyClassName)}
+          data-testid="layout-body"
+          data-view-transition-body="true"
+        >
           {children}
         </div>
         {footer && <footer className={styles.footer}>{footer}</footer>}
