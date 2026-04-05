@@ -1,17 +1,13 @@
+import currentMatchResetNoticeStore from './reset-notice-store'
+
 export interface CurrentMatchResetNotice {
   reason: 'schema-version'
 }
 
-let pendingCurrentMatchResetNotice: CurrentMatchResetNotice | null = null
-
 export function queueCurrentMatchResetNotice(notice: CurrentMatchResetNotice): void {
-  pendingCurrentMatchResetNotice = notice
+  currentMatchResetNoticeStore.set(notice)
 }
 
 export function consumeCurrentMatchResetNotice(): CurrentMatchResetNotice | null {
-  const notice = pendingCurrentMatchResetNotice
-
-  pendingCurrentMatchResetNotice = null
-
-  return notice
+  return currentMatchResetNoticeStore.clear()
 }

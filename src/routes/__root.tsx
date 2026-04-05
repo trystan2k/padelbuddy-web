@@ -8,19 +8,23 @@ import {
   useRouterState,
   type ErrorComponentProps
 } from '@tanstack/react-router'
-import { useEffect, useRef, useState } from 'react'
-import mixpanel from 'mixpanel-browser'
+import { useRef } from 'react'
 
+import { AppErrorBoundary } from '@/components/ErrorBoundary/AppErrorBoundary'
 import { DebugPwa } from '@/components/DebugPwa/DebugPwa'
 import { NotFoundPage } from '@/components/NotFoundPage/NotFoundPage'
+import { PadelCourtSpinner } from '@/components/PadelCourtSpinner/PadelCourtSpinner'
 import { ToastProvider } from '@/components/ui/Toast/useToast'
-import { i18n, initializeI18n } from '@/lib/i18n/i18n'
-import { registerSW } from '@/lib/pwa/registration'
-import { getOrCreateUserId } from '@/lib/user/id'
+import { i18n } from '@/lib/i18n/i18n'
 
+import {
+  getRootErrorDocumentLanguage,
+  useRemoveHydrationSpinner,
+  useRootDocumentLanguage,
+  useRootInitializationEffects
+} from './-root-effects'
 import { RouteErrorCard } from './-route-utils'
 import styles from './RootDocument.module.css'
-import { PadelCourtSpinner } from '@/components/PadelCourtSpinner/PadelCourtSpinner'
 
 export const Route = createRootRoute({
   head: () => ({
@@ -74,14 +78,12 @@ export const Route = createRootRoute({
 
 function RootErrorState(props: ErrorComponentProps) {
   return (
-    <html lang={i18n.resolvedLanguage ?? i18n.language ?? 'en'}>
+    <html lang={getRootErrorDocumentLanguage()}>
       <head>
         <HeadContent />
       </head>
       <body>
-        <main className="appStatusPage">
-          <RouteErrorCard {...props} eyebrowKey="error.unexpectedLabel" />
-        </main>
+        <RouteErrorCard {...props} eyebrowKey="error.unexpectedLabel" />
         <Scripts />
       </body>
     </html>
@@ -89,35 +91,10 @@ function RootErrorState(props: ErrorComponentProps) {
 }
 
 function AppShell() {
-  const [currentLang, setCurrentLang] = useState(
-    () => i18n.resolvedLanguage ?? i18n.language ?? 'en'
-  )
-
+  const currentLang = useRootDocumentLanguage()
   const routePendingRef = useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
-    const handleLanguageChanged = (lng: string) => {
-      setCurrentLang(lng || 'en')
-    }
-
-    i18n.on('languageChanged', handleLanguageChanged)
-
-    return () => {
-      i18n.off('languageChanged', handleLanguageChanged)
-    }
-  }, [])
-
-  useEffect(() => {
-    if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
-      void registerSW()
-    }
-  }, [])
-
-  useEffect(() => {
-    // Use remove() instead of document.body.removeChild() because during SSR
-    // hydration the spinner may not be a direct child of document.body.
-    routePendingRef.current?.remove()
-  }, [routePendingRef])
+  useRemoveHydrationSpinner(routePendingRef)
 
   return (
     <html lang={currentLang}>
@@ -135,7 +112,9 @@ function AppShell() {
           <div className={styles.routeShell}>
             <RoutePendingOverlay />
             <div className={styles.routeViewport} data-view-transition-root="true">
-              <Outlet />
+              <AppErrorBoundary>
+                <Outlet />
+              </AppErrorBoundary>
             </div>
           </div>
         </ToastProvider>
@@ -163,22 +142,7 @@ export function RoutePendingOverlay() {
 }
 
 function RootDocument() {
-  useEffect(() => {
-    if (import.meta.env.PROD) {
-      mixpanel.init('21d2e2fd8e6c4eeca02abb794fb90c7a', {
-        autocapture: true,
-        record_sessions_percent: 100,
-        api_host: 'https://api-eu.mixpanel.com'
-      })
-
-      const userId = getOrCreateUserId()
-      mixpanel.identify(userId)
-    }
-
-    void initializeI18n().catch((error) => {
-      console.error('Failed to initialize i18n:', error)
-    })
-  }, [])
+  useRootInitializationEffects()
 
   return <AppShell />
 }

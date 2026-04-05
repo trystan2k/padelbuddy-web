@@ -1,3 +1,4 @@
+import { getMatchTeamName } from '@/core/match/team-name'
 import type {
   MatchFormat,
   MatchProjection,
@@ -124,17 +125,7 @@ export function getMatchDurationParts(elapsedSeconds: number): MatchDurationPart
 
 function createTeamNames(projection: MatchProjection): TeamScore<string> {
   return {
-    'team-1': getTeamName(projection, 'team-1'),
-    'team-2': getTeamName(projection, 'team-2')
+    'team-1': getMatchTeamName(projection.setup, 'team-1'),
+    'team-2': getMatchTeamName(projection.setup, 'team-2')
   }
-}
-
-function getTeamName(projection: MatchProjection, teamId: MatchTeamId): string {
-  const side = projection.setup.sides.find((candidate) => candidate.id === teamId)
-
-  if (!side) {
-    return teamId
-  }
-
-  return side.playerNames.join(' & ')
 }

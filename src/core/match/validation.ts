@@ -1,21 +1,20 @@
 import {
   bestOfOneDecidingBehaviors,
-  countdownTimerDurations,
   defaultBestOfOneDecidingBehavior,
   gameModes,
   matchFormats,
-  matchTeamIds,
   type BestOfOneDecidingBehavior,
   type CountdownTimerDuration,
   type MatchFormat,
   type MatchGameMode,
   type MatchSetMode,
   type MatchSetup,
+  type MatchTeamId,
   type MatchSetupValidationIssue,
   type MatchSetupValidationResult,
-  type MatchSide,
-  type MatchTeamId
+  type MatchSide
 } from './types'
+import { isCountdownTimerDuration, isMatchTeamId, isRecord } from './guards'
 
 function createIssue(field: string, message: string): MatchSetupValidationIssue {
   return {
@@ -59,20 +58,12 @@ function describeValue(value: unknown): string {
   }
 }
 
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value)
-}
-
 function isMatchFormat(value: unknown): value is MatchFormat {
   return typeof value === 'string' && matchFormats.some((candidate) => candidate === value)
 }
 
 function isMatchGameMode(value: unknown): value is MatchGameMode {
   return typeof value === 'string' && gameModes.some((candidate) => candidate === value)
-}
-
-function isMatchTeamId(value: unknown): value is MatchTeamId {
-  return typeof value === 'string' && matchTeamIds.some((candidate) => candidate === value)
 }
 
 function isPlayerNames(value: unknown): value is string[] {
@@ -82,12 +73,6 @@ function isPlayerNames(value: unknown): value is string[] {
 function isBestOfOneDecidingBehavior(value: unknown): value is BestOfOneDecidingBehavior {
   return (
     typeof value === 'string' && bestOfOneDecidingBehaviors.some((candidate) => candidate === value)
-  )
-}
-
-function isCountdownTimerDuration(value: unknown): value is CountdownTimerDuration {
-  return (
-    typeof value === 'number' && countdownTimerDurations.some((candidate) => candidate === value)
   )
 }
 

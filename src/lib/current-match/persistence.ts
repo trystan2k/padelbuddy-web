@@ -1,22 +1,15 @@
 import {
-  countdownTimerDurations,
   defaultAudioAnnouncementsEnabled,
   defaultCountdownTimerDuration,
   defaultCountdownTimerEnabled,
   defaultServingIndicatorEnabled,
-  matchTeamIds,
   type MatchAction,
-  type CountdownTimerDuration,
   type MatchProjection,
-  type MatchSetup,
-  type MatchTeamId
+  type MatchSetup
 } from '@/core/match/types'
+import { isCountdownTimerDuration, isMatchTeamId, isRecord } from '@/core/match/guards'
 import { createMatchSetup } from '@/core/match/validation'
 import { projectMatch } from '@/core/match/replay'
-
-function isCountdownTimerDuration(value: unknown): value is CountdownTimerDuration {
-  return countdownTimerDurations.some((duration) => duration === value)
-}
 
 export const currentMatchSchemaVersion = 4 as const
 const defaultCurrentMatchId = 'current-match'
@@ -237,20 +230,12 @@ function parseMatchAction(input: unknown): MatchAction {
   }
 }
 
-function isMatchTeamId(value: unknown): value is MatchTeamId {
-  return typeof value === 'string' && matchTeamIds.some((teamId) => teamId === value)
-}
-
 function parseRecord(input: unknown): Record<string, unknown> {
   if (!isRecord(input)) {
     throw new Error('Current match record must be an object.')
   }
 
   return input
-}
-
-function isRecord(input: unknown): input is Record<string, unknown> {
-  return typeof input === 'object' && input !== null && !Array.isArray(input)
 }
 
 function createCorruptResult(error: unknown): CurrentMatchDecodeCorruptResult {

@@ -12,6 +12,7 @@ import { createCurrentMatchSession } from '@/lib/current-match/session'
 import { defaultLocale, isSupportedLocale } from '@/lib/i18n/types'
 import { useSpeechService } from '@/lib/speech/speech-service'
 import { prepareCurrentMatchRouteNavigation } from '@/lib/router/current-match-route-flow'
+import { logRuntimeError } from '@/lib/utils/error'
 import { getViewTransitionNavigationOptions } from '@/lib/utils/view-transitions'
 
 import { createMatchEndScreenSummary, getMatchDurationParts } from './view-model'
@@ -244,7 +245,7 @@ export function MatchEndScreen({
       await prepareCurrentMatchRouteNavigation(router, { to: '/' })
       await navigate({ to: '/', ...getViewTransitionNavigationOptions() })
     } catch (error) {
-      console.error('Failed to clear the current match before starting a new one.', error)
+      logRuntimeError('Failed to clear the current match before starting a new one.', error)
       setIsStartingNewMatch(false)
     }
   }, [isStartingNewMatch, navigate, router])
@@ -281,7 +282,7 @@ export function MatchEndScreen({
         ...getViewTransitionNavigationOptions()
       })
     } catch (error) {
-      console.error('Failed to continue the current match.', error)
+      logRuntimeError('Failed to continue the current match.', error)
       setIsContinuingMatch(false)
     }
   }, [actions, finishedAt, isContinuingMatch, matchId, navigate, router, setup, startedAt])

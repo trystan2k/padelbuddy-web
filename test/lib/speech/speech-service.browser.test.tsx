@@ -36,35 +36,58 @@ describe('useSpeechService', () => {
     speak: ReturnType<typeof vi.fn>
     cancel: ReturnType<typeof vi.fn>
     getVoices: ReturnType<typeof vi.fn>
+    paused: boolean
+    resume: ReturnType<typeof vi.fn>
     onvoiceschanged: ((this: SpeechSynthesis, ev: Event) => unknown) | null
     addEventListener: ReturnType<typeof vi.fn>
     removeEventListener: ReturnType<typeof vi.fn>
   }
+  let utterances: MockSpeechSynthesisUtterance[]
+
+  class MockSpeechSynthesisUtterance {
+    text: string
+    voice: SpeechSynthesisVoice | null = null
+    lang = ''
+    rate = 1.0
+    pitch = 1.0
+    private listeners: Map<string, EventListener[]> = new Map()
+
+    addEventListener = vi.fn((type: string, listener: EventListener) => {
+      const existing = this.listeners.get(type) ?? []
+      existing.push(listener)
+      this.listeners.set(type, existing)
+    })
+
+    removeEventListener = vi.fn()
+
+    constructor(text: string) {
+      this.text = text
+      utterances.push(this)
+    }
+
+    triggerEvent(type: string, event: Event = new Event(type)) {
+      const registeredListeners = this.listeners.get(type) ?? []
+
+      for (const listener of registeredListeners) {
+        listener(event)
+      }
+    }
+  }
 
   beforeEach(() => {
+    utterances = []
     mockSpeechSynthesis = {
       speak: vi.fn(),
       cancel: vi.fn(),
       getVoices: vi.fn(() => [{ lang: 'en-US', name: 'English' }]),
+      paused: false,
+      resume: vi.fn(),
       onvoiceschanged: null,
       addEventListener: vi.fn(),
       removeEventListener: vi.fn()
     }
 
     vi.stubGlobal('speechSynthesis', mockSpeechSynthesis)
-
-    class MockSpeechSynthesisUtterance {
-      text: string
-      voice: SpeechSynthesisVoice | null = null
-      rate = 1.0
-      pitch = 1.0
-      addEventListener = vi.fn()
-      removeEventListener = vi.fn()
-
-      constructor(text: string) {
-        this.text = text
-      }
-    }
     vi.stubGlobal('SpeechSynthesisUtterance', MockSpeechSynthesisUtterance)
   })
 
@@ -234,6 +257,56 @@ describe('useSpeechService', () => {
       serviceRef.current!.speak('Second message', { immediate: true })
 
       expect(mockSpeechSynthesis.cancel).toHaveBeenCalled()
+    })
+
+    it('processes the next queued utterance after the current one ends', async () => {
+      // oxlint-disable-next-line jsx-no-new-object-as-prop
+      const serviceRef = { current: null as ReturnType<typeof useSpeechService> | null }
+      await render(
+        <SpeechTestComponent
+          // oxlint-disable-next-line jsx-no-new-object-as-prop
+          config={{}}
+          onServiceRef={serviceRef}
+        />
+      )
+
+      await vi.waitFor(() => {
+        expect(serviceRef.current?.getVoice()).not.toBeNull()
+      })
+
+      serviceRef.current!.speak('First message')
+      serviceRef.current!.speak('Second message')
+
+      expect(mockSpeechSynthesis.speak).toHaveBeenCalledTimes(1)
+      expect(utterances[0]?.text).toBe('First message')
+
+      utterances[0]!.triggerEvent('end')
+
+      expect(mockSpeechSynthesis.speak).toHaveBeenCalledTimes(2)
+      expect(utterances[1]?.text).toBe('Second message')
+    })
+
+    it('resumes speech synthesis before speaking when the engine is paused', async () => {
+      mockSpeechSynthesis.paused = true
+
+      // oxlint-disable-next-line jsx-no-new-object-as-prop
+      const serviceRef = { current: null as ReturnType<typeof useSpeechService> | null }
+      await render(
+        <SpeechTestComponent
+          // oxlint-disable-next-line jsx-no-new-object-as-prop
+          config={{}}
+          onServiceRef={serviceRef}
+        />
+      )
+
+      await vi.waitFor(() => {
+        expect(serviceRef.current?.getVoice()).not.toBeNull()
+      })
+
+      serviceRef.current!.speak('Hello')
+
+      expect(mockSpeechSynthesis.resume).toHaveBeenCalledTimes(1)
+      expect(mockSpeechSynthesis.speak).toHaveBeenCalledTimes(1)
     })
   })
 

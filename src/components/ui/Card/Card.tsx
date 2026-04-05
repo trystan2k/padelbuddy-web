@@ -1,4 +1,4 @@
-import type { ReactNode, HTMLAttributes } from 'react'
+import type { ComponentPropsWithoutRef, ReactNode } from 'react'
 
 import { cn } from '@/lib/utils/cn'
 
@@ -7,7 +7,7 @@ import styles from './Card.module.css'
 
 export type CardAccent = Accent
 
-export interface CardProps extends HTMLAttributes<HTMLDivElement> {
+export interface CardProps extends ComponentPropsWithoutRef<'div'> {
   children: ReactNode
   className?: string | undefined
   accent?: CardAccent

@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, test } from 'vitest'
 
-import { consumeCurrentMatchResetNotice } from '@/lib/current-match/reset-notice'
+import currentMatchResetNoticeStore from '@/lib/current-match/reset-notice-store'
 import {
   createCurrentMatchPersistence,
   type CurrentMatchPersistence
@@ -33,7 +33,7 @@ describe('current match IndexedDB persistence', () => {
   })
 
   afterEach(async () => {
-    consumeCurrentMatchResetNotice()
+    currentMatchResetNoticeStore.reset()
     await deleteDatabase(databaseName)
   })
 
@@ -153,10 +153,10 @@ describe('current match IndexedDB persistence', () => {
       reason: 'schema-version',
       storedSchemaVersion: currentMatchSchemaVersion + 1
     })
-    expect(consumeCurrentMatchResetNotice()).toEqual({
+    expect(currentMatchResetNoticeStore.clear()).toEqual({
       reason: 'schema-version'
     })
-    expect(consumeCurrentMatchResetNotice()).toBeNull()
+    expect(currentMatchResetNoticeStore.clear()).toBeNull()
     await expect(persistence.loadCurrentMatch()).resolves.toEqual({
       status: 'empty'
     })
@@ -181,7 +181,7 @@ describe('current match IndexedDB persistence', () => {
       status: 'corrupt',
       message: 'Invalid current match action team: team-3'
     })
-    expect(consumeCurrentMatchResetNotice()).toBeNull()
+    expect(currentMatchResetNoticeStore.clear()).toBeNull()
     await expect(persistence.loadCurrentMatch()).resolves.toEqual({
       status: 'corrupt',
       message: 'Invalid current match action team: team-3'

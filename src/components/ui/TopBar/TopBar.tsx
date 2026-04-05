@@ -1,10 +1,10 @@
-import { type HTMLAttributes, type ReactNode } from 'react'
+import { type ComponentPropsWithoutRef, type ReactNode } from 'react'
 import { APP_VERSION } from '@/version'
 import { cn } from '@/lib/utils/cn'
 
 import styles from './TopBar.module.css'
 
-export interface TopBarProps extends HTMLAttributes<HTMLDivElement> {
+export interface TopBarProps extends ComponentPropsWithoutRef<'div'> {
   /** Optional brand icon source displayed next to the title. */
   iconSrc?: string
   /** Alt text for the brand icon. Use an empty string to mark it as decorative (`aria-hidden`). */

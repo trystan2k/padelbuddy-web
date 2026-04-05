@@ -6,7 +6,7 @@ import {
   type CurrentMatchRecord,
   type CurrentMatchSaveInput
 } from './persistence'
-import { queueCurrentMatchResetNotice } from './reset-notice'
+import currentMatchResetNoticeStore from './reset-notice-store'
 import {
   currentMatchObjectStoreName,
   persistenceDatabaseName,
@@ -95,7 +95,7 @@ export function createCurrentMatchPersistence(
 
         resetTransaction.objectStore(config.objectStoreName).delete(currentMatchRecordKey)
         await waitForIndexedDbTransaction(resetTransaction)
-        queueCurrentMatchResetNotice({
+        currentMatchResetNoticeStore.set({
           reason: 'schema-version'
         })
 
