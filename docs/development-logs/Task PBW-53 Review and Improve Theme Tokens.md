@@ -20,7 +20,7 @@ permalink: development-logs/task-pbw-53-review-and-improve-theme-tokens
 
 ## Implementation Summary
 
-- Performed a comprehensive token audit (PBW-54), created an audit report at docs/development-logs/PBW-54-token-audit.md, and aligned tokens with Pencil design variables.
+- Performed a comprehensive token audit (PBW-54), created an audit report at docs/development-logs/Task PBW-54 Token Audit.md, and aligned tokens with Pencil design variables.
 - Added base and semantic 'items' tokens and removed unused/dead tokens (PBW-55). Rebuilt CSS variables via pnpm tokens:build.
 - Migrated shared UI primitives and several screen-level components to the new semantic items tokens (PBW-56). Fixed token intent misuse and restored a mistakenly removed base.font.letterSpacing.wide-sm used by TopBar.
 - QA: pnpm complete-check passed (typecheck, lint, format, tests, e2e, build). No leftover legacy team color references found in migrated files.
