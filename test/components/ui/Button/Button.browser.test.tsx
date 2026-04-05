@@ -34,7 +34,7 @@ describe('Button', () => {
 
   describe('click handling', () => {
     test('calls onClick when clicked', async () => {
-      const handleClick = vi.fn()
+      const handleClick = vi.fn<() => void>()
       const screen = await render(<Button onClick={handleClick}>Click Me</Button>)
 
       await screen.getByRole('button').click()
@@ -43,7 +43,7 @@ describe('Button', () => {
     })
 
     test('does not call onClick when disabled', async () => {
-      const handleClick = vi.fn()
+      const handleClick = vi.fn<() => void>()
       const screen = await render(
         <Button onClick={handleClick} disabled>
           Disabled Button

@@ -75,7 +75,7 @@ export function CurrentMatchStartupGate({
   const { t } = useTranslation()
   const navigate = useNavigate()
   const router = useRouter()
-  const [startupState, setStartupState] = useState<CurrentMatchStartupResult>(initialStartupState)
+  const [startupState, setStartupState] = useState(initialStartupState)
   const [isClearing, setIsClearing] = useState(false)
   const [clearErrorMessage, setClearErrorMessage] = useState<string | null>(null)
   const pendingResumeMatchIdRef = useRef<string | null>(null)

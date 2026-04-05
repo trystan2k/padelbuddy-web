@@ -97,16 +97,20 @@ describe('voice-selector', () => {
     beforeEach(() => {
       const listeners = new Map<string, Set<EventListener>>()
       mockSpeechSynthesis = {
-        getVoices: vi.fn(() => mockVoices),
+        getVoices: vi.fn<() => SpeechSynthesisVoice[]>(() => mockVoices),
         onvoiceschanged: null,
-        addEventListener: vi.fn((type: string, listener: EventListener) => {
-          const set = listeners.get(type) ?? new Set()
-          set.add(listener)
-          listeners.set(type, set)
-        }),
-        removeEventListener: vi.fn((type: string, listener: EventListener) => {
-          listeners.get(type)?.delete(listener)
-        })
+        addEventListener: vi.fn<(type: string, listener: EventListener) => void>(
+          (type, listener) => {
+            const set = listeners.get(type) ?? new Set()
+            set.add(listener)
+            listeners.set(type, set)
+          }
+        ),
+        removeEventListener: vi.fn<(type: string, listener: EventListener) => void>(
+          (type, listener) => {
+            listeners.get(type)?.delete(listener)
+          }
+        )
       }
       vi.stubGlobal('speechSynthesis', mockSpeechSynthesis)
     })
@@ -133,18 +137,22 @@ describe('voice-selector', () => {
       let voicesLoaded = false
       const listeners = new Map<string, Set<EventListener>>()
 
-      mockSpeechSynthesis.getVoices = vi.fn(() => {
+      mockSpeechSynthesis.getVoices = vi.fn<() => SpeechSynthesisVoice[]>(() => {
         if (voicesLoaded) {
           return mockVoices
         }
         return []
       })
-      mockSpeechSynthesis.addEventListener = vi.fn((type: string, listener: EventListener) => {
-        const set = listeners.get(type) ?? new Set()
-        set.add(listener)
-        listeners.set(type, set)
-      })
-      mockSpeechSynthesis.removeEventListener = vi.fn((type: string, listener: EventListener) => {
+      mockSpeechSynthesis.addEventListener = vi.fn<(type: string, listener: EventListener) => void>(
+        (type, listener) => {
+          const set = listeners.get(type) ?? new Set()
+          set.add(listener)
+          listeners.set(type, set)
+        }
+      )
+      mockSpeechSynthesis.removeEventListener = vi.fn<
+        (type: string, listener: EventListener) => void
+      >((type, listener) => {
         listeners.get(type)?.delete(listener)
       })
 
@@ -186,13 +194,17 @@ describe('voice-selector', () => {
     it('rejects when signal is aborted during operation', async () => {
       const listeners = new Map<string, Set<EventListener>>()
 
-      mockSpeechSynthesis.getVoices = vi.fn(() => [])
-      mockSpeechSynthesis.addEventListener = vi.fn((type: string, listener: EventListener) => {
-        const set = listeners.get(type) ?? new Set()
-        set.add(listener)
-        listeners.set(type, set)
-      })
-      mockSpeechSynthesis.removeEventListener = vi.fn((type: string, listener: EventListener) => {
+      mockSpeechSynthesis.getVoices = vi.fn<() => SpeechSynthesisVoice[]>(() => [])
+      mockSpeechSynthesis.addEventListener = vi.fn<(type: string, listener: EventListener) => void>(
+        (type, listener) => {
+          const set = listeners.get(type) ?? new Set()
+          set.add(listener)
+          listeners.set(type, set)
+        }
+      )
+      mockSpeechSynthesis.removeEventListener = vi.fn<
+        (type: string, listener: EventListener) => void
+      >((type, listener) => {
         listeners.get(type)?.delete(listener)
       })
 

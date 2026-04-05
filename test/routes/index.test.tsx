@@ -1,12 +1,15 @@
 import { describe, expect, test, vi } from 'vitest'
+import { Route } from '@/routes/index'
 
 const { mockLoadHomeStartup } = vi.hoisted(() => ({
-  mockLoadHomeStartup: vi.fn(async () => ({
-    startupState: {
-      status: 'no-match' as const,
-      notice: null
-    }
-  }))
+  mockLoadHomeStartup: vi.fn<() => Promise<{ startupState: { status: 'no-match'; notice: null } }>>(
+    async () => ({
+      startupState: {
+        status: 'no-match' as const,
+        notice: null
+      }
+    })
+  )
 }))
 
 vi.mock('@/routes/-home-startup', () => ({
@@ -21,8 +24,6 @@ vi.mock('@tanstack/react-router', async (importOriginal) => {
     createFileRoute: () => (options: unknown) => ({ options })
   }
 })
-
-import { Route } from '@/routes/index'
 
 describe('index route', () => {
   test('renders the app shell component', () => {

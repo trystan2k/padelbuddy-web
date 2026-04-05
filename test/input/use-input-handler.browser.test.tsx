@@ -23,10 +23,10 @@ function InputHandlerHarness({
   bindings = null,
   initialActions = [],
   bufferedAddWindowMs = 380,
-  onAdd = vi.fn(),
-  onUndo = vi.fn(),
-  onUndoForTeam = vi.fn(),
-  onError = vi.fn(),
+  onAdd = vi.fn<(teamId: MatchTeamId) => void>(),
+  onUndo = vi.fn<() => void>(),
+  onUndoForTeam = vi.fn<(teamId: MatchTeamId) => void>(),
+  onError = vi.fn<(error: Error) => void>(),
   onStateChange
 }: {
   enabled?: boolean
@@ -39,7 +39,7 @@ function InputHandlerHarness({
   onError?: (error: Error) => void
   onStateChange?: (state: ReturnType<typeof useInputHandler>) => void
 }) {
-  const [actions, setActions] = useState<MatchAction[]>(initialActions)
+  const [actions, setActions] = useState(initialActions)
   const state = useInputHandler(
     {
       actions,
@@ -98,7 +98,7 @@ describe('use-input-handler browser', () => {
   test('commits a mapped add after the buffered window', async () => {
     vi.useFakeTimers()
 
-    const onAdd = vi.fn()
+    const onAdd = vi.fn<(teamId: MatchTeamId) => void>()
     await render(<InputHandlerHarness onAdd={onAdd} />)
 
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft' }))
@@ -113,7 +113,7 @@ describe('use-input-handler browser', () => {
   test('supports custom mapped adds for team 2', async () => {
     vi.useFakeTimers()
 
-    const onAdd = vi.fn()
+    const onAdd = vi.fn<(teamId: MatchTeamId) => void>()
     await render(
       <InputHandlerHarness
         onAdd={onAdd}
@@ -135,8 +135,8 @@ describe('use-input-handler browser', () => {
   test('double pressing the same add key reverts that team instead of scoring', async () => {
     vi.useFakeTimers()
 
-    const onAdd = vi.fn()
-    const onUndoForTeam = vi.fn()
+    const onAdd = vi.fn<(teamId: MatchTeamId) => void>()
+    const onUndoForTeam = vi.fn<(teamId: MatchTeamId) => void>()
     const initialActions: MatchAction[] = [{ type: 'score-point', teamId: 'team-1' }]
 
     const screen = await render(
@@ -158,7 +158,7 @@ describe('use-input-handler browser', () => {
   })
 
   test('explicit revert mapping removes the last team-specific action even when another team scored later', async () => {
-    const onUndoForTeam = vi.fn()
+    const onUndoForTeam = vi.fn<(teamId: MatchTeamId) => void>()
     const bindings: RemoteControllerBindings = {
       'add-team-1': 'q',
       'revert-team-1': 'z',
@@ -185,7 +185,7 @@ describe('use-input-handler browser', () => {
   })
 
   test('explicit revert mapping does nothing when that team has no scoring action', async () => {
-    const onUndoForTeam = vi.fn()
+    const onUndoForTeam = vi.fn<(teamId: MatchTeamId) => void>()
     const bindings: RemoteControllerBindings = {
       'add-team-1': 'q',
       'revert-team-1': 'z',
@@ -208,7 +208,7 @@ describe('use-input-handler browser', () => {
   })
 
   test('team-2 revert mapping removes the last team-2 action', async () => {
-    const onUndoForTeam = vi.fn()
+    const onUndoForTeam = vi.fn<(teamId: MatchTeamId) => void>()
 
     const screen = await render(
       <InputHandlerHarness
@@ -235,7 +235,7 @@ describe('use-input-handler browser', () => {
   })
 
   test('legacy undo keys still work', async () => {
-    const onUndo = vi.fn()
+    const onUndo = vi.fn<() => void>()
     const screen = await render(
       <InputHandlerHarness
         initialActions={[{ type: 'score-point', teamId: 'team-1' }]}
@@ -260,7 +260,7 @@ describe('use-input-handler browser', () => {
       />
     )
 
-    const preventDefault = vi.fn()
+    const preventDefault = vi.fn<() => void>()
 
     await vi.waitFor(() => {
       expect(handler).not.toBeNull()
@@ -281,7 +281,7 @@ describe('use-input-handler browser', () => {
   })
 
   test('ignores unmapped keys, modifier keys, and editable targets', async () => {
-    const onAdd = vi.fn()
+    const onAdd = vi.fn<(teamId: MatchTeamId) => void>()
     let handler: ((event: KeyboardEvent) => void) | null = null
 
     await render(
@@ -304,7 +304,7 @@ describe('use-input-handler browser', () => {
       ctrlKey: false,
       metaKey: false,
       altKey: false,
-      preventDefault: vi.fn(),
+      preventDefault: vi.fn<() => void>(),
       target: document.body
     } as unknown as KeyboardEvent)
     currentHandler({
@@ -312,7 +312,7 @@ describe('use-input-handler browser', () => {
       ctrlKey: true,
       metaKey: false,
       altKey: false,
-      preventDefault: vi.fn(),
+      preventDefault: vi.fn<() => void>(),
       target: document.body
     } as unknown as KeyboardEvent)
 
@@ -322,7 +322,7 @@ describe('use-input-handler browser', () => {
       ctrlKey: false,
       metaKey: false,
       altKey: false,
-      preventDefault: vi.fn(),
+      preventDefault: vi.fn<() => void>(),
       target: input
     } as unknown as KeyboardEvent)
 
@@ -333,7 +333,7 @@ describe('use-input-handler browser', () => {
     vi.useFakeTimers()
 
     let handler: ((event: KeyboardEvent) => void) | null = null
-    const onAdd = vi.fn()
+    const onAdd = vi.fn<(teamId: MatchTeamId) => void>()
 
     await render(
       <InputHandlerHarness
@@ -356,7 +356,7 @@ describe('use-input-handler browser', () => {
       ctrlKey: false,
       metaKey: false,
       altKey: false,
-      preventDefault: vi.fn(),
+      preventDefault: vi.fn<() => void>(),
       target: textNode
     } as unknown as KeyboardEvent)
 
@@ -366,7 +366,7 @@ describe('use-input-handler browser', () => {
   })
 
   test('touch handlers remain immediate and do not use the buffer', async () => {
-    const onAdd = vi.fn()
+    const onAdd = vi.fn<(teamId: MatchTeamId) => void>()
     const screen = await render(<InputHandlerHarness onAdd={onAdd} />)
 
     await screen.getByTestId('touch-add-team-1').click()
@@ -376,7 +376,7 @@ describe('use-input-handler browser', () => {
   })
 
   test('touch team-2 scoring remains immediate', async () => {
-    const onAdd = vi.fn()
+    const onAdd = vi.fn<(teamId: MatchTeamId) => void>()
 
     function Team2Harness() {
       const [actions, setActions] = useState<MatchAction[]>([])
@@ -409,7 +409,7 @@ describe('use-input-handler browser', () => {
   })
 
   test('touch undo handler works immediately when enabled', async () => {
-    const onUndo = vi.fn()
+    const onUndo = vi.fn<() => void>()
     const screen = await render(
       <InputHandlerHarness
         initialActions={[{ type: 'score-point', teamId: 'team-1' }]}
@@ -426,7 +426,7 @@ describe('use-input-handler browser', () => {
   test('cancels a pending buffered add when the handler becomes disabled', async () => {
     vi.useFakeTimers()
 
-    const onAdd = vi.fn()
+    const onAdd = vi.fn<(teamId: MatchTeamId) => void>()
 
     function ToggleEnabledHarness() {
       const [enabled, setEnabled] = useState(true)
@@ -461,7 +461,7 @@ describe('use-input-handler browser', () => {
   test('enabled ref guard prevents a buffered add from committing after disable', async () => {
     vi.useFakeTimers()
 
-    const onAdd = vi.fn()
+    const onAdd = vi.fn<(teamId: MatchTeamId) => void>()
     const clearTimeoutSpy = vi.spyOn(globalThis, 'clearTimeout').mockImplementation(() => undefined)
 
     function ToggleEnabledHarness() {
@@ -502,8 +502,8 @@ describe('use-input-handler browser', () => {
     // Net result: no score, no undo — both presses silently discarded.
     vi.useFakeTimers()
 
-    const onAdd = vi.fn()
-    const onUndoForTeam = vi.fn()
+    const onAdd = vi.fn<(teamId: MatchTeamId) => void>()
+    const onUndoForTeam = vi.fn<(teamId: MatchTeamId) => void>()
 
     await render(<InputHandlerHarness onAdd={onAdd} onUndoForTeam={onUndoForTeam} />)
 
@@ -519,7 +519,7 @@ describe('use-input-handler browser', () => {
   test('ignores mapped keyboard input when the handler is disabled', async () => {
     vi.useFakeTimers()
 
-    const onAdd = vi.fn()
+    const onAdd = vi.fn<(teamId: MatchTeamId) => void>()
     await render(<InputHandlerHarness enabled={false} onAdd={onAdd} />)
 
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft' }))
@@ -529,8 +529,8 @@ describe('use-input-handler browser', () => {
   })
 
   test('ignores touch handlers when the hook is disabled', async () => {
-    const onAdd = vi.fn()
-    const onUndo = vi.fn()
+    const onAdd = vi.fn<(teamId: MatchTeamId) => void>()
+    const onUndo = vi.fn<() => void>()
     const screen = await render(
       <InputHandlerHarness
         enabled={false}
@@ -549,7 +549,7 @@ describe('use-input-handler browser', () => {
   })
 
   test('team-specific revert keeps state unchanged when that team has no actions', async () => {
-    const onUndoForTeam = vi.fn()
+    const onUndoForTeam = vi.fn<(teamId: MatchTeamId) => void>()
     const screen = await render(
       <InputHandlerHarness
         onUndoForTeam={onUndoForTeam}
@@ -571,8 +571,8 @@ describe('use-input-handler browser', () => {
   test('global undo cancels a pending buffered add before it is committed', async () => {
     vi.useFakeTimers()
 
-    const onAdd = vi.fn()
-    const onUndo = vi.fn()
+    const onAdd = vi.fn<(teamId: MatchTeamId) => void>()
+    const onUndo = vi.fn<() => void>()
 
     await render(<InputHandlerHarness onAdd={onAdd} onUndo={onUndo} />)
 
@@ -585,7 +585,7 @@ describe('use-input-handler browser', () => {
   })
 
   test('reports callback errors through onError', async () => {
-    const onError = vi.fn()
+    const onError = vi.fn<(error: Error) => void>()
 
     function ErrorHarness() {
       const state = useInputHandler(

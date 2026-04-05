@@ -76,12 +76,14 @@ describe('wake-lock browser', () => {
 
   test('manager reset clears singleton state', async () => {
     const mockSentinel = {
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-      release: vi.fn().mockResolvedValue(undefined)
+      addEventListener: vi.fn<() => void>(),
+      removeEventListener: vi.fn<() => void>(),
+      release: vi.fn<() => Promise<void>>().mockResolvedValue(undefined)
     }
     const mockWakeLock = {
-      request: vi.fn().mockResolvedValue(mockSentinel)
+      request: vi
+        .fn<() => Promise<WakeLockSentinel>>()
+        .mockResolvedValue(mockSentinel as unknown as WakeLockSentinel)
     }
 
     Object.defineProperty(navigator, 'wakeLock', {
@@ -102,12 +104,14 @@ describe('wake-lock browser', () => {
     const firstManager = createWakeLockManager()
     const secondManager = createWakeLockManager()
     const mockSentinel = {
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-      release: vi.fn().mockResolvedValue(undefined)
+      addEventListener: vi.fn<() => void>(),
+      removeEventListener: vi.fn<() => void>(),
+      release: vi.fn<() => Promise<void>>().mockResolvedValue(undefined)
     }
     const mockWakeLock = {
-      request: vi.fn().mockResolvedValue(mockSentinel)
+      request: vi
+        .fn<() => Promise<WakeLockSentinel>>()
+        .mockResolvedValue(mockSentinel as unknown as WakeLockSentinel)
     }
 
     Object.defineProperty(navigator, 'wakeLock', {
@@ -152,12 +156,14 @@ describe('wake-lock browser', () => {
   describe('isSupported', () => {
     test('returns true when Wake Lock API is available', async () => {
       const mockSentinel = {
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-        release: vi.fn().mockResolvedValue(undefined)
+        addEventListener: vi.fn<() => void>(),
+        removeEventListener: vi.fn<() => void>(),
+        release: vi.fn<() => Promise<void>>().mockResolvedValue(undefined)
       }
       const mockWakeLock = {
-        request: vi.fn().mockResolvedValue(mockSentinel)
+        request: vi
+          .fn<() => Promise<WakeLockSentinel>>()
+          .mockResolvedValue(mockSentinel as unknown as WakeLockSentinel)
       }
 
       Object.defineProperty(navigator, 'wakeLock', {
@@ -175,12 +181,14 @@ describe('wake-lock browser', () => {
   describe('request and release (supported)', () => {
     test('requests wake lock successfully', async () => {
       const mockSentinel = {
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-        release: vi.fn().mockResolvedValue(undefined)
+        addEventListener: vi.fn<() => void>(),
+        removeEventListener: vi.fn<() => void>(),
+        release: vi.fn<() => Promise<void>>().mockResolvedValue(undefined)
       }
       const mockWakeLock = {
-        request: vi.fn().mockResolvedValue(mockSentinel)
+        request: vi
+          .fn<() => Promise<WakeLockSentinel>>()
+          .mockResolvedValue(mockSentinel as unknown as WakeLockSentinel)
       }
 
       Object.defineProperty(navigator, 'wakeLock', {
@@ -202,12 +210,14 @@ describe('wake-lock browser', () => {
 
     test('releases wake lock successfully', async () => {
       const mockSentinel = {
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-        release: vi.fn().mockResolvedValue(undefined)
+        addEventListener: vi.fn<() => void>(),
+        removeEventListener: vi.fn<() => void>(),
+        release: vi.fn<() => Promise<void>>().mockResolvedValue(undefined)
       }
       const mockWakeLock = {
-        request: vi.fn().mockResolvedValue(mockSentinel)
+        request: vi
+          .fn<() => Promise<WakeLockSentinel>>()
+          .mockResolvedValue(mockSentinel as unknown as WakeLockSentinel)
       }
 
       Object.defineProperty(navigator, 'wakeLock', {
@@ -231,12 +241,14 @@ describe('wake-lock browser', () => {
 
     test('does not request wake lock if already active', async () => {
       const mockSentinel = {
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-        release: vi.fn().mockResolvedValue(undefined)
+        addEventListener: vi.fn<() => void>(),
+        removeEventListener: vi.fn<() => void>(),
+        release: vi.fn<() => Promise<void>>().mockResolvedValue(undefined)
       }
       const mockWakeLock = {
-        request: vi.fn().mockResolvedValue(mockSentinel)
+        request: vi
+          .fn<() => Promise<WakeLockSentinel>>()
+          .mockResolvedValue(mockSentinel as unknown as WakeLockSentinel)
       }
 
       Object.defineProperty(navigator, 'wakeLock', {
@@ -259,12 +271,14 @@ describe('wake-lock browser', () => {
   describe('enabled option', () => {
     test('does not request wake lock when enabled is false', async () => {
       const mockSentinel = {
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-        release: vi.fn().mockResolvedValue(undefined)
+        addEventListener: vi.fn<() => void>(),
+        removeEventListener: vi.fn<() => void>(),
+        release: vi.fn<() => Promise<void>>().mockResolvedValue(undefined)
       }
       const mockWakeLock = {
-        request: vi.fn().mockResolvedValue(mockSentinel)
+        request: vi
+          .fn<() => Promise<WakeLockSentinel>>()
+          .mockResolvedValue(mockSentinel as unknown as WakeLockSentinel)
       }
 
       Object.defineProperty(navigator, 'wakeLock', {
@@ -286,12 +300,14 @@ describe('wake-lock browser', () => {
   describe('visibility change handling', () => {
     test('does not re-request wake lock when already active', async () => {
       const mockSentinel = {
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-        release: vi.fn().mockResolvedValue(undefined)
+        addEventListener: vi.fn<() => void>(),
+        removeEventListener: vi.fn<() => void>(),
+        release: vi.fn<() => Promise<void>>().mockResolvedValue(undefined)
       }
       const mockWakeLock = {
-        request: vi.fn().mockResolvedValue(mockSentinel)
+        request: vi
+          .fn<() => Promise<WakeLockSentinel>>()
+          .mockResolvedValue(mockSentinel as unknown as WakeLockSentinel)
       }
 
       Object.defineProperty(navigator, 'wakeLock', {
@@ -321,14 +337,16 @@ describe('wake-lock browser', () => {
 
   describe('error handling', () => {
     test('handles release error gracefully', async () => {
-      const releaseFn = vi.fn().mockRejectedValue(new Error('Release failed'))
+      const releaseFn = vi.fn<() => Promise<void>>().mockRejectedValue(new Error('Release failed'))
       const mockSentinel = {
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
+        addEventListener: vi.fn<() => void>(),
+        removeEventListener: vi.fn<() => void>(),
         release: releaseFn
       }
       const mockWakeLock = {
-        request: vi.fn().mockResolvedValue(mockSentinel)
+        request: vi
+          .fn<() => Promise<WakeLockSentinel>>()
+          .mockResolvedValue(mockSentinel as unknown as WakeLockSentinel)
       }
 
       Object.defineProperty(navigator, 'wakeLock', {
@@ -337,7 +355,7 @@ describe('wake-lock browser', () => {
         configurable: true
       })
 
-      const onError = vi.fn()
+      const onError = vi.fn<(error: Error) => void>()
       // eslint-disable-next-line react-perf/jsx-no-new-object-as-prop
       const wakeLockOptions = { onError }
       const screen = await render(<WakeLockTestComponent options={wakeLockOptions} />)
@@ -358,9 +376,11 @@ describe('wake-lock browser', () => {
     })
 
     test('handles request error and calls onError callback', async () => {
-      const onError = vi.fn()
+      const onError = vi.fn<(error: Error) => void>()
       const mockWakeLock = {
-        request: vi.fn().mockRejectedValue(new Error('Request failed'))
+        request: vi
+          .fn<() => Promise<WakeLockSentinel>>()
+          .mockRejectedValue(new Error('Request failed'))
       }
 
       Object.defineProperty(navigator, 'wakeLock', {
@@ -381,12 +401,14 @@ describe('wake-lock browser', () => {
   describe('return value', () => {
     test('returns correct interface shape', async () => {
       const mockSentinel = {
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-        release: vi.fn().mockResolvedValue(undefined)
+        addEventListener: vi.fn<() => void>(),
+        removeEventListener: vi.fn<() => void>(),
+        release: vi.fn<() => Promise<void>>().mockResolvedValue(undefined)
       }
       const mockWakeLock = {
-        request: vi.fn().mockResolvedValue(mockSentinel)
+        request: vi
+          .fn<() => Promise<WakeLockSentinel>>()
+          .mockResolvedValue(mockSentinel as unknown as WakeLockSentinel)
       }
 
       Object.defineProperty(navigator, 'wakeLock', {

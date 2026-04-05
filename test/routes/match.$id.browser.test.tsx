@@ -3,10 +3,14 @@
 
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 import { render } from 'vitest-browser-react'
+import { currentMatchSchemaVersion } from '@/lib/current-match/persistence'
+import { Route } from '@/routes/match.$id'
+
+import { createTestSetup, winQuickSet } from '../core/match/test-helpers'
 
 const { mockLoadCurrentMatch, mockUseLoaderData } = vi.hoisted(() => ({
-  mockLoadCurrentMatch: vi.fn(),
-  mockUseLoaderData: vi.fn()
+  mockLoadCurrentMatch: vi.fn<() => Promise<unknown>>(),
+  mockUseLoaderData: vi.fn<() => unknown>()
 }))
 
 vi.mock('@/lib/current-match/indexed-db', async (importOriginal) => {
@@ -31,17 +35,12 @@ vi.mock('@tanstack/react-router', async (importOriginal) => {
     }),
     redirect: (options: unknown) => options,
     useRouter: () => ({
-      invalidate: vi.fn(),
-      preloadRoute: vi.fn(),
-      navigate: vi.fn()
+      invalidate: vi.fn<() => Promise<void>>(),
+      preloadRoute: vi.fn<() => Promise<void>>(),
+      navigate: vi.fn<() => void>()
     })
   }
 })
-
-import { currentMatchSchemaVersion } from '@/lib/current-match/persistence'
-import { Route } from '@/routes/match.$id'
-
-import { createTestSetup, winQuickSet } from '../core/match/test-helpers'
 
 describe('match.$id route', () => {
   const testMatchId = 'match-1'

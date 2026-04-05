@@ -21,14 +21,14 @@ describe('SideSwitchPrompt', () => {
   })
 
   test('renders when open with odd-games reason', async () => {
-    const onClose = vi.fn()
+    const onClose = vi.fn<() => void>()
     const screen = await render(<SideSwitchPrompt {...defaultProps} onClose={onClose} />)
 
     await expect.element(screen.getByText('Switch sides (odd games)')).toBeInTheDocument()
   })
 
   test('renders when open with tiebreak-interval reason', async () => {
-    const onClose = vi.fn()
+    const onClose = vi.fn<() => void>()
     const screen = await render(
       <SideSwitchPrompt {...defaultProps} reason="tiebreak-interval" onClose={onClose} />
     )
@@ -37,7 +37,7 @@ describe('SideSwitchPrompt', () => {
   })
 
   test('does not render when isOpen is false', async () => {
-    const onClose = vi.fn()
+    const onClose = vi.fn<() => void>()
     const screen = await render(
       <SideSwitchPrompt {...defaultProps} isOpen={false} onClose={onClose} />
     )
@@ -46,7 +46,7 @@ describe('SideSwitchPrompt', () => {
   })
 
   test('does not render when reason is null', async () => {
-    const onClose = vi.fn()
+    const onClose = vi.fn<() => void>()
     const screen = await render(
       <SideSwitchPrompt {...defaultProps} reason={null} onClose={onClose} />
     )
@@ -55,7 +55,7 @@ describe('SideSwitchPrompt', () => {
   })
 
   test('calls onClose when confirm button clicked', async () => {
-    const handleClose = vi.fn()
+    const handleClose = vi.fn<() => void>()
     const screen = await render(<SideSwitchPrompt {...defaultProps} onClose={handleClose} />)
 
     // Use dispatchEvent to reliably trigger the click in CI where Playwright's
@@ -67,7 +67,7 @@ describe('SideSwitchPrompt', () => {
   })
 
   test('calls onClose when click on backdrop', async () => {
-    const handleClose = vi.fn()
+    const handleClose = vi.fn<() => void>()
     const screen = await render(<SideSwitchPrompt {...defaultProps} onClose={handleClose} />)
 
     const backdrop = screen.getByTestId('side-switch-backdrop').element()
@@ -79,14 +79,14 @@ describe('SideSwitchPrompt', () => {
   })
 
   test('renders description text', async () => {
-    const onClose = vi.fn()
+    const onClose = vi.fn<() => void>()
     const screen = await render(<SideSwitchPrompt {...defaultProps} onClose={onClose} />)
 
     await expect.element(screen.getByText('Players should switch sides now.')).toBeInTheDocument()
   })
 
   test('has dialog role', async () => {
-    const onClose = vi.fn()
+    const onClose = vi.fn<() => void>()
     const screen = await render(<SideSwitchPrompt {...defaultProps} onClose={onClose} />)
 
     const dialog = screen.getByRole('dialog')
@@ -94,7 +94,7 @@ describe('SideSwitchPrompt', () => {
   })
 
   test('has aria-modal attribute', async () => {
-    const onClose = vi.fn()
+    const onClose = vi.fn<() => void>()
     const screen = await render(<SideSwitchPrompt {...defaultProps} onClose={onClose} />)
 
     const dialog = screen.getByRole('dialog')
@@ -102,14 +102,14 @@ describe('SideSwitchPrompt', () => {
   })
 
   test('has test id', async () => {
-    const onClose = vi.fn()
+    const onClose = vi.fn<() => void>()
     const screen = await render(<SideSwitchPrompt {...defaultProps} onClose={onClose} />)
 
     await expect.element(screen.getByTestId('side-switch-prompt')).toBeInTheDocument()
   })
 
   test('has accessible label for title', async () => {
-    const onClose = vi.fn()
+    const onClose = vi.fn<() => void>()
     const screen = await render(<SideSwitchPrompt {...defaultProps} onClose={onClose} />)
 
     // Dialog is rendered in a portal, so we query via the dialog element
@@ -120,7 +120,7 @@ describe('SideSwitchPrompt', () => {
   })
 
   test('confirm button has correct type', async () => {
-    const onClose = vi.fn()
+    const onClose = vi.fn<() => void>()
     const screen = await render(<SideSwitchPrompt {...defaultProps} onClose={onClose} />)
 
     const confirmButton = screen.getByText('Switched')
@@ -130,7 +130,7 @@ describe('SideSwitchPrompt', () => {
   test('auto-closes after specified delay', async () => {
     vi.useFakeTimers()
 
-    const handleClose = vi.fn()
+    const handleClose = vi.fn<() => void>()
     await render(<SideSwitchPrompt {...defaultProps} onClose={handleClose} autoCloseDelay={5000} />)
 
     // Before delay - not called
@@ -146,7 +146,7 @@ describe('SideSwitchPrompt', () => {
   test('does not auto-close when autoCloseDelay is 0', async () => {
     vi.useFakeTimers()
 
-    const handleClose = vi.fn()
+    const handleClose = vi.fn<() => void>()
     await render(<SideSwitchPrompt {...defaultProps} onClose={handleClose} autoCloseDelay={0} />)
 
     // Even after a long time

@@ -31,13 +31,14 @@ const {
   mockSpeechDestroy,
   mockUseOrientationDetection
 } = vi.hoisted(() => ({
-  mockInvalidate: vi.fn(async () => undefined),
-  mockNavigate: vi.fn(),
-  mockPreloadRoute: vi.fn(async () => undefined),
-  mockLoadRemoteControllerBindings: vi.fn(),
-  mockSpeechAnnounce: vi.fn(),
-  mockSpeechDestroy: vi.fn(),
-  mockUseOrientationDetection: vi.fn(() => ({
+  mockInvalidate: vi.fn<() => Promise<void>>(async () => undefined),
+  mockNavigate: vi.fn<() => void>(),
+  mockPreloadRoute: vi.fn<() => Promise<void>>(async () => undefined),
+  mockLoadRemoteControllerBindings:
+    vi.fn<() => Promise<ReturnType<typeof createRemoteControllerBindings> | null>>(),
+  mockSpeechAnnounce: vi.fn<(args: unknown) => void>(),
+  mockSpeechDestroy: vi.fn<() => void>(),
+  mockUseOrientationDetection: vi.fn<() => { isPortrait: boolean; isLandscape: boolean }>(() => ({
     isPortrait: false,
     isLandscape: true
   }))
@@ -62,7 +63,7 @@ vi.mock('@/lib/i18n/i18n', async (importOriginal) => {
   return {
     ...original,
     getCurrentLocale: () => 'en',
-    changeLocale: vi.fn()
+    changeLocale: vi.fn<(locale: string) => void>()
   }
 })
 
@@ -83,14 +84,14 @@ vi.mock('@/lib/speech/speech-service', async (importOriginal) => {
     useSpeechService: () => ({
       announce: mockSpeechAnnounce,
       destroy: mockSpeechDestroy,
-      cancel: vi.fn(),
-      getMuted: vi.fn(() => false),
-      setMuted: vi.fn(),
-      getVerbosity: vi.fn(() => 'standard'),
-      setVerbosity: vi.fn(),
-      getVoice: vi.fn(() => null),
-      isSupported: vi.fn(() => true),
-      speak: vi.fn()
+      cancel: vi.fn<() => void>(),
+      getMuted: vi.fn<() => boolean>(() => false),
+      setMuted: vi.fn<() => void>(),
+      getVerbosity: vi.fn<() => string>(() => 'standard'),
+      setVerbosity: vi.fn<() => void>(),
+      getVoice: vi.fn<() => null>(() => null),
+      isSupported: vi.fn<() => boolean>(() => true),
+      speak: vi.fn<() => void>()
     })
   }
 })

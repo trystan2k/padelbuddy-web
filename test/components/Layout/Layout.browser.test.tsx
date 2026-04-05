@@ -3,10 +3,16 @@ import { render } from 'vitest-browser-react'
 
 import { Layout } from '@/components/Layout/Layout'
 
+const HeaderTest = () => <span>Header Content</span>
+const FooterTest = () => <span>Footer Content</span>
+
+const headerTest = <HeaderTest />
+const footerTest = <FooterTest />
+
 describe('Layout', () => {
   test('renders header, children, and footer slots correctly', async () => {
     const screen = await render(
-      <Layout header={<span>Header Content</span>} footer={<span>Footer Content</span>}>
+      <Layout header={headerTest} footer={footerTest}>
         <span>Main Content</span>
       </Layout>
     )
@@ -18,7 +24,7 @@ describe('Layout', () => {
 
   test('does not render header when omitted', async () => {
     const screen = await render(
-      <Layout footer={<span>Footer Content</span>}>
+      <Layout footer={footerTest}>
         <span>Main Content</span>
       </Layout>
     )
@@ -30,7 +36,7 @@ describe('Layout', () => {
 
   test('does not render footer when omitted', async () => {
     const screen = await render(
-      <Layout header={<span>Header Content</span>}>
+      <Layout header={headerTest}>
         <span>Main Content</span>
       </Layout>
     )
@@ -64,7 +70,7 @@ describe('Layout', () => {
 
   test('uses semantic HTML elements (main, header, footer)', async () => {
     const screen = await render(
-      <Layout header={<span>Header</span>} footer={<span>Footer</span>}>
+      <Layout header={headerTest} footer={footerTest}>
         <span>Main</span>
       </Layout>
     )

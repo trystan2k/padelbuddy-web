@@ -4,14 +4,14 @@ import { afterEach, beforeEach, describe, expect, it, vi, type Mock } from 'vite
 
 function createMockRegistration(overrides?: Partial<ServiceWorkerRegistration>) {
   return {
-    unregister: vi.fn().mockResolvedValue(undefined),
-    addEventListener: vi.fn(),
-    removeEventListener: vi.fn(),
+    unregister: vi.fn<() => Promise<boolean>>().mockResolvedValue(true),
+    addEventListener: vi.fn<(type: string, listener: EventListener) => void>(),
+    removeEventListener: vi.fn<(type: string, listener: EventListener) => void>(),
     active: { state: 'activated' } as ServiceWorker,
     installing: null as ServiceWorker | null,
     waiting: null as ServiceWorker | null,
     scope: '/',
-    update: vi.fn().mockResolvedValue(undefined),
+    update: vi.fn<() => Promise<void>>().mockResolvedValue(undefined),
     ...overrides
   } as unknown as ServiceWorkerRegistration
 }
@@ -23,12 +23,14 @@ interface StubResult {
 }
 
 function stubServiceWorker(hasController = true): StubResult {
-  const controllerPostMessage = hasController ? vi.fn() : null
+  const controllerPostMessage = hasController ? vi.fn<() => void>() : null
 
   const sw: Record<string, unknown> = {
     controller: hasController ? { postMessage: controllerPostMessage } : null,
-    register: vi.fn().mockResolvedValue(createMockRegistration()),
-    getRegistrations: vi.fn().mockResolvedValue([])
+    register: vi
+      .fn<() => Promise<ServiceWorkerRegistration>>()
+      .mockResolvedValue(createMockRegistration()),
+    getRegistrations: vi.fn<() => Promise<ServiceWorkerRegistration[]>>().mockResolvedValue([])
   }
 
   vi.stubGlobal('navigator', { serviceWorker: sw })
@@ -48,7 +50,7 @@ function getPort2FromCall(postMessageSpy: Mock): MessagePort {
 
 /** Helper: send a response through the MessageChannel port2 → port1 */
 function respondViaPort(port2: MessagePort, data: unknown) {
-  port2.postMessage(data)
+  port2.postMessage(data as void)
 }
 
 // Dynamic import helper to get fresh module state
@@ -124,7 +126,7 @@ describe('PWA registration module', () => {
     })
 
     it('sets up updatefound listener on the registration', async () => {
-      const addEventListenerSpy = vi.fn()
+      const addEventListenerSpy = vi.fn<() => void>()
       const mockRegistration = createMockRegistration({ addEventListener: addEventListenerSpy })
       const { register } = stubServiceWorker()
       register.mockResolvedValue(mockRegistration)
@@ -137,12 +139,12 @@ describe('PWA registration module', () => {
 
     it('updatefound handler logs warning when new worker installs and controller exists', async () => {
       const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
-      const installingAddEventListener = vi.fn()
+      const installingAddEventListener = vi.fn<() => void>()
       const mockInstalling = {
         state: 'installed',
         addEventListener: installingAddEventListener
       } as unknown as ServiceWorker
-      const regAddEventListener = vi.fn()
+      const regAddEventListener = vi.fn<() => void>()
       const mockRegistration = createMockRegistration({
         installing: mockInstalling,
         addEventListener: regAddEventListener
@@ -196,7 +198,7 @@ describe('PWA registration module', () => {
       const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
       const mockInstalling = {
         state: 'installed',
-        addEventListener: vi.fn()
+        addEventListener: vi.fn<() => void>()
       } as unknown as ServiceWorker
       const mockRegistration = createMockRegistration({
         installing: mockInstalling
@@ -237,8 +239,8 @@ describe('PWA registration module', () => {
     })
 
     it('unregisters all registrations when no cached registration exists', async () => {
-      const unregister1 = vi.fn().mockResolvedValue(undefined)
-      const unregister2 = vi.fn().mockResolvedValue(undefined)
+      const unregister1 = vi.fn<() => Promise<boolean>>().mockResolvedValue(true)
+      const unregister2 = vi.fn<() => Promise<boolean>>().mockResolvedValue(true)
       const mockReg1 = createMockRegistration({ unregister: unregister1 })
       const mockReg2 = createMockRegistration({ unregister: unregister2 })
       const { getRegistrations } = stubServiceWorker()
@@ -252,7 +254,7 @@ describe('PWA registration module', () => {
     })
 
     it('unregisters the cached registration directly', async () => {
-      const unregisterSpy = vi.fn().mockResolvedValue(undefined)
+      const unregisterSpy = vi.fn<() => Promise<boolean>>().mockResolvedValue(true)
       const mockRegistration = createMockRegistration({ unregister: unregisterSpy })
       const { register } = stubServiceWorker()
       register.mockResolvedValue(mockRegistration)
@@ -282,7 +284,9 @@ describe('PWA registration module', () => {
 
     it('handles error during unregister gracefully', async () => {
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
-      const unregisterSpy = vi.fn().mockRejectedValue(new Error('Unregister failed'))
+      const unregisterSpy = vi
+        .fn<() => Promise<boolean>>()
+        .mockRejectedValue(new Error('Unregister failed'))
       const mockRegistration = createMockRegistration({ unregister: unregisterSpy })
       const { register } = stubServiceWorker()
       register.mockResolvedValue(mockRegistration)

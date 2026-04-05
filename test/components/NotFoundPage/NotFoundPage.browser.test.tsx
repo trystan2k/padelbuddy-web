@@ -3,15 +3,15 @@ import type { ReactNode } from 'react'
 import { describe, expect, test, vi } from 'vitest'
 import { render } from 'vitest-browser-react'
 
+import { NotFoundPage } from '@/components/NotFoundPage/NotFoundPage'
+
 vi.mock('@tanstack/react-router', () => ({
-  Link: ({ children, className, to }: { children: ReactNode; className?: string; to: string }) => (
-    <a className={className} href={to}>
+  Link: ({ to, children, ...props }: { to: string; children: ReactNode; className?: string }) => (
+    <a href={to} {...props}>
       {children}
     </a>
   )
 }))
-
-import { NotFoundPage } from '@/components/NotFoundPage/NotFoundPage'
 
 describe('NotFoundPage browser', () => {
   test('renders the not-found guidance', async () => {

@@ -21,7 +21,7 @@ describe('TextInput', () => {
   })
 
   test('calls onChange when value changes', async () => {
-    const handleChange = vi.fn()
+    const handleChange = vi.fn<() => void>()
     const screen = await render(<TextInput value="" onChange={handleChange} />)
 
     const input = screen.getByRole('textbox')
@@ -112,7 +112,7 @@ describe('TextInput', () => {
   })
 
   test('calls onChange with updated value on each keystroke', async () => {
-    const handleChange = vi.fn()
+    const handleChange = vi.fn<() => void>()
     const screen = await render(<TextInput value="" onChange={handleChange} />)
 
     const input = screen.getByRole('textbox')

@@ -43,7 +43,7 @@ export function useSetupForm() {
   // Use a ref so hydration completion can flip synchronously in finally without
   // waiting for a state update; the persistence effect sees the updated flag on re-render.
   const hasHydratedPersistedPreferences = useRef(false)
-  const lastPersistedSetupSlice = useRef<SetupPreferenceSlice>(defaultPersistedSetupSlice)
+  const lastPersistedSetupSlice = useRef(defaultPersistedSetupSlice)
 
   // Initialize form with defaults
   const [formData, setFormData] = useState<SetupFormData>({

@@ -13,15 +13,19 @@ const startedAt = currentTime.getTime() - 20 * 60 * 1000
 const finishedAt = startedAt + 5 * 60 * 1000
 
 // Mock useToast to track toast calls without rendering portal
-const mockAddInfoToast = vi.fn()
-const mockAddErrorToast = vi.fn()
+const mockAddInfoToast = vi.fn<(message: string, options?: object) => void>()
+const mockAddErrorToast = vi.fn<(message: string, options?: object) => void>()
 vi.mock('@/components/ui/Toast/useToast', () => ({
   useToast: () => ({
     addInfoToast: mockAddInfoToast,
     addErrorToast: mockAddErrorToast
   }),
   ToastProvider: ({ children }: { children: React.ReactNode }) => children,
-  globalToastManager: { add: vi.fn(), subscribe: vi.fn(), unsubscribe: vi.fn() },
+  globalToastManager: {
+    add: vi.fn<() => void>(),
+    subscribe: vi.fn<() => void>(),
+    unsubscribe: vi.fn<() => void>()
+  },
   useToastManager: () => ({ toasts: [] })
 }))
 
@@ -36,15 +40,17 @@ const {
   mockSpeechSpeak,
   mockSpeechDestroy
 } = vi.hoisted(() => {
-  const mockInvalidateFn = vi.fn(async () => undefined)
-  const mockNavigateFn = vi.fn()
-  const mockPreloadRouteFn = vi.fn(async () => undefined)
-  const mockClearCurrentMatchFn = vi.fn(async () => undefined)
-  const mockContinuePlayingFn = vi.fn(async () => undefined)
-  const mockDomToBlobFn = vi.fn()
-  const mockSpeechSpeakFn = vi.fn()
-  const mockSpeechDestroyFn = vi.fn()
-  const mockCreateCurrentMatchSessionFn = vi.fn(() => ({
+  const mockInvalidateFn = vi.fn<() => Promise<void>>(async () => undefined)
+  const mockNavigateFn = vi.fn<(options: object) => void>()
+  const mockPreloadRouteFn = vi.fn<() => Promise<void>>(async () => undefined)
+  const mockClearCurrentMatchFn = vi.fn<() => Promise<void>>(async () => undefined)
+  const mockContinuePlayingFn = vi.fn<() => Promise<void>>(async () => undefined)
+  const mockDomToBlobFn = vi.fn<() => Promise<Blob>>()
+  const mockSpeechSpeakFn = vi.fn<(message: string, options: object) => void>()
+  const mockSpeechDestroyFn = vi.fn<() => void>()
+  const mockCreateCurrentMatchSessionFn = vi.fn<
+    () => { continuePlaying: typeof mockContinuePlayingFn }
+  >(() => ({
     continuePlaying: mockContinuePlayingFn
   }))
 
@@ -88,15 +94,15 @@ vi.mock('@/lib/speech/speech-service', async (importOriginal) => {
     ...actual,
     useSpeechService: () => ({
       speak: mockSpeechSpeak,
-      announce: vi.fn(),
-      cancel: vi.fn(),
+      announce: vi.fn<(message: string) => void>(),
+      cancel: vi.fn<() => void>(),
       destroy: mockSpeechDestroy,
-      getMuted: vi.fn(() => false),
-      setMuted: vi.fn(),
-      getVerbosity: vi.fn(() => 'standard'),
-      setVerbosity: vi.fn(),
-      getVoice: vi.fn(() => null),
-      isSupported: vi.fn(() => true)
+      getMuted: vi.fn<() => boolean>(() => false),
+      setMuted: vi.fn<(muted: boolean) => void>(),
+      getVerbosity: vi.fn<() => string>(() => 'standard'),
+      setVerbosity: vi.fn<(verbosity: string) => void>(),
+      getVoice: vi.fn<() => string | null>(() => null),
+      isSupported: vi.fn<() => boolean>(() => true)
     })
   }
 })
@@ -107,7 +113,7 @@ vi.mock('@/lib/i18n/i18n', async (importOriginal) => {
   return {
     ...original,
     getCurrentLocale: () => 'en',
-    changeLocale: vi.fn()
+    changeLocale: vi.fn<(lang: string) => void>()
   }
 })
 
@@ -116,8 +122,8 @@ describe('MatchEndScreen', () => {
   const originalNavigatorCanShareDescriptor = Object.getOwnPropertyDescriptor(navigator, 'canShare')
   const originalCreateObjectUrl = URL.createObjectURL.bind(URL)
   const originalRevokeObjectUrl = URL.revokeObjectURL.bind(URL)
-  let createObjectUrlMock = vi.fn(() => 'blob:match-end-screen')
-  let revokeObjectUrlMock = vi.fn()
+  let createObjectUrlMock = vi.fn<(_blob: Blob) => string>(() => 'blob:match-end-screen')
+  let revokeObjectUrlMock = vi.fn<(_url: string) => void>()
 
   beforeEach(() => {
     vi.clearAllMocks()
@@ -126,8 +132,8 @@ describe('MatchEndScreen', () => {
     mockDomToBlob.mockResolvedValue(createPngBlob())
     mockSpeechSpeak.mockReset()
     mockSpeechDestroy.mockReset()
-    createObjectUrlMock = vi.fn(() => 'blob:match-end-screen')
-    revokeObjectUrlMock = vi.fn()
+    createObjectUrlMock = vi.fn<(_blob: Blob) => string>(() => 'blob:match-end-screen')
+    revokeObjectUrlMock = vi.fn<(_url: string) => void>()
     restoreNavigatorProperty('share', originalNavigatorShareDescriptor)
     restoreNavigatorProperty('canShare', originalNavigatorCanShareDescriptor)
     Object.defineProperty(URL, 'createObjectURL', {
@@ -277,8 +283,8 @@ describe('MatchEndScreen', () => {
 
   test('locks the share button while capture is in progress', async () => {
     setShareNavigator({
-      canShare: vi.fn((_data?: ShareData) => true),
-      share: vi.fn(async (_data?: ShareData) => undefined)
+      canShare: vi.fn<(_data?: ShareData) => boolean>((_data?: ShareData) => true),
+      share: vi.fn<(_data?: ShareData) => Promise<void>>(async (_data?: ShareData) => undefined)
     })
     const deferredCapture = createDeferred<Blob>()
     mockDomToBlob.mockReturnValueOnce(deferredCapture.promise)
@@ -313,8 +319,10 @@ describe('MatchEndScreen', () => {
   })
 
   test('shares localized text with a PNG file when file sharing is supported', async () => {
-    const share = vi.fn(async (_data?: ShareData) => undefined)
-    const canShare = vi.fn((_data?: ShareData) => true)
+    const share = vi.fn<(_data?: ShareData) => Promise<void>>(
+      async (_data?: ShareData) => undefined
+    )
+    const canShare = vi.fn<(_data?: ShareData) => boolean>((_data?: ShareData) => true)
     setShareNavigator({ canShare, share })
 
     const screen = await renderCompletedMatchEndScreen()
@@ -343,8 +351,10 @@ describe('MatchEndScreen', () => {
     const anchorClickSpy = vi
       .spyOn(HTMLAnchorElement.prototype, 'click')
       .mockImplementation(() => {})
-    const share = vi.fn(async (_data?: ShareData) => undefined)
-    const canShare = vi.fn((_data?: ShareData) => false)
+    const share = vi.fn<(_data?: ShareData) => Promise<void>>(
+      async (_data?: ShareData) => undefined
+    )
+    const canShare = vi.fn<(_data?: ShareData) => boolean>((_data?: ShareData) => false)
     setShareNavigator({ canShare, share })
 
     const screen = await renderCompletedMatchEndScreen()
@@ -367,8 +377,10 @@ describe('MatchEndScreen', () => {
   })
 
   test('shows an error alert when capture fails', async () => {
-    const share = vi.fn(async (_data?: ShareData) => undefined)
-    const canShare = vi.fn((_data?: ShareData) => true)
+    const share = vi.fn<(_data?: ShareData) => Promise<void>>(
+      async (_data?: ShareData) => undefined
+    )
+    const canShare = vi.fn<(_data?: ShareData) => boolean>((_data?: ShareData) => true)
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined)
     setShareNavigator({ canShare, share })
     mockDomToBlob.mockRejectedValueOnce(new Error('capture failed'))
@@ -394,8 +406,10 @@ describe('MatchEndScreen', () => {
   })
 
   test('shares the finished-early copy instead of the raw i18n key', async () => {
-    const share = vi.fn(async (_data?: ShareData) => undefined)
-    const canShare = vi.fn((_data?: ShareData) => true)
+    const share = vi.fn<(_data?: ShareData) => Promise<void>>(
+      async (_data?: ShareData) => undefined
+    )
+    const canShare = vi.fn<(_data?: ShareData) => boolean>((_data?: ShareData) => true)
     setShareNavigator({ canShare, share })
 
     const screen = await renderFinishedEarlyMatchEndScreen()
@@ -416,8 +430,8 @@ describe('MatchEndScreen', () => {
 
   test('handles share-sheet cancellation without surfacing an error', async () => {
     setShareNavigator({
-      canShare: vi.fn((_data?: ShareData) => true),
-      share: vi.fn(async (_data?: ShareData) => {
+      canShare: vi.fn<(_data?: ShareData) => boolean>((_data?: ShareData) => true),
+      share: vi.fn<(_data?: ShareData) => Promise<void>>(async (_data?: ShareData) => {
         throw new DOMException('Share cancelled', 'AbortError')
       })
     })

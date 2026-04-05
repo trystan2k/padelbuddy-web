@@ -48,7 +48,7 @@ export function useInputHandler(
   } = options
 
   const callbacksRef = useRef(callbacks)
-  const bindingsRef = useRef<RemoteControllerBindings | null>(bindings)
+  const bindingsRef = useRef(bindings)
   const actionsRef = useRef(options.actions)
   const enabledRef = useRef(enabled)
   const pendingAddTimersRef = useRef<Record<MatchTeamId, ReturnType<typeof setTimeout> | null>>({

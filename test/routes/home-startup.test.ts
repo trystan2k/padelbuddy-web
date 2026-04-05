@@ -1,14 +1,15 @@
 import { describe, expect, test, vi } from 'vitest'
+import type { CurrentMatchLoadResult } from '@/lib/current-match/indexed-db'
+import type { CurrentMatchRecord, CurrentMatchSaveInput } from '@/lib/current-match/persistence'
+import { loadHomeStartup } from '@/routes/-home-startup'
 
 const { mockHydrateCurrentMatchStartup } = vi.hoisted(() => ({
-  mockHydrateCurrentMatchStartup: vi.fn()
+  mockHydrateCurrentMatchStartup: vi.fn<() => Promise<object>>()
 }))
 
 vi.mock('@/lib/current-match/startup', () => ({
   hydrateCurrentMatchStartup: mockHydrateCurrentMatchStartup
 }))
-
-import { loadHomeStartup } from '@/routes/-home-startup'
 
 describe('loadHomeStartup', () => {
   test('wraps startup hydration in the home loader data contract', async () => {
@@ -32,9 +33,9 @@ describe('loadHomeStartup', () => {
 
   test('passes through explicit startup options for browser-backed home hydration', async () => {
     const persistence = {
-      loadCurrentMatch: vi.fn(),
-      saveCurrentMatch: vi.fn(),
-      clearCurrentMatch: vi.fn()
+      loadCurrentMatch: vi.fn<() => Promise<CurrentMatchLoadResult>>(),
+      saveCurrentMatch: vi.fn<(input: CurrentMatchSaveInput) => Promise<CurrentMatchRecord>>(),
+      clearCurrentMatch: vi.fn<() => Promise<void>>()
     }
 
     mockHydrateCurrentMatchStartup.mockResolvedValue({

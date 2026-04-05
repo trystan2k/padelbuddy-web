@@ -7,7 +7,11 @@ import { useEffect, useState } from 'react'
 
 import { useMatchSession } from '@/components/ActiveMatchScreen/useMatchSession'
 import { createTestSetup } from '../../core/match/test-helpers'
-import type { CurrentMatchPersistence } from '@/lib/current-match/indexed-db'
+import type {
+  CurrentMatchLoadResult,
+  CurrentMatchPersistence
+} from '@/lib/current-match/indexed-db'
+import type { CurrentMatchRecord, CurrentMatchSaveInput } from '@/lib/current-match/persistence'
 
 const testMatchId = 'test-match'
 
@@ -71,9 +75,13 @@ function SessionTestComponent({
 
 // Helper to create mock persistence
 const createMockPersistence = (): CurrentMatchPersistence => ({
-  saveCurrentMatch: vi.fn().mockResolvedValue(undefined),
-  loadCurrentMatch: vi.fn().mockResolvedValue({ kind: 'not-found' }),
-  clearCurrentMatch: vi.fn().mockResolvedValue(undefined)
+  saveCurrentMatch: vi
+    .fn<(input: CurrentMatchSaveInput) => Promise<CurrentMatchRecord>>()
+    .mockResolvedValue(undefined as unknown as CurrentMatchRecord),
+  loadCurrentMatch: vi
+    .fn<() => Promise<CurrentMatchLoadResult>>()
+    .mockResolvedValue({ kind: 'not-found' } as unknown as CurrentMatchLoadResult),
+  clearCurrentMatch: vi.fn<() => Promise<void>>().mockResolvedValue(undefined)
 })
 
 describe('useMatchSession', () => {
@@ -348,9 +356,13 @@ describe('useMatchSession - error handling', () => {
   test('handles persistence errors gracefully', async () => {
     const setup = createTestSetup()
     const errorPersistence: CurrentMatchPersistence = {
-      saveCurrentMatch: vi.fn().mockRejectedValue(new Error('Persistence error')),
-      loadCurrentMatch: vi.fn().mockResolvedValue({ kind: 'not-found' }),
-      clearCurrentMatch: vi.fn().mockResolvedValue(undefined)
+      saveCurrentMatch: vi
+        .fn<(input: CurrentMatchSaveInput) => Promise<CurrentMatchRecord>>()
+        .mockRejectedValue(new Error('Persistence error')),
+      loadCurrentMatch: vi
+        .fn<() => Promise<CurrentMatchLoadResult>>()
+        .mockResolvedValue({ kind: 'not-found' } as unknown as CurrentMatchLoadResult),
+      clearCurrentMatch: vi.fn<() => Promise<void>>().mockResolvedValue(undefined)
     }
 
     // Error component to catch errors

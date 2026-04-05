@@ -3,6 +3,9 @@ import { describe, expect, test, vi, beforeAll } from 'vitest'
 import defaultTranslation from '@/lib/i18n/locales/en'
 import { i18n, initializeI18n, resetI18nInitialization } from '@/lib/i18n/i18n'
 
+import { Route } from '@/routes/__root'
+import { renderToStaticMarkup } from 'react-dom/server'
+
 const { routerStateMock } = vi.hoisted(() => ({
   routerStateMock: {
     isRoutePending: false
@@ -27,9 +30,6 @@ vi.mock('@tanstack/react-router', async (importOriginal) => {
     useRouterState: () => routerStateMock.isRoutePending
   }
 })
-
-import { Route } from '@/routes/__root'
-import { renderToStaticMarkup } from 'react-dom/server'
 
 describe('root route', () => {
   test('defines document metadata and shell markup', async () => {

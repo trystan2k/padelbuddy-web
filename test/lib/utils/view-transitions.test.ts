@@ -21,7 +21,7 @@ describe('view-transitions', () => {
     it('returns false when startViewTransition is not a function', () => {
       const mockDoc = {
         get body() {
-          return { appendChild: vi.fn(), removeChild: vi.fn() }
+          return { appendChild: vi.fn<() => void>(), removeChild: vi.fn<() => void>() }
         },
         startViewTransition: undefined
       }
@@ -34,7 +34,7 @@ describe('view-transitions', () => {
     it('returns true when startViewTransition is a function', () => {
       const mockDoc = {
         get body() {
-          return { appendChild: vi.fn(), removeChild: vi.fn() }
+          return { appendChild: vi.fn<() => void>(), removeChild: vi.fn<() => void>() }
         },
         startViewTransition: () => ({})
       }
@@ -49,7 +49,7 @@ describe('view-transitions', () => {
     it('returns empty object when view transitions are not supported', () => {
       const mockDoc = {
         get body() {
-          return { appendChild: vi.fn(), removeChild: vi.fn() }
+          return { appendChild: vi.fn<() => void>(), removeChild: vi.fn<() => void>() }
         },
         startViewTransition: undefined
       }
@@ -63,7 +63,7 @@ describe('view-transitions', () => {
     it('returns viewTransition true when supported', () => {
       const mockDoc = {
         get body() {
-          return { appendChild: vi.fn(), removeChild: vi.fn() }
+          return { appendChild: vi.fn<() => void>(), removeChild: vi.fn<() => void>() }
         },
         startViewTransition: () => ({})
       }

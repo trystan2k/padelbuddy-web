@@ -82,7 +82,7 @@ describe('RoutePendingBoundary', () => {
 
 describe('RouteErrorState', () => {
   test('renders without an error message when error has an empty message', () => {
-    const reset = vi.fn()
+    const reset = vi.fn<() => void>()
     const markup = renderToStaticMarkup(<RouteErrorState error={new Error('')} reset={reset} />)
 
     expect(markup).toContain('Something interrupted this screen.')
@@ -91,7 +91,7 @@ describe('RouteErrorState', () => {
   })
 
   test('renders with an error message when error has a user-facing message', () => {
-    const reset = vi.fn()
+    const reset = vi.fn<() => void>()
     const markup = renderToStaticMarkup(
       <RouteErrorState error={new Error('Match not found')} reset={reset} />
     )
@@ -102,7 +102,7 @@ describe('RouteErrorState', () => {
   })
 
   test('renders without error detail for technical errors', () => {
-    const reset = vi.fn()
+    const reset = vi.fn<() => void>()
     const markup = renderToStaticMarkup(
       <RouteErrorState error={new Error('TypeError: x is undefined')} reset={reset} />
     )
@@ -112,7 +112,7 @@ describe('RouteErrorState', () => {
   })
 
   test('uses custom eyebrowKey when provided', () => {
-    const reset = vi.fn()
+    const reset = vi.fn<() => void>()
     const markup = renderToStaticMarkup(
       <RouteErrorState error={new Error('test')} reset={reset} eyebrowKey="error.loadMatch" />
     )

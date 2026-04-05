@@ -36,7 +36,6 @@
     ".tanstack/**",
     ".vinxi/**",
     "node_modules/**",
-    "src/routeTree.gen.ts",
     "**/*.gen.ts",
     "**/*.gen.tsx"
   ],
@@ -49,17 +48,13 @@
     "import/no-cycle": "error",
     "import/no-duplicates": "error",
     "import/no-self-import": "error",
-    "import/no-unassigned-import": "off",
-    "import/no-named-as-default-member": "off",
     "typescript/no-unsafe-type-assertion": "warn",
     "promise/catch-or-return": "warn",
     "typescript/await-thenable": "error",
     "typescript/no-floating-promises": ["error", { "ignoreVoid": true }],
     "typescript/no-misused-promises": ["warn", { "checksVoidReturn": false }],
     "react/button-has-type": "warn",
-    "react/jsx-uses-react": "off",
     "react/react-in-jsx-scope": "off",
-    "jsx-a11y/anchor-is-valid": "off",
     "react/no-array-index-key": "warn",
     "react/self-closing-comp": "warn",
     "react-perf/jsx-no-new-array-as-prop": "warn",
@@ -67,21 +62,8 @@
     "react-perf/jsx-no-new-object-as-prop": "warn"
   },
   "settings": {
-    "jsx-a11y": {
-      "components": {
-        "Link": "a"
-      }
-    },
     "react": {
-      "version": "19.2.4",
-      "formComponents": [],
-      "linkComponents": [
-        {
-          "name": "Link",
-          "linkAttribute": ["to", "href"]
-        }
-      ],
-      "componentWrapperFunctions": ["memo", "forwardRef"]
+      "version": "19.2.4"
     },
     "vitest": {
       "typecheck": false
@@ -95,34 +77,7 @@
         "node": true
       },
       "rules": {
-        "import/first": "off",
-        "no-console": "off",
-        "promise/catch-or-return": "off",
         "typescript/no-unsafe-type-assertion": "off"
-      }
-    },
-    {
-      "files": ["vite.config.ts", "vitest.config.ts"],
-      "env": {
-        "node": true
-      },
-      "rules": {
-        "no-console": "off"
-      }
-    },
-    {
-      "files": [
-        "src/components/SetupScreen/SetupScreen.tsx",
-        "test/components/Layout/Layout.browser.test.tsx"
-      ],
-      "rules": {
-        "react-perf/jsx-no-jsx-as-prop": "off"
-      }
-    },
-    {
-      "files": ["src/components/ActiveMatchScreen/SideSwitchPrompt/SideSwitchPrompt.tsx"],
-      "rules": {
-        "react-perf/jsx-no-new-function-as-prop": "off"
       }
     }
   ]

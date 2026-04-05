@@ -28,8 +28,8 @@ describe('current match route flow helpers', () => {
   })
 
   test('invalidates only persistence-backed routes', async () => {
-    const invalidate = vi.fn(async () => undefined)
-    const preloadRoute = vi.fn(async () => undefined)
+    const invalidate = vi.fn<() => Promise<void>>(async () => undefined)
+    const preloadRoute = vi.fn<() => Promise<void>>(async () => undefined)
 
     await invalidateCurrentMatchPersistenceRoutes({
       invalidate,
@@ -51,10 +51,10 @@ describe('current match route flow helpers', () => {
 
   test('preloads route navigation without invalidating by default', async () => {
     const callOrder: string[] = []
-    const invalidate = vi.fn(async () => {
+    const invalidate = vi.fn<() => Promise<void>>(async () => {
       callOrder.push('invalidate')
     })
-    const preloadRoute = vi.fn(async () => {
+    const preloadRoute = vi.fn<() => Promise<void>>(async () => {
       callOrder.push('preload')
     })
 
@@ -79,10 +79,10 @@ describe('current match route flow helpers', () => {
 
   test('invalidates before preloading when the navigation opts in', async () => {
     const callOrder: string[] = []
-    const invalidate = vi.fn(async () => {
+    const invalidate = vi.fn<() => Promise<void>>(async () => {
       callOrder.push('invalidate')
     })
-    const preloadRoute = vi.fn(async () => {
+    const preloadRoute = vi.fn<() => Promise<void>>(async () => {
       callOrder.push('preload')
     })
 

@@ -68,18 +68,12 @@
   font-weight: var(--semantic-typography-weight-strong);
 }
 
-.revertButtonTeam1 {
+.revertButtonTeam1,
+.revertButtonTeam2 {
   background-color: var(--semantic-color-background-critical-subtle);
   border-color: var(--semantic-color-border-critical-subtle);
   color: var(--semantic-color-content-danger);
   color: color-mix(in srgb, var(--semantic-color-content-danger) 70%, transparent);
-}
-
-.revertButtonTeam2 {
-  background-color: var(--semantic-color-background-critical-subtle-alt);
-  border-color: var(--semantic-color-border-critical-subtle-alt);
-  color: var(--semantic-color-items-secondary-content);
-  color: color-mix(in srgb, var(--semantic-color-items-secondary-content) 70%, transparent);
 }
 
 .finishButton {

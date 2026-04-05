@@ -35,7 +35,7 @@ describe('Chip', () => {
   // ===========================================
   describe('variant="toggle" (default)', () => {
     test('calls onPressedChange when clicked', async () => {
-      const handleChange = vi.fn()
+      const handleChange = vi.fn<(pressed: boolean) => void>()
       const screen = await render(
         <Chip pressed={false} onPressedChange={handleChange}>
           Click Me
@@ -96,7 +96,7 @@ describe('Chip', () => {
 
   describe('variant="button"', () => {
     test('calls onPressedChange when clicked', async () => {
-      const handleChange = vi.fn()
+      const handleChange = vi.fn<(pressed: boolean) => void>()
       const screen = await render(
         <Chip variant="button" pressed={false} onPressedChange={handleChange}>
           Click Me
@@ -143,7 +143,7 @@ describe('Chip', () => {
     })
 
     test('respects disabled prop', async () => {
-      const handleChange = vi.fn()
+      const handleChange = vi.fn<(pressed: boolean) => void>()
       const screen = await render(
         <Chip variant="button" pressed={false} onPressedChange={handleChange} disabled>
           Disabled Button
@@ -207,7 +207,7 @@ describe('Chip', () => {
   })
 
   test('disabled button prevents click interaction', async () => {
-    const handleChange = vi.fn()
+    const handleChange = vi.fn<(pressed: boolean) => void>()
     const screen = await render(
       <Chip pressed={false} onPressedChange={handleChange} disabled>
         Disabled
@@ -288,7 +288,7 @@ describe('Chip', () => {
     })
 
     test('calls onPressedChange when clicked in dropdown mode', async () => {
-      const handleChange = vi.fn()
+      const handleChange = vi.fn<(pressed: boolean) => void>()
       const screen = await render(
         <Chip pressed={false} onPressedChange={handleChange} aria-expanded={false}>
           Dropdown Trigger

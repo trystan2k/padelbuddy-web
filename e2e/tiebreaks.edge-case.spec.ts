@@ -13,7 +13,7 @@ test.describe('@edge-case @active-match @match-end Tiebreak flows', () => {
     const team1Panel = page.getByTestId('team-panel-team-1')
     const team2Panel = page.getByTestId('team-panel-team-2')
 
-    await Array.from({ length: 6 }).reduce<Promise<void>>(async (previousGame) => {
+    await Array.from({ length: 6 }).reduce(async (previousGame) => {
       await previousGame
       await winQuickGame(team1Panel)
       await winQuickGame(team2Panel)

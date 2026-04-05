@@ -59,7 +59,7 @@ describe('LocaleSelector', () => {
   })
 
   test('calls changeLocale and onLocaleChange when locale changes', async () => {
-    const handleLocaleChange = vi.fn()
+    const handleLocaleChange = vi.fn<(locale: string) => void>()
     const screen = await render(<LocaleSelector onLocaleChange={handleLocaleChange} />)
 
     const triggerElement = screen.getByRole('button', { name: /english/i }).element()
@@ -92,7 +92,7 @@ describe('LocaleSelector', () => {
   })
 
   test('does not call changeLocale when selecting the current locale', async () => {
-    const handleLocaleChange = vi.fn()
+    const handleLocaleChange = vi.fn<(locale: string) => void>()
     const screen = await render(
       <LocaleSelector currentLocale="en" onLocaleChange={handleLocaleChange} />
     )

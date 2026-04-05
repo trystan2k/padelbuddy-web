@@ -20,15 +20,15 @@ const {
   mockSaveSetupPreferenceSlice,
   mockSaveSpeechPreferences
 } = vi.hoisted(() => ({
-  mockClearSpeechPreferences: vi.fn(),
-  mockInvalidate: vi.fn(),
-  mockLoadSetupPreferences: vi.fn(),
-  mockLoadSpeechPreferences: vi.fn(),
-  mockNavigate: vi.fn(),
-  mockPreloadRoute: vi.fn(),
-  mockLoadRemoteControllerBindings: vi.fn(),
-  mockSaveSetupPreferenceSlice: vi.fn(),
-  mockSaveSpeechPreferences: vi.fn()
+  mockClearSpeechPreferences: vi.fn<() => Promise<void>>(),
+  mockInvalidate: vi.fn<() => Promise<void>>(),
+  mockLoadSetupPreferences: vi.fn<() => Promise<object | null>>(),
+  mockLoadSpeechPreferences: vi.fn<() => Promise<object | null>>(),
+  mockNavigate: vi.fn<(options: object) => void>(),
+  mockPreloadRoute: vi.fn<() => Promise<void>>(),
+  mockLoadRemoteControllerBindings: vi.fn<() => Promise<object>>(),
+  mockSaveSetupPreferenceSlice: vi.fn<() => Promise<void>>(),
+  mockSaveSpeechPreferences: vi.fn<() => Promise<void>>()
 }))
 
 vi.mock('@tanstack/react-router', async (importOriginal) => {

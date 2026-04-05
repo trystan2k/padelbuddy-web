@@ -1,6 +1,10 @@
 import { afterEach, describe, expect, test, vi } from 'vitest'
 
-import { currentMatchSchemaVersion } from '@/lib/current-match/persistence'
+import {
+  currentMatchSchemaVersion,
+  type CurrentMatchRecord,
+  type CurrentMatchSaveInput
+} from '@/lib/current-match/persistence'
 import { hydrateCurrentMatchStartup } from '@/lib/current-match/startup'
 import currentMatchResetNoticeStore from '@/lib/current-match/reset-notice-store'
 import type { CurrentMatchPersistence } from '@/lib/current-match/indexed-db'
@@ -142,8 +146,8 @@ function createPersistenceStub(overrides: {
   loadCurrentMatch: CurrentMatchPersistence['loadCurrentMatch']
 }): CurrentMatchPersistence {
   return {
-    saveCurrentMatch: vi.fn(),
+    saveCurrentMatch: vi.fn<(input: CurrentMatchSaveInput) => Promise<CurrentMatchRecord>>(),
     loadCurrentMatch: overrides.loadCurrentMatch,
-    clearCurrentMatch: vi.fn(async () => undefined)
+    clearCurrentMatch: vi.fn<() => Promise<void>>(async () => undefined)
   }
 }

@@ -4,9 +4,9 @@ import { render } from 'vitest-browser-react'
 import { useSpeechService } from '@/lib/speech/speech-service'
 
 vi.mock('@/lib/setup/setup-storage', () => ({
-  saveSpeechPreferences: vi.fn(() => Promise.resolve()),
-  loadSpeechPreferences: vi.fn(() => Promise.resolve(null)),
-  clearSpeechPreferences: vi.fn(() => Promise.resolve())
+  saveSpeechPreferences: vi.fn<() => Promise<void>>().mockResolvedValue(undefined),
+  loadSpeechPreferences: vi.fn<() => Promise<null>>(),
+  clearSpeechPreferences: vi.fn<() => Promise<void>>().mockResolvedValue(undefined)
 }))
 
 // Helper component to test the hook
@@ -35,12 +35,14 @@ describe('utterance-cancellation', () => {
 
   beforeEach(() => {
     mockSpeechSynthesis = {
-      speak: vi.fn(),
-      cancel: vi.fn(),
-      getVoices: vi.fn(() => [{ lang: 'en-US', name: 'English' }]),
+      speak: vi.fn<(utterance: SpeechSynthesisUtterance) => void>(),
+      cancel: vi.fn<() => void>(),
+      getVoices: vi.fn<() => SpeechSynthesisVoice[]>(() => [
+        { lang: 'en-US', name: 'English', default: false, localService: true, voiceURI: 'test' }
+      ]),
       onvoiceschanged: null,
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn()
+      addEventListener: vi.fn<() => void>(),
+      removeEventListener: vi.fn<() => void>()
     }
 
     vi.stubGlobal('speechSynthesis', mockSpeechSynthesis)
@@ -51,8 +53,8 @@ describe('utterance-cancellation', () => {
       voice: SpeechSynthesisVoice | null = null
       rate = 1.0
       pitch = 1.0
-      addEventListener = vi.fn()
-      removeEventListener = vi.fn()
+      addEventListener = vi.fn<(type: string, listener: EventListener) => void>()
+      removeEventListener = vi.fn<(type: string, listener: EventListener) => void>()
 
       constructor(text: string) {
         this.text = text

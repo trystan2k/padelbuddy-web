@@ -13,7 +13,7 @@ describe('TeamPanel', () => {
     teamName: 'Team Alpha',
     score: '15',
     isServing: false,
-    onClick: vi.fn()
+    onClick: vi.fn<() => void>()
   })
 
   beforeEach(() => {
@@ -37,7 +37,7 @@ describe('TeamPanel', () => {
   })
 
   test('calls onClick when clicked', async () => {
-    const handleClick = vi.fn()
+    const handleClick = vi.fn<() => void>()
     const screen = await render(<TeamPanel {...createDefaultProps()} onClick={handleClick} />)
 
     await screen.getByRole('button').click()
@@ -131,7 +131,7 @@ describe('TeamPanel', () => {
   })
 
   test('disabled state prevents onClick from being called', async () => {
-    const handleClick = vi.fn()
+    const handleClick = vi.fn<() => void>()
     const screen = await render(
       <TeamPanel {...createDefaultProps()} onClick={handleClick} disabled={true} />
     )

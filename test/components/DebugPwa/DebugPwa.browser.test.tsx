@@ -5,10 +5,11 @@ import { render } from 'vitest-browser-react'
 
 import { DebugPwa } from '@/components/DebugPwa/DebugPwa'
 
-const mockGetSWState = vi.fn()
-const mockGetSWVersion = vi.fn()
-const mockRequestSWUpdate = vi.fn()
-const mockClearSWCache = vi.fn()
+const mockGetSWState =
+  vi.fn<() => Promise<{ supported: boolean; registered: boolean; ready: boolean }>>()
+const mockGetSWVersion = vi.fn<() => Promise<{ version: string; cacheName: string }>>()
+const mockRequestSWUpdate = vi.fn<() => Promise<void>>()
+const mockClearSWCache = vi.fn<() => Promise<boolean>>()
 
 vi.mock('@/lib/pwa/registration', () => ({
   getSWState: () => mockGetSWState(),

@@ -175,18 +175,20 @@ function createFakeIndexedDb(
   }
 
   const factory = {
-    open: vi.fn((_databaseName: string, _version?: number) => {
-      const request = new FakeOpenRequest<FakeDatabase>()
-      const database = new FakeDatabase(storage, createdObjectStores)
+    open: vi.fn<(_databaseName: string, _version?: number) => FakeOpenRequest<FakeDatabase>>(
+      (_databaseName, _version?: number) => {
+        const request = new FakeOpenRequest<FakeDatabase>()
+        const database = new FakeDatabase(storage, createdObjectStores)
 
-      queueMicrotask(() => {
-        request.result = database
-        request.dispatchEvent(new Event('upgradeneeded'))
-        request.dispatchEvent(new Event('success'))
-      })
+        queueMicrotask(() => {
+          request.result = database
+          request.dispatchEvent(new Event('upgradeneeded'))
+          request.dispatchEvent(new Event('success'))
+        })
 
-      return request
-    })
+        return request
+      }
+    )
   }
 
   return {

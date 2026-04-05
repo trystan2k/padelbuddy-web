@@ -17,7 +17,7 @@ export function getCompletedSetCount(projection: MatchProjection): number {
 }
 
 export function getTotalGamesWon(projection: MatchProjection): Record<MatchTeamId, number> {
-  return projection.state.sets.reduce<Record<MatchTeamId, number>>(
+  return projection.state.sets.reduce(
     (totals, set) => ({
       'team-1': totals['team-1'] + set.games['team-1'],
       'team-2': totals['team-2'] + set.games['team-2']

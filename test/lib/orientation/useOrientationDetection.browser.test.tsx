@@ -30,25 +30,27 @@ function installMatchMedia(initialIsPortrait: boolean): MockMediaQueryListContro
     },
     media: '(orientation: portrait)',
     onchange: null,
-    addListener: vi.fn((listener: OrientationChangeListener) => {
+    addListener: vi.fn<(listener: OrientationChangeListener) => void>((listener) => {
       listeners.add(listener)
     }),
-    removeListener: vi.fn((listener: OrientationChangeListener) => {
+    removeListener: vi.fn<(listener: OrientationChangeListener) => void>((listener) => {
       listeners.delete(listener)
     }),
-    addEventListener: vi.fn((type: string, listener: EventListenerOrEventListenerObject | null) => {
+    addEventListener: vi.fn<
+      (type: string, listener: EventListenerOrEventListenerObject | null) => void
+    >((type, listener) => {
       if (type === 'change' && typeof listener === 'function') {
         listeners.add(listener as OrientationChangeListener)
       }
     }),
-    removeEventListener: vi.fn(
-      (type: string, listener: EventListenerOrEventListenerObject | null) => {
-        if (type === 'change' && typeof listener === 'function') {
-          listeners.delete(listener as OrientationChangeListener)
-        }
+    removeEventListener: vi.fn<
+      (type: string, listener: EventListenerOrEventListenerObject | null) => void
+    >((type, listener) => {
+      if (type === 'change' && typeof listener === 'function') {
+        listeners.delete(listener as OrientationChangeListener)
       }
-    ),
-    dispatchEvent: vi.fn((event: Event) => {
+    }),
+    dispatchEvent: vi.fn<(event: Event) => boolean>((event) => {
       for (const listener of listeners) {
         listener(event as MediaQueryListEvent)
       }
@@ -60,7 +62,7 @@ function installMatchMedia(initialIsPortrait: boolean): MockMediaQueryListContro
   Object.defineProperty(window, 'matchMedia', {
     configurable: true,
     writable: true,
-    value: vi.fn((queryString: string) => {
+    value: vi.fn<(queryString: string) => MediaQueryList>((queryString) => {
       expect(queryString).toBe('(orientation: portrait)')
       return query as MediaQueryList
     })

@@ -4,7 +4,10 @@ import { projectMatch } from '@/core/match/replay'
 import type { MatchTeamId } from '@/core/match/types'
 import { currentMatchSchemaVersion } from '@/lib/current-match/persistence'
 import { createCurrentMatchSession } from '@/lib/current-match/session'
-import type { CurrentMatchPersistence } from '@/lib/current-match/indexed-db'
+import type {
+  CurrentMatchLoadResult,
+  CurrentMatchPersistence
+} from '@/lib/current-match/indexed-db'
 import { createRemoteControllerBindings, getActionFromKey } from '@/lib/input/keyboard-aliases'
 
 import { createTestSetup, scorePoints } from '../core/match/test-helpers'
@@ -25,8 +28,8 @@ describe('input regression', () => {
           actions,
           startedAt: startedAt ?? testStartedAt
         })),
-      loadCurrentMatch: vi.fn(),
-      clearCurrentMatch: vi.fn(async () => undefined)
+      loadCurrentMatch: vi.fn<() => Promise<CurrentMatchLoadResult>>(),
+      clearCurrentMatch: vi.fn<() => Promise<void>>()
     }
   })
 

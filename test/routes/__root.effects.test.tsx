@@ -1,15 +1,18 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest'
+import { renderToStaticMarkup } from 'react-dom/server'
+
+import { Route } from '@/routes/__root'
 
 const { initializeI18nMock, i18nMock, registerSWMock, routerStateMock, translationMap } =
   vi.hoisted(() => ({
-    initializeI18nMock: vi.fn(() => Promise.resolve()),
+    initializeI18nMock: vi.fn<() => Promise<void>>(() => Promise.resolve()),
     i18nMock: {
       resolvedLanguage: 'en',
       language: 'en',
-      on: vi.fn(),
-      off: vi.fn()
+      on: vi.fn<() => void>(),
+      off: vi.fn<() => void>()
     },
-    registerSWMock: vi.fn(() => Promise.resolve()),
+    registerSWMock: vi.fn<() => Promise<void>>(() => Promise.resolve()),
     routerStateMock: {
       isRoutePending: false
     },
@@ -63,10 +66,6 @@ vi.mock('@tanstack/react-router', async (importOriginal) => {
     useRouterState: () => routerStateMock.isRoutePending
   }
 })
-
-import { renderToStaticMarkup } from 'react-dom/server'
-
-import { Route } from '@/routes/__root'
 
 describe('root route effects', () => {
   beforeEach(() => {

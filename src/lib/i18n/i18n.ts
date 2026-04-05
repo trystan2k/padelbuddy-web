@@ -1,3 +1,4 @@
+// oxlint-disable import/no-named-as-default-member
 import i18n from 'i18next'
 import type { InitOptions } from 'i18next'
 import { initReactI18next } from 'react-i18next'
@@ -71,7 +72,6 @@ function createBaseConfig(): InitOptions {
     defaultNS: 'translation',
     ns: ['translation'],
     partialBundledLanguages: true,
-    initImmediate: false,
     interpolation: {
       escapeValue: false
     },

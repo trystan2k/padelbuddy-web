@@ -16,7 +16,7 @@ describe('i18n initialization', () => {
   })
 
   it('uses the bundled default locale without network fetches', async () => {
-    const fetchSpy = vi.fn()
+    const fetchSpy = vi.fn<() => Promise<unknown>>()
 
     vi.stubGlobal('fetch', fetchSpy)
     vi.stubGlobal('indexedDB', undefined)
@@ -63,18 +63,20 @@ function createFakeIndexedDb() {
 
   return {
     factory: {
-      open: vi.fn((_databaseName: string, _version?: number) => {
-        const request = new FakeOpenRequest<FakeDatabase>()
-        const database = new FakeDatabase(storage)
+      open: vi.fn<(_databaseName: string, _version?: number) => FakeOpenRequest<FakeDatabase>>(
+        (_databaseName, _version?: number) => {
+          const request = new FakeOpenRequest<FakeDatabase>()
+          const database = new FakeDatabase(storage)
 
-        queueMicrotask(() => {
-          request.result = database
-          request.dispatchEvent(new Event('upgradeneeded'))
-          request.dispatchEvent(new Event('success'))
-        })
+          queueMicrotask(() => {
+            request.result = database
+            request.dispatchEvent(new Event('upgradeneeded'))
+            request.dispatchEvent(new Event('success'))
+          })
 
-        return request
-      })
+          return request
+        }
+      )
     }
   }
 }

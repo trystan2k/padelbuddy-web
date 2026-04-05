@@ -4,9 +4,9 @@ import { render } from 'vitest-browser-react'
 import { useSpeechService } from '@/lib/speech/speech-service'
 
 vi.mock('@/lib/setup/setup-storage', () => ({
-  saveSpeechPreferences: vi.fn(() => Promise.resolve()),
-  loadSpeechPreferences: vi.fn(() => Promise.resolve(null)),
-  clearSpeechPreferences: vi.fn(() => Promise.resolve())
+  saveSpeechPreferences: vi.fn<() => Promise<void>>().mockResolvedValue(undefined),
+  loadSpeechPreferences: vi.fn<() => Promise<null>>(),
+  clearSpeechPreferences: vi.fn<() => Promise<void>>().mockResolvedValue(undefined)
 }))
 
 function SpeechTestComponent({
@@ -52,13 +52,15 @@ describe('useSpeechService', () => {
     pitch = 1.0
     private listeners: Map<string, EventListener[]> = new Map()
 
-    addEventListener = vi.fn((type: string, listener: EventListener) => {
-      const existing = this.listeners.get(type) ?? []
-      existing.push(listener)
-      this.listeners.set(type, existing)
-    })
+    addEventListener = vi.fn<(type: string, listener: EventListener) => void>(
+      (type: string, listener: EventListener) => {
+        const existing = this.listeners.get(type) ?? []
+        existing.push(listener)
+        this.listeners.set(type, existing)
+      }
+    )
 
-    removeEventListener = vi.fn()
+    removeEventListener = vi.fn<(type: string, listener: EventListener) => void>()
 
     constructor(text: string) {
       this.text = text
@@ -77,14 +79,16 @@ describe('useSpeechService', () => {
   beforeEach(() => {
     utterances = []
     mockSpeechSynthesis = {
-      speak: vi.fn(),
-      cancel: vi.fn(),
-      getVoices: vi.fn(() => [{ lang: 'en-US', name: 'English' }]),
+      speak: vi.fn<(utterance: SpeechSynthesisUtterance) => void>(),
+      cancel: vi.fn<() => void>(),
+      getVoices: vi.fn<() => SpeechSynthesisVoice[]>(() => [
+        { lang: 'en-US', name: 'English', default: false, localService: true, voiceURI: 'test' }
+      ]),
       paused: false,
-      resume: vi.fn(),
+      resume: vi.fn<() => void>(),
       onvoiceschanged: null,
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn()
+      addEventListener: vi.fn<() => void>(),
+      removeEventListener: vi.fn<() => void>()
     }
 
     vi.stubGlobal('speechSynthesis', mockSpeechSynthesis)
@@ -160,7 +164,7 @@ describe('useSpeechService', () => {
     })
 
     it('calls onVoiceChange callback when voice is initialized', async () => {
-      const onVoiceChange = vi.fn()
+      const onVoiceChange = vi.fn<() => void>()
       await render(
         <SpeechTestComponent
           // oxlint-disable-next-line jsx-no-new-object-as-prop
@@ -200,7 +204,7 @@ describe('useSpeechService', () => {
     })
 
     it('does not speak when voice is not available', async () => {
-      mockSpeechSynthesis.getVoices = vi.fn(() => [])
+      mockSpeechSynthesis.getVoices = vi.fn<() => SpeechSynthesisVoice[]>(() => [])
       // oxlint-disable-next-line jsx-no-new-object-as-prop
       const serviceRef = { current: null as ReturnType<typeof useSpeechService> | null }
       await render(

@@ -5,9 +5,16 @@ import {
   createCurrentMatchSession,
   createCurrentMatchSessionSnapshot
 } from '@/lib/current-match/session'
-import { currentMatchSchemaVersion } from '@/lib/current-match/persistence'
+import {
+  currentMatchSchemaVersion,
+  type CurrentMatchRecord,
+  type CurrentMatchSaveInput
+} from '@/lib/current-match/persistence'
 import { undoLastScoringActionForTeam } from '@/lib/current-match/helpers'
-import type { CurrentMatchPersistence } from '@/lib/current-match/indexed-db'
+import type {
+  CurrentMatchLoadResult,
+  CurrentMatchPersistence
+} from '@/lib/current-match/indexed-db'
 
 import { createTestSetup, scorePoints, winQuickGame, winQuickSet } from '../core/match/test-helpers'
 
@@ -424,30 +431,30 @@ describe('current match session', () => {
     const setup = createTestSetup()
     const firstSave = createDeferred<void>()
     const secondSave = createDeferred<void>()
-    const saveCurrentMatchMock = vi
-      .fn<CurrentMatchPersistence['saveCurrentMatch']>()
-      .mockImplementationOnce(async () => {
-        await firstSave.promise
+    const saveCurrentMatchMock =
+      vi.fn<(input: CurrentMatchSaveInput) => Promise<CurrentMatchRecord>>()
+    saveCurrentMatchMock.mockImplementationOnce(async () => {
+      await firstSave.promise
 
-        return {
-          schemaVersion: currentMatchSchemaVersion,
-          matchId: testMatchId,
-          setup,
-          actions: scorePoints('team-1'),
-          startedAt: testStartedAt
-        }
-      })
-      .mockImplementationOnce(async () => {
-        await secondSave.promise
+      return {
+        schemaVersion: currentMatchSchemaVersion,
+        matchId: testMatchId,
+        setup,
+        actions: scorePoints('team-1'),
+        startedAt: testStartedAt
+      }
+    })
+    saveCurrentMatchMock.mockImplementationOnce(async () => {
+      await secondSave.promise
 
-        return {
-          schemaVersion: currentMatchSchemaVersion,
-          matchId: testMatchId,
-          setup,
-          actions: scorePoints('team-1', 'team-2'),
-          startedAt: testStartedAt
-        }
-      })
+      return {
+        schemaVersion: currentMatchSchemaVersion,
+        matchId: testMatchId,
+        setup,
+        actions: scorePoints('team-1', 'team-2'),
+        startedAt: testStartedAt
+      }
+    })
     const session = createCurrentMatchSession({
       matchId: testMatchId,
       setup,
@@ -455,8 +462,8 @@ describe('current match session', () => {
       startedAt: testStartedAt,
       persistence: {
         saveCurrentMatch: saveCurrentMatchMock,
-        loadCurrentMatch: vi.fn(),
-        clearCurrentMatch: vi.fn(async () => undefined)
+        loadCurrentMatch: vi.fn<() => Promise<CurrentMatchLoadResult>>(),
+        clearCurrentMatch: vi.fn<() => Promise<void>>()
       }
     })
 
@@ -498,13 +505,13 @@ function createPersistenceStub(): {
   persistence: CurrentMatchPersistence
   saveCurrentMatchMock: ReturnType<typeof vi.fn>
 } {
-  const saveCurrentMatchMock = vi.fn(
+  const saveCurrentMatchMock = vi.fn<CurrentMatchPersistence['saveCurrentMatch']>(
     async ({ matchId = 'current-match', setup, actions, startedAt, finishedAt }) => ({
       schemaVersion: currentMatchSchemaVersion,
       matchId,
       setup,
       actions,
-      startedAt,
+      startedAt: startedAt ?? Date.now(),
       ...(typeof finishedAt === 'number' ? { finishedAt } : {})
     })
   )
@@ -512,8 +519,8 @@ function createPersistenceStub(): {
   return {
     persistence: {
       saveCurrentMatch: saveCurrentMatchMock,
-      loadCurrentMatch: vi.fn(),
-      clearCurrentMatch: vi.fn(async () => undefined)
+      loadCurrentMatch: vi.fn<() => Promise<CurrentMatchLoadResult>>(),
+      clearCurrentMatch: vi.fn<() => Promise<void>>()
     },
     saveCurrentMatchMock
   }

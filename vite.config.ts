@@ -2,7 +2,6 @@ import { tanstackStart } from '@tanstack/react-start/plugin/vite'
 import react from '@vitejs/plugin-react'
 import { defineConfig, type UserConfig } from 'vite'
 import killerInstincts from 'vite-plugin-killer-instincts'
-import tsconfigPaths from 'vite-tsconfig-paths'
 import { readFileSync, writeFileSync, existsSync } from 'fs'
 import { join } from 'path'
 
@@ -48,6 +47,7 @@ function generatePrecacheManifest() {
         const uniqueAssets = [...new Set(assets)]
 
         writeFileSync(outputPath, JSON.stringify({ assets: uniqueAssets }, null, 2))
+        // oxlint-disable-next-line no-console
         console.log(`[precache-manifest] Generated with ${uniqueAssets.length} assets`)
       }
     }
@@ -58,6 +58,9 @@ export const appViteConfig = {
   server: {
     port: 4000,
     strictPort: true
+  },
+  resolve: {
+    tsconfigPaths: true
   },
   plugins: [
     ...tanstackStart({
@@ -77,7 +80,6 @@ export const appViteConfig = {
       }
     }),
     react(),
-    tsconfigPaths(),
     killerInstincts({ autoKill: true }),
     generatePrecacheManifest()
   ],

@@ -5,10 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { Layout } from '@/components/Layout/Layout'
 import { RotateDeviceBlocker } from '@/components/ui/RotateDeviceBlocker/RotateDeviceBlocker'
 import { TopBar } from '@/components/ui/TopBar/TopBar'
-import {
-  createEmptyRemoteControllerBindings,
-  type RemoteControllerBindings
-} from '@/lib/input/keyboard-aliases'
+import { createEmptyRemoteControllerBindings } from '@/lib/input/keyboard-aliases'
 import { loadRemoteControllerBindingsWithFallback } from '@/lib/input/remote-controller-storage'
 import { useInputHandler } from '@/lib/input/use-input-handler'
 import { prepareCurrentMatchRouteNavigation } from '@/lib/router/current-match-route-flow'
@@ -49,9 +46,7 @@ export function ActiveMatchScreen({
   const { isPortrait } = useOrientationDetection()
   const [sideSwitchDismissed, setSideSwitchDismissed] = useState(false)
   const [isNavigatingToFinish, setIsNavigatingToFinish] = useState(false)
-  const [remoteBindings, setRemoteBindings] = useState<RemoteControllerBindings>(
-    createEmptyRemoteControllerBindings()
-  )
+  const [remoteBindings, setRemoteBindings] = useState(createEmptyRemoteControllerBindings())
   const { snapshot, scorePoint, undoScoreAction, undoScoreActionForTeam, finishMatch, isLoading } =
     useMatchSession({
       matchId,

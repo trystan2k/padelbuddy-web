@@ -7,8 +7,8 @@ import { render } from 'vitest-browser-react'
 import { useSetupForm } from '@/components/SetupScreen/useSetupForm'
 
 const { mockLoadSetupPreferences, mockSaveSetupPreferenceSlice } = vi.hoisted(() => ({
-  mockLoadSetupPreferences: vi.fn(),
-  mockSaveSetupPreferenceSlice: vi.fn()
+  mockLoadSetupPreferences: vi.fn<() => Promise<object | null>>(),
+  mockSaveSetupPreferenceSlice: vi.fn<() => Promise<void>>()
 }))
 
 vi.mock('@/lib/setup/setup-storage', () => ({

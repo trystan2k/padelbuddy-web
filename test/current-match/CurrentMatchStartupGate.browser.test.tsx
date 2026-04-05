@@ -3,20 +3,6 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import { render } from 'vitest-browser-react'
 
-const { mockInvalidate, mockNavigate, mockPreloadRoute } = vi.hoisted(() => ({
-  mockInvalidate: vi.fn(async () => undefined),
-  mockNavigate: vi.fn(),
-  mockPreloadRoute: vi.fn(async () => undefined)
-}))
-
-vi.mock('@tanstack/react-router', () => ({
-  useNavigate: () => mockNavigate,
-  useRouter: () => ({
-    invalidate: mockInvalidate,
-    preloadRoute: mockPreloadRoute
-  })
-}))
-
 import { CurrentMatchStartupGate } from '@/components/CurrentMatchStartupGate/CurrentMatchStartupGate'
 import {
   clearCurrentMatch,
@@ -33,6 +19,20 @@ import {
 } from '@/lib/current-match/startup'
 
 import { createTestSetup, scorePoints } from '../core/match/test-helpers'
+
+const { mockInvalidate, mockNavigate, mockPreloadRoute } = vi.hoisted(() => ({
+  mockInvalidate: vi.fn<() => Promise<void>>(async () => undefined),
+  mockNavigate: vi.fn<(options: object) => void>(),
+  mockPreloadRoute: vi.fn<() => Promise<void>>(async () => undefined)
+}))
+
+vi.mock('@tanstack/react-router', () => ({
+  useNavigate: () => mockNavigate,
+  useRouter: () => ({
+    invalidate: mockInvalidate,
+    preloadRoute: mockPreloadRoute
+  })
+}))
 
 describe('CurrentMatchStartupGate browser', () => {
   const testMatchId = 'test-match'

@@ -12,8 +12,7 @@ import {
   createEmptyRemoteControllerBindings,
   createRemoteControllerBindings,
   getKeyboardBindingDisplayLabel,
-  type ConfigurableKeyboardAction,
-  type RemoteControllerBindings
+  type ConfigurableKeyboardAction
 } from '@/lib/input/keyboard-aliases'
 import {
   clearRemoteControllerBindings,
@@ -38,9 +37,7 @@ export interface RemoteConfigurationModalProps {
 export function RemoteConfigurationModal({ isOpen, onClose }: RemoteConfigurationModalProps) {
   const { t } = useTranslation()
   const { addErrorToast, addSuccessToast } = useToast()
-  const [draftBindings, setDraftBindings] = useState<RemoteControllerBindings>(
-    createEmptyRemoteControllerBindings()
-  )
+  const [draftBindings, setDraftBindings] = useState(createEmptyRemoteControllerBindings())
   const [listeningAction, setListeningAction] = useState<ConfigurableKeyboardAction | null>(null)
   const [isSaving, setIsSaving] = useState(false)
   const closeGuardRef = useRef(false)

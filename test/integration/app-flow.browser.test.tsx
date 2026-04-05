@@ -16,16 +16,17 @@ import {
   hydrateCurrentMatchStartup,
   type CurrentMatchStartupResult
 } from '@/lib/current-match/startup'
-import { HomeRoute, Route as HomeIndexRoute } from '@/routes/index'
+import { HomeScreen } from '@/components/HomeScreen/HomeScreen'
+import { Route as HomeIndexRoute } from '@/routes/index'
 import { Route as MatchRoute } from '@/routes/match.$id'
 import { Route as MatchFinishRoute } from '@/routes/match.finish.$id'
 
 import { createTestSetup, scorePoints, winQuickSet } from '../core/match/test-helpers'
 
 const { mockInvalidate, mockNavigate, mockPreloadRoute, mockRouteSearch } = vi.hoisted(() => ({
-  mockInvalidate: vi.fn(async () => undefined),
-  mockNavigate: vi.fn(),
-  mockPreloadRoute: vi.fn(async () => undefined),
+  mockInvalidate: vi.fn<() => Promise<void>>(),
+  mockNavigate: vi.fn<() => void>(),
+  mockPreloadRoute: vi.fn<() => Promise<void>>(),
   mockRouteSearch: {
     current: {} as { error?: string }
   }
@@ -38,7 +39,7 @@ vi.mock('@tanstack/react-router', async (importOriginal) => {
     ...actual,
     createFileRoute: () => (options: unknown) => ({
       options,
-      useLoaderData: vi.fn(),
+      useLoaderData: vi.fn<() => unknown>(),
       useSearch: () => mockRouteSearch.current,
       isPending: false,
       error: false
@@ -130,8 +131,8 @@ describe('app flow integration', () => {
     await matchEndScreen.unmount()
     mockNavigate.mockClear()
 
-    await setHomeStartupState(await hydrateCurrentMatchStartup())
-    const homeScreen = await render(<HomeRoute />)
+    const startupState = await hydrateCurrentMatchStartup()
+    const homeScreen = await render(<HomeScreen startupState={startupState} />)
 
     await expect.element(homeScreen.getByRole('button', { name: 'Start Match' })).toBeVisible()
     expect(document.body.textContent).not.toContain('Resume saved match?')
@@ -148,8 +149,8 @@ describe('app flow integration', () => {
       startedAt: Date.now()
     })
 
-    await setHomeStartupState(await hydrateCurrentMatchStartup())
-    const homeScreen = await render(<HomeRoute />)
+    const startupState = await hydrateCurrentMatchStartup()
+    const homeScreen = await render(<HomeScreen startupState={startupState} />)
 
     await expect
       .element(homeScreen.getByRole('heading', { level: 2, name: 'Resume saved match?' }))
@@ -199,11 +200,11 @@ describe('app flow integration', () => {
     })
 
     mockRouteSearch.current = { error: 'invalid-match' }
-    await setHomeStartupState(await hydrateCurrentMatchStartup())
+    const startupState = await hydrateCurrentMatchStartup()
 
     const homeScreen = await render(
       <ToastProvider>
-        <HomeRoute />
+        <HomeScreen startupState={startupState} error="invalid-match" />
       </ToastProvider>
     )
 
@@ -367,13 +368,13 @@ async function waitForNavigationCall(to: string): Promise<unknown> {
   })
 
   const matchingCall = [...mockNavigate.mock.calls]
-    .map(([navigation]) => navigation)
-    .find((navigation) => {
+    .map((calls): unknown => (calls as unknown[])[0] ?? null)
+    .find((navigation): navigation is Record<string, unknown> => {
       return (
         typeof navigation === 'object' &&
         navigation !== null &&
         'to' in navigation &&
-        navigation.to === to
+        (navigation as Record<string, unknown>).to === to
       )
     })
 
