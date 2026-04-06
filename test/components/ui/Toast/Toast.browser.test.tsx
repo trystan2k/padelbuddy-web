@@ -1,6 +1,3 @@
-/* oxlint-disable jsx-no-new-function-as-prop -- Test files use inline functions for readability */
-/* oxlint-disable jsx-no-new-array-as-prop -- Test files use inline arrays for readable */
-
 import { afterEach, describe, expect, test, vi } from 'vitest';
 import { cleanup, render } from 'vitest-browser-react';
 

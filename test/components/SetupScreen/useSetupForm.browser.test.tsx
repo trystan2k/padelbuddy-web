@@ -1,6 +1,3 @@
-/* oxlint-disable jsx-no-new-function-as-prop -- Test files use inline functions for readability */
-/* oxlint-disable button-has-type -- Test buttons don't need type attribute */
-
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 
@@ -289,6 +286,7 @@ function SetupFormController({
   return (
     <div>
       <button
+        type="button"
         data-testid="update-team1"
         onClick={() => {
           formState.updateTeamName('team-1', 'Alpha Team');
@@ -297,6 +295,7 @@ function SetupFormController({
         Update Team 1
       </button>
       <button
+        type="button"
         data-testid="update-team2"
         onClick={() => {
           formState.updateTeamName('team-2', 'Beta Team');
@@ -305,6 +304,7 @@ function SetupFormController({
         Update Team 2
       </button>
       <button
+        type="button"
         data-testid="update-format-bo5"
         onClick={() => {
           formState.updateFormat('best-of-5');
@@ -313,6 +313,7 @@ function SetupFormController({
         Format BO5
       </button>
       <button
+        type="button"
         data-testid="update-format-bo1"
         onClick={() => {
           formState.updateFormat('best-of-1');
@@ -321,6 +322,7 @@ function SetupFormController({
         Format BO1
       </button>
       <button
+        type="button"
         data-testid="update-golden-point"
         onClick={() => {
           formState.updateGameMode('golden-point');
@@ -329,6 +331,7 @@ function SetupFormController({
         Golden Point
       </button>
       <button
+        type="button"
         data-testid="update-advantage"
         onClick={() => {
           formState.updateGameMode('advantage');
@@ -337,6 +340,7 @@ function SetupFormController({
         Advantage
       </button>
       <button
+        type="button"
         data-testid="update-server-team2"
         onClick={() => {
           formState.updateInitialServer('team-2');
@@ -345,6 +349,7 @@ function SetupFormController({
         Server Team 2
       </button>
       <button
+        type="button"
         data-testid="update-super-tiebreak-true"
         onClick={() => {
           formState.updateDecidingSetSuperTiebreak(true);
@@ -353,6 +358,7 @@ function SetupFormController({
         Super Tiebreak ON
       </button>
       <button
+        type="button"
         data-testid="update-super-tiebreak-false"
         onClick={() => {
           formState.updateDecidingSetSuperTiebreak(false);
@@ -361,6 +367,7 @@ function SetupFormController({
         Super Tiebreak OFF
       </button>
       <button
+        type="button"
         data-testid="update-side-switch-false"
         onClick={() => {
           formState.updateSideSwitchPrompts(false);
@@ -369,6 +376,7 @@ function SetupFormController({
         Side Switch OFF
       </button>
       <button
+        type="button"
         data-testid="update-side-switch-true"
         onClick={() => {
           formState.updateSideSwitchPrompts(true);
@@ -377,6 +385,7 @@ function SetupFormController({
         Side Switch ON
       </button>
       <button
+        type="button"
         data-testid="update-audio-announcements-enabled"
         onClick={() => {
           formState.updateAudioAnnouncementsEnabled(true);
@@ -385,6 +394,7 @@ function SetupFormController({
         Audio ON
       </button>
       <button
+        type="button"
         data-testid="update-audio-announcements-disabled"
         onClick={() => {
           formState.updateAudioAnnouncementsEnabled(false);
@@ -393,14 +403,16 @@ function SetupFormController({
         Audio OFF
       </button>
       <button
+        type="button"
         data-testid="update-serving-indicator-enabled"
         onClick={() => {
           formState.updateServingIndicatorEnabled(true);
         }}
       >
-        Serving Indicator ON
+        Serving Indicator ON type="button"
       </button>
       <button
+        type="button"
         data-testid="update-serving-indicator-disabled"
         onClick={() => {
           formState.updateServingIndicatorEnabled(false);
@@ -409,6 +421,7 @@ function SetupFormController({
         Serving Indicator OFF
       </button>
       <button
+        type="button"
         data-testid="update-countdown-enabled"
         onClick={() => {
           formState.updateCountdownTimerEnabled(true);
@@ -421,10 +434,12 @@ function SetupFormController({
         onClick={() => {
           formState.updateCountdownTimerEnabled(false);
         }}
+        type="button"
       >
         Countdown OFF
       </button>
       <button
+        type="button"
         data-testid="update-countdown-duration-60"
         onClick={() => {
           formState.updateCountdownTimerDuration(60);
@@ -433,6 +448,7 @@ function SetupFormController({
         Countdown 60
       </button>
       <button
+        type="button"
         data-testid="update-countdown-duration-120"
         onClick={() => {
           formState.updateCountdownTimerDuration(120);
@@ -441,7 +457,8 @@ function SetupFormController({
         Countdown 120
       </button>
       <button
-        data-testid="validate"
+        type="button"
+        type-testid="validate"
         onClick={() => {
           formState.validate();
         }}
@@ -449,6 +466,7 @@ function SetupFormController({
         Validate
       </button>
       <button
+        type="button"
         data-testid="clear-team1"
         onClick={() => {
           formState.updateTeamName('team-1', '');
@@ -457,6 +475,7 @@ function SetupFormController({
         Clear Team 1
       </button>
       <button
+        type="button"
         data-testid="clear-team2"
         onClick={() => {
           formState.updateTeamName('team-2', '');
@@ -464,7 +483,7 @@ function SetupFormController({
       >
         Clear Team 2
       </button>
-      <button data-testid="get-state" onClick={() => onGetState?.(formState)}>
+      <button type="button" data-testid="get-state" onClick={() => onGetState?.(formState)}>
         Get State
       </button>
       <div data-testid="state">{JSON.stringify(formState.formData)}</div>

@@ -78,7 +78,10 @@
         "node": true
       },
       "rules": {
-        "typescript/no-unsafe-type-assertion": "off"
+        "typescript/no-unsafe-type-assertion": "off",
+        "jsx-no-new-function-as-prop": "off",
+        "jsx-no-new-array-as-prop": "off",
+        "jsx-no-new-object-as-prop": "off"
       }
     }
   ]

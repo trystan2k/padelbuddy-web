@@ -1,5 +1,3 @@
-/* oxlint-disable jsx-no-new-function-as-prop -- Test route harness keeps navigation handlers inline for readability. */
-
 import {
   Outlet,
   RouterProvider,

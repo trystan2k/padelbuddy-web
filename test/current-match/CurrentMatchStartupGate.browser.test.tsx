@@ -1,5 +1,3 @@
-/* oxlint-disable jsx-no-new-object-as-prop -- Test files use inline objects for readability */
-
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 

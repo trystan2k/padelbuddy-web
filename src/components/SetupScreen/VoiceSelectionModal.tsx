@@ -1,5 +1,3 @@
-/* oxlint-disable jsx-no-new-function-as-prop -- Base UI Dialog and Select use render props for accessible composition. */
-
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Dialog } from '@base-ui/react/dialog';
 import { useTranslation } from 'react-i18next';
@@ -17,6 +15,44 @@ import {
 import { generateSpeechMessage } from '@/lib/speech/message-generator';
 
 import styles from './VoiceSelectionModal.module.css';
+
+const EMPTY_ARRAY: SpeechSynthesisVoice[] = [];
+
+interface VoiceItemProps {
+  voice: SpeechSynthesisVoice;
+  onIndicatorRender: (props: React.HTMLAttributes<HTMLSpanElement>) => React.ReactElement;
+}
+
+const VoiceItem = ({ voice, onIndicatorRender }: VoiceItemProps) => (
+  <Select.Item value={getVoiceId(voice)} className={styles.item}>
+    <span>{voice.name}</span>
+    <Select.ItemIndicator render={onIndicatorRender} />
+  </Select.Item>
+);
+
+interface VoiceGroupProps {
+  groupLocale: string;
+  voices: SpeechSynthesisVoice[];
+  onGroupLabelRender: (props: React.HTMLAttributes<HTMLDivElement>) => React.ReactElement;
+  onItemIndicatorRender: (props: React.HTMLAttributes<HTMLSpanElement>) => React.ReactElement;
+}
+
+const VoiceGroup = ({
+  groupLocale,
+  voices,
+  onGroupLabelRender,
+  onItemIndicatorRender
+}: VoiceGroupProps) => (
+  <Select.Group className={styles.group}>
+    <Select.GroupLabel render={onGroupLabelRender}>
+      {getLanguageDisplayName(groupLocale)}
+    </Select.GroupLabel>
+
+    {voices?.map((voice) => (
+      <VoiceItem key={getVoiceId(voice)} voice={voice} onIndicatorRender={onItemIndicatorRender} />
+    ))}
+  </Select.Group>
+);
 
 export interface VoiceSelectionModalProps {
   isOpen: boolean;
@@ -135,121 +171,142 @@ export function VoiceSelectionModal({
     onClose();
   }, [onAccept, onClose, previewVoice]);
 
+  const handleBackdropRender = useCallback(
+    (props: React.HTMLAttributes<HTMLDivElement>) => <div {...props} className={styles.overlay} />,
+    []
+  );
+
+  const handleTitleRender = useCallback(
+    (titleProps: React.HTMLAttributes<HTMLHeadingElement>) => (
+      <h2 {...titleProps} className={styles.title}>
+        {t('setup.voiceSelection.title')}
+      </h2>
+    ),
+    [t]
+  );
+
+  const handleSelectPopupRender = useCallback(
+    (popupProps: React.HTMLAttributes<HTMLDivElement>) => (
+      <div {...popupProps} className={styles.popup} />
+    ),
+    []
+  );
+
+  const handleGroupLabelRender = useCallback(
+    (groupLabelProps: React.HTMLAttributes<HTMLDivElement>) => (
+      <div {...groupLabelProps} className={styles.groupLabel} />
+    ),
+    []
+  );
+
+  const handleItemIndicatorRender = useCallback(
+    (indicatorProps: React.HTMLAttributes<HTMLSpanElement>) => (
+      <span {...indicatorProps} className={styles.itemIndicator} aria-hidden="true">
+        ✓
+      </span>
+    ),
+    []
+  );
+
+  const handleTriggerRender = useCallback(
+    (triggerProps: React.HTMLAttributes<HTMLButtonElement>) => (
+      <button {...triggerProps} type="button" className={styles.trigger}>
+        <Select.Value placeholder={t('setup.voiceSelection.selectVoice')}>
+          {previewVoice?.name ?? null}
+        </Select.Value>
+        <span className={styles.triggerIcon} aria-hidden="true">
+          ▾
+        </span>
+      </button>
+    ),
+    [previewVoice?.name, t]
+  );
+
+  const handlePopupRender = useCallback(
+    (props: React.HTMLAttributes<HTMLDivElement>) => (
+      <div {...props} className={styles.container} data-testid="voice-selection-modal">
+        <div className={styles.header}>
+          <Dialog.Title render={handleTitleRender} />
+        </div>
+
+        <div className={styles.field}>
+          <Select.Root
+            value={previewVoice ? getVoiceId(previewVoice) : null}
+            onValueChange={handleVoiceChange}
+          >
+            <Select.Label className={styles.label}>
+              {t('setup.voiceSelection.selectVoice')}
+            </Select.Label>
+
+            <Select.Trigger render={handleTriggerRender} />
+
+            <Select.Portal>
+              <Select.Positioner side="bottom" className={styles.positioner}>
+                <Select.Popup render={handleSelectPopupRender}>
+                  <Select.List className={styles.list}>
+                    {orderedLocaleKeys.map((groupLocale) => (
+                      <VoiceGroup
+                        key={groupLocale}
+                        groupLocale={groupLocale}
+                        voices={voicesByLocale[groupLocale] ?? EMPTY_ARRAY}
+                        onGroupLabelRender={handleGroupLabelRender}
+                        onItemIndicatorRender={handleItemIndicatorRender}
+                      />
+                    ))}
+                  </Select.List>
+                </Select.Popup>
+              </Select.Positioner>
+            </Select.Portal>
+          </Select.Root>
+        </div>
+
+        <div className={styles.footer}>
+          <Button variant="outline" size="sm" accent="secondary" onClick={onClose}>
+            {t('setup.voiceSelection.cancel')}
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            accent="secondary"
+            onClick={handlePlayPreview}
+            disabled={!previewVoice}
+          >
+            {t('setup.voiceSelection.preview')}
+          </Button>
+          <Button
+            variant="solid"
+            size="sm"
+            accent="success"
+            onClick={handleAccept}
+            disabled={!previewVoice}
+          >
+            {t('setup.voiceSelection.accept')}
+          </Button>
+        </div>
+      </div>
+    ),
+    [
+      handleTitleRender,
+      previewVoice,
+      handleVoiceChange,
+      t,
+      handleTriggerRender,
+      handleSelectPopupRender,
+      orderedLocaleKeys,
+      handleGroupLabelRender,
+      voicesByLocale,
+      handleItemIndicatorRender,
+      onClose,
+      handlePlayPreview,
+      handleAccept
+    ]
+  );
+
   return (
     <Dialog.Root open={isOpen} onOpenChange={handleOpenChange}>
       <Dialog.Portal>
-        <Dialog.Backdrop render={(props) => <div {...props} className={styles.overlay} />} />
-
-        <Dialog.Popup
-          render={(props) => (
-            <div {...props} className={styles.container} data-testid="voice-selection-modal">
-              <div className={styles.header}>
-                <Dialog.Title
-                  render={(titleProps) => (
-                    <h2 {...titleProps} className={styles.title}>
-                      {t('setup.voiceSelection.title')}
-                    </h2>
-                  )}
-                />
-              </div>
-
-              <div className={styles.field}>
-                <Select.Root
-                  value={previewVoice ? getVoiceId(previewVoice) : null}
-                  onValueChange={handleVoiceChange}
-                >
-                  {/* oxlint-disable jsx-a11y/label-has-associated-control -- Base UI Select.Label and
-                    Select.Trigger are associated through the component's ARIA pattern, not htmlFor */}
-                  <Select.Label
-                    render={(labelProps) => <label {...labelProps} className={styles.label} />}
-                  >
-                    {t('setup.voiceSelection.selectVoice')}
-                  </Select.Label>
-
-                  <Select.Trigger
-                    render={(triggerProps) => (
-                      <button {...triggerProps} type="button" className={styles.trigger}>
-                        <Select.Value placeholder={t('setup.voiceSelection.selectVoice')}>
-                          {previewVoice?.name ?? null}
-                        </Select.Value>
-                        <span className={styles.triggerIcon} aria-hidden="true">
-                          ▾
-                        </span>
-                      </button>
-                    )}
-                  />
-
-                  <Select.Portal>
-                    <Select.Positioner side="bottom" className={styles.positioner}>
-                      <Select.Popup
-                        render={(popupProps) => <div {...popupProps} className={styles.popup} />}
-                      >
-                        <Select.List className={styles.list}>
-                          {orderedLocaleKeys.map((groupLocale) => (
-                            <Select.Group key={groupLocale} className={styles.group}>
-                              <Select.GroupLabel
-                                render={(groupLabelProps) => (
-                                  <div {...groupLabelProps} className={styles.groupLabel} />
-                                )}
-                              >
-                                {getLanguageDisplayName(groupLocale)}
-                              </Select.GroupLabel>
-
-                              {voicesByLocale[groupLocale]?.map((voice) => (
-                                <Select.Item
-                                  key={getVoiceId(voice)}
-                                  value={getVoiceId(voice)}
-                                  className={styles.item}
-                                >
-                                  <span>{voice.name}</span>
-                                  <Select.ItemIndicator
-                                    render={(indicatorProps) => (
-                                      <span
-                                        {...indicatorProps}
-                                        className={styles.itemIndicator}
-                                        aria-hidden="true"
-                                      >
-                                        ✓
-                                      </span>
-                                    )}
-                                  />
-                                </Select.Item>
-                              ))}
-                            </Select.Group>
-                          ))}
-                        </Select.List>
-                      </Select.Popup>
-                    </Select.Positioner>
-                  </Select.Portal>
-                </Select.Root>
-              </div>
-
-              <div className={styles.footer}>
-                <Button variant="outline" size="sm" accent="secondary" onClick={onClose}>
-                  {t('setup.voiceSelection.cancel')}
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  accent="secondary"
-                  onClick={handlePlayPreview}
-                  disabled={!previewVoice}
-                >
-                  {t('setup.voiceSelection.preview')}
-                </Button>
-                <Button
-                  variant="solid"
-                  size="sm"
-                  accent="success"
-                  onClick={handleAccept}
-                  disabled={!previewVoice}
-                >
-                  {t('setup.voiceSelection.accept')}
-                </Button>
-              </div>
-            </div>
-          )}
-        />
+        <Dialog.Backdrop render={handleBackdropRender} />
+        <Dialog.Popup render={handlePopupRender} />
       </Dialog.Portal>
     </Dialog.Root>
   );

@@ -1,5 +1,3 @@
-/* oxlint-disable jsx-no-new-function-as-prop -- Base UI Dialog uses render props for accessible composition. */
-
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Dialog } from '@base-ui/react/dialog';
 import { useTranslation } from 'react-i18next';
@@ -28,6 +26,63 @@ const ignoredCaptureKeys = new Set(['Alt', 'Control', 'Meta', 'Shift']);
 function toError(error: unknown): Error {
   return error instanceof Error ? error : new Error(String(error));
 }
+
+interface RemoteBindingRowProps {
+  label: string;
+  hint: string;
+  binding?: string | null;
+  isListening: boolean;
+  onCapture: (action: ConfigurableKeyboardAction) => void;
+  action: ConfigurableKeyboardAction;
+}
+
+const RemoteBindingRow = ({
+  label,
+  hint,
+  binding,
+  isListening,
+  onCapture,
+  action
+}: RemoteBindingRowProps) => {
+  const { t } = useTranslation();
+
+  const handleCapture = useCallback(() => {
+    onCapture(action);
+  }, [onCapture, action]);
+
+  return (
+    <div className={styles.row}>
+      <div className={styles.rowText}>
+        <span className={styles.rowLabel}>{label}</span>
+        <span className={styles.rowHint}>{hint}</span>
+      </div>
+
+      <Button
+        className={styles.captureButton}
+        variant={isListening ? 'solid' : 'outline'}
+        size="sm"
+        accent={isListening ? 'primary' : 'secondary'}
+        onClick={handleCapture}
+        aria-pressed={isListening}
+        data-testid={`remote-binding-${action}`}
+      >
+        <span
+          className={cn(
+            styles.captureValue,
+            isListening && styles.captureValueListening,
+            !binding && !isListening && styles.captureValueEmpty
+          )}
+        >
+          {isListening
+            ? t('setup.remoteConfig.listening')
+            : binding
+              ? getKeyboardBindingDisplayLabel(binding)
+              : t('setup.remoteConfig.notSet')}
+        </span>
+      </Button>
+    </div>
+  );
+};
 
 export interface RemoteConfigurationModalProps {
   isOpen: boolean;
@@ -159,6 +214,29 @@ export function RemoteConfigurationModal({ isOpen, onClose }: RemoteConfiguratio
     setDraftBindings(createRemoteControllerBindings());
   }, []);
 
+  const handleBackdropRender = useCallback(
+    (props: React.HTMLAttributes<HTMLDivElement>) => <div {...props} className={styles.overlay} />,
+    []
+  );
+
+  const handleTitleRender = useCallback(
+    (titleProps: React.HTMLAttributes<HTMLHeadingElement>) => (
+      <h2 {...titleProps} className={styles.title}>
+        {t('setup.remoteConfig.title')}
+      </h2>
+    ),
+    [t]
+  );
+
+  const handleDescriptionRender = useCallback(
+    (descriptionProps: React.HTMLAttributes<HTMLParagraphElement>) => (
+      <p {...descriptionProps} className={styles.description}>
+        {t('setup.remoteConfig.description')}
+      </p>
+    ),
+    [t]
+  );
+
   const bindingRows = useMemo(
     () =>
       [
@@ -196,115 +274,87 @@ export function RemoteConfigurationModal({ isOpen, onClose }: RemoteConfiguratio
       })
     : '';
 
+  const handlePopupRender = useCallback(
+    (props: React.HTMLAttributes<HTMLDivElement>) => (
+      <div
+        {...props}
+        className={styles.container}
+        aria-modal="true"
+        data-testid="remote-configuration-modal"
+      >
+        <div className={styles.header}>
+          <Dialog.Title render={handleTitleRender} />
+          <Dialog.Description render={handleDescriptionRender} />
+        </div>
+
+        <span role="status" aria-live="polite" className={styles.srOnly}>
+          {listeningAnnouncement}
+        </span>
+
+        <div className={styles.rows}>
+          {bindingRows.map((row) => (
+            <RemoteBindingRow
+              key={row.action}
+              label={row.label}
+              hint={row.hint}
+              binding={draftBindings[row.action]}
+              isListening={listeningAction === row.action}
+              onCapture={setListeningAction}
+              action={row.action}
+            />
+          ))}
+        </div>
+
+        <p className={styles.helperText}>{t('setup.remoteConfig.helper')}</p>
+
+        <div className={styles.footer}>
+          <div className={styles.footerGroup}>
+            <Button variant="outline" size="sm" accent="secondary" onClick={handleClear}>
+              {t('setup.remoteConfig.actions.clear')}
+            </Button>
+            <Button variant="outline" size="sm" accent="secondary" onClick={handleResetDefaults}>
+              {t('setup.remoteConfig.actions.resetDefaults')}
+            </Button>
+          </div>
+
+          <div className={styles.footerGroup}>
+            <Button variant="outline" size="sm" accent="secondary" onClick={requestClose}>
+              {t('setup.remoteConfig.actions.cancel')}
+            </Button>
+            <Button
+              variant="solid"
+              size="sm"
+              accent="success"
+              onClick={handleSave}
+              disabled={isSaving}
+            >
+              {t('setup.remoteConfig.actions.save')}
+            </Button>
+          </div>
+        </div>
+      </div>
+    ),
+    [
+      handleTitleRender,
+      handleDescriptionRender,
+      listeningAnnouncement,
+      bindingRows,
+      draftBindings,
+      listeningAction,
+      t,
+      handleClear,
+      handleResetDefaults,
+      requestClose,
+      handleSave,
+      isSaving
+    ]
+  );
+
   return (
     <Dialog.Root open={isOpen} onOpenChange={handleOpenChange}>
       <Dialog.Portal>
-        <Dialog.Backdrop render={(props) => <div {...props} className={styles.overlay} />} />
-
-        <Dialog.Popup
-          render={(props) => (
-            <div
-              {...props}
-              className={styles.container}
-              aria-modal="true"
-              data-testid="remote-configuration-modal"
-            >
-              <div className={styles.header}>
-                <Dialog.Title
-                  render={(titleProps) => (
-                    <h2 {...titleProps} className={styles.title}>
-                      {t('setup.remoteConfig.title')}
-                    </h2>
-                  )}
-                />
-                <Dialog.Description
-                  render={(descriptionProps) => (
-                    <p {...descriptionProps} className={styles.description}>
-                      {t('setup.remoteConfig.description')}
-                    </p>
-                  )}
-                />
-              </div>
-
-              <span role="status" aria-live="polite" className={styles.srOnly}>
-                {listeningAnnouncement}
-              </span>
-
-              <div className={styles.rows}>
-                {bindingRows.map((row) => {
-                  const binding = draftBindings[row.action];
-                  const isListening = listeningAction === row.action;
-
-                  return (
-                    <div key={row.action} className={styles.row}>
-                      <div className={styles.rowText}>
-                        <span className={styles.rowLabel}>{row.label}</span>
-                        <span className={styles.rowHint}>{row.hint}</span>
-                      </div>
-
-                      <Button
-                        className={styles.captureButton}
-                        variant={isListening ? 'solid' : 'outline'}
-                        size="sm"
-                        accent={isListening ? 'primary' : 'secondary'}
-                        onClick={() => setListeningAction(row.action)}
-                        aria-pressed={isListening}
-                        data-testid={`remote-binding-${row.action}`}
-                      >
-                        <span
-                          className={cn(
-                            styles.captureValue,
-                            isListening && styles.captureValueListening,
-                            !binding && !isListening && styles.captureValueEmpty
-                          )}
-                        >
-                          {isListening
-                            ? t('setup.remoteConfig.listening')
-                            : binding
-                              ? getKeyboardBindingDisplayLabel(binding)
-                              : t('setup.remoteConfig.notSet')}
-                        </span>
-                      </Button>
-                    </div>
-                  );
-                })}
-              </div>
-
-              <p className={styles.helperText}>{t('setup.remoteConfig.helper')}</p>
-
-              <div className={styles.footer}>
-                <div className={styles.footerGroup}>
-                  <Button variant="outline" size="sm" accent="secondary" onClick={handleClear}>
-                    {t('setup.remoteConfig.actions.clear')}
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    accent="secondary"
-                    onClick={handleResetDefaults}
-                  >
-                    {t('setup.remoteConfig.actions.resetDefaults')}
-                  </Button>
-                </div>
-
-                <div className={styles.footerGroup}>
-                  <Button variant="outline" size="sm" accent="secondary" onClick={requestClose}>
-                    {t('setup.remoteConfig.actions.cancel')}
-                  </Button>
-                  <Button
-                    variant="solid"
-                    size="sm"
-                    accent="success"
-                    onClick={handleSave}
-                    disabled={isSaving}
-                  >
-                    {t('setup.remoteConfig.actions.save')}
-                  </Button>
-                </div>
-              </div>
-            </div>
-          )}
-        />
+        <Dialog.Backdrop render={handleBackdropRender} />
+        <Dialog.Popup render={handlePopupRender} />
       </Dialog.Portal>
     </Dialog.Root>
   );

@@ -1,6 +1,3 @@
-/* oxlint-disable jsx-no-new-function-as-prop -- Test files use inline functions for readability */
-/* oxlint-disable jsx-no-new-object-as-prop -- Test files use inline objects for readability */
-
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { currentMatchSchemaVersion } from '@/lib/current-match/persistence';
