@@ -40,7 +40,8 @@ export default defineConfig({
             // @ts-ignore
             provider: playwright(),
             headless: true,
-            instances: [{ browser: 'chromium' }]
+            instances: [{ browser: 'chromium' }],
+            screenshotFailures: false
           },
           testTimeout: 60000,
           hookTimeout: 30000

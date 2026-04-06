@@ -12,6 +12,7 @@ coverage
 .vinxi
 __unconfig*
 todos.json
+.serena/
 
 # Playwright
 playwright-report/
