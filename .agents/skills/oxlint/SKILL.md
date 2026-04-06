@@ -1,10 +1,10 @@
 ---
 name: oxlint
-description: 'Use when configuring, running, or troubleshooting Oxlint in a JavaScript/TypeScript project. Covers .oxlintrc.json setup, plugin selection, rule tuning, CLI commands, type-aware linting, and CI/pre-commit integration.'
+description: "Use when configuring, running, or troubleshooting Oxlint in a JavaScript/TypeScript project. Covers .oxlintrc.json setup, plugin selection, rule tuning, CLI commands, type-aware linting, and CI/pre-commit integration."
 license: MIT
 compatibility: OpenCode
 metadata:
-  version: '1.0.0'
+  version: "1.0.0"
   references:
     - https://oxc.rs/docs/guide/usage/linter.html
     - https://oxc.rs/docs/guide/usage/linter/rules.html
@@ -103,17 +103,17 @@ Recommended default: use `.oxlintrc.json` unless the project needs dynamic confi
 
 ### Important top-level fields
 
-| Field            | Purpose                                  | Notes                                                     |
-| ---------------- | ---------------------------------------- | --------------------------------------------------------- |
-| `plugins`        | Enables built-in plugin rule sets        | Setting this replaces the default plugin set              |
-| `categories`     | Turns groups of rules on/off by severity | Good first pass before tuning individual rules            |
-| `rules`          | Fine-grained rule config                 | Overrides category behavior                               |
-| `ignorePatterns` | Ignores files/directories                | Paths are relative to the config file                     |
-| `env`            | Adds environment globals                 | e.g. `browser`, `node`, `builtin`                         |
-| `globals`        | Declares project globals                 | Prefer this over disabling undefined-variable style rules |
-| `settings`       | Plugin-specific shared config            | React, jsx-a11y, Vitest, etc.                             |
-| `overrides`      | Per-file config                          | Useful for tests, config files, generated code            |
-| `options`        | Linter-level behavior                    | Includes `typeAware`, `typeCheck`, warning behavior       |
+| Field | Purpose | Notes |
+|------|---------|-------|
+| `plugins` | Enables built-in plugin rule sets | Setting this replaces the default plugin set |
+| `categories` | Turns groups of rules on/off by severity | Good first pass before tuning individual rules |
+| `rules` | Fine-grained rule config | Overrides category behavior |
+| `ignorePatterns` | Ignores files/directories | Paths are relative to the config file |
+| `env` | Adds environment globals | e.g. `browser`, `node`, `builtin` |
+| `globals` | Declares project globals | Prefer this over disabling undefined-variable style rules |
+| `settings` | Plugin-specific shared config | React, jsx-a11y, Vitest, etc. |
+| `overrides` | Per-file config | Useful for tests, config files, generated code |
+| `options` | Linter-level behavior | Includes `typeAware`, `typeCheck`, warning behavior |
 
 ---
 
@@ -149,19 +149,19 @@ Avoid enabling `pedantic`, `style`, or `restriction` broadly at the start unless
 
 Oxlint supports many native plugin ecosystems. Common ones:
 
-| Plugin       | Use for                                        |
-| ------------ | ---------------------------------------------- |
-| `typescript` | TS syntax and TypeScript-oriented rules        |
-| `react`      | React and React Hooks rules                    |
-| `react-perf` | React render performance anti-patterns         |
-| `import`     | import order, cycles, duplicates, self-imports |
-| `jsx-a11y`   | JSX accessibility checks                       |
-| `promise`    | Promise handling and async behavior            |
-| `vitest`     | Vitest-specific test rules                     |
-| `node`       | Node/runtime script patterns                   |
-| `unicorn`    | General code-quality rules                     |
-| `oxc`        | Oxc-specific and deepscan-derived rules        |
-| `eslint`     | Core ESLint-compatible rules                   |
+| Plugin | Use for |
+|-------|---------|
+| `typescript` | TS syntax and TypeScript-oriented rules |
+| `react` | React and React Hooks rules |
+| `react-perf` | React render performance anti-patterns |
+| `import` | import order, cycles, duplicates, self-imports |
+| `jsx-a11y` | JSX accessibility checks |
+| `promise` | Promise handling and async behavior |
+| `vitest` | Vitest-specific test rules |
+| `node` | Node/runtime script patterns |
+| `unicorn` | General code-quality rules |
+| `oxc` | Oxc-specific and deepscan-derived rules |
+| `eslint` | Core ESLint-compatible rules |
 
 ### Good plugin set for React + TypeScript apps
 
@@ -239,13 +239,13 @@ This is useful for React Router, TanStack Router, and similar libraries.
 
 ### Common React rules to consider
 
-| Rule                       | Suggested default | Notes                                  |
-| -------------------------- | ----------------- | -------------------------------------- |
-| `react/button-has-type`    | `warn`            | Helpful for reusable button components |
-| `react/no-array-index-key` | `warn`            | Useful for dynamic list rendering      |
-| `react/self-closing-comp`  | `warn`            | Low-noise readability win              |
-| `react/jsx-uses-react`     | `off` in React 19 | Legacy runtime rule                    |
-| `react/react-in-jsx-scope` | `off` in React 19 | Legacy runtime rule                    |
+| Rule | Suggested default | Notes |
+|------|-------------------|-------|
+| `react/button-has-type` | `warn` | Helpful for reusable button components |
+| `react/no-array-index-key` | `warn` | Useful for dynamic list rendering |
+| `react/self-closing-comp` | `warn` | Low-noise readability win |
+| `react/jsx-uses-react` | `off` in React 19 | Legacy runtime rule |
+| `react/react-in-jsx-scope` | `off` in React 19 | Legacy runtime rule |
 
 ---
 
@@ -337,18 +337,18 @@ pnpm oxlint --rules
 
 ### Useful CLI flags
 
-| Flag                | Purpose                                    |
-| ------------------- | ------------------------------------------ |
-| `--fix`             | Apply safe fixes                           |
+| Flag | Purpose |
+|------|---------|
+| `--fix` | Apply safe fixes |
 | `--fix-suggestions` | Apply suggestions that may change behavior |
-| `--fix-dangerously` | Apply dangerous fixes                      |
-| `--type-aware`      | Enable type-aware rules                    |
-| `--type-check`      | Include TS diagnostics                     |
-| `--deny-warnings`   | Fail on warnings                           |
-| `--max-warnings`    | Cap warning count                          |
-| `--print-config`    | Inspect final config                       |
-| `--tsconfig`        | Use non-default tsconfig path              |
-| `-f json`           | JSON output for CI or tooling              |
+| `--fix-dangerously` | Apply dangerous fixes |
+| `--type-aware` | Enable type-aware rules |
+| `--type-check` | Include TS diagnostics |
+| `--deny-warnings` | Fail on warnings |
+| `--max-warnings` | Cap warning count |
+| `--print-config` | Inspect final config |
+| `--tsconfig` | Use non-default tsconfig path |
+| `-f json` | JSON output for CI or tooling |
 
 ### Recommended `package.json` scripts
 
@@ -447,12 +447,12 @@ When Oxlint reports issues, tune rules in this order:
 
 ### Good candidates for repo-specific tuning
 
-| Rule                             | Why tune it                                                         |
-| -------------------------------- | ------------------------------------------------------------------- |
-| `import/no-unassigned-import`    | CSS side-effect imports and setup files are common in frontend apps |
-| `jsx-a11y/anchor-is-valid`       | Custom router links may confuse the rule                            |
-| `promise/catch-or-return`        | Tests often intentionally ignore returned promises                  |
-| `typescript/no-misused-promises` | React callback usage sometimes needs options                        |
+| Rule | Why tune it |
+|------|-------------|
+| `import/no-unassigned-import` | CSS side-effect imports and setup files are common in frontend apps |
+| `jsx-a11y/anchor-is-valid` | Custom router links may confuse the rule |
+| `promise/catch-or-return` | Tests often intentionally ignore returned promises |
+| `typescript/no-misused-promises` | React callback usage sometimes needs options |
 
 ---
 

@@ -19,18 +19,18 @@ export default defineConfig({
     lib: {
       entry: resolve(import.meta.dirname, 'lib/main.ts'),
       name: 'MyLib',
-      fileName: 'my-lib'
+      fileName: 'my-lib',
     },
     rolldownOptions: {
       external: ['vue', 'react'],
       output: {
         globals: {
           vue: 'Vue',
-          react: 'React'
-        }
-      }
-    }
-  }
+          react: 'React',
+        },
+      },
+    },
+  },
 })
 ```
 
@@ -80,10 +80,10 @@ export default defineConfig({
     rolldownOptions: {
       input: {
         main: resolve(import.meta.dirname, 'index.html'),
-        nested: resolve(import.meta.dirname, 'nested/index.html')
-      }
-    }
-  }
+        nested: resolve(import.meta.dirname, 'nested/index.html'),
+      },
+    },
+  },
 })
 ```
 
@@ -101,7 +101,7 @@ const app = express()
 
 const vite = await createViteServer({
   server: { middlewareMode: true },
-  appType: 'custom'
+  appType: 'custom',
 })
 
 app.use(vite.middlewares)
@@ -140,7 +140,6 @@ app.listen(5173)
 ```
 
 The `--ssr` flag:
-
 - Externalizes dependencies by default
 - Outputs for Node.js consumption
 
@@ -161,9 +160,9 @@ Control which deps get bundled vs externalized:
 ```ts
 export default defineConfig({
   ssr: {
-    noExternal: ['some-package'], // Bundle this dep
-    external: ['another-package'] // Externalize this dep
-  }
+    noExternal: ['some-package'],  // Bundle this dep
+    external: ['another-package'], // Externalize this dep
+  },
 })
 ```
 
@@ -185,7 +184,7 @@ import { createServer } from 'vite'
 const server = await createServer({
   configFile: false,
   root: import.meta.dirname,
-  server: { port: 1337 }
+  server: { port: 1337 },
 })
 
 await server.listen()
@@ -199,7 +198,7 @@ import { build } from 'vite'
 
 await build({
   root: './project',
-  build: { outDir: 'dist' }
+  build: { outDir: 'dist' },
 })
 ```
 
@@ -209,7 +208,7 @@ await build({
 import { preview } from 'vite'
 
 const previewServer = await preview({
-  preview: { port: 8080, open: true }
+  preview: { port: 8080, open: true },
 })
 previewServer.printUrls()
 ```

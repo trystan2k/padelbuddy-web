@@ -3,7 +3,7 @@ name: tanstack-start
 description: TanStack Start best practices for full-stack React applications. Server functions, middleware, SSR, authentication, and deployment patterns. Activate when building full-stack apps with TanStack Start.
 compatibility: OpenCode
 metadata:
-  version: '1.0.0'
+  version: "1.0.0"
   references:
     - https://skills.sh/deckardger/tanstack-agent-skills/tanstack-start-best-practices
 ---
@@ -24,18 +24,18 @@ Comprehensive guidelines for implementing TanStack Start patterns in full-stack 
 
 ## Rule Categories by Priority
 
-| Priority | Category          | Rules   | Impact                      |
-| -------- | ----------------- | ------- | --------------------------- |
-| CRITICAL | Server Functions  | 5 rules | Core data mutation patterns |
-| CRITICAL | Security          | 4 rules | Prevents vulnerabilities    |
-| HIGH     | Middleware        | 4 rules | Request/response handling   |
-| HIGH     | Authentication    | 4 rules | Secure user sessions        |
-| MEDIUM   | API Routes        | 1 rule  | External endpoint patterns  |
-| MEDIUM   | SSR               | 6 rules | Server rendering patterns   |
-| MEDIUM   | Error Handling    | 3 rules | Graceful failure handling   |
-| MEDIUM   | Environment       | 1 rule  | Configuration management    |
-| LOW      | File Organization | 3 rules | Maintainable code structure |
-| LOW      | Deployment        | 2 rules | Production readiness        |
+| Priority | Category | Rules | Impact |
+|----------|----------|-------|--------|
+| CRITICAL | Server Functions | 5 rules | Core data mutation patterns |
+| CRITICAL | Security | 4 rules | Prevents vulnerabilities |
+| HIGH | Middleware | 4 rules | Request/response handling |
+| HIGH | Authentication | 4 rules | Secure user sessions |
+| MEDIUM | API Routes | 1 rule | External endpoint patterns |
+| MEDIUM | SSR | 6 rules | Server rendering patterns |
+| MEDIUM | Error Handling | 3 rules | Graceful failure handling |
+| MEDIUM | Environment | 1 rule | Configuration management |
+| LOW | File Organization | 3 rules | Maintainable code structure |
+| LOW | Deployment | 2 rules | Production readiness |
 
 ## Quick Reference
 
@@ -104,7 +104,6 @@ Comprehensive guidelines for implementing TanStack Start patterns in full-stack 
 ## How to Use
 
 Each rule file in the `rules/` directory contains:
-
 1. **Explanation** — Why this pattern matters
 2. **Bad Example** — Anti-pattern to avoid
 3. **Good Example** — Recommended implementation

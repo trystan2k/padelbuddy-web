@@ -1,10 +1,10 @@
 ---
 name: oxfmt
-description: 'Use when configuring, running, or troubleshooting Oxfmt in a JavaScript/TypeScript project. Covers .oxfmtrc.json setup, CLI commands, formatting options, sorting features, and CI/pre-commit integration.'
+description: "Use when configuring, running, or troubleshooting Oxfmt in a JavaScript/TypeScript project. Covers .oxfmtrc.json setup, CLI commands, formatting options, sorting features, and CI/pre-commit integration."
 license: MIT
 compatibility: OpenCode
 metadata:
-  version: '1.0.0'
+  version: "1.0.0"
   references:
     - https://oxc.rs/docs/guide/usage/formatter.html
     - https://oxc.rs/docs/guide/usage/formatter/cli.html
@@ -89,19 +89,19 @@ Recommended default: use `.oxfmtrc.json`.
 
 ### Important top-level fields
 
-| Field             | Purpose                     | Notes                          |
-| ----------------- | --------------------------- | ------------------------------ |
-| `printWidth`      | Line wrapping target        | Default is `100`               |
-| `tabWidth`        | Spaces per indent level     | Default is `2`                 |
-| `useTabs`         | Tabs vs spaces              | Default is `false`             |
-| `semi`            | Semicolons                  | Default is `true`              |
-| `singleQuote`     | Single vs double quotes     | JSX uses `jsxSingleQuote`      |
-| `trailingComma`   | Trailing comma style        | `all`, `es5`, `none`           |
-| `ignorePatterns`  | Exclude files and folders   | Relative to config file        |
-| `overrides`       | Per-file formatting options | Good for Markdown, tests, JSON |
-| `sortImports`     | Import sorting              | Disabled by default            |
-| `sortPackageJson` | Package key sorting         | Enabled by default             |
-| `sortTailwindcss` | Tailwind class sorting      | Disabled by default            |
+| Field | Purpose | Notes |
+|------|---------|-------|
+| `printWidth` | Line wrapping target | Default is `100` |
+| `tabWidth` | Spaces per indent level | Default is `2` |
+| `useTabs` | Tabs vs spaces | Default is `false` |
+| `semi` | Semicolons | Default is `true` |
+| `singleQuote` | Single vs double quotes | JSX uses `jsxSingleQuote` |
+| `trailingComma` | Trailing comma style | `all`, `es5`, `none` |
+| `ignorePatterns` | Exclude files and folders | Relative to config file |
+| `overrides` | Per-file formatting options | Good for Markdown, tests, JSON |
+| `sortImports` | Import sorting | Disabled by default |
+| `sortPackageJson` | Package key sorting | Enabled by default |
+| `sortTailwindcss` | Tailwind class sorting | Disabled by default |
 
 ---
 
@@ -126,17 +126,17 @@ echo 'const  x = 1' | pnpm oxfmt --stdin-filepath src/example.ts
 
 ### Useful CLI flags
 
-| Flag                              | Purpose                              |
-| --------------------------------- | ------------------------------------ |
-| `--check`                         | Validate formatting without writing  |
-| `--list-different`                | Print only changed file paths        |
-| `--write`                         | Write in place; default mode         |
-| `--config`                        | Use a specific config file           |
-| `--ignore-path`                   | Add ignore file(s)                   |
-| `--no-error-on-unmatched-pattern` | Useful for `lint-staged`             |
-| `--stdin-filepath`                | Lets Oxfmt choose parser for stdin   |
-| `--threads`                       | Control concurrency                  |
-| `--migrate`                       | Create config from Prettier or Biome |
+| Flag | Purpose |
+|------|---------|
+| `--check` | Validate formatting without writing |
+| `--list-different` | Print only changed file paths |
+| `--write` | Write in place; default mode |
+| `--config` | Use a specific config file |
+| `--ignore-path` | Add ignore file(s) |
+| `--no-error-on-unmatched-pattern` | Useful for `lint-staged` |
+| `--stdin-filepath` | Lets Oxfmt choose parser for stdin |
+| `--threads` | Control concurrency |
+| `--migrate` | Create config from Prettier or Biome |
 
 ### Recommended `package.json` scripts
 
@@ -302,19 +302,19 @@ Only enable this in Tailwind projects:
 
 ## Option Reference: Commonly Tuned Settings
 
-| Option                   | Common values                         | Notes                                    |
-| ------------------------ | ------------------------------------- | ---------------------------------------- |
-| `semi`                   | `true`, `false`                       | Statement semicolons                     |
-| `singleQuote`            | `true`, `false`                       | JS/TS string quotes                      |
-| `jsxSingleQuote`         | `true`, `false`                       | JSX attribute quotes                     |
-| `trailingComma`          | `all`, `es5`, `none`                  | Multi-line structures                    |
-| `bracketSpacing`         | `true`, `false`                       | Object literal spaces                    |
-| `arrowParens`            | `always`, `avoid`                     | Single-arg arrow functions               |
-| `quoteProps`             | `as-needed`, `consistent`, `preserve` | Object property quotes                   |
-| `proseWrap`              | `preserve`, `always`, `never`         | Markdown text wrapping                   |
-| `objectWrap`             | `preserve`, `collapse`                | Multi-line object handling               |
-| `singleAttributePerLine` | `true`, `false`                       | JSX/HTML attribute wrapping              |
-| `bracketSameLine`        | `true`, `false`                       | Multi-line JSX closing bracket placement |
+| Option | Common values | Notes |
+|-------|---------------|-------|
+| `semi` | `true`, `false` | Statement semicolons |
+| `singleQuote` | `true`, `false` | JS/TS string quotes |
+| `jsxSingleQuote` | `true`, `false` | JSX attribute quotes |
+| `trailingComma` | `all`, `es5`, `none` | Multi-line structures |
+| `bracketSpacing` | `true`, `false` | Object literal spaces |
+| `arrowParens` | `always`, `avoid` | Single-arg arrow functions |
+| `quoteProps` | `as-needed`, `consistent`, `preserve` | Object property quotes |
+| `proseWrap` | `preserve`, `always`, `never` | Markdown text wrapping |
+| `objectWrap` | `preserve`, `collapse` | Multi-line object handling |
+| `singleAttributePerLine` | `true`, `false` | JSX/HTML attribute wrapping |
+| `bracketSameLine` | `true`, `false` | Multi-line JSX closing bracket placement |
 
 ---
 

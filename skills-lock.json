@@ -4,7 +4,22 @@
     "base-ui-react": {
       "source": "trystan2k/skills",
       "sourceType": "github",
-      "computedHash": "b930fb6f093bed11f78c03040392a99e63bf52d580bdcb6eb5501a68d5f5fafe"
+      "computedHash": "b9916c7b6fa08ed495674673553b2a45e0570cc1a360eb95d745329c179ac4af"
+    },
+    "capacitor-best-practices": {
+      "source": "cap-go/capacitor-skills",
+      "sourceType": "github",
+      "computedHash": "9da56403dfd57025245e260d63d5ed3dcd74982ee8858f3b2186c396c25fac3d"
+    },
+    "capacitor-performance": {
+      "source": "cap-go/capgo-skills",
+      "sourceType": "github",
+      "computedHash": "e6815591d7ac5700e8a27f409a59459c9488ca02c9b3e777d2ec31eaac077dbe"
+    },
+    "capacitor-splash-screen": {
+      "source": "cap-go/capgo-skills",
+      "sourceType": "github",
+      "computedHash": "0e00503e10fc8478342b317099b0141c2c0d928fa52fac957a4d34c1e5453bb3"
     },
     "css-architecture": {
       "source": "trystan2k/skills",
@@ -24,7 +39,7 @@
     "linear-cli": {
       "source": "trystan2k/skills",
       "sourceType": "github",
-      "computedHash": "e445fcd79ce59244565f3eca45d702084ebe0f90e11f341301b22461f20eb7dc"
+      "computedHash": "7cf827d07dd21f717d457e6eb69fbd674979f97d22eca5dedfd7fb32b891ee42"
     },
     "oxfmt": {
       "source": "trystan2k/skills",

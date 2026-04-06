@@ -6,7 +6,7 @@
 
 ```
 Usage:   linear config
-Version: 1.11.1
+Version: 1.11.1       
 
 Description:
 
@@ -14,6 +14,6 @@ Description:
 
 Options:
 
-  -h, --help               - Show this help.
+  -h, --help               - Show this help.                      
   -w, --workspace  <slug>  - Target workspace (uses credentials)
 ```

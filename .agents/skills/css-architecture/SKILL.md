@@ -5,7 +5,7 @@ description: >
   styling systems with scoped styles and proper component isolation.
 compatibility: OpenCode
 metadata:
-  version: '1.0.0'
+  version: "1.0.0"
   references:
     - https://skills.sh/aj-geddes/useful-ai-prompts/css-architecture
 ---
@@ -37,7 +37,6 @@ Build maintainable CSS systems using **CSS Modules** to ensure locally scoped st
 Minimal working example using CSS Modules:
 
 **Button.module.css**
-
 ```css
 .button {
   display: inline-block;
@@ -60,12 +59,15 @@ Minimal working example using CSS Modules:
 ```
 
 **Button.tsx**
-
 ```tsx
-import styles from './Button.module.css'
+import styles from './Button.module.css';
 
 export function Button({ type = 'primary', children }) {
-  return <button className={`${styles.button} ${styles[type]}`}>{children}</button>
+  return (
+    <button className={`${styles.button} ${styles[type]}`}>
+      {children}
+    </button>
+  );
 }
 ```
 
@@ -73,9 +75,9 @@ export function Button({ type = 'primary', children }) {
 
 Detailed implementations in the `references/` directory:
 
-| Guide                                                                              | Contents                          |
-| ---------------------------------------------------------------------------------- | --------------------------------- |
-| [CSS Modules Pattern](references/css-modules.md)                                   | CSS Modules Pattern               |
+| Guide | Contents |
+|---|---|
+| [CSS Modules Pattern](references/css-modules.md) | CSS Modules Pattern |
 | [CSS Variables (Custom Properties)](references/css-variables-custom-properties.md) | CSS Variables (Custom Properties) |
 
 ## Best Practices

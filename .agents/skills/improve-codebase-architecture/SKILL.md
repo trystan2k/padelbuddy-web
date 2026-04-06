@@ -4,7 +4,7 @@ description: Explore a codebase to find opportunities for architectural improvem
 license: MIT
 compatibility: OpenCode
 metadata:
-  version: '1.0.0'
+  version: "1.0.0"
   references:
     - https://github.com/mattpocock/skills/blob/main/improve-codebase-architecture/SKILL.md
 ---

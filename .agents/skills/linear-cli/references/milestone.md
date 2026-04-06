@@ -6,7 +6,7 @@
 
 ```
 Usage:   linear milestone
-Version: 1.11.1
+Version: 1.11.1          
 
 Description:
 
@@ -14,14 +14,14 @@ Description:
 
 Options:
 
-  -h, --help               - Show this help.
-  -w, --workspace  <slug>  - Target workspace (uses credentials)
+  -h, --help               - Show this help.                      
+  -w, --workspace  <slug>  - Target workspace (uses credentials)  
 
 Commands:
 
-  list                    - List milestones for a project
-  view, v  <milestoneId>  - View milestone details
-  create                  - Create a new project milestone
+  list                    - List milestones for a project       
+  view, v  <milestoneId>  - View milestone details              
+  create                  - Create a new project milestone      
   update   <id>           - Update an existing project milestone
   delete   <id>           - Delete a project milestone
 ```
@@ -34,7 +34,7 @@ Commands:
 
 ```
 Usage:   linear milestone list --project <projectId>
-Version: 1.11.1
+Version: 1.11.1                                     
 
 Description:
 
@@ -42,8 +42,8 @@ Description:
 
 Options:
 
-  -h, --help                    - Show this help.
-  -w, --workspace  <slug>       - Target workspace (uses credentials)
+  -h, --help                    - Show this help.                                
+  -w, --workspace  <slug>       - Target workspace (uses credentials)            
   --project        <projectId>  - Project ID                           (required)
 ```
 
@@ -53,7 +53,7 @@ Options:
 
 ```
 Usage:   linear milestone view <milestoneId>
-Version: 1.11.1
+Version: 1.11.1                             
 
 Description:
 
@@ -61,7 +61,7 @@ Description:
 
 Options:
 
-  -h, --help               - Show this help.
+  -h, --help               - Show this help.                      
   -w, --workspace  <slug>  - Target workspace (uses credentials)
 ```
 
@@ -71,7 +71,7 @@ Options:
 
 ```
 Usage:   linear milestone create --project <projectId> --name <name>
-Version: 1.11.1
+Version: 1.11.1                                                     
 
 Description:
 
@@ -79,11 +79,11 @@ Description:
 
 Options:
 
-  -h, --help                      - Show this help.
-  -w, --workspace  <slug>         - Target workspace (uses credentials)
+  -h, --help                      - Show this help.                                
+  -w, --workspace  <slug>         - Target workspace (uses credentials)            
   --project        <projectId>    - Project ID                           (required)
   --name           <name>         - Milestone name                       (required)
-  --description    <description>  - Milestone description
+  --description    <description>  - Milestone description                          
   --target-date    <date>         - Target date (YYYY-MM-DD)
 ```
 
@@ -93,7 +93,7 @@ Options:
 
 ```
 Usage:   linear milestone update <id>
-Version: 1.11.1
+Version: 1.11.1                      
 
 Description:
 
@@ -101,12 +101,12 @@ Description:
 
 Options:
 
-  -h, --help                      - Show this help.
-  -w, --workspace  <slug>         - Target workspace (uses credentials)
-  --name           <name>         - Milestone name
-  --description    <description>  - Milestone description
-  --target-date    <date>         - Target date (YYYY-MM-DD)
-  --sort-order     <value>        - Sort order relative to other milestones
+  -h, --help                      - Show this help.                          
+  -w, --workspace  <slug>         - Target workspace (uses credentials)      
+  --name           <name>         - Milestone name                           
+  --description    <description>  - Milestone description                    
+  --target-date    <date>         - Target date (YYYY-MM-DD)                 
+  --sort-order     <value>        - Sort order relative to other milestones  
   --project        <projectId>    - Move to a different project
 ```
 
@@ -116,7 +116,7 @@ Options:
 
 ```
 Usage:   linear milestone delete <id>
-Version: 1.11.1
+Version: 1.11.1                      
 
 Description:
 
@@ -124,7 +124,7 @@ Description:
 
 Options:
 
-  -h, --help               - Show this help.
-  -w, --workspace  <slug>  - Target workspace (uses credentials)
+  -h, --help               - Show this help.                      
+  -w, --workspace  <slug>  - Target workspace (uses credentials)  
   -f, --force              - Skip confirmation prompt
 ```

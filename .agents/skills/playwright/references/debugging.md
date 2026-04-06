@@ -47,10 +47,10 @@ You can also set `slowMo` to add an `N` ms delay per action, making test executi
 export default defineConfig({
   use: {
     launchOptions: {
-      slowMo: 500
-    }
-  }
-})
+      slowMo: 500,
+    },
+  },
+});
 ```
 
 ### UI Mode
@@ -71,15 +71,15 @@ Features:
 ### Debug in Code
 
 ```typescript
-test('debug example', async ({ page }) => {
-  await page.goto('/')
+test("debug example", async ({ page }) => {
+  await page.goto("/");
 
   // Pause and open inspector
-  await page.pause()
+  await page.pause();
 
   // Continue test...
-  await page.click('button')
-})
+  await page.click("button");
+});
 ```
 
 ## Trace Viewer
@@ -90,11 +90,11 @@ test('debug example', async ({ page }) => {
 // playwright.config.ts
 export default defineConfig({
   use: {
-    trace: 'on-first-retry' // Record on retry
+    trace: "on-first-retry", // Record on retry
     // trace: 'on',                 // Always record
     // trace: 'retain-on-failure',  // Keep only failures
-  }
-})
+  },
+});
 ```
 
 ### View Traces
@@ -119,14 +119,14 @@ npx playwright show-trace test-results/test-name/trace.zip
 ### Programmatic Traces
 
 ```typescript
-test('manual trace', async ({ page, context }) => {
-  await context.tracing.start({ screenshots: true, snapshots: true })
+test("manual trace", async ({ page, context }) => {
+  await context.tracing.start({ screenshots: true, snapshots: true });
 
-  await page.goto('/')
-  await page.click('button')
+  await page.goto("/");
+  await page.click("button");
 
-  await context.tracing.stop({ path: 'trace.zip' })
-})
+  await context.tracing.stop({ path: "trace.zip" });
+});
 ```
 
 ## Identifying Flaky Tests
@@ -148,25 +148,25 @@ If a test fails intermittently, it's likely flaky. Quick checks:
 ### Monitor All Requests
 
 ```typescript
-test('debug network', async ({ page }) => {
-  const requests: string[] = []
-  const failures: string[] = []
+test("debug network", async ({ page }) => {
+  const requests: string[] = [];
+  const failures: string[] = [];
 
-  page.on('request', (req) => requests.push(`>> ${req.method()} ${req.url()}`))
-  page.on('requestfinished', (req) => {
-    const resp = req.response()
-    requests.push(`<< ${resp?.status()} ${req.url()}`)
-  })
-  page.on('requestfailed', (req) => {
-    failures.push(`FAILED: ${req.url()} - ${req.failure()?.errorText}`)
-  })
+  page.on("request", (req) => requests.push(`>> ${req.method()} ${req.url()}`));
+  page.on("requestfinished", (req) => {
+    const resp = req.response();
+    requests.push(`<< ${resp?.status()} ${req.url()}`);
+  });
+  page.on("requestfailed", (req) => {
+    failures.push(`FAILED: ${req.url()} - ${req.failure()?.errorText}`);
+  });
 
-  await page.goto('/dashboard')
+  await page.goto("/dashboard");
 
   // Log summary
-  console.log('Requests:', requests.length)
-  if (failures.length) console.log('Failures:', failures)
-})
+  console.log("Requests:", requests.length);
+  if (failures.length) console.log("Failures:", failures);
+});
 ```
 
 ### Wait for Specific API Response
@@ -176,11 +176,11 @@ When debugging network-dependent issues, wait for specific API responses instead
 ```typescript
 // Start waiting BEFORE triggering the request
 const responsePromise = page.waitForResponse(
-  (resp) => resp.url().includes('/api/data') && resp.status() === 200
-)
-await page.getByRole('button', { name: 'Load' }).click()
-const response = await responsePromise
-console.log('Status:', response.status())
+  (resp) => resp.url().includes("/api/data") && resp.status() === 200,
+);
+await page.getByRole("button", { name: "Load" }).click();
+const response = await responsePromise;
+console.log("Status:", response.status());
 ```
 
 > **For comprehensive waiting patterns** (navigation, element state, network, polling), see [assertions-waiting.md](assertions-waiting.md#waiting-strategies).
@@ -188,17 +188,17 @@ console.log('Status:', response.status())
 ### Debug Slow Requests
 
 ```typescript
-test('find slow requests', async ({ page }) => {
-  page.on('requestfinished', (request) => {
-    const timing = request.timing()
-    const total = timing.responseEnd - timing.requestStart
+test("find slow requests", async ({ page }) => {
+  page.on("requestfinished", (request) => {
+    const timing = request.timing();
+    const total = timing.responseEnd - timing.requestStart;
     if (total > 1000) {
-      console.log(`SLOW (${total}ms): ${request.url()}`)
+      console.log(`SLOW (${total}ms): ${request.url()}`);
     }
-  })
+  });
 
-  await page.goto('/')
-})
+  await page.goto("/");
+});
 ```
 
 ## Debugging in CI
@@ -225,57 +225,57 @@ docker run --rm -v $(pwd):/work -w /work \
 export default defineConfig({
   // More artifacts in CI for debugging
   use: {
-    trace: process.env.CI ? 'on-first-retry' : 'off',
-    video: process.env.CI ? 'retain-on-failure' : 'off',
-    screenshot: process.env.CI ? 'only-on-failure' : 'off'
+    trace: process.env.CI ? "on-first-retry" : "off",
+    video: process.env.CI ? "retain-on-failure" : "off",
+    screenshot: process.env.CI ? "only-on-failure" : "off",
   },
 
   // More retries in CI (but investigate failures!)
-  retries: process.env.CI ? 2 : 0
-})
+  retries: process.env.CI ? 2 : 0,
+});
 ```
 
 ### Debug CI Environment
 
 ```typescript
-test('CI environment check', async ({ page }, testInfo) => {
-  console.log('CI:', process.env.CI)
-  console.log('Project:', testInfo.project.name)
-  console.log('Worker:', testInfo.workerIndex)
-  console.log('Retry:', testInfo.retry)
-  console.log('Base URL:', testInfo.project.use.baseURL)
+test("CI environment check", async ({ page }, testInfo) => {
+  console.log("CI:", process.env.CI);
+  console.log("Project:", testInfo.project.name);
+  console.log("Worker:", testInfo.workerIndex);
+  console.log("Retry:", testInfo.retry);
+  console.log("Base URL:", testInfo.project.use.baseURL);
 
   // Check viewport
-  const viewport = page.viewportSize()
-  console.log('Viewport:', viewport)
-})
+  const viewport = page.viewportSize();
+  console.log("Viewport:", viewport);
+});
 ```
 
 ## Debugging Authentication
 
 ```typescript
-test('debug auth', async ({ page, context }) => {
+test("debug auth", async ({ page, context }) => {
   // Inspect current storage state
-  const storage = await context.storageState()
+  const storage = await context.storageState();
   console.log(
-    'Cookies:',
-    storage.cookies.map((c) => c.name)
-  )
+    "Cookies:",
+    storage.cookies.map((c) => c.name),
+  );
 
   // Check if auth cookies are present
-  const cookies = await context.cookies()
-  const authCookie = cookies.find((c) => c.name.includes('session'))
-  console.log('Auth cookie:', authCookie ? 'present' : 'MISSING')
+  const cookies = await context.cookies();
+  const authCookie = cookies.find((c) => c.name.includes("session"));
+  console.log("Auth cookie:", authCookie ? "present" : "MISSING");
 
-  await page.goto('/protected')
+  await page.goto("/protected");
 
   // Check if redirected to login (auth failed)
-  if (page.url().includes('/login')) {
-    console.error('Auth failed - redirected to login')
+  if (page.url().includes("/login")) {
+    console.error("Auth failed - redirected to login");
     // Save state for inspection
-    await context.storageState({ path: 'debug-auth.json' })
+    await context.storageState({ path: "debug-auth.json" });
   }
-})
+});
 ```
 
 ## Debugging Screenshots
@@ -283,46 +283,46 @@ test('debug auth', async ({ page, context }) => {
 ### Compare Visual State
 
 ```typescript
-test('visual debug', async ({ page }, testInfo) => {
-  await page.goto('/')
+test("visual debug", async ({ page }, testInfo) => {
+  await page.goto("/");
 
   // Screenshot before action
   await page.screenshot({
-    path: testInfo.outputPath('before.png'),
-    fullPage: true
-  })
+    path: testInfo.outputPath("before.png"),
+    fullPage: true,
+  });
 
-  await page.getByRole('button', { name: 'Open Menu' }).click()
+  await page.getByRole("button", { name: "Open Menu" }).click();
 
   // Screenshot after action
   await page.screenshot({
-    path: testInfo.outputPath('after.png'),
-    fullPage: true
-  })
+    path: testInfo.outputPath("after.png"),
+    fullPage: true,
+  });
 
   // Attach to report
-  await testInfo.attach('before', {
-    path: testInfo.outputPath('before.png'),
-    contentType: 'image/png'
-  })
-})
+  await testInfo.attach("before", {
+    path: testInfo.outputPath("before.png"),
+    contentType: "image/png",
+  });
+});
 ```
 
 ### Screenshot Specific Element
 
 ```typescript
-test('element screenshot', async ({ page }) => {
-  await page.goto('/')
+test("element screenshot", async ({ page }) => {
+  await page.goto("/");
 
-  const element = page.getByTestId('problem-area')
+  const element = page.getByTestId("problem-area");
 
   // Screenshot just the element
-  await element.screenshot({ path: 'element-debug.png' })
+  await element.screenshot({ path: "element-debug.png" });
 
   // Highlight element in full page screenshot
-  await element.evaluate((el) => (el.style.border = '3px solid red'))
-  await page.screenshot({ path: 'highlighted.png' })
-})
+  await element.evaluate((el) => (el.style.border = "3px solid red"));
+  await page.screenshot({ path: "highlighted.png" });
+});
 ```
 
 ## Common Issues
@@ -331,53 +331,55 @@ test('element screenshot', async ({ page }) => {
 
 ```typescript
 // Debug: Check if element exists
-console.log(await page.getByRole('button').count())
+console.log(await page.getByRole("button").count());
 
 // Debug: Log all buttons
-const buttons = await page.getByRole('button').all()
+const buttons = await page.getByRole("button").all();
 for (const button of buttons) {
-  console.log(await button.textContent())
+  console.log(await button.textContent());
 }
 
 // Debug: Screenshot before action
-await page.screenshot({ path: 'debug.png' })
-await page.getByRole('button').click()
+await page.screenshot({ path: "debug.png" });
+await page.getByRole("button").click();
 ```
 
 ### Timeout Issues
 
 ```typescript
 // Increase timeout for slow operations
-await expect(page.getByText('Loaded')).toBeVisible({ timeout: 30000 })
+await expect(page.getByText("Loaded")).toBeVisible({ timeout: 30000 });
 
 // Global timeout increase
-test.setTimeout(60000)
+test.setTimeout(60000);
 
 // Check what's blocking
-test('debug timeout', async ({ page }) => {
-  await page.goto('/slow-page')
+test("debug timeout", async ({ page }) => {
+  await page.goto("/slow-page");
 
   // Log network activity
-  page.on('request', (request) => console.log('>>', request.url()))
-  page.on('response', (response) => console.log('<<', response.url(), response.status()))
-})
+  page.on("request", (request) => console.log(">>", request.url()));
+  page.on("response", (response) =>
+    console.log("<<", response.url(), response.status()),
+  );
+});
 ```
 
 ### Selector Issues
 
 ```typescript
 // Debug: Highlight element
-await page.getByRole('button').highlight()
+await page.getByRole("button").highlight();
 
 // Debug: Evaluate selector in browser console
 // Run in Inspector console:
 // playwright.locator('button').first().highlight()
 
 // Debug: Get element info
-const element = page.getByRole('button')
-console.log('Count:', await element.count())
-console.log('Visible:', await element.isVisible())
-console.log('Enabled:', await element.isEnabled())
+const element = page.getByRole("button");
+console.log("Count:", await element.count());
+console.log("Visible:", await element.isVisible());
+console.log("Enabled:", await element.isEnabled());
 ```
 
 ### Frame Issues
@@ -385,12 +387,12 @@ console.log('Enabled:', await element.isEnabled())
 ```typescript
 // Debug: List all frames
 for (const frame of page.frames()) {
-  console.log('Frame:', frame.url())
+  console.log("Frame:", frame.url());
 }
 
 // Debug: Check if element is in iframe
-const frame = page.frameLocator('iframe').first()
-console.log(await frame.getByRole('button').count())
+const frame = page.frameLocator("iframe").first();
+console.log(await frame.getByRole("button").count());
 ```
 
 ## Logging
@@ -398,11 +400,11 @@ console.log(await frame.getByRole('button').count())
 ### Capture Browser Console
 
 ```typescript
-test('with logging', async ({ page }) => {
-  page.on('console', (msg) => console.log('Browser:', msg.text()))
-  page.on('pageerror', (error) => console.log('Page error:', error.message))
-  await page.goto('/')
-})
+test("with logging", async ({ page }) => {
+  page.on("console", (msg) => console.log("Browser:", msg.text()));
+  page.on("pageerror", (error) => console.log("Page error:", error.message));
+  await page.goto("/");
+});
 ```
 
 > **For comprehensive console error handling** (fail on errors, allowed patterns, fixtures), see [console-errors.md](console-errors.md).
@@ -410,23 +412,23 @@ test('with logging', async ({ page }) => {
 ### Custom Test Attachments
 
 ```typescript
-test('with attachments', async ({ page }, testInfo) => {
+test("with attachments", async ({ page }, testInfo) => {
   // Attach screenshot to report
-  const screenshot = await page.screenshot()
-  await testInfo.attach('screenshot', {
+  const screenshot = await page.screenshot();
+  await testInfo.attach("screenshot", {
     body: screenshot,
-    contentType: 'image/png'
-  })
+    contentType: "image/png",
+  });
 
   // Attach logs or data
-  await testInfo.attach('logs', {
-    body: 'Custom log data',
-    contentType: 'text/plain'
-  })
+  await testInfo.attach("logs", {
+    body: "Custom log data",
+    contentType: "text/plain",
+  });
 
   // Use testInfo for output paths
-  const outputPath = testInfo.outputPath('debug-file.json')
-})
+  const outputPath = testInfo.outputPath("debug-file.json");
+});
 ```
 
 ## Troubleshooting Checklist
@@ -472,14 +474,14 @@ test('with attachments', async ({ page }, testInfo) => {
 
    ```typescript
    // Add debugging points
-   await page.pause()
+   await page.pause();
 
    // Log element state
-   console.log('Element count:', await page.getByRole('button').count())
-   console.log('Element visible:', await page.getByRole('button').isVisible())
+   console.log("Element count:", await page.getByRole("button").count());
+   console.log("Element visible:", await page.getByRole("button").isVisible());
 
    // Take screenshot at failure point
-   await page.screenshot({ path: 'debug.png' })
+   await page.screenshot({ path: "debug.png" });
    ```
 
 4. **Check related areas**

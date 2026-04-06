@@ -15,3 +15,7 @@ https://github.com/trystan2k/skills:ui-ux-pro-max
 https://github.com/trystan2k/skills:vite
 https://github.com/trystan2k/skills:web-accessibility
 https://github.com/trystan2k/skills:wrangler
+https://github.com/cap-go/capacitor-skills:capacitor-best-practices
+https://github.com/cap-go/capgo-skills:capacitor-splash-screen
+https://github.com/cap-go/capgo-skills:capacitor-performance
+

@@ -6,7 +6,7 @@
 
 ```
 Usage:   linear initiative-update
-Version: 1.11.1
+Version: 1.11.1                  
 
 Description:
 
@@ -14,8 +14,8 @@ Description:
 
 Options:
 
-  -h, --help               - Show this help.
-  -w, --workspace  <slug>  - Target workspace (uses credentials)
+  -h, --help               - Show this help.                      
+  -w, --workspace  <slug>  - Target workspace (uses credentials)  
 
 Commands:
 
@@ -31,7 +31,7 @@ Commands:
 
 ```
 Usage:   linear initiative-update create <initiativeId>
-Version: 1.11.1
+Version: 1.11.1                                        
 
 Description:
 
@@ -39,11 +39,11 @@ Description:
 
 Options:
 
-  -h, --help                   - Show this help.
-  -w, --workspace    <slug>    - Target workspace (uses credentials)
-  --body             <body>    - Update content (markdown)
-  --body-file        <path>    - Read content from file
-  --health           <health>  - Health status (onTrack, atRisk, offTrack)
+  -h, --help                   - Show this help.                            
+  -w, --workspace    <slug>    - Target workspace (uses credentials)        
+  --body             <body>    - Update content (markdown)                  
+  --body-file        <path>    - Read content from file                     
+  --health           <health>  - Health status (onTrack, atRisk, offTrack)  
   -i, --interactive            - Interactive mode with prompts
 ```
 
@@ -53,7 +53,7 @@ Options:
 
 ```
 Usage:   linear initiative-update list <initiativeId>
-Version: 1.11.1
+Version: 1.11.1                                      
 
 Description:
 
@@ -61,8 +61,8 @@ Description:
 
 Options:
 
-  -h, --help                - Show this help.
-  -w, --workspace  <slug>   - Target workspace (uses credentials)
-  -j, --json                - Output as JSON
+  -h, --help                - Show this help.                                   
+  -w, --workspace  <slug>   - Target workspace (uses credentials)               
+  -j, --json                - Output as JSON                                    
   --limit          <limit>  - Limit results                        (Default: 10)
 ```

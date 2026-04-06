@@ -52,7 +52,7 @@ Import the styles object and access class names as properties.
 
 ```tsx
 // Button.tsx
-import styles from './Button.module.css'
+import styles from './Button.module.css';
 
 export function Button({ children, icon }) {
   return (
@@ -60,7 +60,7 @@ export function Button({ children, icon }) {
       {icon && <span className={styles.icon}>{icon}</span>}
       {children}
     </button>
-  )
+  );
 }
 ```
 
@@ -68,7 +68,7 @@ export function Button({ children, icon }) {
 
 Compose styles from other classes within the same file or from other files.
 
-````css
+```css
 /* Base.module.css */
 .base {
   font-family: sans-serif;
@@ -103,7 +103,7 @@ export function Button({ variant = 'primary', disabled, className }) {
     </button>
   );
 }
-````
+```
 
 ## Global Styles
 

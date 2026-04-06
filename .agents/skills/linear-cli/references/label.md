@@ -6,7 +6,7 @@
 
 ```
 Usage:   linear label
-Version: 1.11.1
+Version: 1.11.1      
 
 Description:
 
@@ -14,12 +14,12 @@ Description:
 
 Options:
 
-  -h, --help               - Show this help.
-  -w, --workspace  <slug>  - Target workspace (uses credentials)
+  -h, --help               - Show this help.                      
+  -w, --workspace  <slug>  - Target workspace (uses credentials)  
 
 Commands:
 
-  list                - List issue labels
+  list                - List issue labels       
   create              - Create a new issue label
   delete  <nameOrId>  - Delete an issue label
 ```
@@ -32,7 +32,7 @@ Commands:
 
 ```
 Usage:   linear label list
-Version: 1.11.1
+Version: 1.11.1           
 
 Description:
 
@@ -40,10 +40,10 @@ Description:
 
 Options:
 
-  -h, --help              - Show this help.
-  --team       <teamKey>  - Filter by team (e.g., TC). Shows team-specific labels only.
-  --workspace             - Show only workspace-level labels (not team-specific)
-  --all                   - Show all labels (both workspace and team)
+  -h, --help              - Show this help.                                              
+  --team       <teamKey>  - Filter by team (e.g., TC). Shows team-specific labels only.  
+  --workspace             - Show only workspace-level labels (not team-specific)         
+  --all                   - Show all labels (both workspace and team)                    
   -j, --json              - Output as JSON
 ```
 
@@ -53,7 +53,7 @@ Options:
 
 ```
 Usage:   linear label create
-Version: 1.11.1
+Version: 1.11.1             
 
 Description:
 
@@ -61,12 +61,12 @@ Description:
 
 Options:
 
-  -h, --help                        - Show this help.
-  -w, --workspace    <slug>         - Target workspace (uses credentials)
-  -n, --name         <name>         - Label name (required)
-  -c, --color        <color>        - Color hex code (e.g., #EB5757)
-  -d, --description  <description>  - Label description
-  -t, --team         <teamKey>      - Team key for team-specific label (omit for workspace label)
+  -h, --help                        - Show this help.                                              
+  -w, --workspace    <slug>         - Target workspace (uses credentials)                          
+  -n, --name         <name>         - Label name (required)                                        
+  -c, --color        <color>        - Color hex code (e.g., #EB5757)                               
+  -d, --description  <description>  - Label description                                            
+  -t, --team         <teamKey>      - Team key for team-specific label (omit for workspace label)  
   -i, --interactive                 - Interactive mode (default if no flags provided)
 ```
 
@@ -76,7 +76,7 @@ Options:
 
 ```
 Usage:   linear label delete <nameOrId>
-Version: 1.11.1
+Version: 1.11.1                        
 
 Description:
 
@@ -84,8 +84,8 @@ Description:
 
 Options:
 
-  -h, --help                  - Show this help.
-  -w, --workspace  <slug>     - Target workspace (uses credentials)
-  -t, --team       <teamKey>  - Team key to disambiguate labels with same name
+  -h, --help                  - Show this help.                                 
+  -w, --workspace  <slug>     - Target workspace (uses credentials)             
+  -t, --team       <teamKey>  - Team key to disambiguate labels with same name  
   -f, --force                 - Skip confirmation prompt
 ```

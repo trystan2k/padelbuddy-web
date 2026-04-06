@@ -6,7 +6,7 @@
 
 ```
 Usage:   linear team
-Version: 1.11.1
+Version: 1.11.1     
 
 Description:
 
@@ -14,15 +14,15 @@ Description:
 
 Options:
 
-  -h, --help               - Show this help.
-  -w, --workspace  <slug>  - Target workspace (uses credentials)
+  -h, --help               - Show this help.                      
+  -w, --workspace  <slug>  - Target workspace (uses credentials)  
 
 Commands:
 
-  create                - Create a linear team
-  delete     <teamKey>  - Delete a Linear team
-  list                  - List teams
-  id                    - Print the configured team id
+  create                - Create a linear team                                                         
+  delete     <teamKey>  - Delete a Linear team                                                         
+  list                  - List teams                                                                   
+  id                    - Print the configured team id                                                 
   autolinks             - Configure GitHub repository autolinks for Linear issues with this team prefix
   members    [teamKey]  - List team members
 ```
@@ -35,7 +35,7 @@ Commands:
 
 ```
 Usage:   linear team create
-Version: 1.11.1
+Version: 1.11.1            
 
 Description:
 
@@ -43,12 +43,12 @@ Description:
 
 Options:
 
-  -h, --help                        - Show this help.
-  -w, --workspace    <slug>         - Target workspace (uses credentials)
-  -n, --name         <name>         - Name of the team
-  -d, --description  <description>  - Description of the team
-  -k, --key          <key>          - Team key (if not provided, will be generated from name)
-  --private                         - Make the team private
+  -h, --help                        - Show this help.                                          
+  -w, --workspace    <slug>         - Target workspace (uses credentials)                      
+  -n, --name         <name>         - Name of the team                                         
+  -d, --description  <description>  - Description of the team                                  
+  -k, --key          <key>          - Team key (if not provided, will be generated from name)  
+  --private                         - Make the team private                                    
   --no-interactive                  - Disable interactive prompts
 ```
 
@@ -58,7 +58,7 @@ Options:
 
 ```
 Usage:   linear team delete <teamKey>
-Version: 1.11.1
+Version: 1.11.1                      
 
 Description:
 
@@ -66,9 +66,9 @@ Description:
 
 Options:
 
-  -h, --help                     - Show this help.
-  -w, --workspace  <slug>        - Target workspace (uses credentials)
-  --move-issues    <targetTeam>  - Move all issues to another team before deletion
+  -h, --help                     - Show this help.                                  
+  -w, --workspace  <slug>        - Target workspace (uses credentials)              
+  --move-issues    <targetTeam>  - Move all issues to another team before deletion  
   -y, --force                    - Skip confirmation prompt
 ```
 
@@ -78,7 +78,7 @@ Options:
 
 ```
 Usage:   linear team list
-Version: 1.11.1
+Version: 1.11.1          
 
 Description:
 
@@ -86,9 +86,9 @@ Description:
 
 Options:
 
-  -h, --help               - Show this help.
-  -w, --workspace  <slug>  - Target workspace (uses credentials)
-  -w, --web                - Open in web browser
+  -h, --help               - Show this help.                      
+  -w, --workspace  <slug>  - Target workspace (uses credentials)  
+  -w, --web                - Open in web browser                  
   -a, --app                - Open in Linear.app
 ```
 
@@ -98,7 +98,7 @@ Options:
 
 ```
 Usage:   linear team id
-Version: 1.11.1
+Version: 1.11.1        
 
 Description:
 
@@ -106,7 +106,7 @@ Description:
 
 Options:
 
-  -h, --help               - Show this help.
+  -h, --help               - Show this help.                      
   -w, --workspace  <slug>  - Target workspace (uses credentials)
 ```
 
@@ -116,7 +116,7 @@ Options:
 
 ```
 Usage:   linear team autolinks
-Version: 1.11.1
+Version: 1.11.1               
 
 Description:
 
@@ -124,7 +124,7 @@ Description:
 
 Options:
 
-  -h, --help               - Show this help.
+  -h, --help               - Show this help.                      
   -w, --workspace  <slug>  - Target workspace (uses credentials)
 ```
 
@@ -134,7 +134,7 @@ Options:
 
 ```
 Usage:   linear team members [teamKey]
-Version: 1.11.1
+Version: 1.11.1                       
 
 Description:
 
@@ -142,7 +142,7 @@ Description:
 
 Options:
 
-  -h, --help               - Show this help.
-  -w, --workspace  <slug>  - Target workspace (uses credentials)
+  -h, --help               - Show this help.                      
+  -w, --workspace  <slug>  - Target workspace (uses credentials)  
   -a, --all                - Include inactive members
 ```

@@ -6,7 +6,7 @@
 
 ```
 Usage:   linear auth
-Version: 1.11.1
+Version: 1.11.1     
 
 Description:
 
@@ -14,16 +14,16 @@ Description:
 
 Options:
 
-  -h, --help               - Show this help.
-  -w, --workspace  <slug>  - Target workspace (uses credentials)
+  -h, --help               - Show this help.                      
+  -w, --workspace  <slug>  - Target workspace (uses credentials)  
 
 Commands:
 
-  login                 - Add a workspace credential
-  logout   [workspace]  - Remove a workspace credential
-  list                  - List configured workspaces
-  default  [workspace]  - Set the default workspace
-  token                 - Print the configured API token
+  login                 - Add a workspace credential                    
+  logout   [workspace]  - Remove a workspace credential                 
+  list                  - List configured workspaces                    
+  default  [workspace]  - Set the default workspace                     
+  token                 - Print the configured API token                
   whoami                - Print information about the authenticated user
 ```
 
@@ -35,7 +35,7 @@ Commands:
 
 ```
 Usage:   linear auth login
-Version: 1.11.1
+Version: 1.11.1           
 
 Description:
 
@@ -43,8 +43,8 @@ Description:
 
 Options:
 
-  -h, --help               - Show this help.
-  -w, --workspace  <slug>  - Target workspace (uses credentials)
+  -h, --help               - Show this help.                      
+  -w, --workspace  <slug>  - Target workspace (uses credentials)  
   -k, --key        <key>   - API key (prompted if not provided)
 ```
 
@@ -54,7 +54,7 @@ Options:
 
 ```
 Usage:   linear auth logout [workspace]
-Version: 1.11.1
+Version: 1.11.1                        
 
 Description:
 
@@ -62,8 +62,8 @@ Description:
 
 Options:
 
-  -h, --help               - Show this help.
-  -w, --workspace  <slug>  - Target workspace (uses credentials)
+  -h, --help               - Show this help.                      
+  -w, --workspace  <slug>  - Target workspace (uses credentials)  
   -f, --force              - Skip confirmation prompt
 ```
 
@@ -73,7 +73,7 @@ Options:
 
 ```
 Usage:   linear auth list
-Version: 1.11.1
+Version: 1.11.1          
 
 Description:
 
@@ -81,7 +81,7 @@ Description:
 
 Options:
 
-  -h, --help               - Show this help.
+  -h, --help               - Show this help.                      
   -w, --workspace  <slug>  - Target workspace (uses credentials)
 ```
 
@@ -91,7 +91,7 @@ Options:
 
 ```
 Usage:   linear auth default [workspace]
-Version: 1.11.1
+Version: 1.11.1                         
 
 Description:
 
@@ -99,7 +99,7 @@ Description:
 
 Options:
 
-  -h, --help               - Show this help.
+  -h, --help               - Show this help.                      
   -w, --workspace  <slug>  - Target workspace (uses credentials)
 ```
 
@@ -109,7 +109,7 @@ Options:
 
 ```
 Usage:   linear auth token
-Version: 1.11.1
+Version: 1.11.1           
 
 Description:
 
@@ -117,7 +117,7 @@ Description:
 
 Options:
 
-  -h, --help               - Show this help.
+  -h, --help               - Show this help.                      
   -w, --workspace  <slug>  - Target workspace (uses credentials)
 ```
 
@@ -127,7 +127,7 @@ Options:
 
 ```
 Usage:   linear auth whoami
-Version: 1.11.1
+Version: 1.11.1            
 
 Description:
 
@@ -135,6 +135,6 @@ Description:
 
 Options:
 
-  -h, --help               - Show this help.
+  -h, --help               - Show this help.                      
   -w, --workspace  <slug>  - Target workspace (uses credentials)
 ```

@@ -4,7 +4,7 @@ description: Automates browser interactions for web testing, form filling, scree
 allowed-tools: Bash(playwright-cli:*)
 compatibility: OpenCode
 metadata:
-  version: '1.0.0'
+  version: "1.0.0"
   references:
     - https://skills.sh/microsoft/playwright-cli/playwright-cli
 ---
@@ -161,7 +161,6 @@ playwright-cli video-stop video.webm
 ```
 
 ## Open parameters
-
 ```bash
 # Use specific browser when creating session
 playwright-cli open --browser=chrome
@@ -275,10 +274,10 @@ playwright-cli close
 
 ## Specific tasks
 
-- **Request mocking** [references/request-mocking.md](references/request-mocking.md)
-- **Running Playwright code** [references/running-code.md](references/running-code.md)
-- **Browser session management** [references/session-management.md](references/session-management.md)
-- **Storage state (cookies, localStorage)** [references/storage-state.md](references/storage-state.md)
-- **Test generation** [references/test-generation.md](references/test-generation.md)
-- **Tracing** [references/tracing.md](references/tracing.md)
-- **Video recording** [references/video-recording.md](references/video-recording.md)
+* **Request mocking** [references/request-mocking.md](references/request-mocking.md)
+* **Running Playwright code** [references/running-code.md](references/running-code.md)
+* **Browser session management** [references/session-management.md](references/session-management.md)
+* **Storage state (cookies, localStorage)** [references/storage-state.md](references/storage-state.md)
+* **Test generation** [references/test-generation.md](references/test-generation.md)
+* **Tracing** [references/tracing.md](references/tracing.md)
+* **Video recording** [references/video-recording.md](references/video-recording.md)
