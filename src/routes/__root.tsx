@@ -63,6 +63,10 @@ export const Route = createRootRoute({
       {
         name: 'apple-mobile-web-app-title',
         content: i18n.t('app.title')
+      },
+      {
+        name: 'google-adsense-account',
+        content: 'ca-pub-2277025637309109'
       }
     ],
     links: [
@@ -73,6 +77,13 @@ export const Route = createRootRoute({
       {
         rel: 'apple-touch-icon',
         href: '/icon.png'
+      }
+    ],
+    scripts: [
+      {
+        src: 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2277025637309109',
+        async: true,
+        crossOrigin: 'anonymous'
       }
     ]
   }),
@@ -86,16 +97,10 @@ function RootErrorState(props: ErrorComponentProps) {
     <html lang={getRootErrorDocumentLanguage()}>
       <head>
         <HeadContent />
-        <meta name="google-adsense-account" content="ca-pub-2277025637309109" />
       </head>
       <body>
         <RouteErrorCard {...props} eyebrowKey="error.unexpectedLabel" />
         <Scripts />
-        <script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2277025637309109"
-          crossOrigin="anonymous"
-        />
       </body>
     </html>
   );
