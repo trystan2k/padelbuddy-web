@@ -56,9 +56,7 @@ Describe the testing approach including manual steps, automated tests, and edge 
 
 **Automated Tests**:
 
--
-
-**Manual Testing**:
+- **Manual Testing**:
 
 1.
 

@@ -173,7 +173,6 @@ Base UI uses **render props** instead of Radix's **asChild** pattern. This provi
 
 ```tsx
 import * as Dialog from '@radix-ui/react-dialog'
-
 ;<Dialog.Trigger asChild>
   <button>Open</button>
 </Dialog.Trigger>
@@ -183,7 +182,6 @@ import * as Dialog from '@radix-ui/react-dialog'
 
 ```tsx
 import { Dialog } from '@base-ui-components/react/dialog'
-
 ;<Dialog.Trigger render={(props) => <button {...props}>Open</button>} />
 ```
 
@@ -901,7 +899,6 @@ Base UI is **completely unstyled**. Choose your approach:
 
 ```tsx
 import styles from './Dialog.module.css'
-
 ;<Dialog.Popup
   render={(props) => (
     <div {...props} className={styles.popup}>
