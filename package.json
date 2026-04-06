@@ -70,7 +70,7 @@
     "stylelint": "~17.6.0",
     "stylelint-config-standard": "~40.0.0",
     "typescript": "~6.0.2",
-    "vite": "~8.0.3",
+    "vite": "~8.0.5",
     "vite-plugin-killer-instincts": "~1.1.0",
     "vitest": "~4.1.2",
     "vitest-browser-react": "~2.0.5"
