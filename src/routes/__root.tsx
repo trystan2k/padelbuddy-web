@@ -91,6 +91,11 @@ function RootErrorState(props: ErrorComponentProps) {
       <body>
         <RouteErrorCard {...props} eyebrowKey="error.unexpectedLabel" />
         <Scripts />
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2277025637309109"
+          crossOrigin="anonymous"
+        />
       </body>
     </html>
   );
