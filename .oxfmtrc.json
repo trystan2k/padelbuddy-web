@@ -12,6 +12,7 @@
     "coverage/**",
     ".husky/**",
     ".opencode/**",
+    ".agents/**",
     ".serena/**",
     ".tanstack/**",
     ".vinxi/**",
