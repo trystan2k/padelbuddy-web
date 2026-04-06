@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/trystan2k/padelbuddy-web/compare/v1.0.0...v1.1.0) (2026-04-06)
+
+
+### Features
+
+* **pwa:** add mobile-web-app-capable meta tag and simplify debug panel state ([5c73ed4](https://github.com/trystan2k/padelbuddy-web/commit/5c73ed40db0cb6426a3336d00d4a7a6db3be33d8))
+
 ## [1.0.0](https://github.com/trystan2k/padelbuddy-web/compare/v0.30.0...v1.0.0) (2026-04-05)
 
 
