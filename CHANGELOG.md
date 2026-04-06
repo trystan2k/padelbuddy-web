@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/trystan2k/padelbuddy-web/compare/v1.1.0...v1.2.0) (2026-04-06)
+
+
+### Features
+
+* **ads:** add Google AdSense script to error page ([3f0cb34](https://github.com/trystan2k/padelbuddy-web/commit/3f0cb34297d0fe2113f156cb823c89689d053b12))
+
 ## [1.1.0](https://github.com/trystan2k/padelbuddy-web/compare/v1.0.0...v1.1.0) (2026-04-06)
 
 
