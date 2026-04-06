@@ -57,13 +57,13 @@
 1.1. Update `src/lib/current-match/persistence.ts`:
 
 ```typescript
-export const currentMatchSchemaVersion = 2 as const // Bump from 1 to 2
+export const currentMatchSchemaVersion = 2 as const; // Bump from 1 to 2
 
 export interface CurrentMatchRecord {
-  schemaVersion: typeof currentMatchSchemaVersion
-  setup: MatchSetup
-  actions: MatchAction[]
-  startedAt: number // Unix timestamp in milliseconds
+  schemaVersion: typeof currentMatchSchemaVersion;
+  setup: MatchSetup;
+  actions: MatchAction[];
+  startedAt: number; // Unix timestamp in milliseconds
 }
 ```
 
@@ -71,9 +71,9 @@ export interface CurrentMatchRecord {
 
 ```typescript
 export interface CurrentMatchSaveInput {
-  setup: MatchSetup
-  actions: MatchAction[]
-  startedAt?: number // Optional, defaults to Date.now()
+  setup: MatchSetup;
+  actions: MatchAction[];
+  startedAt?: number; // Optional, defaults to Date.now()
 }
 
 export function createCurrentMatchRecord(input: CurrentMatchSaveInput): CurrentMatchRecord {
@@ -82,7 +82,7 @@ export function createCurrentMatchRecord(input: CurrentMatchSaveInput): CurrentM
     setup: parseMatchSetup(input.setup),
     actions: parseMatchActions(input.actions),
     startedAt: input.startedAt ?? Date.now()
-  }
+  };
 }
 ```
 
@@ -116,17 +116,17 @@ export function createCurrentMatchRecord(input: CurrentMatchSaveInput): CurrentM
 
 ```typescript
 interface UseMatchTimerOptions {
-  startedAt: number | null
-  isMatchCompleted: boolean
+  startedAt: number | null;
+  isMatchCompleted: boolean;
 }
 
 interface UseMatchTimerReturn {
-  elapsedSeconds: number
-  formattedTime: string // e.g., "41 min"
-  isRunning: boolean
+  elapsedSeconds: number;
+  formattedTime: string; // e.g., "41 min"
+  isRunning: boolean;
 }
 
-export function useMatchTimer(options: UseMatchTimerOptions): UseMatchTimerReturn
+export function useMatchTimer(options: UseMatchTimerOptions): UseMatchTimerReturn;
 ```
 
 2.2. Implementation details:
@@ -153,20 +153,20 @@ export function useMatchTimer(options: UseMatchTimerOptions): UseMatchTimerRetur
 
 ```typescript
 interface UseMatchSessionOptions {
-  setup: MatchSetup
-  actions: MatchAction[]
-  startedAt: number
+  setup: MatchSetup;
+  actions: MatchAction[];
+  startedAt: number;
 }
 
 interface UseMatchSessionReturn {
-  snapshot: CurrentMatchSessionSnapshot
-  scorePoint: (teamId: MatchTeamId) => Promise<void>
-  undoScoreAction: () => Promise<void>
-  finishMatch: () => Promise<void>
-  isLoading: boolean
+  snapshot: CurrentMatchSessionSnapshot;
+  scorePoint: (teamId: MatchTeamId) => Promise<void>;
+  undoScoreAction: () => Promise<void>;
+  finishMatch: () => Promise<void>;
+  isLoading: boolean;
 }
 
-export function useMatchSession(options: UseMatchSessionOptions): UseMatchSessionReturn
+export function useMatchSession(options: UseMatchSessionOptions): UseMatchSessionReturn;
 ```
 
 3.2. Implementation details:
@@ -204,14 +204,14 @@ export function useMatchSession(options: UseMatchSessionOptions): UseMatchSessio
 
 ```typescript
 interface TeamPanelProps {
-  teamId: MatchTeamId
-  teamName: string
-  score: string // "40", "15", "Ad" for standard; "7" for tiebreak
-  games: number
-  isServing: boolean
-  isGoldenPointActive: boolean
-  onClick: () => void
-  disabled?: boolean
+  teamId: MatchTeamId;
+  teamName: string;
+  score: string; // "40", "15", "Ad" for standard; "7" for tiebreak
+  games: number;
+  isServing: boolean;
+  isGoldenPointActive: boolean;
+  onClick: () => void;
+  disabled?: boolean;
 }
 ```
 
@@ -248,9 +248,9 @@ interface TeamPanelProps {
 
 ```typescript
 interface SetsCardProps {
-  sets: MatchSetState[]
-  currentSetIndex: number | null
-  setsWon: TeamScore<number>
+  sets: MatchSetState[];
+  currentSetIndex: number | null;
+  setsWon: TeamScore<number>;
 }
 ```
 
@@ -282,9 +282,9 @@ interface SetsCardProps {
 
 ```typescript
 interface InfoCardProps {
-  isGoldenPoint: boolean
-  isSuperTiebreak: boolean
-  sideSwitchPrompts: boolean
+  isGoldenPoint: boolean;
+  isSuperTiebreak: boolean;
+  sideSwitchPrompts: boolean;
 }
 ```
 
@@ -309,7 +309,7 @@ interface InfoCardProps {
 
 ```typescript
 interface TimeChipProps {
-  formattedTime: string // e.g., "41 min"
+  formattedTime: string; // e.g., "41 min"
 }
 ```
 
@@ -335,9 +335,9 @@ interface TimeChipProps {
 
 ```typescript
 interface RevertButtonProps {
-  teamId: MatchTeamId
-  onClick: () => void
-  disabled: boolean // Disabled when no actions to undo
+  teamId: MatchTeamId;
+  onClick: () => void;
+  disabled: boolean; // Disabled when no actions to undo
 }
 ```
 
@@ -361,8 +361,8 @@ interface RevertButtonProps {
 
 ```typescript
 interface FinishButtonProps {
-  onClick: () => void
-  disabled?: boolean // Disabled until match has winner
+  onClick: () => void;
+  disabled?: boolean; // Disabled until match has winner
 }
 ```
 
@@ -387,9 +387,9 @@ interface FinishButtonProps {
 
 ```typescript
 interface SideSwitchPromptProps {
-  isOpen: boolean
-  reason: 'odd-games' | 'tiebreak-interval' | null
-  onConfirm: () => void
+  isOpen: boolean;
+  reason: 'odd-games' | 'tiebreak-interval' | null;
+  onConfirm: () => void;
 }
 ```
 
@@ -414,10 +414,10 @@ interface SideSwitchPromptProps {
 
 ```typescript
 interface ActiveMatchScreenProps {
-  matchId: string
-  initialSetup: MatchSetup
-  initialActions: MatchAction[]
-  startedAt: number
+  matchId: string;
+  initialSetup: MatchSetup;
+  initialActions: MatchAction[];
+  startedAt: number;
 }
 ```
 
@@ -487,8 +487,8 @@ ActiveMatchScreen
 
 ```typescript
 interface TopBarProps {
-  currentLocale: SupportedLocale
-  onLocaleClick: () => void
+  currentLocale: SupportedLocale;
+  onLocaleClick: () => void;
 }
 ```
 
@@ -518,7 +518,7 @@ export const mockMatchSetup: MatchSetup = {
     { id: 'team-2', playerNames: ['Pablo', 'Thiago'] }
   ]
   // ... other fields
-}
+};
 
 export const mockMatchActions: MatchAction[] = [
   { type: 'score-point', teamId: 'team-1' },
@@ -526,9 +526,9 @@ export const mockMatchActions: MatchAction[] = [
   { type: 'score-point', teamId: 'team-1' },
   { type: 'score-point', teamId: 'team-2' }
   // ... more actions to reach desired state
-]
+];
 
-export const mockStartedAt = Date.now() - 41 * 60 * 1000 // 41 minutes ago
+export const mockStartedAt = Date.now() - 41 * 60 * 1000; // 41 minutes ago
 ```
 
 13.2. Create utility function to generate various match states:

@@ -1,7 +1,7 @@
 export interface CatalogViewport {
-  name: string
-  width: number
-  height: number
+  name: string;
+  width: number;
+  height: number;
 }
 
 export const viewportCatalog = [
@@ -13,7 +13,7 @@ export const viewportCatalog = [
   { name: 'iPad Air', width: 820, height: 1180 },
   { name: 'iPad Pro', width: 1024, height: 1366 },
   { name: 'MacBook Pro 14', width: 1512, height: 982 }
-] as const satisfies ReadonlyArray<CatalogViewport>
+] as const satisfies ReadonlyArray<CatalogViewport>;
 
 export const landscapeViewportCatalog = [
   { name: 'iPhone SE landscape', width: 667, height: 375 },
@@ -24,16 +24,16 @@ export const landscapeViewportCatalog = [
   { name: 'iPad Air landscape', width: 1180, height: 820 },
   { name: 'iPad Pro landscape', width: 1366, height: 1024 },
   { name: 'MacBook Pro 14 landscape', width: 1512, height: 982 }
-] as const satisfies ReadonlyArray<CatalogViewport>
+] as const satisfies ReadonlyArray<CatalogViewport>;
 
-export type ViewportOrientation = 'portrait' | 'landscape'
+export type ViewportOrientation = 'portrait' | 'landscape';
 
 export function getViewportOrientation(
   viewport: Pick<CatalogViewport, 'width' | 'height'>
 ): ViewportOrientation {
-  return viewport.height >= viewport.width ? 'portrait' : 'landscape'
+  return viewport.height >= viewport.width ? 'portrait' : 'landscape';
 }
 
 export function isPortraitViewport(viewport: Pick<CatalogViewport, 'width' | 'height'>): boolean {
-  return getViewportOrientation(viewport) === 'portrait'
+  return getViewportOrientation(viewport) === 'portrait';
 }

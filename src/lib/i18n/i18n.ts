@@ -1,16 +1,16 @@
 // oxlint-disable import/no-named-as-default-member
-import i18n from 'i18next'
-import type { InitOptions } from 'i18next'
-import { initReactI18next } from 'react-i18next'
+import i18n from 'i18next';
+import type { InitOptions } from 'i18next';
+import { initReactI18next } from 'react-i18next';
 
-import { detectBrowserLocale, resolveInitialLocale } from './locale-detector'
-import { loadLocalePreference, saveLocalePreference } from './locale-storage'
-import enTranslation from './locales/en'
-import { loadLocaleResource } from './resources'
-import { defaultLocale, isSupportedLocale, supportedLocales, type SupportedLocale } from './types'
+import { detectBrowserLocale, resolveInitialLocale } from './locale-detector';
+import { loadLocalePreference, saveLocalePreference } from './locale-storage';
+import enTranslation from './locales/en';
+import { loadLocaleResource } from './resources';
+import { defaultLocale, isSupportedLocale, supportedLocales, type SupportedLocale } from './types';
 
-let baseInitializationPromise: Promise<void> | null = null
-let localeReconciliationPromise: Promise<void> | null = null
+let baseInitializationPromise: Promise<void> | null = null;
+let localeReconciliationPromise: Promise<void> | null = null;
 
 /**
  * Resets the initialization state. For testing purposes only.
@@ -21,17 +21,17 @@ let localeReconciliationPromise: Promise<void> | null = null
  * @internal
  */
 export async function resetI18nInitialization(): Promise<void> {
-  localeReconciliationPromise = null
+  localeReconciliationPromise = null;
 
   for (const locale of supportedLocales) {
     if (locale === defaultLocale || !i18n.hasResourceBundle(locale, 'translation')) {
-      continue
+      continue;
     }
 
-    i18n.removeResourceBundle(locale, 'translation')
+    i18n.removeResourceBundle(locale, 'translation');
   }
 
-  await i18n.changeLanguage(defaultLocale)
+  await i18n.changeLanguage(defaultLocale);
 }
 
 /**
@@ -39,18 +39,18 @@ export async function resetI18nInitialization(): Promise<void> {
  * while persisted/browser locale reconciliation happens asynchronously.
  */
 export async function initializeI18n(): Promise<void> {
-  await ensureBaseInitialization()
+  await ensureBaseInitialization();
 
   if (localeReconciliationPromise) {
-    return localeReconciliationPromise
+    return localeReconciliationPromise;
   }
 
   localeReconciliationPromise = reconcileInitialLocale().catch((error) => {
-    localeReconciliationPromise = null
-    throw error
-  })
+    localeReconciliationPromise = null;
+    throw error;
+  });
 
-  return localeReconciliationPromise
+  return localeReconciliationPromise;
 }
 
 async function ensureBaseInitialization(): Promise<void> {
@@ -58,10 +58,10 @@ async function ensureBaseInitialization(): Promise<void> {
     baseInitializationPromise = i18n
       .use(initReactI18next)
       .init(createBaseConfig())
-      .then(() => undefined)
+      .then(() => undefined);
   }
 
-  await baseInitializationPromise
+  await baseInitializationPromise;
 }
 
 function createBaseConfig(): InitOptions {
@@ -83,72 +83,72 @@ function createBaseConfig(): InitOptions {
         translation: enTranslation
       }
     }
-  }
+  };
 }
 
 async function reconcileInitialLocale(): Promise<void> {
-  let storedPreference: SupportedLocale | null = null
+  let storedPreference: SupportedLocale | null = null;
 
   try {
-    storedPreference = await loadLocalePreference()
+    storedPreference = await loadLocalePreference();
   } catch {
-    storedPreference = null
+    storedPreference = null;
   }
 
-  const browserLocale = detectBrowserLocale()
-  const initialLocale = resolveInitialLocale(storedPreference, browserLocale)
+  const browserLocale = detectBrowserLocale();
+  const initialLocale = resolveInitialLocale(storedPreference, browserLocale);
 
-  await applyLocale(initialLocale)
+  await applyLocale(initialLocale);
 }
 
 async function applyLocale(locale: SupportedLocale): Promise<void> {
-  await ensureLocaleResource(locale)
+  await ensureLocaleResource(locale);
 
   if (i18n.resolvedLanguage === locale || i18n.language === locale) {
-    return
+    return;
   }
 
-  await i18n.changeLanguage(locale)
+  await i18n.changeLanguage(locale);
 }
 
 async function ensureLocaleResource(locale: SupportedLocale): Promise<void> {
   if (i18n.hasResourceBundle(locale, 'translation')) {
-    return
+    return;
   }
 
-  const resource = await loadLocaleResource(locale)
-  i18n.addResourceBundle(locale, 'translation', resource.translation, true, true)
+  const resource = await loadLocaleResource(locale);
+  i18n.addResourceBundle(locale, 'translation', resource.translation, true, true);
 }
 
 /**
  * Changes the current locale and persists the preference.
  */
 export async function changeLocale(locale: SupportedLocale): Promise<void> {
-  await ensureBaseInitialization()
-  await ensureLocaleResource(locale)
+  await ensureBaseInitialization();
+  await ensureLocaleResource(locale);
 
   // Try to save preference, but don't fail if IndexedDB is unavailable
   try {
-    await saveLocalePreference(locale)
+    await saveLocalePreference(locale);
   } catch {
     // IndexedDB not available, continue without persistence
   }
-  await i18n.changeLanguage(locale)
+  await i18n.changeLanguage(locale);
 }
 
 /**
  * Gets the current locale.
  */
 export function getCurrentLocale(): SupportedLocale {
-  const currentLang = i18n.resolvedLanguage ?? i18n.language
+  const currentLang = i18n.resolvedLanguage ?? i18n.language;
 
   if (isSupportedLocale(currentLang)) {
-    return currentLang
+    return currentLang;
   }
 
-  return defaultLocale
+  return defaultLocale;
 }
 
-export { i18n }
+export { i18n };
 
-void ensureBaseInitialization()
+void ensureBaseInitialization();

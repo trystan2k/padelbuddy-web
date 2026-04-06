@@ -1,13 +1,13 @@
-import { useId, type ReactNode } from 'react'
+import { useId, type ReactNode } from 'react';
 
-import styles from './AppStatusPage.module.css'
+import styles from './AppStatusPage.module.css';
 
 export interface AppStatusPageProps {
-  body: ReactNode
-  children?: ReactNode
-  eyebrow: ReactNode
-  liveRegion?: 'assertive' | 'off' | 'polite'
-  title: ReactNode
+  body: ReactNode;
+  children?: ReactNode;
+  eyebrow: ReactNode;
+  liveRegion?: 'assertive' | 'off' | 'polite';
+  title: ReactNode;
 }
 
 export function AppStatusPage({
@@ -17,7 +17,7 @@ export function AppStatusPage({
   liveRegion = 'off',
   title
 }: AppStatusPageProps) {
-  const titleId = useId()
+  const titleId = useId();
 
   return (
     <main className={styles.page}>
@@ -34,12 +34,12 @@ export function AppStatusPage({
         {children}
       </section>
     </main>
-  )
+  );
 }
 
 export interface AppStatusDetailProps {
-  children: ReactNode
-  role?: 'alert' | 'status'
+  children: ReactNode;
+  role?: 'alert' | 'status';
 }
 
 export function AppStatusDetail({ children, role }: AppStatusDetailProps) {
@@ -47,13 +47,13 @@ export function AppStatusDetail({ children, role }: AppStatusDetailProps) {
     <p className={styles.detail} role={role}>
       {children}
     </p>
-  )
+  );
 }
 
 export interface AppStatusActionsProps {
-  children: ReactNode
+  children: ReactNode;
 }
 
 export function AppStatusActions({ children }: AppStatusActionsProps) {
-  return <div className={styles.actions}>{children}</div>
+  return <div className={styles.actions}>{children}</div>;
 }

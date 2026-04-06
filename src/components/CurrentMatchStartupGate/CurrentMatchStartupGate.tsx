@@ -1,29 +1,29 @@
-import { useCallback, useEffect, useRef, useState, type HTMLAttributes } from 'react'
-import { useTranslation } from 'react-i18next'
-import { useNavigate, useRouter } from '@tanstack/react-router'
-import { Dialog } from '@base-ui/react/dialog'
+import { useCallback, useEffect, useRef, useState, type HTMLAttributes } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useNavigate, useRouter } from '@tanstack/react-router';
+import { Dialog } from '@base-ui/react/dialog';
 
-import { Button } from '@/components/ui/Button/Button'
-import { clearCurrentMatch, type CurrentMatchPersistence } from '@/lib/current-match/indexed-db'
-import type { CurrentMatchStartupResult } from '@/lib/current-match/startup'
+import { Button } from '@/components/ui/Button/Button';
+import { clearCurrentMatch, type CurrentMatchPersistence } from '@/lib/current-match/indexed-db';
+import type { CurrentMatchStartupResult } from '@/lib/current-match/startup';
 import {
   invalidateCurrentMatchPersistenceRoutes,
   prepareCurrentMatchRouteNavigation
-} from '@/lib/router/current-match-route-flow'
-import { getViewTransitionNavigationOptions } from '@/lib/utils/view-transitions'
+} from '@/lib/router/current-match-route-flow';
+import { getViewTransitionNavigationOptions } from '@/lib/utils/view-transitions';
 
-import styles from './CurrentMatchStartupGate.module.css'
+import styles from './CurrentMatchStartupGate.module.css';
 
 export interface CurrentMatchStartupGateProps extends HTMLAttributes<HTMLElement> {
-  startupState: CurrentMatchStartupResult
-  persistence?: CurrentMatchPersistence
-  portalContainer?: HTMLElement | null
+  startupState: CurrentMatchStartupResult;
+  persistence?: CurrentMatchPersistence;
+  portalContainer?: HTMLElement | null;
 }
 
 export interface CurrentMatchStartupGateResolvedProps extends HTMLAttributes<HTMLElement> {
-  initialState: CurrentMatchStartupResult
-  persistence?: CurrentMatchPersistence
-  portalContainer?: HTMLElement | null
+  initialState: CurrentMatchStartupResult;
+  persistence?: CurrentMatchPersistence;
+  portalContainer?: HTMLElement | null;
 }
 
 export function dismissCurrentMatchStartupNotice(
@@ -32,21 +32,21 @@ export function dismissCurrentMatchStartupNotice(
   return {
     ...currentState,
     notice: null
-  }
+  };
 }
 
 export function resumeCurrentMatchStartup(
   currentState: CurrentMatchStartupResult
 ): CurrentMatchStartupResult {
   if (currentState.status !== 'resume-required') {
-    return currentState
+    return currentState;
   }
 
   return {
     status: 'ready',
     notice: currentState.notice,
     match: currentState.match
-  }
+  };
 }
 
 export function clearCurrentMatchStartup(
@@ -55,14 +55,14 @@ export function clearCurrentMatchStartup(
   return {
     status: 'no-match',
     notice: currentState.notice
-  }
+  };
 }
 
 export function CurrentMatchStartupGateResolved({
   initialState,
   ...props
 }: CurrentMatchStartupGateResolvedProps) {
-  return <CurrentMatchStartupGate startupState={initialState} {...props} />
+  return <CurrentMatchStartupGate startupState={initialState} {...props} />;
 }
 
 export function CurrentMatchStartupGate({
@@ -72,96 +72,96 @@ export function CurrentMatchStartupGate({
   portalContainer,
   ...props
 }: CurrentMatchStartupGateProps) {
-  const { t } = useTranslation()
-  const navigate = useNavigate()
-  const router = useRouter()
-  const [startupState, setStartupState] = useState(initialStartupState)
-  const [isClearing, setIsClearing] = useState(false)
-  const [clearErrorMessage, setClearErrorMessage] = useState<string | null>(null)
-  const pendingResumeMatchIdRef = useRef<string | null>(null)
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const router = useRouter();
+  const [startupState, setStartupState] = useState(initialStartupState);
+  const [isClearing, setIsClearing] = useState(false);
+  const [clearErrorMessage, setClearErrorMessage] = useState<string | null>(null);
+  const pendingResumeMatchIdRef = useRef<string | null>(null);
 
   useEffect(() => {
-    setStartupState(initialStartupState)
-    setIsClearing(false)
-    setClearErrorMessage(null)
-  }, [initialStartupState])
+    setStartupState(initialStartupState);
+    setIsClearing(false);
+    setClearErrorMessage(null);
+  }, [initialStartupState]);
 
   useEffect(() => {
-    const matchId = pendingResumeMatchIdRef.current
+    const matchId = pendingResumeMatchIdRef.current;
 
     if (matchId === null) {
-      return
+      return;
     }
 
-    pendingResumeMatchIdRef.current = null
+    pendingResumeMatchIdRef.current = null;
 
     void (async () => {
       try {
         await prepareCurrentMatchRouteNavigation(router, {
           to: '/match/$id',
           params: { id: matchId }
-        })
+        });
       } finally {
         await navigate({
           to: '/match/$id',
           params: { id: matchId },
           ...getViewTransitionNavigationOptions()
-        })
+        });
       }
-    })()
-  }, [navigate, router, startupState])
+    })();
+  }, [navigate, router, startupState]);
 
   const dismissNotice = useCallback(() => {
-    setStartupState((currentState) => dismissCurrentMatchStartupNotice(currentState))
-  }, [])
+    setStartupState((currentState) => dismissCurrentMatchStartupNotice(currentState));
+  }, []);
 
   const clearSavedMatch = useCallback(async () => {
-    setIsClearing(true)
-    setClearErrorMessage(null)
+    setIsClearing(true);
+    setClearErrorMessage(null);
 
     try {
-      await (persistence?.clearCurrentMatch() ?? clearCurrentMatch())
-      await invalidateCurrentMatchPersistenceRoutes(router)
-      setStartupState((currentState) => clearCurrentMatchStartup(currentState))
+      await (persistence?.clearCurrentMatch() ?? clearCurrentMatch());
+      await invalidateCurrentMatchPersistenceRoutes(router);
+      setStartupState((currentState) => clearCurrentMatchStartup(currentState));
     } catch (error) {
       setClearErrorMessage(
         error instanceof Error ? error.message : t('startupGate.errors.clearSavedMatch')
-      )
+      );
     } finally {
-      setIsClearing(false)
+      setIsClearing(false);
     }
-  }, [persistence, router, t])
+  }, [persistence, router, t]);
 
   const resumeSavedMatch = useCallback(() => {
-    setClearErrorMessage(null)
+    setClearErrorMessage(null);
     setStartupState((currentState) => {
       if (currentState.status === 'resume-required') {
-        pendingResumeMatchIdRef.current = currentState.match.matchId
+        pendingResumeMatchIdRef.current = currentState.match.matchId;
       }
 
-      return resumeCurrentMatchStartup(currentState)
-    })
-  }, [])
+      return resumeCurrentMatchStartup(currentState);
+    });
+  }, []);
 
   const handleClearSavedMatch = useCallback(() => {
-    void clearSavedMatch()
-  }, [clearSavedMatch])
+    void clearSavedMatch();
+  }, [clearSavedMatch]);
 
   const handleDialogOpenChange = useCallback(
     (open: boolean) => {
       if (!open) {
-        handleClearSavedMatch()
+        handleClearSavedMatch();
       }
     },
     [handleClearSavedMatch]
-  )
+  );
 
   const renderBackdrop = useCallback(
     (backdropProps: HTMLAttributes<HTMLElement>) => (
       <div {...backdropProps} className={styles.promptBackdrop} />
     ),
     []
-  )
+  );
 
   const renderTitle = useCallback(
     (titleProps: HTMLAttributes<HTMLElement>) => (
@@ -170,7 +170,7 @@ export function CurrentMatchStartupGate({
       </h2>
     ),
     [t]
-  )
+  );
 
   const renderDescription = useCallback(
     (descProps: HTMLAttributes<HTMLElement>) => (
@@ -179,7 +179,7 @@ export function CurrentMatchStartupGate({
       </p>
     ),
     [t]
-  )
+  );
 
   const renderPopup = useCallback(
     (popupProps: HTMLAttributes<HTMLElement>) => (
@@ -224,7 +224,7 @@ export function CurrentMatchStartupGate({
       renderTitle,
       renderDescription
     ]
-  )
+  );
 
   if (startupState.status === 'corrupt') {
     return (
@@ -250,7 +250,7 @@ export function CurrentMatchStartupGate({
           </Button>
         </section>
       </main>
-    )
+    );
   }
 
   return (
@@ -278,5 +278,5 @@ export function CurrentMatchStartupGate({
         </Dialog.Root>
       )}
     </>
-  )
+  );
 }

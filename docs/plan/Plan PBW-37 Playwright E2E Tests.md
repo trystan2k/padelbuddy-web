@@ -38,7 +38,7 @@
 **File**: `playwright.config.ts`
 
 ```typescript
-import { defineConfig, devices } from '@playwright/test'
+import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './e2e',
@@ -68,7 +68,7 @@ export default defineConfig({
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000
   }
-})
+});
 ```
 
 **Dependencies**: None
@@ -85,11 +85,11 @@ export default defineConfig({
 
 ```typescript
 // e2e/fixtures.ts
-import { test as base, expect } from '@playwright/test'
+import { test as base, expect } from '@playwright/test';
 
 // Re-export for convenience
-export { expect }
-export const test = base.extend({})
+export { expect };
+export const test = base.extend({});
 ```
 
 **Dependencies**: Step 1.1

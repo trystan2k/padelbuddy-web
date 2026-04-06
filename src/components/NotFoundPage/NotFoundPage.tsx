@@ -1,12 +1,12 @@
-import { Link } from '@tanstack/react-router'
-import { useTranslation } from 'react-i18next'
+import { Link } from '@tanstack/react-router';
+import { useTranslation } from 'react-i18next';
 
-import { supportsViewTransitions } from '@/lib/utils/view-transitions'
+import { supportsViewTransitions } from '@/lib/utils/view-transitions';
 
-import styles from './NotFoundPage.module.css'
+import styles from './NotFoundPage.module.css';
 
 export function NotFoundPage() {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   return (
     <main className={styles.page}>
@@ -21,5 +21,5 @@ export function NotFoundPage() {
         </Link>
       </section>
     </main>
-  )
+  );
 }

@@ -1,30 +1,30 @@
 /* oxlint-disable jsx-no-new-object-as-prop -- Test files use inline objects for readability */
 
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
-import { render } from 'vitest-browser-react'
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { render } from 'vitest-browser-react';
 
-import { CurrentMatchStartupGate } from '@/components/CurrentMatchStartupGate/CurrentMatchStartupGate'
+import { CurrentMatchStartupGate } from '@/components/CurrentMatchStartupGate/CurrentMatchStartupGate';
 import {
   clearCurrentMatch,
   createCurrentMatchPersistence,
   saveCurrentMatch,
   type CurrentMatchPersistence
-} from '@/lib/current-match/indexed-db'
-import currentMatchResetNoticeStore from '@/lib/current-match/reset-notice-store'
-import { createCurrentMatchSessionSnapshot } from '@/lib/current-match/session'
-import { currentMatchSchemaVersion } from '@/lib/current-match/persistence'
+} from '@/lib/current-match/indexed-db';
+import currentMatchResetNoticeStore from '@/lib/current-match/reset-notice-store';
+import { createCurrentMatchSessionSnapshot } from '@/lib/current-match/session';
+import { currentMatchSchemaVersion } from '@/lib/current-match/persistence';
 import {
   hydrateCurrentMatchStartup,
   type CurrentMatchStartupResult
-} from '@/lib/current-match/startup'
+} from '@/lib/current-match/startup';
 
-import { createTestSetup, scorePoints } from '../core/match/test-helpers'
+import { createTestSetup, scorePoints } from '../core/match/test-helpers';
 
 const { mockInvalidate, mockNavigate, mockPreloadRoute } = vi.hoisted(() => ({
   mockInvalidate: vi.fn<() => Promise<void>>(async () => undefined),
   mockNavigate: vi.fn<(options: object) => void>(),
   mockPreloadRoute: vi.fn<() => Promise<void>>(async () => undefined)
-}))
+}));
 
 vi.mock('@tanstack/react-router', () => ({
   useNavigate: () => mockNavigate,
@@ -32,33 +32,33 @@ vi.mock('@tanstack/react-router', () => ({
     invalidate: mockInvalidate,
     preloadRoute: mockPreloadRoute
   })
-}))
+}));
 
 describe('CurrentMatchStartupGate browser', () => {
-  const testMatchId = 'test-match'
-  let databaseName = ''
-  let persistence: CurrentMatchPersistence
-  let portalContainer: HTMLDivElement
+  const testMatchId = 'test-match';
+  let databaseName = '';
+  let persistence: CurrentMatchPersistence;
+  let portalContainer: HTMLDivElement;
 
   beforeEach(() => {
-    mockNavigate.mockReset()
-    mockInvalidate.mockReset()
-    mockPreloadRoute.mockReset()
-    databaseName = `padel-buddy-startup-gate-${crypto.randomUUID()}`
+    mockNavigate.mockReset();
+    mockInvalidate.mockReset();
+    mockPreloadRoute.mockReset();
+    databaseName = `padel-buddy-startup-gate-${crypto.randomUUID()}`;
     persistence = createCurrentMatchPersistence({
       databaseName,
       objectStoreName: 'current-match'
-    })
-    portalContainer = document.createElement('div')
-    document.body.append(portalContainer)
-  })
+    });
+    portalContainer = document.createElement('div');
+    document.body.append(portalContainer);
+  });
 
   afterEach(async () => {
-    currentMatchResetNoticeStore.reset()
-    await clearCurrentMatch()
-    await deleteDatabase(databaseName)
-    portalContainer.remove()
-  })
+    currentMatchResetNoticeStore.reset();
+    await clearCurrentMatch();
+    await deleteDatabase(databaseName);
+    portalContainer.remove();
+  });
 
   test('renders the shell directly when no saved match exists', async () => {
     const screen = await render(
@@ -69,19 +69,19 @@ describe('CurrentMatchStartupGate browser', () => {
       >
         <TestShell />
       </CurrentMatchStartupGate>
-    )
+    );
 
     await expect
       .element(screen.getByRole('heading', { level: 1, name: 'Padel Buddy' }))
-      .toBeVisible()
-    expect(document.body.textContent).not.toContain('Resume saved match?')
-  })
+      .toBeVisible();
+    expect(document.body.textContent).not.toContain('Resume saved match?');
+  });
 
   test('prompts to resume or discard an in-progress match and emphasizes resume', async () => {
     await persistence.saveCurrentMatch({
       setup: createTestSetup(),
       actions: scorePoints('team-1', 'team-2')
-    })
+    });
 
     const screen = await render(
       <CurrentMatchStartupGate
@@ -91,16 +91,16 @@ describe('CurrentMatchStartupGate browser', () => {
       >
         <TestShell />
       </CurrentMatchStartupGate>
-    )
-    const resumeDialog = screen.getByRole('dialog', { name: 'Resume saved match?' })
-    const resumeButton = screen.getByRole('button', { name: 'Resume match' })
+    );
+    const resumeDialog = screen.getByRole('dialog', { name: 'Resume saved match?' });
+    const resumeButton = screen.getByRole('button', { name: 'Resume match' });
 
-    await expect.element(resumeDialog).toBeVisible()
-    await expect.element(resumeDialog).toHaveAttribute('aria-modal', 'true')
-    await expect.element(resumeButton).toHaveFocus()
-    await expect.element(screen.getByRole('button', { name: 'Discard match' })).toBeVisible()
+    await expect.element(resumeDialog).toBeVisible();
+    await expect.element(resumeDialog).toHaveAttribute('aria-modal', 'true');
+    await expect.element(resumeButton).toHaveFocus();
+    await expect.element(screen.getByRole('button', { name: 'Discard match' })).toBeVisible();
 
-    await resumeButton.click()
+    await resumeButton.click();
 
     expect(mockNavigate).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -109,19 +109,19 @@ describe('CurrentMatchStartupGate browser', () => {
           id: expect.any(String)
         })
       })
-    )
+    );
     expect(mockPreloadRoute).toHaveBeenCalledWith({
       to: '/match/$id',
       params: expect.objectContaining({
         id: expect.any(String)
       })
-    })
-    expect(document.body.textContent).not.toContain('Resume saved match?')
+    });
+    expect(document.body.textContent).not.toContain('Resume saved match?');
     await expect
       .element(screen.getByRole('heading', { level: 1, name: 'Padel Buddy' }))
-      .toBeVisible()
+      .toBeVisible();
 
-    await screen.unmount()
+    await screen.unmount();
 
     const repeatedStartupScreen = await render(
       <CurrentMatchStartupGate
@@ -131,20 +131,20 @@ describe('CurrentMatchStartupGate browser', () => {
       >
         <TestShell />
       </CurrentMatchStartupGate>
-    )
+    );
 
     await expect
       .element(
         repeatedStartupScreen.getByRole('heading', { level: 2, name: 'Resume saved match?' })
       )
-      .toBeVisible()
-  })
+      .toBeVisible();
+  });
 
   test('discard clears the saved match so the next startup does not prompt again', async () => {
     await persistence.saveCurrentMatch({
       setup: createTestSetup(),
       actions: scorePoints('team-1')
-    })
+    });
 
     const firstScreen = await render(
       <CurrentMatchStartupGate
@@ -154,17 +154,17 @@ describe('CurrentMatchStartupGate browser', () => {
       >
         <TestShell />
       </CurrentMatchStartupGate>
-    )
+    );
 
-    await firstScreen.getByRole('button', { name: 'Discard match' }).click()
+    await firstScreen.getByRole('button', { name: 'Discard match' }).click();
     await expect
       .element(firstScreen.getByRole('heading', { level: 1, name: 'Padel Buddy' }))
-      .toBeVisible()
+      .toBeVisible();
     await vi.waitFor(() => {
-      expect(mockInvalidate).toHaveBeenCalledTimes(1)
-    })
+      expect(mockInvalidate).toHaveBeenCalledTimes(1);
+    });
 
-    await firstScreen.unmount()
+    await firstScreen.unmount();
 
     const secondScreen = await render(
       <CurrentMatchStartupGate
@@ -174,13 +174,13 @@ describe('CurrentMatchStartupGate browser', () => {
       >
         <TestShell />
       </CurrentMatchStartupGate>
-    )
+    );
 
     await expect
       .element(secondScreen.getByRole('heading', { level: 1, name: 'Padel Buddy' }))
-      .toBeVisible()
-    expect(document.body.textContent).not.toContain('Resume saved match?')
-  })
+      .toBeVisible();
+    expect(document.body.textContent).not.toContain('Resume saved match?');
+  });
 
   test('renders corrupted-state recovery with only reset and continue', async () => {
     await writeRawRecord({
@@ -192,7 +192,7 @@ describe('CurrentMatchStartupGate browser', () => {
         actions: [{ type: 'score-point', teamId: 'team-3' }],
         startedAt: Date.now()
       }
-    })
+    });
 
     const screen = await render(
       <CurrentMatchStartupGate
@@ -201,15 +201,15 @@ describe('CurrentMatchStartupGate browser', () => {
       >
         <TestShell />
       </CurrentMatchStartupGate>
-    )
+    );
 
     await expect
       .element(screen.getByRole('heading', { level: 1, name: 'Saved match needs recovery' }))
-      .toBeVisible()
-    await expect.element(screen.getByRole('button', { name: 'Reset and continue' })).toBeVisible()
-    expect(document.body.textContent).not.toContain('Resume saved match')
-    expect(document.body.textContent).not.toContain('Discard saved match')
-  })
+      .toBeVisible();
+    await expect.element(screen.getByRole('button', { name: 'Reset and continue' })).toBeVisible();
+    expect(document.body.textContent).not.toContain('Resume saved match');
+    expect(document.body.textContent).not.toContain('Discard saved match');
+  });
 
   test('reset and continue clears the corrupted record for the next startup', async () => {
     await writeRawRecord({
@@ -221,7 +221,7 @@ describe('CurrentMatchStartupGate browser', () => {
         actions: [{ type: 'score-point', teamId: 'team-3' }],
         startedAt: Date.now()
       }
-    })
+    });
 
     const firstScreen = await render(
       <CurrentMatchStartupGate
@@ -231,14 +231,14 @@ describe('CurrentMatchStartupGate browser', () => {
       >
         <TestShell />
       </CurrentMatchStartupGate>
-    )
+    );
 
-    await firstScreen.getByRole('button', { name: 'Reset and continue' }).click()
+    await firstScreen.getByRole('button', { name: 'Reset and continue' }).click();
     await expect
       .element(firstScreen.getByRole('heading', { level: 1, name: 'Padel Buddy' }))
-      .toBeVisible()
+      .toBeVisible();
 
-    await firstScreen.unmount()
+    await firstScreen.unmount();
 
     const secondScreen = await render(
       <CurrentMatchStartupGate
@@ -248,13 +248,13 @@ describe('CurrentMatchStartupGate browser', () => {
       >
         <TestShell />
       </CurrentMatchStartupGate>
-    )
+    );
 
     await expect
       .element(secondScreen.getByRole('heading', { level: 1, name: 'Padel Buddy' }))
-      .toBeVisible()
-    expect(document.body.textContent).not.toContain('Saved match needs recovery')
-  })
+      .toBeVisible();
+    expect(document.body.textContent).not.toContain('Saved match needs recovery');
+  });
 
   test('shows the reset notice once after startup clears an incompatible record', async () => {
     await writeRawRecord({
@@ -264,7 +264,7 @@ describe('CurrentMatchStartupGate browser', () => {
         setup: createTestSetup(),
         actions: []
       }
-    })
+    });
 
     const firstScreen = await render(
       <CurrentMatchStartupGate
@@ -274,13 +274,15 @@ describe('CurrentMatchStartupGate browser', () => {
       >
         <TestShell />
       </CurrentMatchStartupGate>
-    )
+    );
 
-    await expect.element(firstScreen.getByRole('status')).toHaveTextContent('Saved match was reset')
-    await firstScreen.getByRole('button', { name: 'Dismiss' }).click()
-    expect(document.body.textContent).not.toContain('Saved match was reset')
+    await expect
+      .element(firstScreen.getByRole('status'))
+      .toHaveTextContent('Saved match was reset');
+    await firstScreen.getByRole('button', { name: 'Dismiss' }).click();
+    expect(document.body.textContent).not.toContain('Saved match was reset');
 
-    await firstScreen.unmount()
+    await firstScreen.unmount();
 
     const secondScreen = await render(
       <CurrentMatchStartupGate
@@ -290,19 +292,19 @@ describe('CurrentMatchStartupGate browser', () => {
       >
         <TestShell />
       </CurrentMatchStartupGate>
-    )
+    );
 
     await expect
       .element(secondScreen.getByRole('heading', { level: 1, name: 'Padel Buddy' }))
-      .toBeVisible()
-    expect(document.body.textContent).not.toContain('Saved match was reset')
-  })
+      .toBeVisible();
+    expect(document.body.textContent).not.toContain('Saved match was reset');
+  });
 
   test('uses the default persistence path when no persistence prop is provided', async () => {
     await saveCurrentMatch({
       setup: createTestSetup(),
       actions: scorePoints('team-1')
-    })
+    });
 
     const firstScreen = await render(
       <CurrentMatchStartupGate
@@ -311,17 +313,17 @@ describe('CurrentMatchStartupGate browser', () => {
       >
         <TestShell />
       </CurrentMatchStartupGate>
-    )
+    );
 
     await expect
       .element(firstScreen.getByRole('heading', { level: 2, name: 'Resume saved match?' }))
-      .toBeVisible()
-    await firstScreen.getByRole('button', { name: 'Discard match' }).click()
+      .toBeVisible();
+    await firstScreen.getByRole('button', { name: 'Discard match' }).click();
     await expect
       .element(firstScreen.getByRole('heading', { level: 1, name: 'Padel Buddy' }))
-      .toBeVisible()
+      .toBeVisible();
 
-    await firstScreen.unmount()
+    await firstScreen.unmount();
 
     const secondScreen = await render(
       <CurrentMatchStartupGate
@@ -330,13 +332,13 @@ describe('CurrentMatchStartupGate browser', () => {
       >
         <TestShell />
       </CurrentMatchStartupGate>
-    )
+    );
 
     await expect
       .element(secondScreen.getByRole('heading', { level: 1, name: 'Padel Buddy' }))
-      .toBeVisible()
-    expect(document.body.textContent).not.toContain('Resume saved match?')
-  })
+      .toBeVisible();
+    expect(document.body.textContent).not.toContain('Resume saved match?');
+  });
 
   test('keeps the resume dialog open and shows an error when discarding fails', async () => {
     const screen = await render(
@@ -345,21 +347,21 @@ describe('CurrentMatchStartupGate browser', () => {
         portalContainer={portalContainer}
         persistence={createPersistenceStub({
           clearCurrentMatch: async () => {
-            throw new Error('Failed to clear saved match.')
+            throw new Error('Failed to clear saved match.');
           }
         })}
       >
         <TestShell />
       </CurrentMatchStartupGate>
-    )
+    );
 
-    await screen.getByRole('button', { name: 'Discard match' }).click()
+    await screen.getByRole('button', { name: 'Discard match' }).click();
 
-    await expect.element(screen.getByRole('dialog', { name: 'Resume saved match?' })).toBeVisible()
+    await expect.element(screen.getByRole('dialog', { name: 'Resume saved match?' })).toBeVisible();
     await expect
       .element(screen.getByRole('alert'))
-      .toHaveTextContent('Failed to clear saved match.')
-  })
+      .toHaveTextContent('Failed to clear saved match.');
+  });
 
   test('keeps the recovery screen visible and shows an error when reset fails', async () => {
     const screen = await render(
@@ -372,106 +374,106 @@ describe('CurrentMatchStartupGate browser', () => {
         portalContainer={portalContainer}
         persistence={createPersistenceStub({
           clearCurrentMatch: async () => {
-            throw new Error('Failed to clear saved match.')
+            throw new Error('Failed to clear saved match.');
           }
         })}
       >
         <TestShell />
       </CurrentMatchStartupGate>
-    )
+    );
 
-    await screen.getByRole('button', { name: 'Reset and continue' }).click()
+    await screen.getByRole('button', { name: 'Reset and continue' }).click();
 
     await expect
       .element(screen.getByRole('heading', { level: 1, name: 'Saved match needs recovery' }))
-      .toBeVisible()
+      .toBeVisible();
     await expect
       .element(screen.getByRole('alert'))
-      .toHaveTextContent('Failed to clear saved match.')
-  })
-})
+      .toHaveTextContent('Failed to clear saved match.');
+  });
+});
 
 async function writeRawRecord(input: { databaseName: string; value: unknown }): Promise<void> {
-  const database = await openDatabase(input.databaseName)
+  const database = await openDatabase(input.databaseName);
 
   try {
-    const transaction = database.transaction('current-match', 'readwrite')
+    const transaction = database.transaction('current-match', 'readwrite');
 
-    transaction.objectStore('current-match').put(input.value, 'current-match')
-    await waitForTransaction(transaction)
+    transaction.objectStore('current-match').put(input.value, 'current-match');
+    await waitForTransaction(transaction);
   } finally {
-    database.close()
+    database.close();
   }
 }
 
 function openDatabase(databaseName: string): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open(databaseName, 1)
+    const request = indexedDB.open(databaseName, 1);
 
     request.addEventListener('upgradeneeded', () => {
-      const database = request.result
+      const database = request.result;
 
       if (!database.objectStoreNames.contains('current-match')) {
-        database.createObjectStore('current-match')
+        database.createObjectStore('current-match');
       }
-    })
+    });
 
     request.addEventListener('success', () => {
-      resolve(request.result)
-    })
+      resolve(request.result);
+    });
 
     request.addEventListener('error', () => {
-      reject(request.error ?? new Error('Unable to open test IndexedDB database.'))
-    })
-  })
+      reject(request.error ?? new Error('Unable to open test IndexedDB database.'));
+    });
+  });
 }
 
 function deleteDatabase(databaseName: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    const request = indexedDB.deleteDatabase(databaseName)
+    const request = indexedDB.deleteDatabase(databaseName);
 
     request.addEventListener('success', () => {
-      resolve()
-    })
+      resolve();
+    });
 
     request.addEventListener('error', () => {
-      reject(request.error ?? new Error('Unable to delete test IndexedDB database.'))
-    })
+      reject(request.error ?? new Error('Unable to delete test IndexedDB database.'));
+    });
 
     request.addEventListener('blocked', () => {
-      reject(new Error('Deleting the test IndexedDB database was blocked.'))
-    })
-  })
+      reject(new Error('Deleting the test IndexedDB database was blocked.'));
+    });
+  });
 }
 
 function waitForTransaction(transaction: IDBTransaction): Promise<void> {
   return new Promise((resolve, reject) => {
     transaction.addEventListener('complete', () => {
-      resolve()
-    })
+      resolve();
+    });
 
     transaction.addEventListener('error', () => {
-      reject(transaction.error ?? new Error('IndexedDB transaction failed.'))
-    })
+      reject(transaction.error ?? new Error('IndexedDB transaction failed.'));
+    });
 
     transaction.addEventListener('abort', () => {
-      reject(transaction.error ?? new Error('IndexedDB transaction was aborted.'))
-    })
-  })
+      reject(transaction.error ?? new Error('IndexedDB transaction was aborted.'));
+    });
+  });
 }
 
 function createPersistenceStub(overrides: {
-  clearCurrentMatch: CurrentMatchPersistence['clearCurrentMatch']
+  clearCurrentMatch: CurrentMatchPersistence['clearCurrentMatch'];
 }): CurrentMatchPersistence {
   return {
     saveCurrentMatch: async () => {
-      throw new Error('saveCurrentMatch should not be called in this test.')
+      throw new Error('saveCurrentMatch should not be called in this test.');
     },
     loadCurrentMatch: async () => ({
       status: 'empty'
     }),
     clearCurrentMatch: overrides.clearCurrentMatch
-  }
+  };
 }
 
 function createResumeRequiredStartupState(): CurrentMatchStartupResult {
@@ -486,9 +488,9 @@ function createResumeRequiredStartupState(): CurrentMatchStartupResult {
         startedAt: Date.now()
       })
     }
-  }
+  };
 }
 
 function TestShell() {
-  return <h1>Padel Buddy</h1>
+  return <h1>Padel Buddy</h1>;
 }

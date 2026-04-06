@@ -1,39 +1,39 @@
-'use client'
+'use client';
 
-import { useCallback, useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef } from 'react';
 
-import type { MatchAction, MatchTeamId } from '@/core/match/types'
+import type { MatchAction, MatchTeamId } from '@/core/match/types';
 
-import { getActionFromKey, type RemoteControllerBindings } from './keyboard-aliases'
-import { type UseWakeLockReturn, useWakeLock } from './wake-lock'
+import { getActionFromKey, type RemoteControllerBindings } from './keyboard-aliases';
+import { type UseWakeLockReturn, useWakeLock } from './wake-lock';
 
-const defaultBufferedAddWindowMs = 380
+const defaultBufferedAddWindowMs = 380;
 
 export interface UseInputHandlerOptions {
-  actions: MatchAction[]
-  bindings?: RemoteControllerBindings | null
-  enabled?: boolean
-  useWakeLock?: boolean
-  bufferedAddWindowMs?: number
+  actions: MatchAction[];
+  bindings?: RemoteControllerBindings | null;
+  enabled?: boolean;
+  useWakeLock?: boolean;
+  bufferedAddWindowMs?: number;
 }
 
 export interface UseInputHandlerCallbacks {
-  onAdd: (teamId: MatchTeamId) => Promise<void> | void
-  onUndo: () => Promise<void> | void
-  onUndoForTeam: (teamId: MatchTeamId) => Promise<void> | void
-  onError?: (error: Error) => void
+  onAdd: (teamId: MatchTeamId) => Promise<void> | void;
+  onUndo: () => Promise<void> | void;
+  onUndoForTeam: (teamId: MatchTeamId) => Promise<void> | void;
+  onError?: (error: Error) => void;
 }
 
 export interface UseInputHandlerReturn {
-  scorePoint: (teamId: MatchTeamId) => Promise<void>
-  undo: () => Promise<void>
+  scorePoint: (teamId: MatchTeamId) => Promise<void>;
+  undo: () => Promise<void>;
   handlers: {
-    onKeyDown: (event: KeyboardEvent) => void
-    onTeam1Score: () => void
-    onTeam2Score: () => void
-    onUndo: () => void
-  }
-  wakeLockState: Pick<UseWakeLockReturn, 'isSupported' | 'isActive' | 'error'>
+    onKeyDown: (event: KeyboardEvent) => void;
+    onTeam1Score: () => void;
+    onTeam2Score: () => void;
+    onUndo: () => void;
+  };
+  wakeLockState: Pick<UseWakeLockReturn, 'isSupported' | 'isActive' | 'error'>;
 }
 
 export function useInputHandler(
@@ -45,202 +45,202 @@ export function useInputHandler(
     enabled = true,
     useWakeLock: useWakeLockEnabled = false,
     bufferedAddWindowMs = defaultBufferedAddWindowMs
-  } = options
+  } = options;
 
-  const callbacksRef = useRef(callbacks)
-  const bindingsRef = useRef(bindings)
-  const actionsRef = useRef(options.actions)
-  const enabledRef = useRef(enabled)
+  const callbacksRef = useRef(callbacks);
+  const bindingsRef = useRef(bindings);
+  const actionsRef = useRef(options.actions);
+  const enabledRef = useRef(enabled);
   const pendingAddTimersRef = useRef<Record<MatchTeamId, ReturnType<typeof setTimeout> | null>>({
     'team-1': null,
     'team-2': null
-  })
+  });
 
-  callbacksRef.current = callbacks
-  bindingsRef.current = bindings
-  actionsRef.current = options.actions
-  enabledRef.current = enabled
+  callbacksRef.current = callbacks;
+  bindingsRef.current = bindings;
+  actionsRef.current = options.actions;
+  enabledRef.current = enabled;
 
   const onWakeLockError = useCallback((error: Error) => {
-    callbacksRef.current.onError?.(error)
-  }, [])
+    callbacksRef.current.onError?.(error);
+  }, []);
 
   const wakeLock = useWakeLock({
     enabled: useWakeLockEnabled && enabled,
     onError: onWakeLockError
-  })
+  });
 
   const scorePoint = useCallback(async (teamId: MatchTeamId) => {
     try {
-      await callbacksRef.current.onAdd(teamId)
+      await callbacksRef.current.onAdd(teamId);
     } catch (err) {
-      const error = err instanceof Error ? err : new Error(String(err))
-      callbacksRef.current.onError?.(error)
+      const error = err instanceof Error ? err : new Error(String(err));
+      callbacksRef.current.onError?.(error);
     }
-  }, [])
+  }, []);
 
   const undo = useCallback(async () => {
     try {
-      await callbacksRef.current.onUndo()
+      await callbacksRef.current.onUndo();
     } catch (err) {
-      const error = err instanceof Error ? err : new Error(String(err))
-      callbacksRef.current.onError?.(error)
+      const error = err instanceof Error ? err : new Error(String(err));
+      callbacksRef.current.onError?.(error);
     }
-  }, [])
+  }, []);
 
   const undoForTeam = useCallback(async (teamId: MatchTeamId) => {
     // MatchAction is currently ScorePointAction only; guard is future-proof if new action types are added
     const hasScoringAction = actionsRef.current.some(
       (action) => action.type === 'score-point' && action.teamId === teamId
-    )
+    );
 
     if (!hasScoringAction) {
-      return
+      return;
     }
 
     try {
-      await callbacksRef.current.onUndoForTeam(teamId)
+      await callbacksRef.current.onUndoForTeam(teamId);
     } catch (err) {
-      const error = err instanceof Error ? err : new Error(String(err))
-      callbacksRef.current.onError?.(error)
+      const error = err instanceof Error ? err : new Error(String(err));
+      callbacksRef.current.onError?.(error);
     }
-  }, [])
+  }, []);
 
   const cancelPendingAdd = useCallback((teamId: MatchTeamId): boolean => {
-    const timer = pendingAddTimersRef.current[teamId]
+    const timer = pendingAddTimersRef.current[teamId];
 
     if (timer === null) {
-      return false
+      return false;
     }
 
-    clearTimeout(timer)
-    pendingAddTimersRef.current[teamId] = null
-    return true
-  }, [])
+    clearTimeout(timer);
+    pendingAddTimersRef.current[teamId] = null;
+    return true;
+  }, []);
 
   const cancelAllPendingAdds = useCallback((): boolean => {
-    const cancelledTeam1 = cancelPendingAdd('team-1')
-    const cancelledTeam2 = cancelPendingAdd('team-2')
+    const cancelledTeam1 = cancelPendingAdd('team-1');
+    const cancelledTeam2 = cancelPendingAdd('team-2');
 
-    return cancelledTeam1 || cancelledTeam2
-  }, [cancelPendingAdd])
+    return cancelledTeam1 || cancelledTeam2;
+  }, [cancelPendingAdd]);
 
   const queueBufferedAdd = useCallback(
     (teamId: MatchTeamId) => {
       if (pendingAddTimersRef.current[teamId]) {
-        cancelPendingAdd(teamId)
-        void undoForTeam(teamId)
-        return
+        cancelPendingAdd(teamId);
+        void undoForTeam(teamId);
+        return;
       }
 
       pendingAddTimersRef.current[teamId] = setTimeout(() => {
-        pendingAddTimersRef.current[teamId] = null
+        pendingAddTimersRef.current[teamId] = null;
 
         if (!enabledRef.current) {
-          return
+          return;
         }
 
-        void scorePoint(teamId)
-      }, bufferedAddWindowMs)
+        void scorePoint(teamId);
+      }, bufferedAddWindowMs);
     },
     [bufferedAddWindowMs, cancelPendingAdd, scorePoint, undoForTeam]
-  )
+  );
 
   const onKeyDown = useCallback(
     (event: KeyboardEvent) => {
       if (!enabled) {
-        return
+        return;
       }
 
       if (event.ctrlKey || event.metaKey || event.altKey) {
-        return
+        return;
       }
 
       if (isEditableTarget(event.target)) {
-        return
+        return;
       }
 
-      const action = getActionFromKey(event.key, bindingsRef.current)
+      const action = getActionFromKey(event.key, bindingsRef.current);
 
       if (action === 'unknown') {
-        return
+        return;
       }
 
-      event.preventDefault()
+      event.preventDefault();
 
       switch (action) {
         case 'add-team-1':
-          queueBufferedAdd('team-1')
-          break
+          queueBufferedAdd('team-1');
+          break;
         case 'add-team-2':
-          queueBufferedAdd('team-2')
-          break
+          queueBufferedAdd('team-2');
+          break;
         case 'revert-team-1':
-          cancelPendingAdd('team-1')
-          void undoForTeam('team-1')
-          break
+          cancelPendingAdd('team-1');
+          void undoForTeam('team-1');
+          break;
         case 'revert-team-2':
-          cancelPendingAdd('team-2')
-          void undoForTeam('team-2')
-          break
+          cancelPendingAdd('team-2');
+          void undoForTeam('team-2');
+          break;
         case 'undo':
           // Undo cancels buffered adds first so a queued remote score cannot still commit
           // after the user asks to reverse the latest action.
           if (!cancelAllPendingAdds()) {
-            void undo()
+            void undo();
           }
-          break
+          break;
         default:
-          break
+          break;
       }
     },
     [cancelAllPendingAdds, cancelPendingAdd, enabled, queueBufferedAdd, undo, undoForTeam]
-  )
+  );
 
   const onTeam1Score = useCallback(() => {
     if (!enabled) {
-      return
+      return;
     }
 
-    void scorePoint('team-1')
-  }, [enabled, scorePoint])
+    void scorePoint('team-1');
+  }, [enabled, scorePoint]);
 
   const onTeam2Score = useCallback(() => {
     if (!enabled) {
-      return
+      return;
     }
 
-    void scorePoint('team-2')
-  }, [enabled, scorePoint])
+    void scorePoint('team-2');
+  }, [enabled, scorePoint]);
 
   const onUndoHandler = useCallback(() => {
     if (!enabled) {
-      return
+      return;
     }
 
-    void undo()
-  }, [enabled, undo])
+    void undo();
+  }, [enabled, undo]);
 
   useEffect(() => {
     // enabledRef is already current from the render body (synchronous assignment above).
     // cancelAllPendingAdds() is the important cleanup here.
     if (!enabled) {
-      cancelAllPendingAdds()
-      return
+      cancelAllPendingAdds();
+      return;
     }
 
-    window.addEventListener('keydown', onKeyDown)
+    window.addEventListener('keydown', onKeyDown);
 
     return () => {
-      window.removeEventListener('keydown', onKeyDown)
-    }
-  }, [cancelAllPendingAdds, enabled, onKeyDown])
+      window.removeEventListener('keydown', onKeyDown);
+    };
+  }, [cancelAllPendingAdds, enabled, onKeyDown]);
 
   useEffect(() => {
     return () => {
-      cancelAllPendingAdds()
-    }
-  }, [cancelAllPendingAdds])
+      cancelAllPendingAdds();
+    };
+  }, [cancelAllPendingAdds]);
 
   return {
     scorePoint,
@@ -256,13 +256,13 @@ export function useInputHandler(
       isActive: wakeLock.isActive,
       error: wakeLock.error
     }
-  }
+  };
 }
 
 function isEditableTarget(target: EventTarget | null): boolean {
   if (!(target instanceof HTMLElement)) {
-    return false
+    return false;
   }
 
-  return target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable
+  return target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable;
 }

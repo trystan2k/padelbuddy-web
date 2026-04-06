@@ -1,45 +1,45 @@
-import { useState, useCallback, useEffect, useMemo, type KeyboardEvent } from 'react'
-import { useTranslation } from 'react-i18next'
-import { useNavigate, useRouter } from '@tanstack/react-router'
+import { useState, useCallback, useEffect, useMemo, type KeyboardEvent } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useNavigate, useRouter } from '@tanstack/react-router';
 
 import {
   countdownTimerDurations,
   matchFormats,
   type CountdownTimerDuration,
   type MatchFormat
-} from '@/core/match/types'
-import { createMatchSetup } from '@/core/match/validation'
-import { saveCurrentMatch } from '@/lib/current-match/indexed-db'
-import { defaultLocale, isSupportedLocale } from '@/lib/i18n/types'
-import { saveSetupPreferenceSlice } from '@/lib/setup/setup-storage'
-import { getAvailableVoices } from '@/lib/speech/voice-selector'
-import { unlockSpeechEngine } from '@/lib/speech/speech-service'
-import { requestScreenWakeLock } from '@/lib/input/wake-lock'
-import { prepareCurrentMatchRouteNavigation } from '@/lib/router/current-match-route-flow'
-import { cn } from '@/lib/utils/cn'
-import { getViewTransitionNavigationOptions } from '@/lib/utils/view-transitions'
+} from '@/core/match/types';
+import { createMatchSetup } from '@/core/match/validation';
+import { saveCurrentMatch } from '@/lib/current-match/indexed-db';
+import { defaultLocale, isSupportedLocale } from '@/lib/i18n/types';
+import { saveSetupPreferenceSlice } from '@/lib/setup/setup-storage';
+import { getAvailableVoices } from '@/lib/speech/voice-selector';
+import { unlockSpeechEngine } from '@/lib/speech/speech-service';
+import { requestScreenWakeLock } from '@/lib/input/wake-lock';
+import { prepareCurrentMatchRouteNavigation } from '@/lib/router/current-match-route-flow';
+import { cn } from '@/lib/utils/cn';
+import { getViewTransitionNavigationOptions } from '@/lib/utils/view-transitions';
 
-import { Layout } from '@/components/Layout/Layout'
-import { Button } from '@/components/ui/Button/Button'
-import { Card } from '@/components/ui/Card/Card'
-import { Chip } from '@/components/ui/Chip/Chip'
-import { Divider } from '@/components/ui/Divider/Divider'
-import { SectionLabel } from '@/components/ui/SectionLabel/SectionLabel'
-import { TextInput } from '@/components/ui/TextInput/TextInput'
-import { Toggle } from '@/components/ui/Toggle/Toggle'
-import { TopBar } from '@/components/ui/TopBar/TopBar'
-import { LocaleSelector } from '@/components/ui/LocaleSelector/LocaleSelector'
+import { Layout } from '@/components/Layout/Layout';
+import { Button } from '@/components/ui/Button/Button';
+import { Card } from '@/components/ui/Card/Card';
+import { Chip } from '@/components/ui/Chip/Chip';
+import { Divider } from '@/components/ui/Divider/Divider';
+import { SectionLabel } from '@/components/ui/SectionLabel/SectionLabel';
+import { TextInput } from '@/components/ui/TextInput/TextInput';
+import { Toggle } from '@/components/ui/Toggle/Toggle';
+import { TopBar } from '@/components/ui/TopBar/TopBar';
+import { LocaleSelector } from '@/components/ui/LocaleSelector/LocaleSelector';
 
-import { RemoteConfigurationModal } from './RemoteConfigurationModal'
-import { VoiceSelectionModal } from './VoiceSelectionModal'
-import { useSetupForm } from './useSetupForm'
-import styles from './SetupScreen.module.css'
+import { RemoteConfigurationModal } from './RemoteConfigurationModal';
+import { VoiceSelectionModal } from './VoiceSelectionModal';
+import { useSetupForm } from './useSetupForm';
+import styles from './SetupScreen.module.css';
 
 // Generate a URL-safe match ID
 function generateMatchId(): string {
-  const bytes = new Uint8Array(6)
-  crypto.getRandomValues(bytes)
-  return Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('')
+  const bytes = new Uint8Array(6);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('');
 }
 
 // Format key mapping for translations
@@ -47,23 +47,23 @@ const formatKeys: Record<MatchFormat, string> = {
   'best-of-1': 'bestOf1',
   'best-of-3': 'bestOf3',
   'best-of-5': 'bestOf5'
-}
+};
 
 const countdownDurationKeys: Record<CountdownTimerDuration, string> = {
   60: 'setup.rules.countdownDuration.oneHour',
   90: 'setup.rules.countdownDuration.ninetyMinutes',
   120: 'setup.rules.countdownDuration.twoHours'
-}
+};
 
 export function SetupScreen() {
-  const { t, i18n } = useTranslation()
-  const navigate = useNavigate()
-  const router = useRouter()
-  const [isStarting, setIsStarting] = useState(false)
-  const [isRemoteConfigurationOpen, setIsRemoteConfigurationOpen] = useState(false)
-  const [isVoiceSelectionOpen, setIsVoiceSelectionOpen] = useState(false)
-  const [selectedVoiceName, setSelectedVoiceName] = useState<string | null>(null)
-  const [availableVoices, setAvailableVoices] = useState<SpeechSynthesisVoice[]>([])
+  const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
+  const router = useRouter();
+  const [isStarting, setIsStarting] = useState(false);
+  const [isRemoteConfigurationOpen, setIsRemoteConfigurationOpen] = useState(false);
+  const [isVoiceSelectionOpen, setIsVoiceSelectionOpen] = useState(false);
+  const [selectedVoiceName, setSelectedVoiceName] = useState<string | null>(null);
+  const [availableVoices, setAvailableVoices] = useState<SpeechSynthesisVoice[]>([]);
 
   const {
     formData,
@@ -82,34 +82,34 @@ export function SetupScreen() {
     updateCountdownTimerDuration,
     isGoldenPointEnabled,
     showSuperTiebreakOption
-  } = useSetupForm()
+  } = useSetupForm();
 
   useEffect(() => {
-    setSelectedVoiceName(formData.voiceName)
-  }, [formData.voiceName])
+    setSelectedVoiceName(formData.voiceName);
+  }, [formData.voiceName]);
 
-  const hasErrors = Object.keys(errors).length > 0
-  const currentLocale = isSupportedLocale(i18n.language) ? i18n.language : defaultLocale
+  const hasErrors = Object.keys(errors).length > 0;
+  const currentLocale = isSupportedLocale(i18n.language) ? i18n.language : defaultLocale;
 
   const handleStartMatch = useCallback(async () => {
     if (!validate()) {
-      return
+      return;
     }
 
     // iOS/Safari requires a user-gesture-scoped speechSynthesis.speak() call to unlock
     // the speech engine. Without this, all async announcements in ActiveMatchScreen are
     // silently dropped on the first session.
     if (formData.audioAnnouncementsEnabled) {
-      unlockSpeechEngine()
+      unlockSpeechEngine();
     }
 
     // Request wake lock on user interaction (required by iOS Safari)
-    void requestScreenWakeLock()
+    void requestScreenWakeLock();
 
-    setIsStarting(true)
+    setIsStarting(true);
 
     try {
-      const matchId = generateMatchId()
+      const matchId = generateMatchId();
 
       // Create match setup input
       const setupInput = {
@@ -126,162 +126,162 @@ export function SetupScreen() {
           { id: 'team-1' as const, playerNames: [formData.team1Name] },
           { id: 'team-2' as const, playerNames: [formData.team2Name] }
         ]
-      } satisfies Parameters<typeof createMatchSetup>[0]
+      } satisfies Parameters<typeof createMatchSetup>[0];
 
       // Create validated match setup
-      const setup = createMatchSetup(setupInput)
+      const setup = createMatchSetup(setupInput);
 
       // Persist match state to IndexedDB before navigation
-      await saveCurrentMatch({ matchId, setup, actions: [], startedAt: Date.now() })
+      await saveCurrentMatch({ matchId, setup, actions: [], startedAt: Date.now() });
       await prepareCurrentMatchRouteNavigation(router, {
         to: '/match/$id',
         params: { id: matchId }
-      })
+      });
 
       // Navigate to active match route
       await navigate({
         to: '/match/$id',
         params: { id: matchId },
         ...getViewTransitionNavigationOptions()
-      })
+      });
     } catch (error) {
-      console.error('Failed to start match:', error)
-      setIsStarting(false)
+      console.error('Failed to start match:', error);
+      setIsStarting(false);
     }
-  }, [formData, navigate, router, validate])
+  }, [formData, navigate, router, validate]);
 
   const handleFormatChange = useCallback(
     (format: MatchFormat) => {
-      updateFormat(format)
+      updateFormat(format);
       // Reset super tiebreak when switching to best-of-1
       if (format === 'best-of-1') {
-        updateDecidingSetSuperTiebreak(false)
+        updateDecidingSetSuperTiebreak(false);
       }
     },
     [updateFormat, updateDecidingSetSuperTiebreak]
-  )
+  );
 
   const handleGoldenPointChange = useCallback(
     (enabled: boolean) => {
-      updateGameMode(enabled ? 'golden-point' : 'advantage')
+      updateGameMode(enabled ? 'golden-point' : 'advantage');
     },
     [updateGameMode]
-  )
+  );
 
   // Stable handlers for team name inputs
   const handleTeam1NameChange = useCallback(
     (value: string) => {
-      updateTeamName('team-1', value)
+      updateTeamName('team-1', value);
     },
     [updateTeamName]
-  )
+  );
 
   const handleTeam2NameChange = useCallback(
     (value: string) => {
-      updateTeamName('team-2', value)
+      updateTeamName('team-2', value);
     },
     [updateTeamName]
-  )
+  );
 
   // Stable handlers for initial server selection
   const handleTeam1ServerSelect = useCallback(() => {
-    updateInitialServer('team-1')
-  }, [updateInitialServer])
+    updateInitialServer('team-1');
+  }, [updateInitialServer]);
 
   const handleTeam2ServerSelect = useCallback(() => {
-    updateInitialServer('team-2')
-  }, [updateInitialServer])
+    updateInitialServer('team-2');
+  }, [updateInitialServer]);
 
   const createCountdownDurationSelectHandler = useCallback(
     (duration: CountdownTimerDuration) => () => {
-      updateCountdownTimerDuration(duration)
+      updateCountdownTimerDuration(duration);
     },
     [updateCountdownTimerDuration]
-  )
+  );
 
   const handleOpenRemoteConfiguration = useCallback(() => {
-    setIsRemoteConfigurationOpen(true)
-  }, [])
+    setIsRemoteConfigurationOpen(true);
+  }, []);
 
   const handleCloseRemoteConfiguration = useCallback(() => {
-    setIsRemoteConfigurationOpen(false)
-  }, [])
+    setIsRemoteConfigurationOpen(false);
+  }, []);
 
   const handleCloseVoiceSelection = useCallback(() => {
-    setIsVoiceSelectionOpen(false)
-  }, [])
+    setIsVoiceSelectionOpen(false);
+  }, []);
 
   const handleAudioAnnouncementsChange = useCallback(
     (enabled: boolean) => {
-      updateAudioAnnouncementsEnabled(enabled)
+      updateAudioAnnouncementsEnabled(enabled);
     },
     [updateAudioAnnouncementsEnabled]
-  )
+  );
 
   const handleOpenVoiceSelection = useCallback(async () => {
     try {
-      const voices = await getAvailableVoices()
-      setAvailableVoices(voices)
+      const voices = await getAvailableVoices();
+      setAvailableVoices(voices);
     } catch (error) {
-      console.error('Failed to load available voices.', error)
-      setAvailableVoices([])
+      console.error('Failed to load available voices.', error);
+      setAvailableVoices([]);
     }
 
-    setIsVoiceSelectionOpen(true)
-  }, [])
+    setIsVoiceSelectionOpen(true);
+  }, []);
 
   const handleVoiceSelectionAccept = useCallback(
     async (voiceName: string) => {
-      setSelectedVoiceName(voiceName)
-      updateVoiceName(voiceName)
+      setSelectedVoiceName(voiceName);
+      updateVoiceName(voiceName);
 
       try {
-        await saveSetupPreferenceSlice({ voiceName })
+        await saveSetupPreferenceSlice({ voiceName });
       } catch (error) {
-        console.error('Failed to save selected voice.', error)
+        console.error('Failed to save selected voice.', error);
       }
     },
     [updateVoiceName]
-  )
+  );
 
   const handleCountdownDurationKeyDown = useCallback(
     (event: KeyboardEvent<HTMLDivElement>) => {
       if (!formData.countdownTimerEnabled) {
-        return
+        return;
       }
 
       if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') {
-        return
+        return;
       }
 
-      event.preventDefault()
+      event.preventDefault();
 
-      const currentIndex = countdownTimerDurations.indexOf(formData.countdownTimerDuration)
+      const currentIndex = countdownTimerDurations.indexOf(formData.countdownTimerDuration);
       const nextIndex =
         event.key === 'ArrowRight'
           ? (currentIndex + 1) % countdownTimerDurations.length
-          : (currentIndex - 1 + countdownTimerDurations.length) % countdownTimerDurations.length
-      const nextDuration = countdownTimerDurations[nextIndex]
+          : (currentIndex - 1 + countdownTimerDurations.length) % countdownTimerDurations.length;
+      const nextDuration = countdownTimerDurations[nextIndex];
 
       if (typeof nextDuration === 'undefined') {
-        return
+        return;
       }
 
-      updateCountdownTimerDuration(nextDuration)
+      updateCountdownTimerDuration(nextDuration);
       event.currentTarget
         .querySelector<HTMLButtonElement>(`[data-duration="${nextDuration}"]`)
-        ?.focus()
+        ?.focus();
     },
     [formData.countdownTimerDuration, formData.countdownTimerEnabled, updateCountdownTimerDuration]
-  )
+  );
 
   // Handler factory for format selection (returns stable handler per format)
   const createFormatClickHandler = useCallback(
     (format: MatchFormat) => () => {
-      handleFormatChange(format)
+      handleFormatChange(format);
     },
     [handleFormatChange]
-  )
+  );
 
   // Header content
   const headerContent = useMemo(
@@ -296,7 +296,7 @@ export function SetupScreen() {
       </TopBar>
     ),
     [t]
-  )
+  );
 
   // Footer content
   const footerContent = useMemo(
@@ -313,7 +313,7 @@ export function SetupScreen() {
       </Button>
     ),
     [handleStartMatch, isStarting, hasErrors, t]
-  )
+  );
 
   return (
     <Layout header={headerContent} footer={footerContent}>
@@ -509,7 +509,7 @@ export function SetupScreen() {
                 onKeyDown={handleCountdownDurationKeyDown}
               >
                 {countdownTimerDurations.map((duration) => {
-                  const isSelected = formData.countdownTimerDuration === duration
+                  const isSelected = formData.countdownTimerDuration === duration;
 
                   return (
                     <button
@@ -543,7 +543,7 @@ export function SetupScreen() {
                         {t(countdownDurationKeys[duration])}
                       </span>
                     </button>
-                  )
+                  );
                 })}
               </div>
             </div>
@@ -577,5 +577,5 @@ export function SetupScreen() {
         locale={currentLocale}
       />
     </Layout>
-  )
+  );
 }

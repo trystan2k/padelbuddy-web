@@ -1,13 +1,13 @@
-import { describe, expect, test } from 'vitest'
+import { describe, expect, test } from 'vitest';
 
 import {
   clearCurrentMatchStartup,
   dismissCurrentMatchStartupNotice,
   resumeCurrentMatchStartup
-} from '@/components/CurrentMatchStartupGate/CurrentMatchStartupGate'
-import { createCurrentMatchSessionSnapshot } from '@/lib/current-match/session'
+} from '@/components/CurrentMatchStartupGate/CurrentMatchStartupGate';
+import { createCurrentMatchSessionSnapshot } from '@/lib/current-match/session';
 
-import { createTestSetup, scorePoints } from '../core/match/test-helpers'
+import { createTestSetup, scorePoints } from '../core/match/test-helpers';
 
 describe('current match startup gate state helpers', () => {
   test('clears a startup notice without changing a no-match state', () => {
@@ -21,21 +21,21 @@ describe('current match startup gate state helpers', () => {
     ).toEqual({
       status: 'no-match',
       notice: null
-    })
-  })
+    });
+  });
 
   test('keeps non-resume states unchanged when resuming is not applicable', () => {
     const state = {
       status: 'ready' as const,
       notice: null,
       match: createStartupMatch()
-    }
+    };
 
-    expect(resumeCurrentMatchStartup(state)).toBe(state)
-  })
+    expect(resumeCurrentMatchStartup(state)).toBe(state);
+  });
 
   test('converts resume-required state into ready while keeping the match data', () => {
-    const match = createStartupMatch()
+    const match = createStartupMatch();
 
     expect(
       resumeCurrentMatchStartup({
@@ -51,8 +51,8 @@ describe('current match startup gate state helpers', () => {
         reason: 'schema-version'
       },
       match
-    })
-  })
+    });
+  });
 
   test('clears startup state to no-match while preserving any existing notice', () => {
     expect(
@@ -68,9 +68,9 @@ describe('current match startup gate state helpers', () => {
       notice: {
         reason: 'schema-version'
       }
-    })
-  })
-})
+    });
+  });
+});
 
 function createStartupMatch() {
   return {
@@ -80,5 +80,5 @@ function createStartupMatch() {
       actions: scorePoints('team-1'),
       startedAt: Date.now()
     })
-  }
+  };
 }

@@ -1,12 +1,12 @@
-import type { ComponentPropsWithoutRef } from 'react'
+import type { ComponentPropsWithoutRef } from 'react';
 
 export interface TrophyIconProps extends Omit<
   ComponentPropsWithoutRef<'svg'>,
   'children' | 'height' | 'width'
 > {
-  size?: number | string
-  width?: number | string
-  height?: number | string
+  size?: number | string;
+  width?: number | string;
+  height?: number | string;
 }
 
 export function TrophyIcon({
@@ -18,7 +18,7 @@ export function TrophyIcon({
 }: TrophyIconProps) {
   const computedAriaHidden =
     ariaHidden ??
-    (props['aria-label'] == null && props['aria-labelledby'] == null ? true : undefined)
+    (props['aria-label'] == null && props['aria-labelledby'] == null ? true : undefined);
 
   return (
     <svg
@@ -41,5 +41,5 @@ export function TrophyIcon({
       <path d="M6 9a6 6 0 0 0 12 0V3a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1z" />
       <path d="M6 9H4.5a1 1 0 0 1 0-5H6" />
     </svg>
-  )
+  );
 }

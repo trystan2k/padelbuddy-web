@@ -1,19 +1,19 @@
-import { type ComponentPropsWithoutRef, useId } from 'react'
-import { useTranslation } from 'react-i18next'
+import { type ComponentPropsWithoutRef, useId } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import { cn } from '@/lib/utils/cn'
+import { cn } from '@/lib/utils/cn';
 
-import type { MatchTeamId } from '@/core/match/types'
+import type { MatchTeamId } from '@/core/match/types';
 
-import styles from './TeamPanel.module.css'
+import styles from './TeamPanel.module.css';
 
 export interface TeamPanelProps extends Omit<ComponentPropsWithoutRef<'button'>, 'onClick'> {
-  teamId: MatchTeamId
-  teamName: string
-  score: string
-  isServing: boolean
-  showServingIndicator?: boolean
-  onClick: () => void
+  teamId: MatchTeamId;
+  teamName: string;
+  score: string;
+  isServing: boolean;
+  showServingIndicator?: boolean;
+  onClick: () => void;
 }
 
 export function TeamPanel({
@@ -27,12 +27,12 @@ export function TeamPanel({
   className,
   ...props
 }: TeamPanelProps) {
-  const { t } = useTranslation()
-  const servingStatusId = useId()
-  const shouldShowServing = isServing && showServingIndicator
+  const { t } = useTranslation();
+  const servingStatusId = useId();
+  const shouldShowServing = isServing && showServingIndicator;
 
-  const panelClass = teamId === 'team-1' ? styles.team1Panel : styles.team2Panel
-  const servingClass = shouldShowServing ? styles.serving : undefined
+  const panelClass = teamId === 'team-1' ? styles.team1Panel : styles.team2Panel;
+  const servingClass = shouldShowServing ? styles.serving : undefined;
 
   return (
     <button
@@ -55,5 +55,5 @@ export function TeamPanel({
         </span>
       )}
     </button>
-  )
+  );
 }

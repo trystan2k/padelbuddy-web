@@ -1,5 +1,5 @@
 // oxlint-disable-next-line import/no-unassigned-import
-import '@/styles.css'
+import '@/styles.css';
 
 import {
   createRootRoute,
@@ -8,24 +8,24 @@ import {
   Scripts,
   useRouterState,
   type ErrorComponentProps
-} from '@tanstack/react-router'
-import { useRef } from 'react'
+} from '@tanstack/react-router';
+import { useRef } from 'react';
 
-import { AppErrorBoundary } from '@/components/ErrorBoundary/AppErrorBoundary'
-import { DebugPwa } from '@/components/DebugPwa/DebugPwa'
-import { NotFoundPage } from '@/components/NotFoundPage/NotFoundPage'
-import { PadelCourtSpinner } from '@/components/PadelCourtSpinner/PadelCourtSpinner'
-import { ToastProvider } from '@/components/ui/Toast/useToast'
-import { i18n } from '@/lib/i18n/i18n'
+import { AppErrorBoundary } from '@/components/ErrorBoundary/AppErrorBoundary';
+import { DebugPwa } from '@/components/DebugPwa/DebugPwa';
+import { NotFoundPage } from '@/components/NotFoundPage/NotFoundPage';
+import { PadelCourtSpinner } from '@/components/PadelCourtSpinner/PadelCourtSpinner';
+import { ToastProvider } from '@/components/ui/Toast/useToast';
+import { i18n } from '@/lib/i18n/i18n';
 
 import {
   getRootErrorDocumentLanguage,
   useRemoveHydrationSpinner,
   useRootDocumentLanguage,
   useRootInitializationEffects
-} from './-root-effects'
-import { RouteErrorCard } from './-route-utils'
-import styles from './RootDocument.module.css'
+} from './-root-effects';
+import { RouteErrorCard } from './-route-utils';
+import styles from './RootDocument.module.css';
 
 export const Route = createRootRoute({
   head: () => ({
@@ -75,7 +75,7 @@ export const Route = createRootRoute({
   component: RootDocument,
   errorComponent: RootErrorState,
   notFoundComponent: NotFoundPage
-})
+});
 
 function RootErrorState(props: ErrorComponentProps) {
   return (
@@ -88,14 +88,14 @@ function RootErrorState(props: ErrorComponentProps) {
         <Scripts />
       </body>
     </html>
-  )
+  );
 }
 
 function AppShell() {
-  const currentLang = useRootDocumentLanguage()
-  const routePendingRef = useRef<HTMLDivElement>(null)
+  const currentLang = useRootDocumentLanguage();
+  const routePendingRef = useRef<HTMLDivElement>(null);
 
-  useRemoveHydrationSpinner(routePendingRef)
+  useRemoveHydrationSpinner(routePendingRef);
 
   return (
     <html lang={currentLang}>
@@ -123,7 +123,7 @@ function AppShell() {
         {import.meta.env.DEV && <DebugPwa />}
       </body>
     </html>
-  )
+  );
 }
 
 export function RoutePendingOverlay() {
@@ -131,19 +131,19 @@ export function RoutePendingOverlay() {
     select: (state) =>
       Boolean(state.resolvedLocation) && state.matches.some((match) => match.status === 'pending'),
     structuralSharing: true
-  })
+  });
 
   if (!isRoutePending) {
-    return null
+    return null;
   }
 
   return (
     <PadelCourtSpinner className={styles.routePendingSpinner} silent={true} aria-hidden="true" />
-  )
+  );
 }
 
 function RootDocument() {
-  useRootInitializationEffects()
+  useRootInitializationEffects();
 
-  return <AppShell />
+  return <AppShell />;
 }

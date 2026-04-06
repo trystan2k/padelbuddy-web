@@ -1,15 +1,15 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router';
 
-import { MatchEndScreen } from '@/components/MatchEndScreen/MatchEndScreen'
-import type { MatchProjection } from '@/core/match/types'
-import type { CurrentMatchRecord } from '@/lib/current-match/persistence'
-import { currentMatchPersistenceRouteLoaderOptions } from '@/lib/router/current-match-route-flow'
+import { MatchEndScreen } from '@/components/MatchEndScreen/MatchEndScreen';
+import type { MatchProjection } from '@/core/match/types';
+import type { CurrentMatchRecord } from '@/lib/current-match/persistence';
+import { currentMatchPersistenceRouteLoaderOptions } from '@/lib/router/current-match-route-flow';
 
 import {
   getOptionalFinishedAt,
   RouteErrorState,
   loadMappedReadyMatchRouteState
-} from './-route-utils'
+} from './-route-utils';
 
 export const Route = createFileRoute('/match/finish/$id')({
   ...currentMatchPersistenceRouteLoaderOptions,
@@ -21,17 +21,17 @@ export const Route = createFileRoute('/match/finish/$id')({
       record: routeState.record,
       projection: routeState.projection
     }))
-})
+});
 
 function MatchFinishRoute() {
-  const { record, projection } = Route.useLoaderData()
+  const { record, projection } = Route.useLoaderData();
 
-  return <MatchFinishRouteReadyContent record={record} projection={projection} />
+  return <MatchFinishRouteReadyContent record={record} projection={projection} />;
 }
 
 interface MatchFinishRouteReadyContentProps {
-  record: CurrentMatchRecord
-  projection: MatchProjection
+  record: CurrentMatchRecord;
+  projection: MatchProjection;
 }
 
 function MatchFinishRouteReadyContent({ record, projection }: MatchFinishRouteReadyContentProps) {
@@ -46,5 +46,5 @@ function MatchFinishRouteReadyContent({ record, projection }: MatchFinishRouteRe
       // finish route does not drift from the active route's finishedAt handling.
       {...getOptionalFinishedAt(record.finishedAt)}
     />
-  )
+  );
 }

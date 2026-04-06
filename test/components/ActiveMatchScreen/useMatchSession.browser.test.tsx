@@ -1,19 +1,19 @@
 /* oxlint-disable jsx-no-new-function-as-prop -- Test files use inline functions for readability */
 /* oxlint-disable jsx-no-new-array-as-prop -- Test files use inline arrays for test data */
 
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
-import { render } from 'vitest-browser-react'
-import { useEffect, useState } from 'react'
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { render } from 'vitest-browser-react';
+import { useEffect, useState } from 'react';
 
-import { useMatchSession } from '@/components/ActiveMatchScreen/useMatchSession'
-import { createTestSetup } from '../../core/match/test-helpers'
+import { useMatchSession } from '@/components/ActiveMatchScreen/useMatchSession';
+import { createTestSetup } from '../../core/match/test-helpers';
 import type {
   CurrentMatchLoadResult,
   CurrentMatchPersistence
-} from '@/lib/current-match/indexed-db'
-import type { CurrentMatchRecord, CurrentMatchSaveInput } from '@/lib/current-match/persistence'
+} from '@/lib/current-match/indexed-db';
+import type { CurrentMatchRecord, CurrentMatchSaveInput } from '@/lib/current-match/persistence';
 
-const testMatchId = 'test-match'
+const testMatchId = 'test-match';
 
 // Test component to render the hook output
 function SessionTestComponent({
@@ -23,11 +23,11 @@ function SessionTestComponent({
   persistence,
   onStateChange
 }: {
-  setup: ReturnType<typeof createTestSetup>
-  initialActions: Array<{ type: 'score-point'; teamId: 'team-1' | 'team-2' }>
-  startedAt: number
-  persistence?: CurrentMatchPersistence
-  onStateChange?: (state: ReturnType<typeof useMatchSession>) => void
+  setup: ReturnType<typeof createTestSetup>;
+  initialActions: Array<{ type: 'score-point'; teamId: 'team-1' | 'team-2' }>;
+  startedAt: number;
+  persistence?: CurrentMatchPersistence;
+  onStateChange?: (state: ReturnType<typeof useMatchSession>) => void;
 }) {
   const state = useMatchSession({
     matchId: testMatchId,
@@ -35,11 +35,11 @@ function SessionTestComponent({
     initialActions,
     startedAt,
     ...(persistence !== undefined && { persistence })
-  })
+  });
 
   useEffect(() => {
-    onStateChange?.(state)
-  }, [state, onStateChange])
+    onStateChange?.(state);
+  }, [state, onStateChange]);
 
   return (
     <div>
@@ -70,7 +70,7 @@ function SessionTestComponent({
         Undo Team 2
       </button>
     </div>
-  )
+  );
 }
 
 // Helper to create mock persistence
@@ -82,23 +82,23 @@ const createMockPersistence = (): CurrentMatchPersistence => ({
     .fn<() => Promise<CurrentMatchLoadResult>>()
     .mockResolvedValue({ kind: 'not-found' } as unknown as CurrentMatchLoadResult),
   clearCurrentMatch: vi.fn<() => Promise<void>>().mockResolvedValue(undefined)
-})
+});
 
 describe('useMatchSession', () => {
-  const defaultStartedAt = Date.now()
-  let mockPersistence: CurrentMatchPersistence
+  const defaultStartedAt = Date.now();
+  let mockPersistence: CurrentMatchPersistence;
 
   beforeEach(() => {
-    vi.clearAllMocks()
-    mockPersistence = createMockPersistence()
-  })
+    vi.clearAllMocks();
+    mockPersistence = createMockPersistence();
+  });
 
   afterEach(() => {
-    vi.restoreAllMocks()
-  })
+    vi.restoreAllMocks();
+  });
 
   test('returns initial snapshot with no actions', async () => {
-    const setup = createTestSetup()
+    const setup = createTestSetup();
 
     const screen = await render(
       <SessionTestComponent
@@ -107,19 +107,19 @@ describe('useMatchSession', () => {
         startedAt={defaultStartedAt}
         persistence={mockPersistence}
       />
-    )
+    );
 
-    await expect.element(screen.getByTestId('actionCount')).toHaveTextContent('0')
-    await expect.element(screen.getByTestId('isLoading')).toHaveTextContent('false')
-    await expect.element(screen.getByTestId('projectionActionCount')).toHaveTextContent('0')
-  })
+    await expect.element(screen.getByTestId('actionCount')).toHaveTextContent('0');
+    await expect.element(screen.getByTestId('isLoading')).toHaveTextContent('false');
+    await expect.element(screen.getByTestId('projectionActionCount')).toHaveTextContent('0');
+  });
 
   test('returns initial snapshot with existing actions', async () => {
-    const setup = createTestSetup()
+    const setup = createTestSetup();
     const initialActions = [
       { type: 'score-point' as const, teamId: 'team-1' as const },
       { type: 'score-point' as const, teamId: 'team-2' as const }
-    ]
+    ];
 
     const screen = await render(
       <SessionTestComponent
@@ -128,14 +128,14 @@ describe('useMatchSession', () => {
         startedAt={defaultStartedAt}
         persistence={mockPersistence}
       />
-    )
+    );
 
-    await expect.element(screen.getByTestId('actionCount')).toHaveTextContent('2')
-    await expect.element(screen.getByTestId('projectionActionCount')).toHaveTextContent('2')
-  })
+    await expect.element(screen.getByTestId('actionCount')).toHaveTextContent('2');
+    await expect.element(screen.getByTestId('projectionActionCount')).toHaveTextContent('2');
+  });
 
   test('scorePoint adds action and updates snapshot', async () => {
-    const setup = createTestSetup()
+    const setup = createTestSetup();
 
     const screen = await render(
       <SessionTestComponent
@@ -144,26 +144,26 @@ describe('useMatchSession', () => {
         startedAt={defaultStartedAt}
         persistence={mockPersistence}
       />
-    )
+    );
 
-    await expect.element(screen.getByTestId('actionCount')).toHaveTextContent('0')
+    await expect.element(screen.getByTestId('actionCount')).toHaveTextContent('0');
 
-    await screen.getByTestId('scoreTeam1').click()
+    await screen.getByTestId('scoreTeam1').click();
 
     await vi.waitFor(() => {
-      expect(screen.getByTestId('actionCount').element().textContent).toBe('1')
-    })
+      expect(screen.getByTestId('actionCount').element().textContent).toBe('1');
+    });
 
     // oxlint-disable-next-line typescript-eslint(unbound-method): Mock function doesn't use 'this'
-    expect(mockPersistence.saveCurrentMatch).toHaveBeenCalledTimes(1)
-  })
+    expect(mockPersistence.saveCurrentMatch).toHaveBeenCalledTimes(1);
+  });
 
   test('undoScoreAction removes last action', async () => {
-    const setup = createTestSetup()
+    const setup = createTestSetup();
     const initialActions = [
       { type: 'score-point' as const, teamId: 'team-1' as const },
       { type: 'score-point' as const, teamId: 'team-2' as const }
-    ]
+    ];
 
     const screen = await render(
       <SessionTestComponent
@@ -172,19 +172,19 @@ describe('useMatchSession', () => {
         startedAt={defaultStartedAt}
         persistence={mockPersistence}
       />
-    )
+    );
 
-    await expect.element(screen.getByTestId('actionCount')).toHaveTextContent('2')
+    await expect.element(screen.getByTestId('actionCount')).toHaveTextContent('2');
 
-    await screen.getByTestId('undo').click()
+    await screen.getByTestId('undo').click();
 
     await vi.waitFor(() => {
-      expect(screen.getByTestId('actionCount').element().textContent).toBe('1')
-    })
-  })
+      expect(screen.getByTestId('actionCount').element().textContent).toBe('1');
+    });
+  });
 
   test('undoScoreAction does nothing when no actions exist', async () => {
-    const setup = createTestSetup()
+    const setup = createTestSetup();
 
     const screen = await render(
       <SessionTestComponent
@@ -193,23 +193,23 @@ describe('useMatchSession', () => {
         startedAt={defaultStartedAt}
         persistence={mockPersistence}
       />
-    )
+    );
 
-    await expect.element(screen.getByTestId('actionCount')).toHaveTextContent('0')
+    await expect.element(screen.getByTestId('actionCount')).toHaveTextContent('0');
 
-    await screen.getByTestId('undo').click()
+    await screen.getByTestId('undo').click();
 
     // Should still be 0
-    await expect.element(screen.getByTestId('actionCount')).toHaveTextContent('0')
-  })
+    await expect.element(screen.getByTestId('actionCount')).toHaveTextContent('0');
+  });
 
   test('undoScoreActionForTeam removes the last action for the selected team', async () => {
-    const setup = createTestSetup()
+    const setup = createTestSetup();
     const initialActions = [
       { type: 'score-point' as const, teamId: 'team-1' as const },
       { type: 'score-point' as const, teamId: 'team-2' as const },
       { type: 'score-point' as const, teamId: 'team-1' as const }
-    ]
+    ];
 
     const screen = await render(
       <SessionTestComponent
@@ -218,19 +218,19 @@ describe('useMatchSession', () => {
         startedAt={defaultStartedAt}
         persistence={mockPersistence}
       />
-    )
+    );
 
-    await expect.element(screen.getByTestId('actionCount')).toHaveTextContent('3')
+    await expect.element(screen.getByTestId('actionCount')).toHaveTextContent('3');
 
-    await screen.getByTestId('undo-team-1').click()
+    await screen.getByTestId('undo-team-1').click();
 
     await vi.waitFor(() => {
-      expect(screen.getByTestId('actionCount').element().textContent).toBe('2')
-    })
-  })
+      expect(screen.getByTestId('actionCount').element().textContent).toBe('2');
+    });
+  });
 
   test('undoScoreActionForTeam keeps the snapshot unchanged when the selected team has no actions', async () => {
-    const setup = createTestSetup()
+    const setup = createTestSetup();
 
     const screen = await render(
       <SessionTestComponent
@@ -239,15 +239,15 @@ describe('useMatchSession', () => {
         startedAt={defaultStartedAt}
         persistence={mockPersistence}
       />
-    )
+    );
 
-    await screen.getByTestId('undo-team-1').click()
+    await screen.getByTestId('undo-team-1').click();
 
-    await expect.element(screen.getByTestId('actionCount')).toHaveTextContent('1')
-  })
+    await expect.element(screen.getByTestId('actionCount')).toHaveTextContent('1');
+  });
 
   test('works without persistence (uses default)', async () => {
-    const setup = createTestSetup()
+    const setup = createTestSetup();
 
     const screen = await render(
       <SessionTestComponent
@@ -256,19 +256,19 @@ describe('useMatchSession', () => {
         startedAt={defaultStartedAt}
         // No persistence prop
       />
-    )
+    );
 
-    await expect.element(screen.getByTestId('actionCount')).toHaveTextContent('0')
+    await expect.element(screen.getByTestId('actionCount')).toHaveTextContent('0');
 
-    await screen.getByTestId('scoreTeam1').click()
+    await screen.getByTestId('scoreTeam1').click();
 
     await vi.waitFor(() => {
-      expect(screen.getByTestId('actionCount').element().textContent).toBe('1')
-    })
-  })
+      expect(screen.getByTestId('actionCount').element().textContent).toBe('1');
+    });
+  });
 
   test('projection is updated after scorePoint', async () => {
-    const setup = createTestSetup()
+    const setup = createTestSetup();
 
     const screen = await render(
       <SessionTestComponent
@@ -277,20 +277,20 @@ describe('useMatchSession', () => {
         startedAt={defaultStartedAt}
         persistence={mockPersistence}
       />
-    )
+    );
 
-    await expect.element(screen.getByTestId('projectionActionCount')).toHaveTextContent('0')
+    await expect.element(screen.getByTestId('projectionActionCount')).toHaveTextContent('0');
 
-    await screen.getByTestId('scoreTeam1').click()
+    await screen.getByTestId('scoreTeam1').click();
 
     await vi.waitFor(() => {
-      expect(screen.getByTestId('projectionActionCount').element().textContent).toBe('1')
-    })
-  })
+      expect(screen.getByTestId('projectionActionCount').element().textContent).toBe('1');
+    });
+  });
 
   test('projection is updated after undoScoreAction', async () => {
-    const setup = createTestSetup()
-    const initialActions = [{ type: 'score-point' as const, teamId: 'team-1' as const }]
+    const setup = createTestSetup();
+    const initialActions = [{ type: 'score-point' as const, teamId: 'team-1' as const }];
 
     const screen = await render(
       <SessionTestComponent
@@ -299,19 +299,19 @@ describe('useMatchSession', () => {
         startedAt={defaultStartedAt}
         persistence={mockPersistence}
       />
-    )
+    );
 
-    await expect.element(screen.getByTestId('projectionActionCount')).toHaveTextContent('1')
+    await expect.element(screen.getByTestId('projectionActionCount')).toHaveTextContent('1');
 
-    await screen.getByTestId('undo').click()
+    await screen.getByTestId('undo').click();
 
     await vi.waitFor(() => {
-      expect(screen.getByTestId('projectionActionCount').element().textContent).toBe('0')
-    })
-  })
+      expect(screen.getByTestId('projectionActionCount').element().textContent).toBe('0');
+    });
+  });
 
   test('multiple scorePoints update actions correctly', async () => {
-    const setup = createTestSetup()
+    const setup = createTestSetup();
 
     const screen = await render(
       <SessionTestComponent
@@ -320,41 +320,41 @@ describe('useMatchSession', () => {
         startedAt={defaultStartedAt}
         persistence={mockPersistence}
       />
-    )
+    );
 
-    await screen.getByTestId('scoreTeam1').click()
-
-    await vi.waitFor(() => {
-      expect(screen.getByTestId('actionCount').element().textContent).toBe('1')
-    })
-
-    await screen.getByTestId('scoreTeam2').click()
+    await screen.getByTestId('scoreTeam1').click();
 
     await vi.waitFor(() => {
-      expect(screen.getByTestId('actionCount').element().textContent).toBe('2')
-    })
+      expect(screen.getByTestId('actionCount').element().textContent).toBe('1');
+    });
 
-    await screen.getByTestId('scoreTeam1').click()
+    await screen.getByTestId('scoreTeam2').click();
 
     await vi.waitFor(() => {
-      expect(screen.getByTestId('actionCount').element().textContent).toBe('3')
-    })
-  })
-})
+      expect(screen.getByTestId('actionCount').element().textContent).toBe('2');
+    });
+
+    await screen.getByTestId('scoreTeam1').click();
+
+    await vi.waitFor(() => {
+      expect(screen.getByTestId('actionCount').element().textContent).toBe('3');
+    });
+  });
+});
 
 describe('useMatchSession - error handling', () => {
-  const defaultStartedAt = Date.now()
+  const defaultStartedAt = Date.now();
 
   beforeEach(() => {
-    vi.clearAllMocks()
-  })
+    vi.clearAllMocks();
+  });
 
   afterEach(() => {
-    vi.restoreAllMocks()
-  })
+    vi.restoreAllMocks();
+  });
 
   test('handles persistence errors gracefully', async () => {
-    const setup = createTestSetup()
+    const setup = createTestSetup();
     const errorPersistence: CurrentMatchPersistence = {
       saveCurrentMatch: vi
         .fn<(input: CurrentMatchSaveInput) => Promise<CurrentMatchRecord>>()
@@ -363,11 +363,11 @@ describe('useMatchSession - error handling', () => {
         .fn<() => Promise<CurrentMatchLoadResult>>()
         .mockResolvedValue({ kind: 'not-found' } as unknown as CurrentMatchLoadResult),
       clearCurrentMatch: vi.fn<() => Promise<void>>().mockResolvedValue(undefined)
-    }
+    };
 
     // Error component to catch errors
     function ErrorCatchingComponent() {
-      const [error, setError] = useState<Error | null>(null)
+      const [error, setError] = useState<Error | null>(null);
 
       const state = useMatchSession({
         matchId: testMatchId,
@@ -375,15 +375,15 @@ describe('useMatchSession - error handling', () => {
         initialActions: [],
         startedAt: defaultStartedAt,
         persistence: errorPersistence
-      })
+      });
 
       const handleScore = async () => {
         try {
-          await state.scorePoint('team-1')
+          await state.scorePoint('team-1');
         } catch (e) {
-          setError(e as Error)
+          setError(e as Error);
         }
-      }
+      };
 
       return (
         <div>
@@ -392,17 +392,17 @@ describe('useMatchSession - error handling', () => {
             Score
           </button>
         </div>
-      )
+      );
     }
 
-    const screen = await render(<ErrorCatchingComponent />)
+    const screen = await render(<ErrorCatchingComponent />);
 
-    await expect.element(screen.getByTestId('error')).toHaveTextContent('no error')
+    await expect.element(screen.getByTestId('error')).toHaveTextContent('no error');
 
-    await screen.getByTestId('scoreButton').click()
+    await screen.getByTestId('scoreButton').click();
 
     await vi.waitFor(() => {
-      expect(screen.getByTestId('error').element().textContent).toBe('Persistence error')
-    })
-  })
-})
+      expect(screen.getByTestId('error').element().textContent).toBe('Persistence error');
+    });
+  });
+});

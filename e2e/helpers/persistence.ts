@@ -1,36 +1,36 @@
-import type { Page } from '@playwright/test'
-import { expect } from '@playwright/test'
+import type { Page } from '@playwright/test';
+import { expect } from '@playwright/test';
 
-import { createMatchSetup } from '../../src/core/match/validation'
-import type { MatchAction, MatchSetupInput, MatchTeamId } from '../../src/core/match/types'
+import { createMatchSetup } from '../../src/core/match/validation';
+import type { MatchAction, MatchSetupInput, MatchTeamId } from '../../src/core/match/types';
 import {
   currentMatchSchemaVersion,
   createCurrentMatchRecord,
   type CurrentMatchRecord
-} from '../../src/lib/current-match/persistence'
+} from '../../src/lib/current-match/persistence';
 import {
   currentMatchRecordKey,
   defaultDatabaseName,
   defaultDatabaseVersion,
   defaultObjectStoreName
-} from '../../src/lib/current-match/indexed-db'
-import { sharedIndexedDbObjectStoreNames } from '../../src/lib/persistence/indexed-db'
+} from '../../src/lib/current-match/indexed-db';
+import { sharedIndexedDbObjectStoreNames } from '../../src/lib/persistence/indexed-db';
 
-const defaultStartedAt = 1_700_000_000_000
-const defaultFinishedAt = defaultStartedAt + 5 * 60 * 1000
+const defaultStartedAt = 1_700_000_000_000;
+const defaultFinishedAt = defaultStartedAt + 5 * 60 * 1000;
 
 interface SeedMatchOptions {
-  matchId?: string
-  team1Name?: string
-  team2Name?: string
-  startedAt?: number
-  finishedAt?: number
+  matchId?: string;
+  team1Name?: string;
+  team2Name?: string;
+  startedAt?: number;
+  finishedAt?: number;
 }
 
 const defaultSides: MatchSetupInput['sides'] = [
   { id: 'team-1', playerNames: ['Team A'] },
   { id: 'team-2', playerNames: ['Team B'] }
-]
+];
 
 function createSetup(overrides: Partial<MatchSetupInput> = {}) {
   return createMatchSetup({
@@ -45,57 +45,57 @@ function createSetup(overrides: Partial<MatchSetupInput> = {}) {
     sideSwitchPrompts: false,
     sides: defaultSides,
     ...overrides
-  })
+  });
 }
 
 function createScoreActions(teamId: MatchTeamId, count: number): MatchAction[] {
   return Array.from({ length: count }, () => ({
     type: 'score-point',
     teamId
-  }))
+  }));
 }
 
 async function putRecord(page: Page, record: unknown): Promise<void> {
   await page.evaluate(
     async ({ databaseName, databaseVersion, objectStoreName, objectStoreNames, key, value }) => {
       const database = await new Promise<IDBDatabase>((resolve, reject) => {
-        const request = indexedDB.open(databaseName, databaseVersion)
+        const request = indexedDB.open(databaseName, databaseVersion);
 
         request.addEventListener('upgradeneeded', () => {
-          const nextDatabase = request.result
+          const nextDatabase = request.result;
 
           for (const registeredObjectStoreName of objectStoreNames) {
             if (!nextDatabase.objectStoreNames.contains(registeredObjectStoreName)) {
-              nextDatabase.createObjectStore(registeredObjectStoreName)
+              nextDatabase.createObjectStore(registeredObjectStoreName);
             }
           }
 
           if (!nextDatabase.objectStoreNames.contains(objectStoreName)) {
-            nextDatabase.createObjectStore(objectStoreName)
+            nextDatabase.createObjectStore(objectStoreName);
           }
-        })
+        });
 
-        request.addEventListener('success', () => resolve(request.result))
+        request.addEventListener('success', () => resolve(request.result));
         request.addEventListener('error', () => {
-          reject(request.error ?? new Error('Failed to open IndexedDB.'))
-        })
-      })
+          reject(request.error ?? new Error('Failed to open IndexedDB.'));
+        });
+      });
 
       try {
         await new Promise<void>((resolve, reject) => {
-          const transaction = database.transaction(objectStoreName, 'readwrite')
+          const transaction = database.transaction(objectStoreName, 'readwrite');
 
-          transaction.objectStore(objectStoreName).put(value, key)
-          transaction.addEventListener('complete', () => resolve())
+          transaction.objectStore(objectStoreName).put(value, key);
+          transaction.addEventListener('complete', () => resolve());
           transaction.addEventListener('error', () => {
-            reject(transaction.error ?? new Error('IndexedDB write failed.'))
-          })
+            reject(transaction.error ?? new Error('IndexedDB write failed.'));
+          });
           transaction.addEventListener('abort', () => {
-            reject(transaction.error ?? new Error('IndexedDB write was aborted.'))
-          })
-        })
+            reject(transaction.error ?? new Error('IndexedDB write was aborted.'));
+          });
+        });
       } finally {
-        database.close()
+        database.close();
       }
     },
     {
@@ -106,7 +106,7 @@ async function putRecord(page: Page, record: unknown): Promise<void> {
       key: currentMatchRecordKey,
       value: record
     }
-  )
+  );
 }
 
 export function buildCompletedMatchRecord(options: SeedMatchOptions = {}): CurrentMatchRecord {
@@ -116,7 +116,7 @@ export function buildCompletedMatchRecord(options: SeedMatchOptions = {}): Curre
     team2Name = 'Team B',
     startedAt = defaultStartedAt,
     finishedAt = defaultFinishedAt
-  } = options
+  } = options;
 
   return createCurrentMatchRecord({
     matchId,
@@ -129,7 +129,7 @@ export function buildCompletedMatchRecord(options: SeedMatchOptions = {}): Curre
       ]
     }),
     actions: createScoreActions('team-1', 24)
-  })
+  });
 }
 
 export function buildInProgressMatchRecord(options: SeedMatchOptions = {}): CurrentMatchRecord {
@@ -138,7 +138,7 @@ export function buildInProgressMatchRecord(options: SeedMatchOptions = {}): Curr
     team1Name = 'Team A',
     team2Name = 'Team B',
     startedAt = defaultStartedAt
-  } = options
+  } = options;
 
   return createCurrentMatchRecord({
     matchId,
@@ -151,7 +151,7 @@ export function buildInProgressMatchRecord(options: SeedMatchOptions = {}): Curr
       ]
     }),
     actions: [...createScoreActions('team-1', 4), ...createScoreActions('team-2', 2)]
-  })
+  });
 }
 
 export function buildInvalidCurrentMatchRecord(): Record<string, unknown> {
@@ -161,69 +161,69 @@ export function buildInvalidCurrentMatchRecord(): Record<string, unknown> {
     setup: null,
     actions: 'invalid-actions',
     startedAt: 'invalid-started-at'
-  }
+  };
 }
 
 export function buildSchemaMismatchRecord(options: SeedMatchOptions = {}): Record<string, unknown> {
-  const record = buildInProgressMatchRecord(options)
+  const record = buildInProgressMatchRecord(options);
 
   return {
     ...record,
     schemaVersion: currentMatchSchemaVersion - 1
-  }
+  };
 }
 
 export async function seedCompletedMatchRecord(page: Page, options: SeedMatchOptions = {}) {
-  const record = buildCompletedMatchRecord(options)
-  await putRecord(page, record)
-  return record
+  const record = buildCompletedMatchRecord(options);
+  await putRecord(page, record);
+  return record;
 }
 
 export async function seedInProgressMatchRecord(page: Page, options: SeedMatchOptions = {}) {
-  const record = buildInProgressMatchRecord(options)
-  await putRecord(page, record)
-  return record
+  const record = buildInProgressMatchRecord(options);
+  await putRecord(page, record);
+  return record;
 }
 
 export async function seedInvalidCurrentMatchRecord(page: Page): Promise<void> {
-  await putRecord(page, buildInvalidCurrentMatchRecord())
+  await putRecord(page, buildInvalidCurrentMatchRecord());
 }
 
 export async function seedSchemaMismatchRecord(
   page: Page,
   options: SeedMatchOptions = {}
 ): Promise<void> {
-  await putRecord(page, buildSchemaMismatchRecord(options))
+  await putRecord(page, buildSchemaMismatchRecord(options));
 }
 
 export async function expectCurrentMatchCleared(page: Page): Promise<void> {
   const isCleared = await page.evaluate(
     async ({ databaseName, databaseVersion, objectStoreName, key }) => {
       const database = await new Promise<IDBDatabase>((resolve, reject) => {
-        const request = indexedDB.open(databaseName, databaseVersion)
+        const request = indexedDB.open(databaseName, databaseVersion);
 
         request.addEventListener('upgradeneeded', () => {
           // Guard against first-open reads in a clean browser context.
-        })
+        });
 
-        request.addEventListener('success', () => resolve(request.result))
+        request.addEventListener('success', () => resolve(request.result));
         request.addEventListener('error', () => {
-          reject(request.error ?? new Error('Failed to open IndexedDB.'))
-        })
-      })
+          reject(request.error ?? new Error('Failed to open IndexedDB.'));
+        });
+      });
 
       try {
         return await new Promise<boolean>((resolve, reject) => {
-          const transaction = database.transaction(objectStoreName, 'readonly')
-          const request = transaction.objectStore(objectStoreName).get(key)
+          const transaction = database.transaction(objectStoreName, 'readonly');
+          const request = transaction.objectStore(objectStoreName).get(key);
 
-          request.addEventListener('success', () => resolve(typeof request.result === 'undefined'))
+          request.addEventListener('success', () => resolve(typeof request.result === 'undefined'));
           request.addEventListener('error', () => {
-            reject(request.error ?? new Error('IndexedDB read failed.'))
-          })
-        })
+            reject(request.error ?? new Error('IndexedDB read failed.'));
+          });
+        });
       } finally {
-        database.close()
+        database.close();
       }
     },
     {
@@ -232,7 +232,7 @@ export async function expectCurrentMatchCleared(page: Page): Promise<void> {
       objectStoreName: defaultObjectStoreName,
       key: currentMatchRecordKey
     }
-  )
+  );
 
-  expect(isCleared).toBe(true)
+  expect(isCleared).toBe(true);
 }

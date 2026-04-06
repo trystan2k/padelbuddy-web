@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState } from 'react'
-import { useTranslation } from 'react-i18next'
+import { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import {
   clearSWCache,
@@ -7,106 +7,106 @@ import {
   getSWVersion,
   requestSWUpdate,
   type SWRegistrationState
-} from '@/lib/pwa/registration'
-import { cn } from '@/lib/utils/cn'
+} from '@/lib/pwa/registration';
+import { cn } from '@/lib/utils/cn';
 
-import styles from './DebugPwa.module.css'
+import styles from './DebugPwa.module.css';
 
 interface CacheInfo {
-  version: string
-  cacheName: string
+  version: string;
+  cacheName: string;
 }
 
-const STORAGE_KEY = 'debug-pwa-closed'
+const STORAGE_KEY = 'debug-pwa-closed';
 
 export function DebugPwa() {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState(() => {
-    if (typeof window === 'undefined') return true
-    return !localStorage.getItem(STORAGE_KEY)
-  })
-  const [swState, setSwState] = useState<SWRegistrationState | null>(null)
-  const [cacheInfo, setCacheInfo] = useState<CacheInfo | null>(null)
-  const [isUpdating, setIsUpdating] = useState(false)
-  const [isClearing, setIsClearing] = useState(false)
+    if (typeof window === 'undefined') return true;
+    return !localStorage.getItem(STORAGE_KEY);
+  });
+  const [swState, setSwState] = useState<SWRegistrationState | null>(null);
+  const [cacheInfo, setCacheInfo] = useState<CacheInfo | null>(null);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [isClearing, setIsClearing] = useState(false);
 
   const handleClose = useCallback(() => {
-    setIsVisible(false)
-    localStorage.setItem(STORAGE_KEY, 'true')
-  }, [])
+    setIsVisible(false);
+    localStorage.setItem(STORAGE_KEY, 'true');
+  }, []);
 
   const handleReopen = useCallback(() => {
-    localStorage.removeItem(STORAGE_KEY)
-    setIsVisible(true)
-  }, [])
+    localStorage.removeItem(STORAGE_KEY);
+    setIsVisible(true);
+  }, []);
 
   useEffect(() => {
     if (isVisible) {
-      let cancelled = false
-      let isFetching = false
+      let cancelled = false;
+      let isFetching = false;
 
       const tick = async () => {
-        if (cancelled || isFetching) return
-        isFetching = true
+        if (cancelled || isFetching) return;
+        isFetching = true;
         try {
-          const state = await getSWState()
-          if (cancelled) return
-          setSwState(state)
+          const state = await getSWState();
+          if (cancelled) return;
+          setSwState(state);
 
           if (state.registered) {
-            const version = await getSWVersion()
-            if (cancelled) return
-            setCacheInfo(version)
+            const version = await getSWVersion();
+            if (cancelled) return;
+            setCacheInfo(version);
           }
         } finally {
-          isFetching = false
+          isFetching = false;
         }
-      }
+      };
 
-      void tick()
+      void tick();
 
-      const id = setInterval(tick, 5000)
+      const id = setInterval(tick, 5000);
       return () => {
-        cancelled = true
-        clearInterval(id)
-      }
+        cancelled = true;
+        clearInterval(id);
+      };
     }
-  }, [isVisible])
+  }, [isVisible]);
 
   const handleUpdate = useCallback(async () => {
-    setIsUpdating(true)
+    setIsUpdating(true);
     try {
-      await requestSWUpdate()
+      await requestSWUpdate();
       setTimeout(() => {
-        window.location.reload()
-      }, 500)
+        window.location.reload();
+      }, 500);
     } catch (error) {
-      console.error('[DebugPWA] Update failed:', error)
+      console.error('[DebugPWA] Update failed:', error);
     } finally {
-      setIsUpdating(false)
+      setIsUpdating(false);
     }
-  }, [])
+  }, []);
 
   const handleClearCache = useCallback(async () => {
-    setIsClearing(true)
+    setIsClearing(true);
     try {
-      const success = await clearSWCache()
+      const success = await clearSWCache();
       if (success) {
-        setCacheInfo(null)
+        setCacheInfo(null);
       }
     } catch (error) {
-      console.error('[DebugPWA] Failed to clear cache:', error)
+      console.error('[DebugPWA] Failed to clear cache:', error);
     } finally {
-      setIsClearing(false)
+      setIsClearing(false);
     }
-  }, [])
+  }, []);
 
   if (!isVisible) {
     return (
       <button type="button" className={styles.reopenButton} onClick={handleReopen}>
         {t('debugPwa.reopen')}
       </button>
-    )
+    );
   }
 
   return (
@@ -166,5 +166,5 @@ export function DebugPwa() {
         </button>
       </div>
     </div>
-  )
+  );
 }

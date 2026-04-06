@@ -1,36 +1,36 @@
-import { describe, expect, test } from 'vitest'
+import { describe, expect, test } from 'vitest';
 
-import { projectMatch } from '@/core/match/replay'
+import { projectMatch } from '@/core/match/replay';
 import {
   createMatchEndScreenSummary,
   getMatchDurationParts
-} from '@/components/MatchEndScreen/view-model'
+} from '@/components/MatchEndScreen/view-model';
 import {
   createTestSetup,
   repeatAction,
   scorePoints,
   winQuickGame,
   winQuickSet
-} from '../../core/match/test-helpers'
+} from '../../core/match/test-helpers';
 
 describe('MatchEndScreen view model', () => {
   test('builds a completed match summary from the projected match state', () => {
-    const startedAt = 1_000
-    const finishedAt = startedAt + 82 * 60 * 1000
-    const now = finishedAt + 10 * 60 * 1000
+    const startedAt = 1_000;
+    const finishedAt = startedAt + 82 * 60 * 1000;
+    const now = finishedAt + 10 * 60 * 1000;
     const setup = createTestSetup({
       sides: [
         { id: 'team-1', playerNames: ['Alvaro', 'Enrique'] },
         { id: 'team-2', playerNames: ['Pablo', 'Thiago'] }
       ]
-    })
+    });
     const projection = projectMatch(setup, [
       ...winQuickSet('team-1'),
       ...winQuickSet('team-2'),
       ...winQuickSet('team-1')
-    ])
+    ]);
 
-    const summary = createMatchEndScreenSummary({ projection, startedAt, finishedAt, now })
+    const summary = createMatchEndScreenSummary({ projection, startedAt, finishedAt, now });
 
     expect(summary).toEqual({
       winnerTeamId: 'team-1',
@@ -69,11 +69,11 @@ describe('MatchEndScreen view model', () => {
       ],
       totalGames: 18,
       elapsedSeconds: 4_920
-    })
-  })
+    });
+  });
 
   test('marks manually finished matches without a winner as early finishes', () => {
-    const projection = projectMatch(createTestSetup(), [])
+    const projection = projectMatch(createTestSetup(), []);
 
     expect(
       createMatchEndScreenSummary({
@@ -101,8 +101,8 @@ describe('MatchEndScreen view model', () => {
       ],
       totalGames: 0,
       elapsedSeconds: 2
-    })
-  })
+    });
+  });
 
   test('falls back to completed-set wins and includes the partial set for early finishes', () => {
     const setup = createTestSetup({
@@ -110,12 +110,12 @@ describe('MatchEndScreen view model', () => {
         { id: 'team-1', playerNames: ['Alvaro', 'Enrique'] },
         { id: 'team-2', playerNames: ['Pablo', 'Thiago'] }
       ]
-    })
+    });
     const projection = projectMatch(setup, [
       ...winQuickSet('team-1'),
       ...winQuickGame('team-1'),
       ...winQuickGame('team-2')
-    ])
+    ]);
 
     expect(
       createMatchEndScreenSummary({
@@ -152,19 +152,19 @@ describe('MatchEndScreen view model', () => {
       ],
       totalGames: 8,
       elapsedSeconds: 60
-    })
-  })
+    });
+  });
 
   test('splits elapsed time into hours and minutes', () => {
     expect(getMatchDurationParts(4_920)).toEqual({
       hours: 1,
       minutes: 22
-    })
+    });
     expect(getMatchDurationParts(59)).toEqual({
       hours: 0,
       minutes: 0
-    })
-  })
+    });
+  });
 
   test('determineWinnerFromCompletedSets returns team-2 when team-2 wins more sets', () => {
     const setup = createTestSetup({
@@ -172,22 +172,22 @@ describe('MatchEndScreen view model', () => {
         { id: 'team-1', playerNames: ['Alvaro', 'Enrique'] },
         { id: 'team-2', playerNames: ['Pablo', 'Thiago'] }
       ]
-    })
+    });
     const projection = projectMatch(setup, [
       ...winQuickSet('team-1'),
       ...winQuickSet('team-2'),
       ...winQuickSet('team-2')
-    ])
+    ]);
 
     const summary = createMatchEndScreenSummary({
       projection,
       startedAt: 10_000,
       finishedAt: 50_000
-    })
+    });
 
-    expect(summary.winnerTeamId).toBe('team-2')
-    expect(summary.winnerName).toBe('Pablo & Thiago')
-  })
+    expect(summary.winnerTeamId).toBe('team-2');
+    expect(summary.winnerName).toBe('Pablo & Thiago');
+  });
 
   test('determineWinnerFromCompletedSets returns null when sets are tied', () => {
     const setup = createTestSetup({
@@ -195,36 +195,36 @@ describe('MatchEndScreen view model', () => {
         { id: 'team-1', playerNames: ['Ana', 'Bea'] },
         { id: 'team-2', playerNames: ['Carla', 'Dani'] }
       ]
-    })
+    });
     const projection = projectMatch(setup, [
       ...winQuickSet('team-1'),
       ...winQuickSet('team-2'),
       ...winQuickGame('team-1')
-    ])
+    ]);
 
     const summary = createMatchEndScreenSummary({
       projection,
       startedAt: 10_000,
       finishedAt: 50_000
-    })
+    });
 
-    expect(summary.winnerTeamId).toBeUndefined()
-    expect(summary.winnerName).toBeUndefined()
-    expect(summary.isFinishedEarly).toBe(true)
-  })
+    expect(summary.winnerTeamId).toBeUndefined();
+    expect(summary.winnerName).toBeUndefined();
+    expect(summary.isFinishedEarly).toBe(true);
+  });
 
   test('determineWinnerFromCompletedSets returns null when no completed sets exist', () => {
-    const projection = projectMatch(createTestSetup(), [...winQuickGame('team-1')])
+    const projection = projectMatch(createTestSetup(), [...winQuickGame('team-1')]);
 
     const summary = createMatchEndScreenSummary({
       projection,
       startedAt: 10_000,
       finishedAt: 50_000
-    })
+    });
 
-    expect(summary.winnerTeamId).toBeUndefined()
-    expect(summary.isFinishedEarly).toBe(true)
-  })
+    expect(summary.winnerTeamId).toBeUndefined();
+    expect(summary.isFinishedEarly).toBe(true);
+  });
 
   test('returns empty string when side has no player names', () => {
     const setup = createTestSetup({
@@ -232,60 +232,60 @@ describe('MatchEndScreen view model', () => {
         { id: 'team-1', playerNames: [] },
         { id: 'team-2', playerNames: ['Carla'] }
       ]
-    })
+    });
     const projection = projectMatch(setup, [
       ...winQuickSet('team-1'),
       ...winQuickSet('team-2'),
       ...winQuickSet('team-1')
-    ])
+    ]);
 
     const summary = createMatchEndScreenSummary({
       projection,
       startedAt: 1_000,
       finishedAt: 10_000
-    })
+    });
 
-    expect(summary.teamNames['team-1']).toBe('')
-    expect(summary.teamNames['team-2']).toBe('Carla')
-  })
+    expect(summary.teamNames['team-1']).toBe('');
+    expect(summary.teamNames['team-2']).toBe('Carla');
+  });
 
   test('uses now as fallback when finishedAt is not provided', () => {
-    const startedAt = 1_000
-    const now = startedAt + 120_000
-    const projection = projectMatch(createTestSetup(), [])
+    const startedAt = 1_000;
+    const now = startedAt + 120_000;
+    const projection = projectMatch(createTestSetup(), []);
 
     const summary = createMatchEndScreenSummary({
       projection,
       startedAt,
       now
-    })
+    });
 
-    expect(summary.elapsedSeconds).toBe(120)
-  })
+    expect(summary.elapsedSeconds).toBe(120);
+  });
 
   test('clamps elapsed seconds to 0 when startedAt is in the future', () => {
-    const projection = projectMatch(createTestSetup(), [])
+    const projection = projectMatch(createTestSetup(), []);
 
     const summary = createMatchEndScreenSummary({
       projection,
       startedAt: 200_000,
       finishedAt: 100_000
-    })
+    });
 
-    expect(summary.elapsedSeconds).toBe(0)
-  })
+    expect(summary.elapsedSeconds).toBe(0);
+  });
 
   test('getMatchDurationParts handles zero seconds', () => {
-    expect(getMatchDurationParts(0)).toEqual({ hours: 0, minutes: 0 })
-  })
+    expect(getMatchDurationParts(0)).toEqual({ hours: 0, minutes: 0 });
+  });
 
   test('getMatchDurationParts handles negative seconds', () => {
-    expect(getMatchDurationParts(-100)).toEqual({ hours: 0, minutes: 0 })
-  })
+    expect(getMatchDurationParts(-100)).toEqual({ hours: 0, minutes: 0 });
+  });
 
   test('getMatchDurationParts handles exactly one hour', () => {
-    expect(getMatchDurationParts(3600)).toEqual({ hours: 1, minutes: 0 })
-  })
+    expect(getMatchDurationParts(3600)).toEqual({ hours: 1, minutes: 0 });
+  });
 
   test('displays super-tiebreak points instead of games for super-tiebreak sets', () => {
     const setup = createTestSetup({
@@ -294,22 +294,22 @@ describe('MatchEndScreen view model', () => {
         { id: 'team-1', playerNames: ['Alvaro', 'Enrique'] },
         { id: 'team-2', playerNames: ['Pablo', 'Thiago'] }
       ]
-    })
+    });
     const projection = projectMatch(setup, [
       ...winQuickSet('team-1'),
       ...winQuickSet('team-2'),
       ...repeatAction('team-1', 9),
       ...repeatAction('team-2', 8),
       ...scorePoints('team-1')
-    ])
+    ]);
 
     const summary = createMatchEndScreenSummary({
       projection,
       startedAt: 1_000,
       finishedAt: 10_000
-    })
+    });
 
-    expect(summary.winnerTeamId).toBe('team-1')
+    expect(summary.winnerTeamId).toBe('team-1');
     expect(summary.setRows).toEqual([
       {
         setNumber: 1,
@@ -326,6 +326,6 @@ describe('MatchEndScreen view model', () => {
         scores: { 'team-1': 10, 'team-2': 8 },
         isSuperTiebreak: true
       }
-    ])
-  })
-})
+    ]);
+  });
+});

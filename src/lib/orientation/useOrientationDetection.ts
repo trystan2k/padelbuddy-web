@@ -1,62 +1,62 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react';
 
 export interface OrientationState {
-  isPortrait: boolean
-  isLandscape: boolean
+  isPortrait: boolean;
+  isLandscape: boolean;
 }
 
 const defaultOrientationState: OrientationState = {
   isPortrait: true,
   isLandscape: false
-}
+};
 
 function subscribeToOrientationChange(query: MediaQueryList, handler: () => void) {
   if (typeof query.addEventListener === 'function') {
-    query.addEventListener('change', handler)
-    return
+    query.addEventListener('change', handler);
+    return;
   }
 
-  query.addListener(handler)
+  query.addListener(handler);
 }
 
 function unsubscribeFromOrientationChange(query: MediaQueryList, handler: () => void) {
   if (typeof query.removeEventListener === 'function') {
-    query.removeEventListener('change', handler)
-    return
+    query.removeEventListener('change', handler);
+    return;
   }
 
-  query.removeListener(handler)
+  query.removeListener(handler);
 }
 
 function getOrientationState(): OrientationState {
   if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
-    return defaultOrientationState
+    return defaultOrientationState;
   }
 
-  const isPortrait = window.matchMedia('(orientation: portrait)').matches
+  const isPortrait = window.matchMedia('(orientation: portrait)').matches;
 
   return {
     isPortrait,
     isLandscape: !isPortrait
-  }
+  };
 }
 
 export function useOrientationDetection(): OrientationState {
-  const [orientation, setOrientation] = useState<OrientationState>(getOrientationState)
+  const [orientation, setOrientation] = useState<OrientationState>(getOrientationState);
 
   useEffect(() => {
     if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
-      return
+      return;
     }
 
-    const query = window.matchMedia('(orientation: portrait)')
+    const query = window.matchMedia('(orientation: portrait)');
     const update = () => {
-      setOrientation(getOrientationState())
-    }
+      setOrientation(getOrientationState());
+    };
 
-    subscribeToOrientationChange(query, update)
-    return () => unsubscribeFromOrientationChange(query, update)
-  }, [])
+    subscribeToOrientationChange(query, update);
+    return () => unsubscribeFromOrientationChange(query, update);
+  }, []);
 
-  return orientation
+  return orientation;
 }

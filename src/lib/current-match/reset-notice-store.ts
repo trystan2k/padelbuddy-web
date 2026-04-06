@@ -1,35 +1,35 @@
-import type { CurrentMatchResetNotice } from './reset-notice'
+import type { CurrentMatchResetNotice } from './reset-notice';
 
 export interface CurrentMatchResetNoticeStore {
-  get(): CurrentMatchResetNotice | null
-  set(notice: CurrentMatchResetNotice): void
-  clear(): CurrentMatchResetNotice | null
-  reset(): void
+  get(): CurrentMatchResetNotice | null;
+  set(notice: CurrentMatchResetNotice): void;
+  clear(): CurrentMatchResetNotice | null;
+  reset(): void;
 }
 
 export function createCurrentMatchResetNoticeStore(): CurrentMatchResetNoticeStore {
-  let notice: CurrentMatchResetNotice | null = null
+  let notice: CurrentMatchResetNotice | null = null;
 
   return {
     get() {
-      return notice
+      return notice;
     },
     set(nextNotice) {
-      notice = nextNotice
+      notice = nextNotice;
     },
     clear() {
-      const currentNotice = notice
+      const currentNotice = notice;
 
-      notice = null
+      notice = null;
 
-      return currentNotice
+      return currentNotice;
     },
     reset() {
-      notice = null
+      notice = null;
     }
-  }
+  };
 }
 
-const currentMatchResetNoticeStore = createCurrentMatchResetNoticeStore()
+const currentMatchResetNoticeStore = createCurrentMatchResetNoticeStore();
 
-export default currentMatchResetNoticeStore
+export default currentMatchResetNoticeStore;

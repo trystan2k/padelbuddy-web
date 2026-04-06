@@ -352,4 +352,4 @@ export default {
       confirm: 'Cambiado'
     }
   }
-} as const
+} as const;

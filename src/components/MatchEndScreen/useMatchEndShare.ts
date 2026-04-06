@@ -1,36 +1,36 @@
-import { useCallback, useEffect, useRef, useState, type RefObject } from 'react'
+import { useCallback, useEffect, useRef, useState, type RefObject } from 'react';
 
-import type { MatchEndScreenSummary } from './view-model'
+import type { MatchEndScreenSummary } from './view-model';
 
-const statusMessageTimeoutMs = 4000
+const statusMessageTimeoutMs = 4000;
 
 interface MatchEndShareLabels {
-  shareText: string
-  finishedEarlyShareText: string
-  errorMessage: string
-  downloadMessage: string
+  shareText: string;
+  finishedEarlyShareText: string;
+  errorMessage: string;
+  downloadMessage: string;
 }
 
 interface UseMatchEndShareOptions {
-  captureRef: RefObject<HTMLDivElement | null>
-  finishedAt: number
-  summary: MatchEndScreenSummary
-  labels: MatchEndShareLabels
-  shareScreenReady: boolean
-  onCaptureComplete: () => void
+  captureRef: RefObject<HTMLDivElement | null>;
+  finishedAt: number;
+  summary: MatchEndScreenSummary;
+  labels: MatchEndShareLabels;
+  shareScreenReady: boolean;
+  onCaptureComplete: () => void;
 }
 
 interface UseMatchEndShareResult {
-  downloadMessage: string | null
-  errorMessage: string | null
-  handleShareClick: () => void
-  isSharing: boolean
+  downloadMessage: string | null;
+  errorMessage: string | null;
+  handleShareClick: () => void;
+  isSharing: boolean;
 }
 
 type ShareNavigator = Navigator & {
-  canShare?: (data?: ShareData) => boolean
-  share?: (data?: ShareData) => Promise<void>
-}
+  canShare?: (data?: ShareData) => boolean;
+  share?: (data?: ShareData) => Promise<void>;
+};
 
 export function useMatchEndShare({
   captureRef,
@@ -40,30 +40,30 @@ export function useMatchEndShare({
   shareScreenReady,
   onCaptureComplete
 }: UseMatchEndShareOptions): UseMatchEndShareResult {
-  const [isSharing, setIsSharing] = useState(false)
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
-  const [downloadMessage, setDownloadMessage] = useState<string | null>(null)
-  const isCapturingRef = useRef(false)
+  const [isSharing, setIsSharing] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [downloadMessage, setDownloadMessage] = useState<string | null>(null);
+  const isCapturingRef = useRef(false);
 
   // Handle capture when ShareScreen is ready
   useEffect(() => {
     if (!shareScreenReady || isCapturingRef.current) {
-      return
+      return;
     }
 
-    const captureNode = captureRef.current
+    const captureNode = captureRef.current;
 
     if (!captureNode) {
-      setErrorMessage(labels.errorMessage)
-      onCaptureComplete()
-      return
+      setErrorMessage(labels.errorMessage);
+      onCaptureComplete();
+      return;
     }
 
-    isCapturingRef.current = true
-    setErrorMessage(null)
-    setDownloadMessage(null)
+    isCapturingRef.current = true;
+    setErrorMessage(null);
+    setDownloadMessage(null);
 
-    let cancelled = false
+    let cancelled = false;
 
     const performCapture = async () => {
       try {
@@ -71,130 +71,139 @@ export function useMatchEndShare({
         await new Promise<void>((resolve) => {
           requestAnimationFrame(() => {
             requestAnimationFrame(() => {
-              resolve()
-            })
-          })
-        })
+              resolve();
+            });
+          });
+        });
 
         // Check if cancelled while waiting
         if (cancelled) {
-          return
+          return;
         }
 
-        const imageBlob = await captureMatchEndScreen(captureNode)
-        const filename = createShareFilename(finishedAt)
+        const imageBlob = await captureMatchEndScreen(captureNode);
+        const filename = createShareFilename(finishedAt);
         const shareFile = new File([imageBlob], filename, {
           type: imageBlob.type || 'image/png'
-        })
-        const shareText = summary.isFinishedEarly ? labels.finishedEarlyShareText : labels.shareText
+        });
+        const shareText = summary.isFinishedEarly
+          ? labels.finishedEarlyShareText
+          : labels.shareText;
 
         if (cancelled) {
-          return
+          return;
         }
 
         if (await shareMatchImage(navigator as ShareNavigator, shareText, shareFile)) {
-          return
+          return;
         }
 
-        downloadImage(imageBlob, filename)
-        setDownloadMessage(labels.downloadMessage)
+        downloadImage(imageBlob, filename);
+        setDownloadMessage(labels.downloadMessage);
       } catch (error) {
         if (cancelled) {
-          return
+          return;
         }
 
         if (isAbortError(error)) {
-          return
+          return;
         }
 
-        console.error('Failed to share the match end screen.', error)
-        setErrorMessage(labels.errorMessage)
+        console.error('Failed to share the match end screen.', error);
+        setErrorMessage(labels.errorMessage);
       } finally {
         if (!cancelled) {
-          isCapturingRef.current = false
-          onCaptureComplete()
+          isCapturingRef.current = false;
+          onCaptureComplete();
         }
       }
-    }
+    };
 
-    void performCapture()
+    void performCapture();
 
     return () => {
-      cancelled = true
-    }
-  }, [captureRef, labels, finishedAt, onCaptureComplete, shareScreenReady, summary.isFinishedEarly])
+      cancelled = true;
+    };
+  }, [
+    captureRef,
+    labels,
+    finishedAt,
+    onCaptureComplete,
+    shareScreenReady,
+    summary.isFinishedEarly
+  ]);
 
   useEffect(() => {
     if (!errorMessage) {
-      return undefined
+      return undefined;
     }
 
     const timeoutId = window.setTimeout(() => {
-      setErrorMessage(null)
-    }, statusMessageTimeoutMs)
+      setErrorMessage(null);
+    }, statusMessageTimeoutMs);
 
     return () => {
-      window.clearTimeout(timeoutId)
-    }
-  }, [errorMessage])
+      window.clearTimeout(timeoutId);
+    };
+  }, [errorMessage]);
 
   useEffect(() => {
     if (!downloadMessage) {
-      return undefined
+      return undefined;
     }
 
     const timeoutId = window.setTimeout(() => {
-      setDownloadMessage(null)
-    }, statusMessageTimeoutMs)
+      setDownloadMessage(null);
+    }, statusMessageTimeoutMs);
 
     return () => {
-      window.clearTimeout(timeoutId)
-    }
-  }, [downloadMessage])
+      window.clearTimeout(timeoutId);
+    };
+  }, [downloadMessage]);
 
   // Reset isSharing when shareScreenReady becomes false (capture complete)
   useEffect(() => {
     if (shareScreenReady) {
-      return
+      return;
     }
 
     // shareScreenReady just became false, reset isSharing
-    setIsSharing(false)
-  }, [shareScreenReady])
+    setIsSharing(false);
+  }, [shareScreenReady]);
 
   const handleShareClick = useCallback(() => {
     if (isCapturingRef.current) {
-      return
+      return;
     }
 
-    setIsSharing(true)
-  }, [])
+    setIsSharing(true);
+  }, []);
 
   return {
     downloadMessage,
     errorMessage,
     handleShareClick,
     isSharing
-  }
+  };
 }
 
 function createShareFilename(finishedAt: number): string {
-  const d = new Date(finishedAt)
-  const year = d.getUTCFullYear()
-  const month = String(d.getUTCMonth() + 1).padStart(2, '0')
-  const day = String(d.getUTCDate()).padStart(2, '0')
-  const hours = String(d.getUTCHours()).padStart(2, '0')
-  const minutes = String(d.getUTCMinutes()).padStart(2, '0')
-  const formatted = `${year}${month}${day}${hours}${minutes}`
-  return `padel-buddy-match-${formatted}.png`
+  const d = new Date(finishedAt);
+  const year = d.getUTCFullYear();
+  const month = String(d.getUTCMonth() + 1).padStart(2, '0');
+  const day = String(d.getUTCDate()).padStart(2, '0');
+  const hours = String(d.getUTCHours()).padStart(2, '0');
+  const minutes = String(d.getUTCMinutes()).padStart(2, '0');
+  const formatted = `${year}${month}${day}${hours}${minutes}`;
+  return `padel-buddy-match-${formatted}.png`;
 }
 
 async function captureMatchEndScreen(node: HTMLElement): Promise<Blob> {
-  const { domToBlob } = await import('modern-screenshot')
+  const { domToBlob } = await import('modern-screenshot');
 
   return domToBlob(node, {
     scale: Math.max(1, window.devicePixelRatio || 1)
-  })
+  });
 }
 
 async function shareMatchImage(
@@ -206,52 +215,52 @@ async function shareMatchImage(
     typeof navigatorObject.share !== 'function' ||
     typeof navigatorObject.canShare !== 'function'
   ) {
-    return false
+    return false;
   }
 
-  let canShareFiles = false
+  let canShareFiles = false;
   try {
-    canShareFiles = navigatorObject.canShare({ files: [shareFile] })
+    canShareFiles = navigatorObject.canShare({ files: [shareFile] });
   } catch {
-    canShareFiles = false
+    canShareFiles = false;
   }
 
   if (!canShareFiles) {
-    return false
+    return false;
   }
 
   try {
     await navigatorObject.share({
       files: [shareFile],
       text: shareText
-    })
+    });
 
-    return true
+    return true;
   } catch (error) {
     if (isAbortError(error)) {
-      throw error
+      throw error;
     }
 
-    return false
+    return false;
   }
 }
 
 function downloadImage(blob: Blob, filename: string): void {
-  const objectUrl = URL.createObjectURL(blob)
-  const anchor = document.createElement('a')
+  const objectUrl = URL.createObjectURL(blob);
+  const anchor = document.createElement('a');
 
-  anchor.href = objectUrl
-  anchor.download = filename
-  document.body.appendChild(anchor)
-  anchor.click()
-  document.body.removeChild(anchor)
+  anchor.href = objectUrl;
+  anchor.download = filename;
+  document.body.appendChild(anchor);
+  anchor.click();
+  document.body.removeChild(anchor);
   // Revoke after a macrotask to ensure the browser has finished consuming the URL
-  setTimeout(() => URL.revokeObjectURL(objectUrl), 0)
+  setTimeout(() => URL.revokeObjectURL(objectUrl), 0);
 }
 
 function isAbortError(error: unknown): boolean {
   return (
     (error instanceof DOMException && error.name === 'AbortError') ||
     (typeof error === 'object' && error !== null && 'name' in error && error.name === 'AbortError')
-  )
+  );
 }

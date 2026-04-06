@@ -1,19 +1,19 @@
-import { type ComponentPropsWithoutRef, type Ref } from 'react'
-import { useTranslation } from 'react-i18next'
+import { type ComponentPropsWithoutRef, type Ref } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import { cn } from '@/lib/utils/cn'
+import { cn } from '@/lib/utils/cn';
 
-import styles from './Spinner.module.css'
+import styles from './Spinner.module.css';
 
-export type SpinnerSize = 'sm' | 'md' | 'lg'
-export type SpinnerColor = 'primary' | 'secondary'
+export type SpinnerSize = 'sm' | 'md' | 'lg';
+export type SpinnerColor = 'primary' | 'secondary';
 
 export interface SpinnerProps extends Omit<ComponentPropsWithoutRef<'span'>, 'children'> {
-  ref?: Ref<HTMLSpanElement>
-  size?: SpinnerSize
-  color?: SpinnerColor
-  label?: string
-  silent?: boolean
+  ref?: Ref<HTMLSpanElement>;
+  size?: SpinnerSize;
+  color?: SpinnerColor;
+  label?: string;
+  silent?: boolean;
 }
 
 export function Spinner({
@@ -25,10 +25,10 @@ export function Spinner({
   ref,
   ...props
 }: SpinnerProps) {
-  const { t } = useTranslation()
-  const resolvedLabel = label ?? t('common.loadingLabel')
-  const sizeClass = size === 'sm' ? styles.sizeSm : size === 'lg' ? styles.sizeLg : styles.sizeMd
-  const colorClass = color === 'secondary' ? styles.colorSecondary : styles.colorPrimary
+  const { t } = useTranslation();
+  const resolvedLabel = label ?? t('common.loadingLabel');
+  const sizeClass = size === 'sm' ? styles.sizeSm : size === 'lg' ? styles.sizeLg : styles.sizeMd;
+  const colorClass = color === 'secondary' ? styles.colorSecondary : styles.colorPrimary;
 
   return (
     <span
@@ -42,5 +42,5 @@ export function Spinner({
       <span className={styles.indicator} aria-hidden="true" />
       <span className={styles.visuallyHidden}>{resolvedLabel}</span>
     </span>
-  )
+  );
 }

@@ -38,16 +38,16 @@
 **File:** `src/components/ui/Divider/Divider.tsx`
 
 ```tsx
-import { Separator } from '@base-ui/react/separator'
-import { cn } from '@/lib/utils/cn'
-import styles from './Divider.module.css'
+import { Separator } from '@base-ui/react/separator';
+import { cn } from '@/lib/utils/cn';
+import styles from './Divider.module.css';
 
 export interface DividerProps {
-  className?: string
+  className?: string;
 }
 
 export function Divider({ className }: DividerProps) {
-  return <Separator.Root orientation="horizontal" className={cn(styles.divider, className)} />
+  return <Separator.Root orientation="horizontal" className={cn(styles.divider, className)} />;
 }
 ```
 
@@ -76,17 +76,17 @@ No changes needed - base-ui Separator.Root accepts className directly.
 **File:** `src/components/ui/PrimaryButton/PrimaryButton.tsx`
 
 ```tsx
-import type { ReactNode } from 'react'
-import { Button } from '@base-ui/react/button'
-import { cn } from '@/lib/utils/cn'
-import styles from './PrimaryButton.module.css'
+import type { ReactNode } from 'react';
+import { Button } from '@base-ui/react/button';
+import { cn } from '@/lib/utils/cn';
+import styles from './PrimaryButton.module.css';
 
 export interface PrimaryButtonProps {
-  children: ReactNode
-  onClick: () => void
-  disabled?: boolean
-  type?: 'button' | 'submit' | 'reset'
-  className?: string
+  children: ReactNode;
+  onClick: () => void;
+  disabled?: boolean;
+  type?: 'button' | 'submit' | 'reset';
+  className?: string;
 }
 
 export function PrimaryButton({
@@ -105,7 +105,7 @@ export function PrimaryButton({
     >
       {children}
     </Button.Root>
-  )
+  );
 }
 ```
 
@@ -153,25 +153,25 @@ Add data attribute selectors for disabled state:
 **File:** `src/components/ui/TextInput/TextInput.tsx`
 
 ```tsx
-import { useCallback } from 'react'
-import type { ChangeEvent } from 'react'
-import { Input } from '@base-ui/react/input'
-import { cn } from '@/lib/utils/cn'
-import type { Accent } from '../types'
-import styles from './TextInput.module.css'
+import { useCallback } from 'react';
+import type { ChangeEvent } from 'react';
+import { Input } from '@base-ui/react/input';
+import { cn } from '@/lib/utils/cn';
+import type { Accent } from '../types';
+import styles from './TextInput.module.css';
 
-export type TextInputAccent = Accent
+export type TextInputAccent = Accent;
 
 export interface TextInputProps {
-  value: string
-  onChange: (value: string) => void
-  placeholder?: string
-  maxLength?: number
-  disabled?: boolean
-  accent?: TextInputAccent
-  className?: string
-  id?: string
-  'aria-label'?: string
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  maxLength?: number;
+  disabled?: boolean;
+  accent?: TextInputAccent;
+  className?: string;
+  id?: string;
+  'aria-label'?: string;
 }
 
 export function TextInput({
@@ -190,14 +190,14 @@ export function TextInput({
       ? styles.accentPrimary
       : accent === 'secondary'
         ? styles.accentSecondary
-        : undefined
+        : undefined;
 
   const handleChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
-      onChange(e.target.value)
+      onChange(e.target.value);
     },
     [onChange]
-  )
+  );
 
   return (
     <Input
@@ -211,7 +211,7 @@ export function TextInput({
       className={cn(styles.input, accentClass, className)}
       aria-label={ariaLabel}
     />
-  )
+  );
 }
 ```
 
@@ -248,22 +248,22 @@ Add data attribute selectors:
 **File:** `src/components/ui/SelectableChip/SelectableChip.tsx`
 
 ```tsx
-import type { ReactNode } from 'react'
-import { Toggle } from '@base-ui/react/toggle'
-import { cn } from '@/lib/utils/cn'
-import type { Accent } from '../types'
-import styles from './SelectableChip.module.css'
+import type { ReactNode } from 'react';
+import { Toggle } from '@base-ui/react/toggle';
+import { cn } from '@/lib/utils/cn';
+import type { Accent } from '../types';
+import styles from './SelectableChip.module.css';
 
-export type SelectableChipAccent = Accent
+export type SelectableChipAccent = Accent;
 
 export interface SelectableChipProps {
-  children: ReactNode
-  selected: boolean
-  onClick: () => void
-  accent?: SelectableChipAccent
-  disabled?: boolean
-  className?: string
-  showDot?: boolean
+  children: ReactNode;
+  selected: boolean;
+  onClick: () => void;
+  accent?: SelectableChipAccent;
+  disabled?: boolean;
+  className?: string;
+  showDot?: boolean;
 }
 
 export function SelectableChip({
@@ -280,7 +280,7 @@ export function SelectableChip({
       ? styles.accentPrimary
       : accent === 'secondary'
         ? styles.accentSecondary
-        : undefined
+        : undefined;
 
   return (
     <Toggle.Root
@@ -294,7 +294,7 @@ export function SelectableChip({
         {children}
       </span>
     </Toggle.Root>
-  )
+  );
 }
 ```
 
@@ -370,21 +370,21 @@ LocaleChip has two usage patterns:
 **File:** `src/components/ui/LocaleChip/LocaleChip.tsx`
 
 ```tsx
-import { Toggle } from '@base-ui/react/toggle'
-import { cn } from '@/lib/utils/cn'
-import styles from './LocaleChip.module.css'
+import { Toggle } from '@base-ui/react/toggle';
+import { cn } from '@/lib/utils/cn';
+import styles from './LocaleChip.module.css';
 
 export interface LocaleChipProps {
   /** Flag emoji to display */
-  flag: string
-  label: string
-  onClick?: () => void
-  active?: boolean
-  className?: string
+  flag: string;
+  label: string;
+  onClick?: () => void;
+  active?: boolean;
+  className?: string;
   /** For dropdown triggers: indicates whether the dropdown is expanded */
-  'aria-expanded'?: boolean
+  'aria-expanded'?: boolean;
   /** For dropdown triggers: references the controlled element */
-  'aria-controls'?: string
+  'aria-controls'?: string;
 }
 
 export function LocaleChip({
@@ -397,7 +397,7 @@ export function LocaleChip({
   'aria-controls': ariaControls
 }: LocaleChipProps) {
   // When used as dropdown trigger, we need custom aria handling
-  const isDropdownTrigger = ariaExpanded !== undefined
+  const isDropdownTrigger = ariaExpanded !== undefined;
 
   if (isDropdownTrigger) {
     // Dropdown trigger mode - render as regular button with custom aria
@@ -414,7 +414,7 @@ export function LocaleChip({
         <span aria-hidden="true">{flag}</span>
         <span className={styles.text}>{label}</span>
       </Toggle.Root>
-    )
+    );
   }
 
   // Toggle mode - standard toggle behavior
@@ -427,7 +427,7 @@ export function LocaleChip({
       <span aria-hidden="true">{flag}</span>
       <span className={styles.text}>{label}</span>
     </Toggle.Root>
-  )
+  );
 }
 ```
 

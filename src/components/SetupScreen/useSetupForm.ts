@@ -1,5 +1,5 @@
-import { useState, useCallback, useEffect, useRef } from 'react'
-import { useTranslation } from 'react-i18next'
+import { useState, useCallback, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import {
   defaultAudioAnnouncementsEnabled,
@@ -13,16 +13,16 @@ import {
   type MatchFormat,
   type MatchGameMode,
   type MatchTeamId
-} from '@/core/match/types'
+} from '@/core/match/types';
 import {
   defaultSetupPreferences,
   loadSetupPreferences,
   saveSetupPreferenceSlice,
   type SetupPreferenceSlice
-} from '@/lib/setup/setup-storage'
+} from '@/lib/setup/setup-storage';
 
-import type { SetupFormData, FieldErrors } from './types'
-import { validateSetupForm } from './validateSetupForm'
+import type { SetupFormData, FieldErrors } from './types';
+import { validateSetupForm } from './validateSetupForm';
 
 const defaultPersistedSetupSlice: SetupPreferenceSlice = {
   audioAnnouncementsEnabled: defaultSetupPreferences.audioAnnouncementsEnabled,
@@ -32,18 +32,18 @@ const defaultPersistedSetupSlice: SetupPreferenceSlice = {
   sideSwitchPrompts: defaultSetupPreferences.sideSwitchPrompts,
   gameMode: defaultSetupPreferences.gameMode,
   decidingSetSuperTiebreak: defaultSetupPreferences.decidingSetSuperTiebreak
-}
+};
 
 export function useSetupForm() {
-  const { t, i18n } = useTranslation()
+  const { t, i18n } = useTranslation();
 
   // Track whether team names have been manually modified by the user
-  const team1Touched = useRef(false)
-  const team2Touched = useRef(false)
+  const team1Touched = useRef(false);
+  const team2Touched = useRef(false);
   // Use a ref so hydration completion can flip synchronously in finally without
   // waiting for a state update; the persistence effect sees the updated flag on re-render.
-  const hasHydratedPersistedPreferences = useRef(false)
-  const lastPersistedSetupSlice = useRef(defaultPersistedSetupSlice)
+  const hasHydratedPersistedPreferences = useRef(false);
+  const lastPersistedSetupSlice = useRef(defaultPersistedSetupSlice);
 
   // Initialize form with defaults
   const [formData, setFormData] = useState<SetupFormData>({
@@ -59,9 +59,9 @@ export function useSetupForm() {
     countdownTimerEnabled: defaultCountdownTimerEnabled,
     countdownTimerDuration: defaultCountdownTimerDuration,
     sideSwitchPrompts: true
-  })
+  });
 
-  const [errors, setErrors] = useState<FieldErrors>({})
+  const [errors, setErrors] = useState<FieldErrors>({});
 
   // Update team name defaults when language changes (only if not touched by user)
   useEffect(() => {
@@ -69,18 +69,18 @@ export function useSetupForm() {
       ...prev,
       team1Name: team1Touched.current ? prev.team1Name : t('setup.teams.team1Default'),
       team2Name: team2Touched.current ? prev.team2Name : t('setup.teams.team2Default')
-    }))
-  }, [i18n.language, t])
+    }));
+  }, [i18n.language, t]);
 
   useEffect(() => {
-    let isMounted = true
+    let isMounted = true;
 
     void (async () => {
       try {
-        const setupPreferences = await loadSetupPreferences()
+        const setupPreferences = await loadSetupPreferences();
 
         if (!isMounted) {
-          return
+          return;
         }
 
         if (setupPreferences) {
@@ -92,7 +92,7 @@ export function useSetupForm() {
             sideSwitchPrompts: setupPreferences.sideSwitchPrompts,
             gameMode: setupPreferences.gameMode,
             decidingSetSuperTiebreak: setupPreferences.decidingSetSuperTiebreak
-          }
+          };
 
           setFormData((prev) => ({
             ...prev,
@@ -106,26 +106,26 @@ export function useSetupForm() {
             sideSwitchPrompts: setupPreferences.sideSwitchPrompts,
             gameMode: setupPreferences.gameMode,
             decidingSetSuperTiebreak: setupPreferences.decidingSetSuperTiebreak
-          }))
-          return
+          }));
+          return;
         }
 
-        lastPersistedSetupSlice.current = defaultPersistedSetupSlice
+        lastPersistedSetupSlice.current = defaultPersistedSetupSlice;
       } catch (error) {
-        console.warn('[useSetupForm] Failed to load preferences, using defaults:', error)
+        console.warn('[useSetupForm] Failed to load preferences, using defaults:', error);
       } finally {
-        hasHydratedPersistedPreferences.current = true
+        hasHydratedPersistedPreferences.current = true;
       }
-    })()
+    })();
 
     return () => {
-      isMounted = false
-    }
-  }, [])
+      isMounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (!hasHydratedPersistedPreferences.current) {
-      return
+      return;
     }
 
     const nextPersistedSetupSlice: SetupPreferenceSlice = {
@@ -136,31 +136,31 @@ export function useSetupForm() {
       sideSwitchPrompts: formData.sideSwitchPrompts,
       gameMode: formData.gameMode,
       decidingSetSuperTiebreak: formData.decidingSetSuperTiebreak
-    }
+    };
 
     if (areSetupPreferenceSlicesEqual(lastPersistedSetupSlice.current, nextPersistedSetupSlice)) {
-      return
+      return;
     }
 
-    let isCancelled = false
+    let isCancelled = false;
 
     const persistSetupPreferences = async () => {
       try {
-        await saveSetupPreferenceSlice(nextPersistedSetupSlice)
+        await saveSetupPreferenceSlice(nextPersistedSetupSlice);
 
         if (!isCancelled) {
-          lastPersistedSetupSlice.current = nextPersistedSetupSlice
+          lastPersistedSetupSlice.current = nextPersistedSetupSlice;
         }
       } catch (error) {
-        console.error('[useSetupForm] Failed to persist setup preferences:', error)
+        console.error('[useSetupForm] Failed to persist setup preferences:', error);
       }
-    }
+    };
 
-    void persistSetupPreferences()
+    void persistSetupPreferences();
 
     return () => {
-      isCancelled = true
-    }
+      isCancelled = true;
+    };
   }, [
     formData.audioAnnouncementsEnabled,
     formData.countdownTimerDuration,
@@ -169,119 +169,119 @@ export function useSetupForm() {
     formData.gameMode,
     formData.servingIndicatorEnabled,
     formData.sideSwitchPrompts
-  ])
+  ]);
 
   const updateField = useCallback(
     <K extends keyof SetupFormData>(field: K, value: SetupFormData[K]) => {
-      setFormData((prev) => ({ ...prev, [field]: value }))
+      setFormData((prev) => ({ ...prev, [field]: value }));
       // Clear error when field is updated (only for fields that have errors)
       setErrors((prev) => {
         if (!(field in prev)) {
-          return prev
+          return prev;
         }
         // Create a new object without the deleted key
-        const { [field]: _, ...rest } = prev
-        return rest as FieldErrors
-      })
+        const { [field]: _, ...rest } = prev;
+        return rest as FieldErrors;
+      });
     },
     []
-  )
+  );
 
   const updateTeamName = useCallback(
     (teamId: MatchTeamId, name: string) => {
       // Mark as touched when user modifies the name
       if (teamId === 'team-1') {
-        team1Touched.current = true
-        updateField('team1Name', name)
+        team1Touched.current = true;
+        updateField('team1Name', name);
       } else {
-        team2Touched.current = true
-        updateField('team2Name', name)
+        team2Touched.current = true;
+        updateField('team2Name', name);
       }
     },
     [updateField]
-  )
+  );
 
   const updateFormat = useCallback(
     (format: MatchFormat) => {
-      updateField('format', format)
+      updateField('format', format);
     },
     [updateField]
-  )
+  );
 
   const updateGameMode = useCallback(
     (gameMode: MatchGameMode) => {
-      updateField('gameMode', gameMode)
+      updateField('gameMode', gameMode);
     },
     [updateField]
-  )
+  );
 
   const updateInitialServer = useCallback(
     (server: MatchTeamId) => {
-      updateField('initialServer', server)
+      updateField('initialServer', server);
     },
     [updateField]
-  )
+  );
 
   const updateDecidingSetSuperTiebreak = useCallback(
     (enabled: boolean) => {
-      updateField('decidingSetSuperTiebreak', enabled)
+      updateField('decidingSetSuperTiebreak', enabled);
     },
     [updateField]
-  )
+  );
 
   const updateSideSwitchPrompts = useCallback(
     (enabled: boolean) => {
-      updateField('sideSwitchPrompts', enabled)
+      updateField('sideSwitchPrompts', enabled);
     },
     [updateField]
-  )
+  );
 
   const updateAudioAnnouncementsEnabled = useCallback(
     (enabled: boolean) => {
-      updateField('audioAnnouncementsEnabled', enabled)
+      updateField('audioAnnouncementsEnabled', enabled);
     },
     [updateField]
-  )
+  );
 
   const updateVoiceName = useCallback(
     (voiceName: string | null) => {
-      updateField('voiceName', voiceName)
+      updateField('voiceName', voiceName);
     },
     [updateField]
-  )
+  );
 
   const updateCountdownTimerEnabled = useCallback(
     (enabled: boolean) => {
-      updateField('countdownTimerEnabled', enabled)
+      updateField('countdownTimerEnabled', enabled);
     },
     [updateField]
-  )
+  );
 
   const updateServingIndicatorEnabled = useCallback(
     (enabled: boolean) => {
-      updateField('servingIndicatorEnabled', enabled)
+      updateField('servingIndicatorEnabled', enabled);
     },
     [updateField]
-  )
+  );
 
   const updateCountdownTimerDuration = useCallback(
     (duration: CountdownTimerDuration) => {
-      updateField('countdownTimerDuration', duration)
+      updateField('countdownTimerDuration', duration);
     },
     [updateField]
-  )
+  );
 
   const validate = useCallback(() => {
-    const result = validateSetupForm(formData)
-    setErrors(result.errors)
-    return result.isValid
-  }, [formData])
+    const result = validateSetupForm(formData);
+    setErrors(result.errors);
+    return result.isValid;
+  }, [formData]);
 
   // Computed: is Golden Point enabled
-  const isGoldenPointEnabled = formData.gameMode === 'golden-point'
+  const isGoldenPointEnabled = formData.gameMode === 'golden-point';
 
   // Computed: should show Super Tiebreak option (only for best-of-3 and best-of-5)
-  const showSuperTiebreakOption = formData.format !== 'best-of-1'
+  const showSuperTiebreakOption = formData.format !== 'best-of-1';
 
   return {
     formData,
@@ -300,7 +300,7 @@ export function useSetupForm() {
     updateCountdownTimerDuration,
     isGoldenPointEnabled,
     showSuperTiebreakOption
-  }
+  };
 }
 
 function areSetupPreferenceSlicesEqual(
@@ -315,5 +315,5 @@ function areSetupPreferenceSlicesEqual(
     left.sideSwitchPrompts === right.sideSwitchPrompts &&
     left.gameMode === right.gameMode &&
     left.decidingSetSuperTiebreak === right.decidingSetSuperTiebreak
-  )
+  );
 }

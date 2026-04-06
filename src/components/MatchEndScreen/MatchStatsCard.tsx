@@ -1,17 +1,17 @@
-import { useTranslation } from 'react-i18next'
+import { useTranslation } from 'react-i18next';
 
-import { Card } from '@/components/ui/Card/Card'
-import { cn } from '@/lib/utils/cn'
+import { Card } from '@/components/ui/Card/Card';
+import { cn } from '@/lib/utils/cn';
 
-import styles from './MatchStatsCard.module.css'
+import styles from './MatchStatsCard.module.css';
 
 export interface MatchStatsCardProps {
-  durationValue: string
-  totalGames: number
+  durationValue: string;
+  totalGames: number;
 }
 
 export function MatchStatsCard({ durationValue, totalGames }: MatchStatsCardProps) {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   return (
     <section aria-label={t('match.end.aria.statisticsRegion')} className={styles.region}>
@@ -32,5 +32,5 @@ export function MatchStatsCard({ durationValue, totalGames }: MatchStatsCardProp
         </div>
       </Card>
     </section>
-  )
+  );
 }

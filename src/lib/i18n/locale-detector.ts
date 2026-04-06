@@ -1,4 +1,4 @@
-import { defaultLocale, isSupportedLocale, type SupportedLocale } from './types'
+import { defaultLocale, isSupportedLocale, type SupportedLocale } from './types';
 
 /**
  * Detects the browser's preferred language and maps it to a supported locale.
@@ -6,21 +6,21 @@ import { defaultLocale, isSupportedLocale, type SupportedLocale } from './types'
  */
 export function detectBrowserLocale(): SupportedLocale | null {
   if (typeof navigator === 'undefined') {
-    return null
+    return null;
   }
 
-  const browserLang = navigator.language
-  const primaryLang = browserLang.split('-')[0]?.toLowerCase()
+  const browserLang = navigator.language;
+  const primaryLang = browserLang.split('-')[0]?.toLowerCase();
 
   if (!primaryLang) {
-    return null
+    return null;
   }
 
   if (isSupportedLocale(primaryLang)) {
-    return primaryLang
+    return primaryLang;
   }
 
-  return null
+  return null;
 }
 
 /**
@@ -34,5 +34,5 @@ export function resolveInitialLocale(
   browserDetected: SupportedLocale | null
 ): SupportedLocale {
   // Priority: stored preference > browser detection > default
-  return storedPreference ?? browserDetected ?? defaultLocale
+  return storedPreference ?? browserDetected ?? defaultLocale;
 }

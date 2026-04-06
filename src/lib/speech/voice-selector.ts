@@ -1,4 +1,4 @@
-import { type SupportedLocale } from '@/lib/i18n/types'
+import { type SupportedLocale } from '@/lib/i18n/types';
 
 /**
  * Returns the native display name for a language code using Intl.DisplayNames.
@@ -7,10 +7,10 @@ import { type SupportedLocale } from '@/lib/i18n/types'
  */
 export function getLanguageDisplayName(langCode: string): string {
   try {
-    const name = new Intl.DisplayNames([langCode, 'en'], { type: 'language' }).of(langCode)
-    return name ?? langCode
+    const name = new Intl.DisplayNames([langCode, 'en'], { type: 'language' }).of(langCode);
+    return name ?? langCode;
   } catch {
-    return langCode
+    return langCode;
   }
 }
 
@@ -26,25 +26,25 @@ export function selectVoice(
     (voice) =>
       voice.name.toLowerCase().includes('google') &&
       voice.lang.toLowerCase().startsWith(locale.toLowerCase())
-  )
+  );
 
   if (googleVoice) {
-    return googleVoice
+    return googleVoice;
   }
 
   // Try to find voice matching locale
   const localeVoice = voices.find((voice) =>
     voice.lang.toLowerCase().startsWith(locale.toLowerCase())
-  )
+  );
 
   if (localeVoice) {
-    return localeVoice
+    return localeVoice;
   }
 
   // Fallback to English voice
-  const englishVoice = voices.find((voice) => voice.lang.toLowerCase().startsWith('en'))
+  const englishVoice = voices.find((voice) => voice.lang.toLowerCase().startsWith('en'));
 
-  return englishVoice ?? null
+  return englishVoice ?? null;
 }
 
 /**
@@ -55,66 +55,66 @@ export function selectVoice(
 export function getAvailableVoices(signal?: AbortSignal): Promise<SpeechSynthesisVoice[]> {
   return new Promise((resolve, reject) => {
     if (signal?.aborted) {
-      reject(new Error('Operation aborted'))
-      return
+      reject(new Error('Operation aborted'));
+      return;
     }
 
     if (typeof speechSynthesis === 'undefined') {
-      resolve([])
-      return
+      resolve([]);
+      return;
     }
 
-    const voices = speechSynthesis.getVoices()
+    const voices = speechSynthesis.getVoices();
 
     if (voices.length > 0) {
-      resolve(voices)
-      return
+      resolve(voices);
+      return;
     }
 
-    let settled = false
+    let settled = false;
 
     const cleanup = () => {
-      if (settled) return
-      settled = true
-      clearTimeout(timeout)
-      speechSynthesis?.removeEventListener('voiceschanged', handleVoicesChanged)
-      signal?.removeEventListener('abort', handleAbort)
-    }
+      if (settled) return;
+      settled = true;
+      clearTimeout(timeout);
+      speechSynthesis?.removeEventListener('voiceschanged', handleVoicesChanged);
+      signal?.removeEventListener('abort', handleAbort);
+    };
 
     const handleVoicesChanged = () => {
-      cleanup()
-      resolve(speechSynthesis.getVoices())
-    }
+      cleanup();
+      resolve(speechSynthesis.getVoices());
+    };
 
     const handleAbort = () => {
-      cleanup()
-      reject(new Error('Operation aborted'))
-    }
+      cleanup();
+      reject(new Error('Operation aborted'));
+    };
 
     const timeout = setTimeout(() => {
-      cleanup()
-      resolve([])
-    }, 3000)
+      cleanup();
+      resolve([]);
+    }, 3000);
 
-    speechSynthesis.addEventListener('voiceschanged', handleVoicesChanged)
-    signal?.addEventListener('abort', handleAbort)
-  })
+    speechSynthesis.addEventListener('voiceschanged', handleVoicesChanged);
+    signal?.addEventListener('abort', handleAbort);
+  });
 }
 
 export function getAllVoicesGroupedByLocale(
   voices: SpeechSynthesisVoice[]
 ): Record<string, SpeechSynthesisVoice[]> {
   return voices.reduce<Record<string, SpeechSynthesisVoice[]>>((groupedVoices, voice) => {
-    const rawPrefix = (voice.lang ?? '').split('-')[0]?.toLowerCase().trim()
-    const localePrefix = rawPrefix || 'other'
+    const rawPrefix = (voice.lang ?? '').split('-')[0]?.toLowerCase().trim();
+    const localePrefix = rawPrefix || 'other';
 
     if (!groupedVoices[localePrefix]) {
-      groupedVoices[localePrefix] = []
+      groupedVoices[localePrefix] = [];
     }
 
-    groupedVoices[localePrefix].push(voice)
-    return groupedVoices
-  }, {})
+    groupedVoices[localePrefix].push(voice);
+    return groupedVoices;
+  }, {});
 }
 
 /**
@@ -123,7 +123,7 @@ export function getAllVoicesGroupedByLocale(
  * across locales or OS versions, where `name` alone is not unique.
  */
 export function getVoiceId(voice: SpeechSynthesisVoice): string {
-  return `${voice.voiceURI}::${voice.lang}`
+  return `${voice.voiceURI}::${voice.lang}`;
 }
 
 /**
@@ -133,7 +133,7 @@ export function findVoiceByName(
   name: string,
   voices: SpeechSynthesisVoice[]
 ): SpeechSynthesisVoice | undefined {
-  return voices.find((voice) => voice.name === name)
+  return voices.find((voice) => voice.name === name);
 }
 
 /**
@@ -145,7 +145,7 @@ export function findVoiceById(
   id: string,
   voices: SpeechSynthesisVoice[]
 ): SpeechSynthesisVoice | undefined {
-  return voices.find((voice) => getVoiceId(voice) === id)
+  return voices.find((voice) => getVoiceId(voice) === id);
 }
 
 /**
@@ -157,14 +157,14 @@ export function getDefaultVoiceForLocale(
 ): SpeechSynthesisVoice | null {
   const localeVoices = voices.filter((voice) =>
     voice.lang.toLowerCase().startsWith(locale.toLowerCase())
-  )
+  );
 
   if (localeVoices.length === 0) {
-    return selectVoice(locale, voices)
+    return selectVoice(locale, voices);
   }
 
   // Prefer local (non-network) voices
-  const localVoice = localeVoices.find((voice) => voice.localService)
+  const localVoice = localeVoices.find((voice) => voice.localService);
 
-  return localVoice ?? localeVoices[0] ?? null
+  return localVoice ?? localeVoices[0] ?? null;
 }

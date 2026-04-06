@@ -1,54 +1,54 @@
-import { Component, type ErrorInfo, type ReactNode } from 'react'
+import { Component, type ErrorInfo, type ReactNode } from 'react';
 
-import { AppStatusActions, AppStatusPage } from '@/components/AppStatus/AppStatusPage'
-import { Button } from '@/components/ui/Button/Button'
-import { i18n } from '@/lib/i18n/i18n'
+import { AppStatusActions, AppStatusPage } from '@/components/AppStatus/AppStatusPage';
+import { Button } from '@/components/ui/Button/Button';
+import { i18n } from '@/lib/i18n/i18n';
 
 interface AppErrorBoundaryState {
-  error: Error | null
+  error: Error | null;
 }
 
 interface AppErrorBoundaryFallbackProps {
-  error: Error
-  reset: () => void
+  error: Error;
+  reset: () => void;
 }
 
 export interface AppErrorBoundaryProps {
-  children: ReactNode
-  fallback?: ReactNode | ((props: AppErrorBoundaryFallbackProps) => ReactNode)
+  children: ReactNode;
+  fallback?: ReactNode | ((props: AppErrorBoundaryFallbackProps) => ReactNode);
 }
 
 export class AppErrorBoundary extends Component<AppErrorBoundaryProps, AppErrorBoundaryState> {
   public override state: AppErrorBoundaryState = {
     error: null
-  }
+  };
 
   public static getDerivedStateFromError(error: Error): AppErrorBoundaryState {
-    return { error }
+    return { error };
   }
 
   public override componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('AppErrorBoundary caught an error:', error, errorInfo)
+    console.error('AppErrorBoundary caught an error:', error, errorInfo);
   }
 
   private readonly reset = () => {
-    this.setState({ error: null })
-  }
+    this.setState({ error: null });
+  };
 
   public override render() {
-    const { children, fallback } = this.props
-    const { error } = this.state
+    const { children, fallback } = this.props;
+    const { error } = this.state;
 
     if (error === null) {
-      return children
+      return children;
     }
 
     if (typeof fallback === 'function') {
-      return fallback({ error, reset: this.reset })
+      return fallback({ error, reset: this.reset });
     }
 
     if (fallback) {
-      return fallback
+      return fallback;
     }
 
     return (
@@ -64,6 +64,6 @@ export class AppErrorBoundary extends Component<AppErrorBoundaryProps, AppErrorB
           </Button>
         </AppStatusActions>
       </AppStatusPage>
-    )
+    );
   }
 }

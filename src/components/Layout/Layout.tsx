@@ -1,19 +1,19 @@
-import { type ComponentPropsWithoutRef, type ReactNode, type Ref } from 'react'
+import { type ComponentPropsWithoutRef, type ReactNode, type Ref } from 'react';
 
-import { cn } from '@/lib/utils/cn'
+import { cn } from '@/lib/utils/cn';
 
-import styles from './Layout.module.css'
+import styles from './Layout.module.css';
 
 export interface LayoutProps extends Omit<ComponentPropsWithoutRef<'main'>, 'children'> {
-  ref?: Ref<HTMLElement>
+  ref?: Ref<HTMLElement>;
   /** Optional header content (navigation, metadata, etc.) */
-  header?: ReactNode
+  header?: ReactNode;
   /** Optional footer content (primary actions, buttons, etc.) */
-  footer?: ReactNode
+  footer?: ReactNode;
   /** Additional CSS class for the body section */
-  bodyClassName?: string
+  bodyClassName?: string;
   /** Main content rendered inside the shell body */
-  children?: ReactNode
+  children?: ReactNode;
 }
 
 export function Layout({
@@ -39,5 +39,5 @@ export function Layout({
         {footer && <footer className={styles.footer}>{footer}</footer>}
       </div>
     </main>
-  )
+  );
 }

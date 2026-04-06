@@ -1,123 +1,129 @@
 /* oxlint-disable jsx-no-new-function-as-prop -- Test files use inline functions for readability */
 
-import { describe, expect, test, vi } from 'vitest'
-import { render } from 'vitest-browser-react'
+import { describe, expect, test, vi } from 'vitest';
+import { render } from 'vitest-browser-react';
 
-import { TextInput, type TextInputAccent } from '@/components/ui/TextInput/TextInput'
+import { TextInput, type TextInputAccent } from '@/components/ui/TextInput/TextInput';
 
 describe('TextInput', () => {
   test('renders with value', async () => {
-    const screen = await render(<TextInput value="Test Value" onChange={() => {}} />)
+    const screen = await render(<TextInput value="Test Value" onChange={() => {}} />);
 
-    const input = screen.getByRole('textbox')
-    await expect.element(input).toHaveValue('Test Value')
-  })
+    const input = screen.getByRole('textbox');
+    await expect.element(input).toHaveValue('Test Value');
+  });
 
   test('renders with empty value', async () => {
-    const screen = await render(<TextInput value="" onChange={() => {}} />)
+    const screen = await render(<TextInput value="" onChange={() => {}} />);
 
-    const input = screen.getByRole('textbox')
-    await expect.element(input).toHaveValue('')
-  })
+    const input = screen.getByRole('textbox');
+    await expect.element(input).toHaveValue('');
+  });
 
   test('calls onChange when value changes', async () => {
-    const handleChange = vi.fn<() => void>()
-    const screen = await render(<TextInput value="" onChange={handleChange} />)
+    const handleChange = vi.fn<() => void>();
+    const screen = await render(<TextInput value="" onChange={handleChange} />);
 
-    const input = screen.getByRole('textbox')
-    await input.fill('New Value')
+    const input = screen.getByRole('textbox');
+    await input.fill('New Value');
 
-    expect(handleChange).toHaveBeenCalledWith('New Value')
-  })
+    expect(handleChange).toHaveBeenCalledWith('New Value');
+  });
 
   test('renders with placeholder', async () => {
-    const screen = await render(<TextInput value="" onChange={() => {}} placeholder="Enter name" />)
+    const screen = await render(
+      <TextInput value="" onChange={() => {}} placeholder="Enter name" />
+    );
 
-    const input = screen.getByRole('textbox')
-    await expect.element(input).toHaveAttribute('placeholder', 'Enter name')
-  })
+    const input = screen.getByRole('textbox');
+    await expect.element(input).toHaveAttribute('placeholder', 'Enter name');
+  });
 
   test('renders without placeholder', async () => {
-    const screen = await render(<TextInput value="" onChange={() => {}} />)
+    const screen = await render(<TextInput value="" onChange={() => {}} />);
 
-    const input = screen.getByRole('textbox')
-    await expect.element(input).not.toHaveAttribute('placeholder')
-  })
+    const input = screen.getByRole('textbox');
+    await expect.element(input).not.toHaveAttribute('placeholder');
+  });
 
   test('renders with maxLength', async () => {
-    const screen = await render(<TextInput value="" onChange={() => {}} maxLength={10} />)
+    const screen = await render(<TextInput value="" onChange={() => {}} maxLength={10} />);
 
-    const input = screen.getByRole('textbox')
-    await expect.element(input).toHaveAttribute('maxlength', '10')
-  })
+    const input = screen.getByRole('textbox');
+    await expect.element(input).toHaveAttribute('maxlength', '10');
+  });
 
   test('renders disabled', async () => {
-    const screen = await render(<TextInput value="" onChange={() => {}} disabled />)
+    const screen = await render(<TextInput value="" onChange={() => {}} disabled />);
 
-    const input = screen.getByRole('textbox')
-    await expect.element(input).toBeDisabled()
-  })
+    const input = screen.getByRole('textbox');
+    await expect.element(input).toBeDisabled();
+  });
 
   test('renders with data-disabled attribute when disabled', async () => {
-    const screen = await render(<TextInput value="" onChange={() => {}} disabled />)
+    const screen = await render(<TextInput value="" onChange={() => {}} disabled />);
 
-    const input = screen.getByRole('textbox')
-    await expect.element(input).toHaveAttribute('data-disabled')
-  })
+    const input = screen.getByRole('textbox');
+    await expect.element(input).toHaveAttribute('data-disabled');
+  });
 
   test('renders enabled by default', async () => {
-    const screen = await render(<TextInput value="" onChange={() => {}} />)
+    const screen = await render(<TextInput value="" onChange={() => {}} />);
 
-    const input = screen.getByRole('textbox')
-    await expect.element(input).not.toBeDisabled()
-  })
+    const input = screen.getByRole('textbox');
+    await expect.element(input).not.toBeDisabled();
+  });
 
   test('renders with custom className', async () => {
-    const screen = await render(<TextInput value="" onChange={() => {}} className="custom-class" />)
+    const screen = await render(
+      <TextInput value="" onChange={() => {}} className="custom-class" />
+    );
 
-    const input = screen.getByRole('textbox')
-    await expect.element(input).toHaveClass('custom-class')
-  })
+    const input = screen.getByRole('textbox');
+    await expect.element(input).toHaveClass('custom-class');
+  });
 
   test('renders with id', async () => {
-    const screen = await render(<TextInput value="" onChange={() => {}} id="name-input" />)
+    const screen = await render(<TextInput value="" onChange={() => {}} id="name-input" />);
 
-    const input = screen.getByRole('textbox')
-    await expect.element(input).toHaveAttribute('id', 'name-input')
-  })
+    const input = screen.getByRole('textbox');
+    await expect.element(input).toHaveAttribute('id', 'name-input');
+  });
 
   test('renders with aria-label', async () => {
-    const screen = await render(<TextInput value="" onChange={() => {}} aria-label="Player name" />)
+    const screen = await render(
+      <TextInput value="" onChange={() => {}} aria-label="Player name" />
+    );
 
-    const input = screen.getByRole('textbox')
-    await expect.element(input).toHaveAttribute('aria-label', 'Player name')
-  })
+    const input = screen.getByRole('textbox');
+    await expect.element(input).toHaveAttribute('aria-label', 'Player name');
+  });
 
   test('renders without aria-label by default', async () => {
-    const screen = await render(<TextInput value="" onChange={() => {}} />)
+    const screen = await render(<TextInput value="" onChange={() => {}} />);
 
-    const input = screen.getByRole('textbox')
-    await expect.element(input).not.toHaveAttribute('aria-label')
-  })
+    const input = screen.getByRole('textbox');
+    await expect.element(input).not.toHaveAttribute('aria-label');
+  });
 
   // Test all accents for branch coverage
-  const accents: TextInputAccent[] = ['primary', 'secondary']
+  const accents: TextInputAccent[] = ['primary', 'secondary'];
   accents.forEach((accent) => {
     test(`renders correctly with accent: ${accent}`, async () => {
-      const screen = await render(<TextInput value="test" onChange={() => {}} accent={accent} />)
+      const screen = await render(<TextInput value="test" onChange={() => {}} accent={accent} />);
 
-      const input = screen.getByRole('textbox')
-      await expect.element(input).toHaveValue('test')
-    })
-  })
+      const input = screen.getByRole('textbox');
+      await expect.element(input).toHaveValue('test');
+    });
+  });
 
   test('calls onChange with updated value on each keystroke', async () => {
-    const handleChange = vi.fn<() => void>()
-    const screen = await render(<TextInput value="" onChange={handleChange} />)
+    const handleChange = vi.fn<() => void>();
+    const screen = await render(<TextInput value="" onChange={handleChange} />);
 
-    const input = screen.getByRole('textbox')
-    await input.fill('A')
+    const input = screen.getByRole('textbox');
+    await input.fill('A');
 
-    expect(handleChange).toHaveBeenCalledWith('A')
-  })
-})
+    expect(handleChange).toHaveBeenCalledWith('A');
+  });
+});

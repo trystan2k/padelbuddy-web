@@ -1,7 +1,7 @@
-import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest';
 
-import { i18n, initializeI18n, resetI18nInitialization } from '@/lib/i18n/i18n'
-import { formatScoreDisplay, generateSpeechMessage } from '@/lib/speech/message-generator'
+import { i18n, initializeI18n, resetI18nInitialization } from '@/lib/i18n/i18n';
+import { formatScoreDisplay, generateSpeechMessage } from '@/lib/speech/message-generator';
 
 const testTranslations = {
   score: {
@@ -27,15 +27,15 @@ const testTranslations = {
       matchPoint: 'Match point {{teamName}}'
     }
   }
-}
+};
 
 describe('message-generator', () => {
   beforeEach(async () => {
-    await resetI18nInitialization()
-    await initializeI18n()
-    i18n.addResourceBundle('en', 'translation', testTranslations, true, true)
-    await i18n.changeLanguage('en')
-  })
+    await resetI18nInitialization();
+    await initializeI18n();
+    i18n.addResourceBundle('en', 'translation', testTranslations, true, true);
+    await i18n.changeLanguage('en');
+  });
 
   describe('point-scored', () => {
     it('returns null for minimal verbosity', () => {
@@ -46,8 +46,8 @@ describe('message-generator', () => {
           team2Score: '0',
           verbosity: 'minimal'
         })
-      ).toBeNull()
-    })
+      ).toBeNull();
+    });
 
     it('uses chair-umpire standard score phrasing', () => {
       expect(
@@ -57,8 +57,8 @@ describe('message-generator', () => {
           team2Score: '0',
           verbosity: 'standard'
         })
-      ).toBe('Fifteen - Love')
-    })
+      ).toBe('Fifteen - Love');
+    });
 
     it('announces all scores with the all term', () => {
       expect(
@@ -68,8 +68,8 @@ describe('message-generator', () => {
           team2Score: '30',
           verbosity: 'standard'
         })
-      ).toBe('Thirty - All')
-    })
+      ).toBe('Thirty - All');
+    });
 
     it('announces deuce in advantage mode', () => {
       expect(
@@ -80,8 +80,8 @@ describe('message-generator', () => {
           gameMode: 'advantage',
           verbosity: 'standard'
         })
-      ).toBe('Deuce')
-    })
+      ).toBe('Deuce');
+    });
 
     it('announces golden point in golden-point mode', () => {
       expect(
@@ -92,8 +92,8 @@ describe('message-generator', () => {
           gameMode: 'golden-point',
           verbosity: 'standard'
         })
-      ).toBe('Golden Point')
-    })
+      ).toBe('Golden Point');
+    });
 
     it('prefixes corrections on undo announcements', () => {
       expect(
@@ -104,8 +104,8 @@ describe('message-generator', () => {
           isCorrection: true,
           verbosity: 'standard'
         })
-      ).toBe('Correction. Thirty - Fifteen')
-    })
+      ).toBe('Correction. Thirty - Fifteen');
+    });
 
     it('appends game point for the serving team', () => {
       expect(
@@ -119,8 +119,8 @@ describe('message-generator', () => {
           pointPressure: 'game-point',
           verbosity: 'standard'
         })
-      ).toBe('Forty - Fifteen. Game point Team A')
-    })
+      ).toBe('Forty - Fifteen. Game point Team A');
+    });
 
     it('appends break point for the receiving team', () => {
       expect(
@@ -134,8 +134,8 @@ describe('message-generator', () => {
           pointPressure: 'break-point',
           verbosity: 'standard'
         })
-      ).toBe('Fifteen - Forty. Break point')
-    })
+      ).toBe('Fifteen - Forty. Break point');
+    });
 
     it('appends set point for the team that can win the set next', () => {
       expect(
@@ -149,8 +149,8 @@ describe('message-generator', () => {
           pointPressureTeam: 'team-1',
           verbosity: 'standard'
         })
-      ).toBe('Forty - Thirty. Set point Team A')
-    })
+      ).toBe('Forty - Thirty. Set point Team A');
+    });
 
     it('appends match point for the team that can win the match next', () => {
       expect(
@@ -164,8 +164,8 @@ describe('message-generator', () => {
           pointPressureTeam: 'team-1',
           verbosity: 'standard'
         })
-      ).toBe('Forty - Fifteen. Match point Team A')
-    })
+      ).toBe('Forty - Fifteen. Match point Team A');
+    });
 
     it('announces serving team score first when team-1 serves', () => {
       expect(
@@ -178,8 +178,8 @@ describe('message-generator', () => {
           team2Name: 'Team B',
           verbosity: 'standard'
         })
-      ).toBe('Fifteen - Love')
-    })
+      ).toBe('Fifteen - Love');
+    });
 
     it('announces serving team score first when team-2 serves and team-2 leads', () => {
       expect(
@@ -192,8 +192,8 @@ describe('message-generator', () => {
           team2Name: 'Team B',
           verbosity: 'standard'
         })
-      ).toBe('Fifteen - Love')
-    })
+      ).toBe('Fifteen - Love');
+    });
 
     it('announces receiving team score first when team-2 serves and team-1 leads', () => {
       expect(
@@ -206,8 +206,8 @@ describe('message-generator', () => {
           team2Name: 'Team B',
           verbosity: 'standard'
         })
-      ).toBe('Love - Fifteen')
-    })
+      ).toBe('Love - Fifteen');
+    });
 
     it('does not change tiebreak score order based on serving team', () => {
       expect(
@@ -219,8 +219,8 @@ describe('message-generator', () => {
           isTiebreak: true,
           verbosity: 'standard'
         })
-      ).toBe('7-5')
-    })
+      ).toBe('7-5');
+    });
 
     it('keeps tiebreak announcements numeric', () => {
       expect(
@@ -231,8 +231,8 @@ describe('message-generator', () => {
           isTiebreak: true,
           verbosity: 'standard'
         })
-      ).toBe('7-5')
-    })
+      ).toBe('7-5');
+    });
 
     it('prefixes corrections on tiebreak announcements', () => {
       expect(
@@ -244,8 +244,8 @@ describe('message-generator', () => {
           isCorrection: true,
           verbosity: 'standard'
         })
-      ).toBe('Correction. 7-5')
-    })
+      ).toBe('Correction. 7-5');
+    });
 
     it('appends match point on tiebreak announcements', () => {
       expect(
@@ -260,8 +260,8 @@ describe('message-generator', () => {
           pointPressureTeam: 'team-1',
           verbosity: 'standard'
         })
-      ).toBe('6-5. Match point Team A')
-    })
+      ).toBe('6-5. Match point Team A');
+    });
 
     it('normalizes lowercase advantage score labels', () => {
       expect(
@@ -271,8 +271,8 @@ describe('message-generator', () => {
           team2Score: '40',
           verbosity: 'standard'
         })
-      ).toBe('Advantage - Forty')
-    })
+      ).toBe('Advantage - Forty');
+    });
 
     it('uses chair-umpire phrasing in verbose mode', () => {
       expect(
@@ -282,8 +282,8 @@ describe('message-generator', () => {
           team2Score: '15',
           verbosity: 'verbose'
         })
-      ).toBe('Thirty - Fifteen')
-    })
+      ).toBe('Thirty - Fifteen');
+    });
 
     it('returns null when team1Score is undefined', () => {
       expect(
@@ -293,8 +293,8 @@ describe('message-generator', () => {
           team2Score: '0',
           verbosity: 'standard'
         })
-      ).toBeNull()
-    })
+      ).toBeNull();
+    });
 
     it('returns null when team1Score is null', () => {
       expect(
@@ -304,8 +304,8 @@ describe('message-generator', () => {
           team2Score: '0',
           verbosity: 'standard'
         })
-      ).toBeNull()
-    })
+      ).toBeNull();
+    });
 
     it('returns null when team2Score is undefined', () => {
       expect(
@@ -315,8 +315,8 @@ describe('message-generator', () => {
           team2Score: undefined as unknown as '0',
           verbosity: 'standard'
         })
-      ).toBeNull()
-    })
+      ).toBeNull();
+    });
 
     it('returns null when team2Score is null', () => {
       expect(
@@ -326,9 +326,9 @@ describe('message-generator', () => {
           team2Score: null as unknown as '0',
           verbosity: 'standard'
         })
-      ).toBeNull()
-    })
-  })
+      ).toBeNull();
+    });
+  });
 
   describe('game-won', () => {
     it('returns the minimal announcement without a team name', () => {
@@ -340,8 +340,8 @@ describe('message-generator', () => {
           team2Name: 'Team B',
           verbosity: 'minimal'
         })
-      ).toBe('Game')
-    })
+      ).toBe('Game');
+    });
 
     it('includes the winning team name outside minimal mode', () => {
       expect(
@@ -352,8 +352,8 @@ describe('message-generator', () => {
           team2Name: 'Team B',
           verbosity: 'standard'
         })
-      ).toBe('Game, Team B')
-    })
+      ).toBe('Game, Team B');
+    });
 
     it('announces game won by team-2 with name', () => {
       expect(
@@ -364,8 +364,8 @@ describe('message-generator', () => {
           team2Name: 'Team B',
           verbosity: 'standard'
         })
-      ).toBe('Game, Team B')
-    })
+      ).toBe('Game, Team B');
+    });
 
     it('returns Game when winningTeam is invalid', () => {
       expect(
@@ -376,8 +376,8 @@ describe('message-generator', () => {
           team2Name: 'Team B',
           verbosity: 'standard'
         })
-      ).toBe('Game')
-    })
+      ).toBe('Game');
+    });
 
     it('returns Game when winner name is missing despite non-minimal verbosity', () => {
       expect(
@@ -388,9 +388,9 @@ describe('message-generator', () => {
           team2Name: 'Team B',
           verbosity: 'standard'
         })
-      ).toBe('Game')
-    })
-  })
+      ).toBe('Game');
+    });
+  });
 
   describe('set-won', () => {
     it('returns the minimal announcement without a team name', () => {
@@ -402,8 +402,8 @@ describe('message-generator', () => {
           team2Name: 'Team B',
           verbosity: 'minimal'
         })
-      ).toBe('Set')
-    })
+      ).toBe('Set');
+    });
 
     it('includes the winning team name outside minimal mode', () => {
       expect(
@@ -414,8 +414,8 @@ describe('message-generator', () => {
           team2Name: 'Team B',
           verbosity: 'standard'
         })
-      ).toBe('Set, Team A')
-    })
+      ).toBe('Set, Team A');
+    });
 
     it('announces set won by team-2 with name', () => {
       expect(
@@ -426,8 +426,8 @@ describe('message-generator', () => {
           team2Name: 'Team B',
           verbosity: 'standard'
         })
-      ).toBe('Set, Team B')
-    })
+      ).toBe('Set, Team B');
+    });
 
     it('returns Set when winningTeam is invalid', () => {
       expect(
@@ -438,8 +438,8 @@ describe('message-generator', () => {
           team2Name: 'Team B',
           verbosity: 'standard'
         })
-      ).toBe('Set')
-    })
+      ).toBe('Set');
+    });
 
     it('returns Set when winner name is missing despite non-minimal verbosity', () => {
       expect(
@@ -450,9 +450,9 @@ describe('message-generator', () => {
           team2Name: 'Team B',
           verbosity: 'standard'
         })
-      ).toBe('Set')
-    })
-  })
+      ).toBe('Set');
+    });
+  });
 
   describe('match-won', () => {
     it('returns the minimal announcement without a team name', () => {
@@ -464,8 +464,8 @@ describe('message-generator', () => {
           team2Name: 'Team B',
           verbosity: 'minimal'
         })
-      ).toBe('Match')
-    })
+      ).toBe('Match');
+    });
 
     it('includes the winning team name outside minimal mode', () => {
       expect(
@@ -476,8 +476,8 @@ describe('message-generator', () => {
           team2Name: 'Team B',
           verbosity: 'standard'
         })
-      ).toBe('Match, Team A')
-    })
+      ).toBe('Match, Team A');
+    });
 
     it('announces match won by team-2 with name', () => {
       expect(
@@ -488,8 +488,8 @@ describe('message-generator', () => {
           team2Name: 'Team B',
           verbosity: 'standard'
         })
-      ).toBe('Match, Team B')
-    })
+      ).toBe('Match, Team B');
+    });
 
     it('returns Match when winningTeam is invalid', () => {
       expect(
@@ -500,8 +500,8 @@ describe('message-generator', () => {
           team2Name: 'Team B',
           verbosity: 'standard'
         })
-      ).toBe('Match')
-    })
+      ).toBe('Match');
+    });
 
     it('returns Match when winner name is missing despite non-minimal verbosity', () => {
       expect(
@@ -512,9 +512,9 @@ describe('message-generator', () => {
           team2Name: 'Team B',
           verbosity: 'standard'
         })
-      ).toBe('Match')
-    })
-  })
+      ).toBe('Match');
+    });
+  });
 
   describe('server-change', () => {
     it('returns null for minimal verbosity', () => {
@@ -526,8 +526,8 @@ describe('message-generator', () => {
           team2Name: 'Team B',
           verbosity: 'minimal'
         })
-      ).toBeNull()
-    })
+      ).toBeNull();
+    });
 
     it('announces the serving team in standard mode', () => {
       expect(
@@ -538,8 +538,8 @@ describe('message-generator', () => {
           team2Name: 'Team B',
           verbosity: 'standard'
         })
-      ).toBe('Serving Team A')
-    })
+      ).toBe('Serving Team A');
+    });
 
     it('returns null when the serving team is missing', () => {
       expect(
@@ -549,8 +549,8 @@ describe('message-generator', () => {
           team2Name: 'Team B',
           verbosity: 'standard'
         })
-      ).toBeNull()
-    })
+      ).toBeNull();
+    });
 
     it('returns null when the serving team name is missing', () => {
       expect(
@@ -560,8 +560,8 @@ describe('message-generator', () => {
           team2Name: 'Team B',
           verbosity: 'standard'
         })
-      ).toBeNull()
-    })
+      ).toBeNull();
+    });
 
     it('announces server change for team-2', () => {
       expect(
@@ -572,8 +572,8 @@ describe('message-generator', () => {
           team2Name: 'Team B',
           verbosity: 'standard'
         })
-      ).toBe('Serving Team B')
-    })
+      ).toBe('Serving Team B');
+    });
 
     it('returns null when servingTeam name is empty string', () => {
       expect(
@@ -584,9 +584,9 @@ describe('message-generator', () => {
           team2Name: 'Team B',
           verbosity: 'standard'
         })
-      ).toBeNull()
-    })
-  })
+      ).toBeNull();
+    });
+  });
 
   describe('getScoreWord fallback', () => {
     it('returns String(score) for unknown score values', () => {
@@ -597,9 +597,9 @@ describe('message-generator', () => {
           team2Score: '0',
           verbosity: 'standard'
         })
-      ).toBe('unknown - Love')
-    })
-  })
+      ).toBe('unknown - Love');
+    });
+  });
 
   describe('unknown event type', () => {
     it('returns null', () => {
@@ -608,21 +608,21 @@ describe('message-generator', () => {
           eventType: 'unknown-event' as never,
           verbosity: 'standard'
         })
-      ).toBeNull()
-    })
-  })
+      ).toBeNull();
+    });
+  });
 
   describe('formatScoreDisplay', () => {
     it('keeps minimal display numeric', () => {
-      expect(formatScoreDisplay(15, 0, 'minimal')).toBe('15-0')
-    })
+      expect(formatScoreDisplay(15, 0, 'minimal')).toBe('15-0');
+    });
 
     it('translates standard display scores', () => {
-      expect(formatScoreDisplay('15', '0', 'standard')).toBe('Fifteen-Love')
-    })
+      expect(formatScoreDisplay('15', '0', 'standard')).toBe('Fifteen-Love');
+    });
 
     it('normalizes lowercase ad for display formatting', () => {
-      expect(formatScoreDisplay('ad', '40', 'standard')).toBe('Advantage-Forty')
-    })
-  })
-})
+      expect(formatScoreDisplay('ad', '40', 'standard')).toBe('Advantage-Forty');
+    });
+  });
+});

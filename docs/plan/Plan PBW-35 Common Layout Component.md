@@ -111,19 +111,19 @@
 2.1. Create `src/components/Layout/Layout.tsx` with interface:
 
 ```tsx
-import type { ReactNode } from 'react'
-import { cn } from '@/lib/utils/cn'
-import styles from './Layout.module.css'
+import type { ReactNode } from 'react';
+import { cn } from '@/lib/utils/cn';
+import styles from './Layout.module.css';
 
 export interface LayoutProps {
   /** Optional header content (navigation, metadata, etc.) */
-  header?: ReactNode
+  header?: ReactNode;
   /** Optional footer content (primary actions, buttons, etc.) */
-  footer?: ReactNode
+  footer?: ReactNode;
   /** Main body content */
-  children: ReactNode
+  children: ReactNode;
   /** Additional CSS class for the layout container */
-  className?: string
+  className?: string;
 }
 
 export function Layout({ header, footer, children, className }: LayoutProps) {
@@ -135,7 +135,7 @@ export function Layout({ header, footer, children, className }: LayoutProps) {
         {footer && <footer className={styles.footer}>{footer}</footer>}
       </div>
     </main>
-  )
+  );
 }
 ```
 
@@ -278,7 +278,7 @@ export function Layout({ header, footer, children, className }: LayoutProps) {
 4.1. Create `src/components/Layout/index.ts`:
 
 ```ts
-export { Layout, type LayoutProps } from './Layout'
+export { Layout, type LayoutProps } from './Layout';
 ```
 
 4.2. Consider adding to main components index (optional):
@@ -316,7 +316,7 @@ return (
       </footer>
     </div>
   </main>
-)
+);
 ```
 
 **After:**

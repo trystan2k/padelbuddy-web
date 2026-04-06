@@ -1,40 +1,40 @@
-import { redirect, type ErrorComponentProps } from '@tanstack/react-router'
-import { useTranslation } from 'react-i18next'
+import { redirect, type ErrorComponentProps } from '@tanstack/react-router';
+import { useTranslation } from 'react-i18next';
 
 import {
   AppStatusActions,
   AppStatusDetail,
   AppStatusPage
-} from '@/components/AppStatus/AppStatusPage'
-import { Button } from '@/components/ui/Button/Button'
-import { loadCurrentMatch } from '@/lib/current-match/indexed-db'
+} from '@/components/AppStatus/AppStatusPage';
+import { Button } from '@/components/ui/Button/Button';
+import { loadCurrentMatch } from '@/lib/current-match/indexed-db';
 
 import {
   resolveMatchRouteState,
   type MatchRouteMode,
   type MatchRouteState
-} from './-match-route-state'
+} from './-match-route-state';
 
 export function getErrorMessage(error: unknown): string | null {
   if (error instanceof Error && error.message.length > 0) {
-    const message = error.message
+    const message = error.message;
     const isTechnical =
-      /[\\]\(.*[\\]\]|IndexedDB|IDB|undefined|TypeError|SyntaxError|fetch|network/i.test(message)
+      /[\\]\(.*[\\]\]|IndexedDB|IDB|undefined|TypeError|SyntaxError|fetch|network/i.test(message);
 
     if (!isTechnical) {
-      return message
+      return message;
     }
   }
 
-  return null
+  return null;
 }
 
 export function RoutePendingBoundary() {
-  return null
+  return null;
 }
 
 interface RouteErrorCardProps extends ErrorComponentProps {
-  eyebrowKey?: string
+  eyebrowKey?: string;
 }
 
 export function RouteErrorCard({
@@ -42,8 +42,8 @@ export function RouteErrorCard({
   reset,
   eyebrowKey = 'error.loadMatch'
 }: RouteErrorCardProps) {
-  const { t } = useTranslation()
-  const errorMessage = getErrorMessage(error)
+  const { t } = useTranslation();
+  const errorMessage = getErrorMessage(error);
 
   return (
     <AppStatusPage
@@ -59,16 +59,16 @@ export function RouteErrorCard({
         </Button>
       </AppStatusActions>
     </AppStatusPage>
-  )
+  );
 }
 
-type RouteErrorStateProps = RouteErrorCardProps
+type RouteErrorStateProps = RouteErrorCardProps;
 
 export function RouteErrorState(props: RouteErrorStateProps) {
-  return <RouteErrorCard {...props} />
+  return <RouteErrorCard {...props} />;
 }
 
-type ReadyMatchRouteState = Extract<MatchRouteState, { status: 'ready' }>
+type ReadyMatchRouteState = Extract<MatchRouteState, { status: 'ready' }>;
 
 // PBW-68 Item 5 follow-up: keep the active and finish route loaders on the same
 // ready-state mapping path so future redirect/loader changes stay aligned in one place.
@@ -77,9 +77,9 @@ export async function loadMappedReadyMatchRouteState<T>(
   mode: MatchRouteMode,
   mapReadyState: (routeState: ReadyMatchRouteState) => T
 ): Promise<T> {
-  const routeState = await loadReadyMatchRouteState(matchId, mode)
+  const routeState = await loadReadyMatchRouteState(matchId, mode);
 
-  return mapReadyState(routeState)
+  return mapReadyState(routeState);
 }
 
 // PBW-68 Item 5 follow-up: exactOptionalPropertyTypes means the routes cannot pass
@@ -87,12 +87,12 @@ export async function loadMappedReadyMatchRouteState<T>(
 export function getOptionalFinishedAt(
   finishedAt: number | undefined
 ): { finishedAt: number } | Record<string, never> {
-  return typeof finishedAt === 'number' ? { finishedAt } : {}
+  return typeof finishedAt === 'number' ? { finishedAt } : {};
 }
 
 export async function loadReadyMatchRouteState(matchId: string, mode: MatchRouteMode) {
-  const matchData = await loadCurrentMatch()
-  const routeState = resolveMatchRouteState(matchId, matchData, mode)
+  const matchData = await loadCurrentMatch();
+  const routeState = resolveMatchRouteState(matchId, matchData, mode);
 
   switch (routeState.status) {
     case 'redirect-home':
@@ -100,26 +100,26 @@ export async function loadReadyMatchRouteState(matchId: string, mode: MatchRoute
         to: '/',
         replace: true,
         search: { error: routeState.error }
-      })
+      });
 
     case 'redirect-active':
       throw redirect({
         to: '/match/$id',
         params: { id: routeState.matchId },
         replace: true
-      })
+      });
 
     case 'redirect-finish':
       throw redirect({
         to: '/match/finish/$id',
         params: { id: routeState.matchId },
         replace: true
-      })
+      });
 
     case 'ready':
-      return routeState
+      return routeState;
 
     default:
-      throw new Error(`Expected ${mode} match route state to be ready after redirect guards.`)
+      throw new Error(`Expected ${mode} match route state to be ready after redirect guards.`);
   }
 }

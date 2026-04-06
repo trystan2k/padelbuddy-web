@@ -1,30 +1,30 @@
-import { useEffect, useState, type RefObject } from 'react'
-import mixpanel from 'mixpanel-browser'
+import { useEffect, useState, type RefObject } from 'react';
+import mixpanel from 'mixpanel-browser';
 
-import { i18n, initializeI18n } from '@/lib/i18n/i18n'
-import { registerSW } from '@/lib/pwa/registration'
-import { getOrCreateUserId } from '@/lib/user/id'
+import { i18n, initializeI18n } from '@/lib/i18n/i18n';
+import { registerSW } from '@/lib/pwa/registration';
+import { getOrCreateUserId } from '@/lib/user/id';
 
 function getDocumentLanguage() {
-  return i18n.resolvedLanguage ?? i18n.language ?? 'en'
+  return i18n.resolvedLanguage ?? i18n.language ?? 'en';
 }
 
 export function useRootDocumentLanguage() {
-  const [currentLang, setCurrentLang] = useState(getDocumentLanguage)
+  const [currentLang, setCurrentLang] = useState(getDocumentLanguage);
 
   useEffect(() => {
     const handleLanguageChanged = (lng: string) => {
-      setCurrentLang(lng || 'en')
-    }
+      setCurrentLang(lng || 'en');
+    };
 
-    i18n.on('languageChanged', handleLanguageChanged)
+    i18n.on('languageChanged', handleLanguageChanged);
 
     return () => {
-      i18n.off('languageChanged', handleLanguageChanged)
-    }
-  }, [])
+      i18n.off('languageChanged', handleLanguageChanged);
+    };
+  }, []);
 
-  return currentLang
+  return currentLang;
 }
 
 export function useRootInitializationEffects() {
@@ -34,28 +34,28 @@ export function useRootInitializationEffects() {
         autocapture: true,
         record_sessions_percent: 100,
         api_host: 'https://api-eu.mixpanel.com'
-      })
+      });
 
-      const userId = getOrCreateUserId()
-      mixpanel.identify(userId)
+      const userId = getOrCreateUserId();
+      mixpanel.identify(userId);
     }
 
     void initializeI18n().catch((error) => {
-      console.error('Failed to initialize i18n:', error)
-    })
+      console.error('Failed to initialize i18n:', error);
+    });
 
     if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
-      void registerSW()
+      void registerSW();
     }
-  }, [])
+  }, []);
 }
 
 export function useRemoveHydrationSpinner(routePendingRef: RefObject<HTMLDivElement | null>) {
   useEffect(() => {
-    routePendingRef.current?.remove()
-  }, [routePendingRef])
+    routePendingRef.current?.remove();
+  }, [routePendingRef]);
 }
 
 export function getRootErrorDocumentLanguage() {
-  return getDocumentLanguage()
+  return getDocumentLanguage();
 }

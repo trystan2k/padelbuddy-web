@@ -1,13 +1,13 @@
-import { useTranslation } from 'react-i18next'
+import { useTranslation } from 'react-i18next';
 
-import { Card } from '@/components/ui/Card/Card'
+import { Card } from '@/components/ui/Card/Card';
 
-import styles from './InfoCard.module.css'
+import styles from './InfoCard.module.css';
 
 export interface InfoCardProps {
-  isGoldenPoint: boolean
-  isSuperTiebreak: boolean
-  sideSwitchPrompts: boolean
+  isGoldenPoint: boolean;
+  isSuperTiebreak: boolean;
+  sideSwitchPrompts: boolean;
 }
 
 /**
@@ -16,7 +16,7 @@ export interface InfoCardProps {
  * Container: 177px width, corner radius 20px
  */
 export function InfoCard({ isGoldenPoint, isSuperTiebreak, sideSwitchPrompts }: InfoCardProps) {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   return (
     <Card className={styles.container} data-testid="info-card">
@@ -33,5 +33,5 @@ export function InfoCard({ isGoldenPoint, isSuperTiebreak, sideSwitchPrompts }: 
         </span>
       </div>
     </Card>
-  )
+  );
 }

@@ -1,21 +1,21 @@
-import { useTranslation } from 'react-i18next'
+import { useTranslation } from 'react-i18next';
 
-import { TrophyIcon } from '@/components/ui/Icon/TrophyIcon'
-import { Button } from '@/components/ui/Button/Button'
-import { Card } from '@/components/ui/Card/Card'
-import type { MatchTeamId } from '@/core/match/types'
-import { cn } from '@/lib/utils/cn'
+import { TrophyIcon } from '@/components/ui/Icon/TrophyIcon';
+import { Button } from '@/components/ui/Button/Button';
+import { Card } from '@/components/ui/Card/Card';
+import type { MatchTeamId } from '@/core/match/types';
+import { cn } from '@/lib/utils/cn';
 
-import styles from './WinnerCard.module.css'
+import styles from './WinnerCard.module.css';
 
 export interface WinnerCardProps {
-  winnerLabel: string
-  winnerName: string
-  winnerTeamId?: MatchTeamId
-  isStartingNewMatch: boolean
-  isContinuingMatch: boolean
-  onNewMatch: () => void
-  onContinue: () => void
+  winnerLabel: string;
+  winnerName: string;
+  winnerTeamId?: MatchTeamId;
+  isStartingNewMatch: boolean;
+  isContinuingMatch: boolean;
+  onNewMatch: () => void;
+  onContinue: () => void;
 }
 
 export function WinnerCard({
@@ -27,7 +27,7 @@ export function WinnerCard({
   onNewMatch,
   onContinue
 }: WinnerCardProps) {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   return (
     <Card className={styles.card} data-testid="match-end-winner-card">
@@ -75,5 +75,5 @@ export function WinnerCard({
         </div>
       </div>
     </Card>
-  )
+  );
 }

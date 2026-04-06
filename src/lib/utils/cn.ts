@@ -8,5 +8,5 @@ export function cn(...classes: (string | undefined | null | false)[]): string {
     .flat()
     .filter((x): x is string => typeof x === 'string' && x.length > 0)
     .join(' ')
-    .trim()
+    .trim();
 }

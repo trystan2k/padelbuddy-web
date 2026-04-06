@@ -150,13 +150,13 @@
 
 ```typescript
 interface SetupFormData {
-  team1Name: string
-  team2Name: string
-  format: MatchFormat
-  gameMode: MatchGameMode
-  initialServer: MatchTeamId
-  decidingSetSuperTiebreak: boolean
-  sideSwitchPrompts: boolean
+  team1Name: string;
+  team2Name: string;
+  format: MatchFormat;
+  gameMode: MatchGameMode;
+  initialServer: MatchTeamId;
+  decidingSetSuperTiebreak: boolean;
+  sideSwitchPrompts: boolean;
 }
 ```
 

@@ -13,19 +13,19 @@ import {
   type MatchSetupValidationIssue,
   type MatchSetupValidationResult,
   type MatchSide
-} from './types'
-import { isCountdownTimerDuration, isMatchTeamId, isRecord } from './guards'
+} from './types';
+import { isCountdownTimerDuration, isMatchTeamId, isRecord } from './guards';
 
 function createIssue(field: string, message: string): MatchSetupValidationIssue {
   return {
     field,
     message
-  }
+  };
 }
 
 function describeValue(value: unknown): string {
   if (typeof value === 'string') {
-    return value
+    return value;
   }
 
   if (
@@ -34,95 +34,95 @@ function describeValue(value: unknown): string {
     typeof value === 'bigint' ||
     typeof value === 'symbol'
   ) {
-    return String(value)
+    return String(value);
   }
 
   if (value === null) {
-    return 'null'
+    return 'null';
   }
 
   if (value === undefined) {
-    return 'undefined'
+    return 'undefined';
   }
 
   try {
-    const serializedValue = JSON.stringify(value)
+    const serializedValue = JSON.stringify(value);
 
-    return serializedValue ?? 'unserializable value'
+    return serializedValue ?? 'unserializable value';
   } catch {
     if (Array.isArray(value)) {
-      return '[unserializable array]'
+      return '[unserializable array]';
     }
 
-    return '[unserializable object]'
+    return '[unserializable object]';
   }
 }
 
 function isMatchFormat(value: unknown): value is MatchFormat {
-  return typeof value === 'string' && matchFormats.some((candidate) => candidate === value)
+  return typeof value === 'string' && matchFormats.some((candidate) => candidate === value);
 }
 
 function isMatchGameMode(value: unknown): value is MatchGameMode {
-  return typeof value === 'string' && gameModes.some((candidate) => candidate === value)
+  return typeof value === 'string' && gameModes.some((candidate) => candidate === value);
 }
 
 function isPlayerNames(value: unknown): value is string[] {
-  return Array.isArray(value) && value.every((playerName) => typeof playerName === 'string')
+  return Array.isArray(value) && value.every((playerName) => typeof playerName === 'string');
 }
 
 function isBestOfOneDecidingBehavior(value: unknown): value is BestOfOneDecidingBehavior {
   return (
     typeof value === 'string' && bestOfOneDecidingBehaviors.some((candidate) => candidate === value)
-  )
+  );
 }
 
 const officialMaxSetsByFormat = {
   'best-of-1': 1,
   'best-of-3': 3,
   'best-of-5': 5
-} as const
+} as const;
 
 const officialSetsToWinByFormat = {
   'best-of-1': 1,
   'best-of-3': 2,
   'best-of-5': 3
-} as const
+} as const;
 
 function validateMatchSide(
   value: unknown,
   index: number
 ): {
-  side: MatchSide | null
-  issues: MatchSetupValidationIssue[]
+  side: MatchSide | null;
+  issues: MatchSetupValidationIssue[];
 } {
-  const sideField = `sides[${index}]`
+  const sideField = `sides[${index}]`;
 
   if (!isRecord(value)) {
     return {
       side: null,
       issues: [createIssue(sideField, 'Each side must be an object.')]
-    }
+    };
   }
 
-  const issues: MatchSetupValidationIssue[] = []
-  const id = isMatchTeamId(value.id) ? value.id : null
-  const playerNames = isPlayerNames(value.playerNames) ? value.playerNames : null
+  const issues: MatchSetupValidationIssue[] = [];
+  const id = isMatchTeamId(value.id) ? value.id : null;
+  const playerNames = isPlayerNames(value.playerNames) ? value.playerNames : null;
 
   if (id === null) {
-    issues.push(createIssue(`${sideField}.id`, 'Side identifiers must be team-1 and team-2.'))
+    issues.push(createIssue(`${sideField}.id`, 'Side identifiers must be team-1 and team-2.'));
   }
 
   if (playerNames === null) {
     issues.push(
       createIssue(`${sideField}.playerNames`, 'Side playerNames must be an array of strings.')
-    )
+    );
   }
 
   if (id === null || playerNames === null) {
     return {
       side: null,
       issues
-    }
+    };
   }
 
   return {
@@ -131,69 +131,69 @@ function validateMatchSide(
       playerNames
     },
     issues
-  }
+  };
 }
 
 function normalizeSides(sides: unknown): {
-  normalizedSides: [MatchSide, MatchSide] | null
-  issues: MatchSetupValidationIssue[]
+  normalizedSides: [MatchSide, MatchSide] | null;
+  issues: MatchSetupValidationIssue[];
 } {
-  const issues: MatchSetupValidationIssue[] = []
+  const issues: MatchSetupValidationIssue[] = [];
 
   if (!Array.isArray(sides) || sides.length !== 2) {
-    issues.push(createIssue('sides', 'Match setup must include exactly two sides.'))
+    issues.push(createIssue('sides', 'Match setup must include exactly two sides.'));
 
     return {
       normalizedSides: null,
       issues
-    }
+    };
   }
 
-  const sideMap = new Map<MatchTeamId, MatchSide>()
+  const sideMap = new Map<MatchTeamId, MatchSide>();
 
   for (const [index, sideEntry] of sides.entries()) {
-    const { side, issues: sideIssues } = validateMatchSide(sideEntry, index)
+    const { side, issues: sideIssues } = validateMatchSide(sideEntry, index);
 
     if (sideIssues.length > 0) {
-      issues.push(...sideIssues)
-      continue
+      issues.push(...sideIssues);
+      continue;
     }
 
     if (!side) {
-      continue
+      continue;
     }
 
     if (sideMap.has(side.id)) {
-      issues.push(createIssue('sides', `Duplicate side id ${side.id} is not allowed.`))
-      continue
+      issues.push(createIssue('sides', `Duplicate side id ${side.id} is not allowed.`));
+      continue;
     }
 
-    sideMap.set(side.id, side)
+    sideMap.set(side.id, side);
   }
 
   if (issues.length > 0) {
     return {
       normalizedSides: null,
       issues
-    }
+    };
   }
 
-  const teamOne = sideMap.get('team-1')
-  const teamTwo = sideMap.get('team-2')
+  const teamOne = sideMap.get('team-1');
+  const teamTwo = sideMap.get('team-2');
 
   if (!teamOne || !teamTwo) {
-    issues.push(createIssue('sides', 'Both team-1 and team-2 sides are required.'))
+    issues.push(createIssue('sides', 'Both team-1 and team-2 sides are required.'));
 
     return {
       normalizedSides: null,
       issues
-    }
+    };
   }
 
   return {
     normalizedSides: [teamOne, teamTwo],
     issues
-  }
+  };
 }
 
 export function validateMatchSetup(input: unknown): MatchSetupValidationResult {
@@ -201,126 +201,126 @@ export function validateMatchSetup(input: unknown): MatchSetupValidationResult {
     return {
       success: false,
       issues: [createIssue('setup', 'Match setup must be an object.')]
-    }
+    };
   }
 
-  const issues: MatchSetupValidationIssue[] = []
-  const formatValue = input.format
-  const gameModeValue = input.gameMode
-  const initialServerValue = input.initialServer
-  const decidingSetSuperTiebreakValue = input.decidingSetSuperTiebreak
-  const audioAnnouncementsEnabledValue = input.audioAnnouncementsEnabled
-  const servingIndicatorEnabledValue = input.servingIndicatorEnabled
-  const countdownTimerEnabledValue = input.countdownTimerEnabled
-  const countdownTimerDurationValue = input.countdownTimerDuration
-  const bestOfOneDecidingBehaviorValue = input.bestOfOneDecidingBehavior
-  const sideSwitchPromptsValue = input.sideSwitchPrompts
-  const sidesValue = input.sides
+  const issues: MatchSetupValidationIssue[] = [];
+  const formatValue = input.format;
+  const gameModeValue = input.gameMode;
+  const initialServerValue = input.initialServer;
+  const decidingSetSuperTiebreakValue = input.decidingSetSuperTiebreak;
+  const audioAnnouncementsEnabledValue = input.audioAnnouncementsEnabled;
+  const servingIndicatorEnabledValue = input.servingIndicatorEnabled;
+  const countdownTimerEnabledValue = input.countdownTimerEnabled;
+  const countdownTimerDurationValue = input.countdownTimerDuration;
+  const bestOfOneDecidingBehaviorValue = input.bestOfOneDecidingBehavior;
+  const sideSwitchPromptsValue = input.sideSwitchPrompts;
+  const sidesValue = input.sides;
 
-  let format: MatchFormat | null = null
-  let gameMode: MatchGameMode | null = null
-  let initialServer: MatchTeamId | null = null
-  let decidingSetSuperTiebreak: boolean | null = null
-  let audioAnnouncementsEnabled: boolean | null = null
-  let servingIndicatorEnabled: boolean | null = null
-  let countdownTimerEnabled: boolean | null = null
-  let countdownTimerDuration: CountdownTimerDuration | null = null
-  let sideSwitchPrompts: boolean | null = null
-  let bestOfOneDecidingBehavior: BestOfOneDecidingBehavior | undefined
+  let format: MatchFormat | null = null;
+  let gameMode: MatchGameMode | null = null;
+  let initialServer: MatchTeamId | null = null;
+  let decidingSetSuperTiebreak: boolean | null = null;
+  let audioAnnouncementsEnabled: boolean | null = null;
+  let servingIndicatorEnabled: boolean | null = null;
+  let countdownTimerEnabled: boolean | null = null;
+  let countdownTimerDuration: CountdownTimerDuration | null = null;
+  let sideSwitchPrompts: boolean | null = null;
+  let bestOfOneDecidingBehavior: BestOfOneDecidingBehavior | undefined;
 
   if (isMatchFormat(formatValue)) {
-    format = formatValue
+    format = formatValue;
   } else {
-    issues.push(createIssue('format', `Unsupported match format: ${describeValue(formatValue)}`))
+    issues.push(createIssue('format', `Unsupported match format: ${describeValue(formatValue)}`));
   }
 
   if (isMatchGameMode(gameModeValue)) {
-    gameMode = gameModeValue
+    gameMode = gameModeValue;
   } else {
-    issues.push(createIssue('gameMode', `Unsupported game mode: ${describeValue(gameModeValue)}`))
+    issues.push(createIssue('gameMode', `Unsupported game mode: ${describeValue(gameModeValue)}`));
   }
 
   if (isMatchTeamId(initialServerValue)) {
-    initialServer = initialServerValue
+    initialServer = initialServerValue;
   } else {
     issues.push(
       createIssue(
         'initialServer',
         `Unsupported initial server: ${describeValue(initialServerValue)}`
       )
-    )
+    );
   }
 
   if (typeof sideSwitchPromptsValue === 'boolean') {
-    sideSwitchPrompts = sideSwitchPromptsValue
+    sideSwitchPrompts = sideSwitchPromptsValue;
   } else {
-    issues.push(createIssue('sideSwitchPrompts', 'Side-switch prompts must be a boolean value.'))
+    issues.push(createIssue('sideSwitchPrompts', 'Side-switch prompts must be a boolean value.'));
   }
 
   if (typeof countdownTimerEnabledValue === 'boolean') {
-    countdownTimerEnabled = countdownTimerEnabledValue
+    countdownTimerEnabled = countdownTimerEnabledValue;
   } else {
     issues.push(
       createIssue('countdownTimerEnabled', 'Countdown timer enabled must be a boolean value.')
-    )
+    );
   }
 
   if (typeof servingIndicatorEnabledValue === 'boolean') {
-    servingIndicatorEnabled = servingIndicatorEnabledValue
+    servingIndicatorEnabled = servingIndicatorEnabledValue;
   } else {
     issues.push(
       createIssue('servingIndicatorEnabled', 'Serving indicator enabled must be a boolean value.')
-    )
+    );
   }
 
   if (typeof audioAnnouncementsEnabledValue === 'boolean') {
-    audioAnnouncementsEnabled = audioAnnouncementsEnabledValue
+    audioAnnouncementsEnabled = audioAnnouncementsEnabledValue;
   } else {
     issues.push(
       createIssue(
         'audioAnnouncementsEnabled',
         'Audio announcements enabled must be a boolean value.'
       )
-    )
+    );
   }
 
   if (isCountdownTimerDuration(countdownTimerDurationValue)) {
-    countdownTimerDuration = countdownTimerDurationValue
+    countdownTimerDuration = countdownTimerDurationValue;
   } else {
     issues.push(
       createIssue(
         'countdownTimerDuration',
         `Unsupported countdown timer duration: ${describeValue(countdownTimerDurationValue)}`
       )
-    )
+    );
   }
 
   if (typeof decidingSetSuperTiebreakValue === 'boolean') {
-    decidingSetSuperTiebreak = decidingSetSuperTiebreakValue
+    decidingSetSuperTiebreak = decidingSetSuperTiebreakValue;
   } else {
     issues.push(
       createIssue(
         'decidingSetSuperTiebreak',
         'Deciding-set super tiebreak must be a boolean value.'
       )
-    )
+    );
   }
 
   if (bestOfOneDecidingBehaviorValue !== undefined) {
     if (isBestOfOneDecidingBehavior(bestOfOneDecidingBehaviorValue)) {
-      bestOfOneDecidingBehavior = bestOfOneDecidingBehaviorValue
+      bestOfOneDecidingBehavior = bestOfOneDecidingBehaviorValue;
     } else {
       issues.push(
         createIssue(
           'bestOfOneDecidingBehavior',
           `Unsupported best-of-1 deciding behavior: ${describeValue(bestOfOneDecidingBehaviorValue)}`
         )
-      )
+      );
     }
   }
 
-  const { normalizedSides, issues: sideIssues } = normalizeSides(sidesValue)
-  issues.push(...sideIssues)
+  const { normalizedSides, issues: sideIssues } = normalizeSides(sidesValue);
+  issues.push(...sideIssues);
 
   if (format === 'best-of-1') {
     if (decidingSetSuperTiebreak === true && bestOfOneDecidingBehavior === undefined) {
@@ -329,7 +329,7 @@ export function validateMatchSetup(input: unknown): MatchSetupValidationResult {
           'bestOfOneDecidingBehavior',
           'Best-of-1 matches must define the deciding behavior when deciding-set super tiebreak is enabled.'
         )
-      )
+      );
     }
   } else if (bestOfOneDecidingBehavior !== undefined) {
     issues.push(
@@ -337,7 +337,7 @@ export function validateMatchSetup(input: unknown): MatchSetupValidationResult {
         'bestOfOneDecidingBehavior',
         'Best-of-1 deciding behavior is only allowed for best-of-1 matches.'
       )
-    )
+    );
   }
 
   if (bestOfOneDecidingBehavior === 'super-tiebreak' && decidingSetSuperTiebreak === false) {
@@ -346,7 +346,7 @@ export function validateMatchSetup(input: unknown): MatchSetupValidationResult {
         'bestOfOneDecidingBehavior',
         'Best-of-1 super-tiebreak deciding behavior requires deciding-set super tiebreak to be enabled.'
       )
-    )
+    );
   }
 
   if (
@@ -365,13 +365,13 @@ export function validateMatchSetup(input: unknown): MatchSetupValidationResult {
     return {
       success: false,
       issues
-    }
+    };
   }
 
   const normalizedBestOfOneDecidingBehavior =
     format === 'best-of-1'
       ? (bestOfOneDecidingBehavior ?? defaultBestOfOneDecidingBehavior)
-      : defaultBestOfOneDecidingBehavior
+      : defaultBestOfOneDecidingBehavior;
 
   const decidingSetMode: MatchSetMode =
     format === 'best-of-1'
@@ -380,7 +380,7 @@ export function validateMatchSetup(input: unknown): MatchSetupValidationResult {
         : 'standard'
       : decidingSetSuperTiebreak
         ? 'super-tiebreak'
-        : 'standard'
+        : 'standard';
 
   return {
     success: true,
@@ -401,11 +401,11 @@ export function validateMatchSetup(input: unknown): MatchSetupValidationResult {
       officialSetsToWin: officialSetsToWinByFormat[format],
       setCap: officialMaxSetsByFormat[format]
     }
-  }
+  };
 }
 
 export function createMatchSetup(input: unknown): MatchSetup {
-  const result = validateMatchSetup(input)
+  const result = validateMatchSetup(input);
 
   if (!result.success) {
     throw new Error(
@@ -413,8 +413,8 @@ export function createMatchSetup(input: unknown): MatchSetup {
         'Invalid match setup:',
         ...result.issues.map((issue) => `- ${issue.field}: ${issue.message}`)
       ].join('\n')
-    )
+    );
   }
 
-  return result.data
+  return result.data;
 }

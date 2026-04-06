@@ -1,14 +1,14 @@
-import { describe, expect, test } from 'vitest'
+import { describe, expect, test } from 'vitest';
 
-import { createMatchSetup } from '@/core/match/validation'
+import { createMatchSetup } from '@/core/match/validation';
 import {
   countdownTimerDurations,
   defaultCountdownTimerDuration,
   defaultMatchFormat,
   gameModes,
   matchFormats
-} from '@/core/match/types'
-import { projectMatch } from '@/core/match/replay'
+} from '@/core/match/types';
+import { projectMatch } from '@/core/match/replay';
 
 describe('match domain public exports', () => {
   test('exposes the supported setup baselines and replay entrypoint', () => {
@@ -32,12 +32,12 @@ describe('match domain public exports', () => {
           playerNames: ['Carla', 'Dani']
         }
       ]
-    })
+    });
 
-    expect(matchFormats).toEqual(['best-of-1', 'best-of-3', 'best-of-5'])
-    expect(countdownTimerDurations).toEqual([60, 90, 120])
-    expect(defaultCountdownTimerDuration).toBe(90)
-    expect(defaultMatchFormat).toBe('best-of-3')
-    expect(projectMatch(setup, []).derived.status).toBe('in-progress')
-  })
-})
+    expect(matchFormats).toEqual(['best-of-1', 'best-of-3', 'best-of-5']);
+    expect(countdownTimerDurations).toEqual([60, 90, 120]);
+    expect(defaultCountdownTimerDuration).toBe(90);
+    expect(defaultMatchFormat).toBe('best-of-3');
+    expect(projectMatch(setup, []).derived.status).toBe('in-progress');
+  });
+});

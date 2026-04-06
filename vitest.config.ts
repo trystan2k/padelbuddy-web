@@ -1,7 +1,7 @@
-import { playwright } from '@vitest/browser-playwright'
-import { defineConfig } from 'vitest/config'
+import { playwright } from '@vitest/browser-playwright';
+import { defineConfig } from 'vitest/config';
 
-import { appViteConfig } from './vite.config'
+import { appViteConfig } from './vite.config';
 
 export default defineConfig({
   ...appViteConfig,
@@ -49,4 +49,4 @@ export default defineConfig({
       }
     ]
   }
-})
+});

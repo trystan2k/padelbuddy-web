@@ -1,6 +1,6 @@
-import { describe, expect, it } from 'vitest'
-import { render } from 'vitest-browser-react'
-import { ShareScreen } from '@/components/ShareScreen/ShareScreen'
+import { describe, expect, it } from 'vitest';
+import { render } from 'vitest-browser-react';
+import { ShareScreen } from '@/components/ShareScreen/ShareScreen';
 
 describe('ShareScreen', () => {
   const defaultProps = {
@@ -14,32 +14,32 @@ describe('ShareScreen', () => {
     ],
     durationValue: '1h 22m',
     dateValue: '22/03/26'
-  }
+  };
 
   it('renders winner name', async () => {
-    const screen = await render(<ShareScreen {...defaultProps} />)
-    await expect.element(screen.getByText('Alvaro y Enrique').first()).toBeInTheDocument()
-  })
+    const screen = await render(<ShareScreen {...defaultProps} />);
+    await expect.element(screen.getByText('Alvaro y Enrique').first()).toBeInTheDocument();
+  });
 
   it('renders team 1 name', async () => {
-    const screen = await render(<ShareScreen {...defaultProps} />)
-    await expect.element(screen.getByText('Alvaro y Enrique').first()).toBeInTheDocument()
-  })
+    const screen = await render(<ShareScreen {...defaultProps} />);
+    await expect.element(screen.getByText('Alvaro y Enrique').first()).toBeInTheDocument();
+  });
 
   it('renders team 2 name', async () => {
-    const screen = await render(<ShareScreen {...defaultProps} />)
-    await expect.element(screen.getByText('Pablo y Thiago').first()).toBeInTheDocument()
-  })
+    const screen = await render(<ShareScreen {...defaultProps} />);
+    await expect.element(screen.getByText('Pablo y Thiago').first()).toBeInTheDocument();
+  });
 
   it('renders set scores', async () => {
-    const screen = await render(<ShareScreen {...defaultProps} />)
-    await expect.element(screen.getByText('6', { exact: true }).first()).toBeInTheDocument()
-    await expect.element(screen.getByText('4', { exact: true }).first()).toBeInTheDocument()
-  })
+    const screen = await render(<ShareScreen {...defaultProps} />);
+    await expect.element(screen.getByText('6', { exact: true }).first()).toBeInTheDocument();
+    await expect.element(screen.getByText('4', { exact: true }).first()).toBeInTheDocument();
+  });
 
   it('renders duration and date', async () => {
-    const screen = await render(<ShareScreen {...defaultProps} />)
-    await expect.element(screen.getByText('1h 22m')).toBeInTheDocument()
-    await expect.element(screen.getByText('22/03/26')).toBeInTheDocument()
-  })
-})
+    const screen = await render(<ShareScreen {...defaultProps} />);
+    await expect.element(screen.getByText('1h 22m')).toBeInTheDocument();
+    await expect.element(screen.getByText('22/03/26')).toBeInTheDocument();
+  });
+});

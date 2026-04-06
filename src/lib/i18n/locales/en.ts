@@ -351,4 +351,4 @@ export default {
       confirm: 'Switched'
     }
   }
-} as const
+} as const;

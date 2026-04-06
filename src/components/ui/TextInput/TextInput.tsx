@@ -1,21 +1,21 @@
-import { useCallback, type ComponentPropsWithoutRef } from 'react'
+import { useCallback, type ComponentPropsWithoutRef } from 'react';
 
-import { Input } from '@base-ui/react/input'
+import { Input } from '@base-ui/react/input';
 
-import { cn } from '@/lib/utils/cn'
+import { cn } from '@/lib/utils/cn';
 
-import type { Accent } from '@/components/ui/types'
-import styles from './TextInput.module.css'
+import type { Accent } from '@/components/ui/types';
+import styles from './TextInput.module.css';
 
-export type TextInputAccent = Accent
+export type TextInputAccent = Accent;
 
 export interface TextInputProps extends Omit<
   ComponentPropsWithoutRef<'input'>,
   'onChange' | 'value'
 > {
-  value: string
-  onChange: (value: string) => void
-  accent?: TextInputAccent
+  value: string;
+  onChange: (value: string) => void;
+  accent?: TextInputAccent;
 }
 
 export function TextInput({
@@ -35,9 +35,9 @@ export function TextInput({
       ? styles.accentPrimary
       : accent === 'secondary'
         ? styles.accentSecondary
-        : undefined
+        : undefined;
 
-  const handleValueChange = useCallback((newValue: string) => onChange(newValue), [onChange])
+  const handleValueChange = useCallback((newValue: string) => onChange(newValue), [onChange]);
 
   return (
     <Input
@@ -52,5 +52,5 @@ export function TextInput({
       aria-label={ariaLabel}
       {...props}
     />
-  )
+  );
 }

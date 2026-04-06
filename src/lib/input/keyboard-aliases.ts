@@ -3,14 +3,14 @@ export const configurableKeyboardActions = [
   'revert-team-1',
   'add-team-2',
   'revert-team-2'
-] as const
+] as const;
 
-export type ConfigurableKeyboardAction = (typeof configurableKeyboardActions)[number]
-export type KeyboardAction = ConfigurableKeyboardAction | 'undo' | 'unknown'
-export type RemoteControllerBindings = Record<ConfigurableKeyboardAction, string | null>
+export type ConfigurableKeyboardAction = (typeof configurableKeyboardActions)[number];
+export type KeyboardAction = ConfigurableKeyboardAction | 'undo' | 'unknown';
+export type RemoteControllerBindings = Record<ConfigurableKeyboardAction, string | null>;
 
 export interface KeyboardAliasMap {
-  [key: string]: KeyboardAction
+  [key: string]: KeyboardAction;
 }
 
 const legacyKeyboardAliases: KeyboardAliasMap = {
@@ -30,14 +30,14 @@ const legacyKeyboardAliases: KeyboardAliasMap = {
   Delete: 'undo',
   Escape: 'undo',
   r: 'undo'
-}
+};
 
 export const defaultRemoteControllerBindings: RemoteControllerBindings = {
   'add-team-1': 'ArrowLeft',
   'revert-team-1': 'Backspace',
   'add-team-2': 'ArrowRight',
   'revert-team-2': 'Delete'
-}
+};
 
 const keyboardDisplayLabels: Partial<Record<string, string>> = {
   ' ': 'Space',
@@ -54,61 +54,61 @@ const keyboardDisplayLabels: Partial<Record<string, string>> = {
   PageDown: 'Page Down',
   PageUp: 'Page Up',
   Tab: 'Tab'
-}
+};
 
 export function getActionFromKey(
   key: string,
   customBindings?: RemoteControllerBindings | null
 ): KeyboardAction {
-  const normalizedKey = normalizeKeyboardBindingKey(key)
+  const normalizedKey = normalizeKeyboardBindingKey(key);
 
   if (!normalizedKey) {
-    return 'unknown'
+    return 'unknown';
   }
 
-  const customAction = getActionFromBindings(normalizedKey, customBindings)
+  const customAction = getActionFromBindings(normalizedKey, customBindings);
 
   if (customAction !== 'unknown') {
-    return customAction
+    return customAction;
   }
 
-  return legacyKeyboardAliases[normalizedKey] ?? 'unknown'
+  return legacyKeyboardAliases[normalizedKey] ?? 'unknown';
 }
 
 export function normalizeKeyboardBindingKey(key: string): string {
   if (!key) {
-    return ''
+    return '';
   }
 
-  return key.length === 1 ? key.toLowerCase() : key
+  return key.length === 1 ? key.toLowerCase() : key;
 }
 
 export function getKeyboardBindingDisplayLabel(key: string | null | undefined): string {
   if (!key) {
-    return ''
+    return '';
   }
 
   if (key.length === 1) {
-    return key === ' ' ? 'Space' : key.toUpperCase()
+    return key === ' ' ? 'Space' : key.toUpperCase();
   }
 
-  return keyboardDisplayLabels[key] ?? key
+  return keyboardDisplayLabels[key] ?? key;
 }
 
 export function createEmptyRemoteControllerBindings(): RemoteControllerBindings {
-  const bindings = Object.fromEntries(configurableKeyboardActions.map((action) => [action, null]))
+  const bindings = Object.fromEntries(configurableKeyboardActions.map((action) => [action, null]));
 
   if (!isRemoteControllerBindingsRecord(bindings)) {
-    throw new Error('Unable to create empty remote controller bindings.')
+    throw new Error('Unable to create empty remote controller bindings.');
   }
 
-  return bindings
+  return bindings;
 }
 
 function isRemoteControllerBindingsRecord(
   value: Record<string, unknown>
 ): value is RemoteControllerBindings {
-  return configurableKeyboardActions.every((action) => value[action] === null)
+  return configurableKeyboardActions.every((action) => value[action] === null);
 }
 
 export function createRemoteControllerBindings(
@@ -117,7 +117,7 @@ export function createRemoteControllerBindings(
   return {
     ...defaultRemoteControllerBindings,
     ...overrides
-  }
+  };
 }
 
 export function assignRemoteControllerBinding(
@@ -125,21 +125,21 @@ export function assignRemoteControllerBinding(
   action: ConfigurableKeyboardAction,
   key: string
 ): RemoteControllerBindings {
-  const nextBindings = { ...currentBindings }
-  const normalizedNewKey = normalizeKeyboardBindingKey(key)
+  const nextBindings = { ...currentBindings };
+  const normalizedNewKey = normalizeKeyboardBindingKey(key);
 
   for (const currentAction of configurableKeyboardActions) {
     if (currentAction !== action) {
-      const existingKey = nextBindings[currentAction]
+      const existingKey = nextBindings[currentAction];
       if (existingKey && normalizeKeyboardBindingKey(existingKey) === normalizedNewKey) {
-        nextBindings[currentAction] = null
+        nextBindings[currentAction] = null;
       }
     }
   }
 
-  nextBindings[action] = key
+  nextBindings[action] = key;
 
-  return nextBindings
+  return nextBindings;
 }
 
 function getActionFromBindings(
@@ -147,16 +147,16 @@ function getActionFromBindings(
   bindings?: RemoteControllerBindings | null
 ): KeyboardAction {
   if (!bindings) {
-    return 'unknown'
+    return 'unknown';
   }
 
   for (const action of configurableKeyboardActions) {
-    const configuredKey = bindings[action]
+    const configuredKey = bindings[action];
 
     if (configuredKey && normalizeKeyboardBindingKey(configuredKey) === normalizedKey) {
-      return action
+      return action;
     }
   }
 
-  return 'unknown'
+  return 'unknown';
 }

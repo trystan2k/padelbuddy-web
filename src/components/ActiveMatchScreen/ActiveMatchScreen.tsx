@@ -1,36 +1,36 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useNavigate, useRouter } from '@tanstack/react-router'
-import { useTranslation } from 'react-i18next'
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useNavigate, useRouter } from '@tanstack/react-router';
+import { useTranslation } from 'react-i18next';
 
-import { Layout } from '@/components/Layout/Layout'
-import { RotateDeviceBlocker } from '@/components/ui/RotateDeviceBlocker/RotateDeviceBlocker'
-import { TopBar } from '@/components/ui/TopBar/TopBar'
-import { createEmptyRemoteControllerBindings } from '@/lib/input/keyboard-aliases'
-import { loadRemoteControllerBindingsWithFallback } from '@/lib/input/remote-controller-storage'
-import { useInputHandler } from '@/lib/input/use-input-handler'
-import { prepareCurrentMatchRouteNavigation } from '@/lib/router/current-match-route-flow'
-import { useOrientationDetection } from '@/lib/orientation/useOrientationDetection'
-import { cn } from '@/lib/utils/cn'
-import { getViewTransitionNavigationOptions } from '@/lib/utils/view-transitions'
+import { Layout } from '@/components/Layout/Layout';
+import { RotateDeviceBlocker } from '@/components/ui/RotateDeviceBlocker/RotateDeviceBlocker';
+import { TopBar } from '@/components/ui/TopBar/TopBar';
+import { createEmptyRemoteControllerBindings } from '@/lib/input/keyboard-aliases';
+import { loadRemoteControllerBindingsWithFallback } from '@/lib/input/remote-controller-storage';
+import { useInputHandler } from '@/lib/input/use-input-handler';
+import { prepareCurrentMatchRouteNavigation } from '@/lib/router/current-match-route-flow';
+import { useOrientationDetection } from '@/lib/orientation/useOrientationDetection';
+import { cn } from '@/lib/utils/cn';
+import { getViewTransitionNavigationOptions } from '@/lib/utils/view-transitions';
 
-import { getMatchTeamName } from '@/core/match/team-name'
-import type { MatchAction, MatchSetup, MatchTeamId } from '@/core/match/types'
+import { getMatchTeamName } from '@/core/match/team-name';
+import type { MatchAction, MatchSetup, MatchTeamId } from '@/core/match/types';
 
-import { SetsCard } from './SetsCard/SetsCard'
-import { SideSwitchPrompt } from './SideSwitchPrompt/SideSwitchPrompt'
-import { TeamPanel } from './TeamPanel/TeamPanel'
-import { useMatchAnnouncements } from './useMatchAnnouncements'
-import { useMatchSession } from './useMatchSession'
-import { useMatchTimer } from './useMatchTimer'
+import { SetsCard } from './SetsCard/SetsCard';
+import { SideSwitchPrompt } from './SideSwitchPrompt/SideSwitchPrompt';
+import { TeamPanel } from './TeamPanel/TeamPanel';
+import { useMatchAnnouncements } from './useMatchAnnouncements';
+import { useMatchSession } from './useMatchSession';
+import { useMatchTimer } from './useMatchTimer';
 
-import styles from './ActiveMatchScreen.module.css'
+import styles from './ActiveMatchScreen.module.css';
 
 export interface ActiveMatchScreenProps {
-  matchId: string
-  initialSetup: MatchSetup
-  initialActions: MatchAction[]
-  startedAt: number
-  finishedAt?: number
+  matchId: string;
+  initialSetup: MatchSetup;
+  initialActions: MatchAction[];
+  startedAt: number;
+  finishedAt?: number;
 }
 
 export function ActiveMatchScreen({
@@ -40,13 +40,13 @@ export function ActiveMatchScreen({
   startedAt,
   finishedAt
 }: ActiveMatchScreenProps) {
-  const navigate = useNavigate()
-  const router = useRouter()
-  const { t } = useTranslation()
-  const { isPortrait } = useOrientationDetection()
-  const [sideSwitchDismissed, setSideSwitchDismissed] = useState(false)
-  const [isNavigatingToFinish, setIsNavigatingToFinish] = useState(false)
-  const [remoteBindings, setRemoteBindings] = useState(createEmptyRemoteControllerBindings())
+  const navigate = useNavigate();
+  const router = useRouter();
+  const { t } = useTranslation();
+  const { isPortrait } = useOrientationDetection();
+  const [sideSwitchDismissed, setSideSwitchDismissed] = useState(false);
+  const [isNavigatingToFinish, setIsNavigatingToFinish] = useState(false);
+  const [remoteBindings, setRemoteBindings] = useState(createEmptyRemoteControllerBindings());
   const { snapshot, scorePoint, undoScoreAction, undoScoreActionForTeam, finishMatch, isLoading } =
     useMatchSession({
       matchId,
@@ -54,77 +54,77 @@ export function ActiveMatchScreen({
       initialActions,
       startedAt,
       ...(typeof finishedAt === 'number' ? { initialFinishedAt: finishedAt } : {})
-    })
+    });
 
   const isMatchCompleted =
-    snapshot.projection.derived.status === 'completed' || typeof snapshot.finishedAt === 'number'
-  const countdownEnabled = snapshot.projection.setup.countdownTimerEnabled
+    snapshot.projection.derived.status === 'completed' || typeof snapshot.finishedAt === 'number';
+  const countdownEnabled = snapshot.projection.setup.countdownTimerEnabled;
   const { formattedTime } = useMatchTimer({
     startedAt: snapshot.startedAt,
     ...(typeof snapshot.finishedAt === 'number' ? { finishedAt: snapshot.finishedAt } : {}),
     isMatchCompleted,
     countdownEnabled,
     countdownDuration: snapshot.projection.setup.countdownTimerDuration
-  })
+  });
 
-  const { setup, state, derived } = snapshot.projection
-  const resolvedTeam1Name = getMatchTeamName(setup, 'team-1')
-  const resolvedTeam2Name = getMatchTeamName(setup, 'team-2')
+  const { setup, state, derived } = snapshot.projection;
+  const resolvedTeam1Name = getMatchTeamName(setup, 'team-1');
+  const resolvedTeam2Name = getMatchTeamName(setup, 'team-2');
   const team1Name =
-    resolvedTeam1Name === 'team-1' ? t('setup.firstServer.team1') : resolvedTeam1Name
+    resolvedTeam1Name === 'team-1' ? t('setup.firstServer.team1') : resolvedTeam1Name;
   const team2Name =
-    resolvedTeam2Name === 'team-2' ? t('setup.firstServer.team2') : resolvedTeam2Name
+    resolvedTeam2Name === 'team-2' ? t('setup.firstServer.team2') : resolvedTeam2Name;
 
-  const { scoreDisplay, activeSetIndex, sideSwitch, servingTeam } = derived
-  const showServingIndicator = setup.servingIndicatorEnabled
+  const { scoreDisplay, activeSetIndex, sideSwitch, servingTeam } = derived;
+  const showServingIndicator = setup.servingIndicatorEnabled;
 
   useMatchAnnouncements({
     projection: snapshot.projection,
     actionCount: snapshot.actions.length,
     team1Name,
     team2Name
-  })
+  });
 
   useEffect(() => {
     if (sideSwitch.shouldPrompt) {
-      setSideSwitchDismissed(false)
+      setSideSwitchDismissed(false);
     }
-  }, [sideSwitch.shouldPrompt])
+  }, [sideSwitch.shouldPrompt]);
 
   useEffect(() => {
-    let isMounted = true
+    let isMounted = true;
 
     void (async () => {
       try {
-        const storedBindings = await loadRemoteControllerBindingsWithFallback()
+        const storedBindings = await loadRemoteControllerBindingsWithFallback();
 
         if (!isMounted) {
-          return
+          return;
         }
 
-        setRemoteBindings(storedBindings)
+        setRemoteBindings(storedBindings);
       } catch (error) {
-        console.error('Failed to load remote controller bindings.', error)
+        console.error('Failed to load remote controller bindings.', error);
 
         if (!isMounted) {
-          return
+          return;
         }
 
-        setRemoteBindings(createEmptyRemoteControllerBindings())
+        setRemoteBindings(createEmptyRemoteControllerBindings());
       }
-    })()
+    })();
 
     return () => {
-      isMounted = false
-    }
-  }, [])
+      isMounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (!isMatchCompleted || isNavigatingToFinish) {
-      return
+      return;
     }
 
-    setIsNavigatingToFinish(true)
+    setIsNavigatingToFinish(true);
 
     void (async () => {
       try {
@@ -135,91 +135,91 @@ export function ActiveMatchScreen({
             params: { id: matchId }
           },
           { invalidate: true }
-        )
+        );
         await navigate({
           to: '/match/finish/$id',
           params: { id: matchId },
           replace: true,
           ...getViewTransitionNavigationOptions()
-        })
+        });
       } catch (error) {
-        console.error('Failed to navigate to the finished match route.', error)
-        setIsNavigatingToFinish(false)
+        console.error('Failed to navigate to the finished match route.', error);
+        setIsNavigatingToFinish(false);
       }
-    })()
-  }, [isMatchCompleted, isNavigatingToFinish, matchId, navigate, router])
+    })();
+  }, [isMatchCompleted, isNavigatingToFinish, matchId, navigate, router]);
 
   const getTeamScore = (teamId: MatchTeamId): string => {
     if (scoreDisplay.kind === 'standard') {
-      return scoreDisplay.points[teamId]
+      return scoreDisplay.points[teamId];
     }
     if (scoreDisplay.kind === 'tiebreak') {
-      return String(scoreDisplay.points[teamId])
+      return String(scoreDisplay.points[teamId]);
     }
-    return '0'
-  }
+    return '0';
+  };
 
   const handleScoreTeam1 = useCallback(async () => {
     if (isLoading) {
-      return
+      return;
     }
 
-    await scorePoint('team-1')
-  }, [isLoading, scorePoint])
+    await scorePoint('team-1');
+  }, [isLoading, scorePoint]);
 
   const handleScoreTeam2 = useCallback(async () => {
     if (isLoading) {
-      return
+      return;
     }
 
-    await scorePoint('team-2')
-  }, [isLoading, scorePoint])
+    await scorePoint('team-2');
+  }, [isLoading, scorePoint]);
 
   const handleRevert = useCallback(async () => {
     if (isLoading) {
-      return
+      return;
     }
 
-    await undoScoreAction()
-  }, [isLoading, undoScoreAction])
+    await undoScoreAction();
+  }, [isLoading, undoScoreAction]);
 
   const handleRevertTeam1 = useCallback(async () => {
     if (isLoading) {
-      return
+      return;
     }
 
-    await undoScoreActionForTeam('team-1')
-  }, [isLoading, undoScoreActionForTeam])
+    await undoScoreActionForTeam('team-1');
+  }, [isLoading, undoScoreActionForTeam]);
 
   const handleRevertTeam2 = useCallback(async () => {
     if (isLoading) {
-      return
+      return;
     }
 
-    await undoScoreActionForTeam('team-2')
-  }, [isLoading, undoScoreActionForTeam])
+    await undoScoreActionForTeam('team-2');
+  }, [isLoading, undoScoreActionForTeam]);
 
   const handleRemoteAdd = useCallback(
     async (teamId: MatchTeamId) => {
       if (isLoading || isMatchCompleted) {
-        return
+        return;
       }
 
-      await scorePoint(teamId)
+      await scorePoint(teamId);
     },
     [isLoading, isMatchCompleted, scorePoint]
-  )
+  );
 
   const handleRemoteUndoForTeam = useCallback(
     async (teamId: MatchTeamId) => {
       if (isLoading || isMatchCompleted) {
-        return
+        return;
       }
 
-      await undoScoreActionForTeam(teamId)
+      await undoScoreActionForTeam(teamId);
     },
     [isLoading, isMatchCompleted, undoScoreActionForTeam]
-  )
+  );
 
   useInputHandler(
     {
@@ -233,39 +233,39 @@ export function ActiveMatchScreen({
       onUndo: handleRevert,
       onUndoForTeam: handleRemoteUndoForTeam
     }
-  )
+  );
 
   const handleFinish = useCallback(async () => {
     if (isLoading || isMatchCompleted) {
-      return
+      return;
     }
 
-    await finishMatch()
-  }, [finishMatch, isLoading, isMatchCompleted])
+    await finishMatch();
+  }, [finishMatch, isLoading, isMatchCompleted]);
 
   const handleSideSwitchClose = useCallback(() => {
-    setSideSwitchDismissed(true)
-  }, [])
+    setSideSwitchDismissed(true);
+  }, []);
 
   const shouldShowSideSwitch =
-    sideSwitch.shouldPrompt && setup.sideSwitchPrompts && !sideSwitchDismissed
-  const timerLabelKey = countdownEnabled ? 'match.timer.countdownLabel' : 'match.timer.label'
+    sideSwitch.shouldPrompt && setup.sideSwitchPrompts && !sideSwitchDismissed;
+  const timerLabelKey = countdownEnabled ? 'match.timer.countdownLabel' : 'match.timer.label';
   const canUndoTeam1 = useMemo(
     () =>
       snapshot.actions.some(
         (action) => action.type === 'score-point' && action.teamId === 'team-1'
       ),
     [snapshot.actions]
-  )
+  );
   const canUndoTeam2 = useMemo(
     () =>
       snapshot.actions.some(
         (action) => action.type === 'score-point' && action.teamId === 'team-2'
       ),
     [snapshot.actions]
-  )
-  const isUndoTeam1Disabled = isLoading || !canUndoTeam1
-  const isUndoTeam2Disabled = isLoading || !canUndoTeam2
+  );
+  const isUndoTeam1Disabled = isLoading || !canUndoTeam1;
+  const isUndoTeam2Disabled = isLoading || !canUndoTeam2;
 
   const headerContent = useMemo(
     () => (
@@ -286,7 +286,7 @@ export function ActiveMatchScreen({
       </TopBar>
     ),
     [formattedTime, t, timerLabelKey]
-  )
+  );
 
   const footerContent = useMemo(
     () => (
@@ -301,7 +301,7 @@ export function ActiveMatchScreen({
       </button>
     ),
     [handleFinish, isLoading, isMatchCompleted, t]
-  )
+  );
 
   return (
     <>
@@ -363,5 +363,5 @@ export function ActiveMatchScreen({
 
       {isPortrait ? <RotateDeviceBlocker /> : null}
     </>
-  )
+  );
 }

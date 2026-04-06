@@ -1,20 +1,20 @@
-import { type ComponentPropsWithoutRef, type ReactNode } from 'react'
-import { APP_VERSION } from '@/version'
-import { cn } from '@/lib/utils/cn'
+import { type ComponentPropsWithoutRef, type ReactNode } from 'react';
+import { APP_VERSION } from '@/version';
+import { cn } from '@/lib/utils/cn';
 
-import styles from './TopBar.module.css'
+import styles from './TopBar.module.css';
 
 export interface TopBarProps extends ComponentPropsWithoutRef<'div'> {
   /** Optional brand icon source displayed next to the title. */
-  iconSrc?: string
+  iconSrc?: string;
   /** Alt text for the brand icon. Use an empty string to mark it as decorative (`aria-hidden`). */
-  iconAlt?: string
+  iconAlt?: string;
   /** Primary top bar heading, rendered as an `h1`. */
-  title?: string
+  title?: string;
   /** Secondary supporting text shown below the title. */
-  subtitle?: string
+  subtitle?: string;
   /** Optional right-side actions slot content. */
-  children?: ReactNode
+  children?: ReactNode;
 }
 
 export function TopBar({
@@ -26,7 +26,7 @@ export function TopBar({
   className,
   ...props
 }: TopBarProps) {
-  const hasBranding = iconSrc || title || subtitle
+  const hasBranding = iconSrc || title || subtitle;
 
   return (
     <div className={cn(styles.container, className)} {...props}>
@@ -54,5 +54,5 @@ export function TopBar({
 
       {children != null ? <div className={styles.actions}>{children}</div> : null}
     </div>
-  )
+  );
 }

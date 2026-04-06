@@ -1,14 +1,14 @@
-import { useTranslation } from 'react-i18next'
+import { useTranslation } from 'react-i18next';
 
-import type { MatchSetState } from '@/core/match/types'
-import { Card } from '@/components/ui/Card/Card'
+import type { MatchSetState } from '@/core/match/types';
+import { Card } from '@/components/ui/Card/Card';
 
-import styles from './SetsCard.module.css'
-import { useEffect, useRef } from 'react'
+import styles from './SetsCard.module.css';
+import { useEffect, useRef } from 'react';
 
 export interface SetsCardProps {
-  sets: MatchSetState[]
-  currentSetIndex: number | null
+  sets: MatchSetState[];
+  currentSetIndex: number | null;
 }
 
 /**
@@ -17,26 +17,26 @@ export interface SetsCardProps {
  * Container: 180px width, corner radius 20px
  */
 export function SetsCard({ sets, currentSetIndex }: SetsCardProps) {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
-  const setsGridRef = useRef<HTMLDivElement>(null)
+  const setsGridRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const setsGrid = setsGridRef.current
+    const setsGrid = setsGridRef.current;
     if (setsGrid) {
-      setsGrid.scroll({ top: -setsGrid.scrollHeight, behavior: 'smooth' })
+      setsGrid.scroll({ top: -setsGrid.scrollHeight, behavior: 'smooth' });
     }
-  }, [currentSetIndex, sets.length])
+  }, [currentSetIndex, sets.length]);
 
   return (
     <Card className={styles.container} data-testid="sets-card">
       <span className={styles.label}>{t('match.sets.label')}</span>
       <div className={styles.setsGrid} ref={setsGridRef}>
         {sets.map((set, index) => {
-          const isCurrent = index === currentSetIndex
+          const isCurrent = index === currentSetIndex;
           const setLabel = isCurrent
             ? t('match.sets.currentShort')
-            : t('match.sets.setLabel', { number: index + 1 })
+            : t('match.sets.setLabel', { number: index + 1 });
 
           return (
             <div
@@ -54,9 +54,9 @@ export function SetsCard({ sets, currentSetIndex }: SetsCardProps) {
                 <span className={styles.team2Games}>{set.games['team-2']}</span>
               </span>
             </div>
-          )
+          );
         })}
       </div>
     </Card>
-  )
+  );
 }

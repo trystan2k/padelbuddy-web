@@ -1,14 +1,14 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router';
 
-import { ActiveMatchScreen } from '@/components/ActiveMatchScreen/ActiveMatchScreen'
-import type { CurrentMatchRecord } from '@/lib/current-match/persistence'
-import { currentMatchPersistenceRouteLoaderOptions } from '@/lib/router/current-match-route-flow'
+import { ActiveMatchScreen } from '@/components/ActiveMatchScreen/ActiveMatchScreen';
+import type { CurrentMatchRecord } from '@/lib/current-match/persistence';
+import { currentMatchPersistenceRouteLoaderOptions } from '@/lib/router/current-match-route-flow';
 
 import {
   getOptionalFinishedAt,
   RouteErrorState,
   loadMappedReadyMatchRouteState
-} from './-route-utils'
+} from './-route-utils';
 
 export const Route = createFileRoute('/match/$id')({
   ...currentMatchPersistenceRouteLoaderOptions,
@@ -19,21 +19,21 @@ export const Route = createFileRoute('/match/$id')({
       matchId: params.id,
       record: routeState.record
     }))
-})
+});
 
 function MatchRoute() {
-  const { matchId, record } = Route.useLoaderData()
+  const { matchId, record } = Route.useLoaderData();
 
-  return <MatchRouteReadyContent matchId={matchId} record={record} />
+  return <MatchRouteReadyContent matchId={matchId} record={record} />;
 }
 
 interface MatchRouteReadyContentProps {
-  matchId: string
-  record: CurrentMatchRecord
+  matchId: string;
+  record: CurrentMatchRecord;
 }
 
 function MatchRouteReadyContent({ matchId, record }: MatchRouteReadyContentProps) {
-  const { setup, actions, startedAt } = record
+  const { setup, actions, startedAt } = record;
 
   return (
     <ActiveMatchScreen
@@ -45,5 +45,5 @@ function MatchRouteReadyContent({ matchId, record }: MatchRouteReadyContentProps
       // wrapper so they stay aligned without duplicating the same conditional spread.
       {...getOptionalFinishedAt(record.finishedAt)}
     />
-  )
+  );
 }

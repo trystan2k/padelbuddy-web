@@ -66,8 +66,8 @@ Implement vanilla service worker with precaching:
 
 ```javascript
 // SW version for cache busting
-const SW_VERSION = '1.0.0'
-const CACHE_NAME = `padel-buddy-${SW_VERSION}`
+const SW_VERSION = '1.0.0';
+const CACHE_NAME = `padel-buddy-${SW_VERSION}`;
 
 // Assets to precache (will be populated at build time or manually listed)
 const PRECACHE_URLS = [
@@ -77,7 +77,7 @@ const PRECACHE_URLS = [
   '/locales/es.json',
   '/locales/pt.json'
   // JS/CSS bundles added at build time
-]
+];
 ```
 
 Key behaviors:
@@ -102,10 +102,10 @@ Create TypeScript module for SW registration with error handling:
 
 ```typescript
 export interface SWRegistrationState {
-  supported: boolean
-  registered: boolean
-  ready: boolean
-  error?: Error
+  supported: boolean;
+  registered: boolean;
+  ready: boolean;
+  error?: Error;
 }
 ```
 

@@ -5,47 +5,47 @@ import {
   useState,
   type ComponentPropsWithoutRef,
   type Ref
-} from 'react'
-import { useTranslation } from 'react-i18next'
+} from 'react';
+import { useTranslation } from 'react-i18next';
 
-import { cn } from '@/lib/utils/cn'
+import { cn } from '@/lib/utils/cn';
 
-import styles from './PadelCourtSpinner.module.css'
+import styles from './PadelCourtSpinner.module.css';
 
 export interface PadelCourtSpinnerProps extends Omit<ComponentPropsWithoutRef<'div'>, 'children'> {
-  ref?: Ref<HTMLDivElement>
-  label?: string
-  silent?: boolean
+  ref?: Ref<HTMLDivElement>;
+  label?: string;
+  silent?: boolean;
 }
 
-const UPPER_LEFT = { x: 65, y: 25 }
-const UPPER_RIGHT = { x: 219, y: 25 }
-const LOWER_LEFT = { x: 65, y: 115 }
-const LOWER_RIGHT = { x: 219, y: 115 }
-const INITIAL_PATH = 'M 65 25 L 219 25 L 65 115 L 219 115 L 65 25'
+const UPPER_LEFT = { x: 65, y: 25 };
+const UPPER_RIGHT = { x: 219, y: 25 };
+const LOWER_LEFT = { x: 65, y: 115 };
+const LOWER_RIGHT = { x: 219, y: 115 };
+const INITIAL_PATH = 'M 65 25 L 219 25 L 65 115 L 219 115 L 65 25';
 
-const SEGMENTS = 4
-const LOOP_DURATION = 2400
+const SEGMENTS = 4;
+const LOOP_DURATION = 2400;
 
 function generateRandomPath(): string {
-  const points = [UPPER_LEFT]
+  const points = [UPPER_LEFT];
 
   for (let i = 0; i < SEGMENTS; i++) {
-    const prev = points[i]!
-    const isLeftSide = prev.x < 142
+    const prev = points[i]!;
+    const isLeftSide = prev.x < 142;
 
     if (isLeftSide) {
-      points.push(Math.random() > 0.5 ? UPPER_RIGHT : LOWER_RIGHT)
+      points.push(Math.random() > 0.5 ? UPPER_RIGHT : LOWER_RIGHT);
     } else {
-      points.push(Math.random() > 0.5 ? UPPER_LEFT : LOWER_LEFT)
+      points.push(Math.random() > 0.5 ? UPPER_LEFT : LOWER_LEFT);
     }
   }
 
-  return points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ')
+  return points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
 }
 
 function generateKeyTimes(count: number): string {
-  return Array.from({ length: count }, (_, i) => (i / (count - 1)).toFixed(4)).join(';')
+  return Array.from({ length: count }, (_, i) => (i / (count - 1)).toFixed(4)).join(';');
 }
 
 export function PadelCourtSpinner({
@@ -55,21 +55,21 @@ export function PadelCourtSpinner({
   ref,
   ...props
 }: PadelCourtSpinnerProps) {
-  const { t } = useTranslation()
-  const resolvedLabel = label ?? t('common.loadingPleaseWait')
-  const [ballPath, setBallPath] = useState(INITIAL_PATH)
-  const animRef = useRef<SVGAnimateMotionElement>(null)
+  const { t } = useTranslation();
+  const resolvedLabel = label ?? t('common.loadingPleaseWait');
+  const [ballPath, setBallPath] = useState(INITIAL_PATH);
+  const animRef = useRef<SVGAnimateMotionElement>(null);
 
   const regenerate = useCallback(() => {
-    setBallPath(generateRandomPath())
-  }, [])
+    setBallPath(generateRandomPath());
+  }, []);
 
   useEffect(() => {
-    const interval = setInterval(regenerate, LOOP_DURATION)
-    return () => clearInterval(interval)
-  }, [regenerate])
+    const interval = setInterval(regenerate, LOOP_DURATION);
+    return () => clearInterval(interval);
+  }, [regenerate]);
 
-  const keyTimes = generateKeyTimes(SEGMENTS + 1)
+  const keyTimes = generateKeyTimes(SEGMENTS + 1);
 
   return (
     <div ref={ref} className={cn(styles.overlay, styles.loaderContainer)}>
@@ -141,5 +141,5 @@ export function PadelCourtSpinner({
         <span className={styles.visuallyHidden}>{resolvedLabel}</span>
       </div>
     </div>
-  )
+  );
 }

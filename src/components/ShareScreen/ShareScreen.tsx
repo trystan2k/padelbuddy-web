@@ -1,24 +1,24 @@
-import { useTranslation } from 'react-i18next'
+import { useTranslation } from 'react-i18next';
 
-import { TrophyIcon } from '@/components/ui/Icon/TrophyIcon'
-import { TopBar } from '@/components/ui/TopBar/TopBar'
+import { TrophyIcon } from '@/components/ui/Icon/TrophyIcon';
+import { TopBar } from '@/components/ui/TopBar/TopBar';
 
-import styles from './ShareScreen.module.css'
-import { cn } from '@/lib/utils/cn'
+import styles from './ShareScreen.module.css';
+import { cn } from '@/lib/utils/cn';
 
 export interface ShareScreenProps {
-  ref?: import('react').Ref<HTMLDivElement>
-  winnerName: string
-  team1Name: string
-  team2Name: string
-  formatLabel: string
+  ref?: import('react').Ref<HTMLDivElement>;
+  winnerName: string;
+  team1Name: string;
+  team2Name: string;
+  formatLabel: string;
   setRows: Array<{
-    setNumber: number
-    team1Games: number
-    team2Games: number
-  }>
-  durationValue: string
-  dateValue: string
+    setNumber: number;
+    team1Games: number;
+    team2Games: number;
+  }>;
+  durationValue: string;
+  dateValue: string;
 }
 
 export function ShareScreen({
@@ -31,9 +31,9 @@ export function ShareScreen({
   durationValue,
   dateValue
 }: ShareScreenProps) {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
-  const matchCompleteBadge = t('share.topbar.badge')
+  const matchCompleteBadge = t('share.topbar.badge');
 
   return (
     <div
@@ -100,5 +100,5 @@ export function ShareScreen({
         </div>
       </div>
     </div>
-  )
+  );
 }

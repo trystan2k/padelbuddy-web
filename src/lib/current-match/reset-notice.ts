@@ -1,13 +1,13 @@
-import currentMatchResetNoticeStore from './reset-notice-store'
+import currentMatchResetNoticeStore from './reset-notice-store';
 
 export interface CurrentMatchResetNotice {
-  reason: 'schema-version'
+  reason: 'schema-version';
 }
 
 export function queueCurrentMatchResetNotice(notice: CurrentMatchResetNotice): void {
-  currentMatchResetNoticeStore.set(notice)
+  currentMatchResetNoticeStore.set(notice);
 }
 
 export function consumeCurrentMatchResetNotice(): CurrentMatchResetNotice | null {
-  return currentMatchResetNoticeStore.clear()
+  return currentMatchResetNoticeStore.clear();
 }

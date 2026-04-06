@@ -1,1 +1,1 @@
-export type Accent = 'primary' | 'secondary'
+export type Accent = 'primary' | 'secondary';

@@ -1,7 +1,7 @@
-import { beforeEach, describe, expect, test, vi } from 'vitest'
-import { renderToStaticMarkup } from 'react-dom/server'
+import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { renderToStaticMarkup } from 'react-dom/server';
 
-import { Route } from '@/routes/__root'
+import { Route } from '@/routes/__root';
 
 const { initializeI18nMock, i18nMock, registerSWMock, routerStateMock, translationMap } =
   vi.hoisted(() => ({
@@ -22,40 +22,40 @@ const { initializeI18nMock, i18nMock, registerSWMock, routerStateMock, translati
       'error.unexpectedBody': 'Please try again.',
       'common.retry': 'Try again'
     } satisfies Record<string, string>
-  }))
+  }));
 
 vi.mock('react', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('react')>()
+  const actual = await importOriginal<typeof import('react')>();
 
   return {
     ...actual,
     useEffect: (effect: () => void | (() => void)) => {
-      effect()
+      effect();
     }
-  }
-})
+  };
+});
 
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => translationMap[key as keyof typeof translationMap] ?? key
   })
-}))
+}));
 
 vi.mock('@/lib/i18n/i18n', () => ({
   i18n: i18nMock,
   initializeI18n: initializeI18nMock
-}))
+}));
 
 vi.mock('@/lib/pwa/registration', () => ({
   registerSW: registerSWMock
-}))
+}));
 
 vi.mock('@/components/DebugPwa/DebugPwa', () => ({
   DebugPwa: () => <div>debug pwa</div>
-}))
+}));
 
 vi.mock('@tanstack/react-router', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@tanstack/react-router')>()
+  const actual = await importOriginal<typeof import('@tanstack/react-router')>();
 
   return {
     ...actual,
@@ -64,60 +64,60 @@ vi.mock('@tanstack/react-router', async (importOriginal) => {
     Scripts: () => <script type="application/json">scripts</script>,
     createRootRoute: (options: unknown) => ({ options }),
     useRouterState: () => routerStateMock.isRoutePending
-  }
-})
+  };
+});
 
 describe('root route effects', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
-    routerStateMock.isRoutePending = false
-    i18nMock.resolvedLanguage = 'en'
-    i18nMock.language = 'en'
-    vi.stubGlobal('window', {})
-    vi.stubGlobal('navigator', { serviceWorker: {} })
-  })
+    vi.clearAllMocks();
+    routerStateMock.isRoutePending = false;
+    i18nMock.resolvedLanguage = 'en';
+    i18nMock.language = 'en';
+    vi.stubGlobal('window', {});
+    vi.stubGlobal('navigator', { serviceWorker: {} });
+  });
 
   test('kicks off i18n initialization without blocking the root shell', async () => {
-    let resolveInitialization!: () => void
+    let resolveInitialization!: () => void;
     const initializationPromise = new Promise<void>((resolve) => {
-      resolveInitialization = resolve
-    })
-    initializeI18nMock.mockReturnValueOnce(initializationPromise)
+      resolveInitialization = resolve;
+    });
+    initializeI18nMock.mockReturnValueOnce(initializationPromise);
 
-    const RootDocument = Route.options.component
+    const RootDocument = Route.options.component;
 
     if (!RootDocument) {
-      throw new Error('Expected the root route to expose a component.')
+      throw new Error('Expected the root route to expose a component.');
     }
 
-    const markup = renderToStaticMarkup(<RootDocument />)
+    const markup = renderToStaticMarkup(<RootDocument />);
 
-    expect(markup).toContain('<html lang="en">')
-    expect(markup).toContain('route outlet')
-    expect(markup).toContain('scripts')
-    expect(initializeI18nMock).toHaveBeenCalledTimes(1)
-    expect(registerSWMock).toHaveBeenCalledTimes(1)
+    expect(markup).toContain('<html lang="en">');
+    expect(markup).toContain('route outlet');
+    expect(markup).toContain('scripts');
+    expect(initializeI18nMock).toHaveBeenCalledTimes(1);
+    expect(registerSWMock).toHaveBeenCalledTimes(1);
 
-    resolveInitialization()
-    await initializationPromise
-  })
+    resolveInitialization();
+    await initializationPromise;
+  });
 
   test('logs initialization failures without replacing the root shell', async () => {
-    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined)
-    const failure = new Error('init failed')
-    initializeI18nMock.mockRejectedValueOnce(failure)
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    const failure = new Error('init failed');
+    initializeI18nMock.mockRejectedValueOnce(failure);
 
-    const RootDocument = Route.options.component
+    const RootDocument = Route.options.component;
 
     if (!RootDocument) {
-      throw new Error('Expected the root route to expose a component.')
+      throw new Error('Expected the root route to expose a component.');
     }
 
-    const markup = renderToStaticMarkup(<RootDocument />)
+    const markup = renderToStaticMarkup(<RootDocument />);
 
-    await Promise.resolve()
+    await Promise.resolve();
 
-    expect(markup).toContain('route outlet')
-    expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to initialize i18n:', failure)
-  })
-})
+    expect(markup).toContain('route outlet');
+    expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to initialize i18n:', failure);
+  });
+});

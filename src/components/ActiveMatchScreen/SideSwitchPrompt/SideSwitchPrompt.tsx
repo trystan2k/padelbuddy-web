@@ -1,17 +1,17 @@
-import { useCallback, useEffect, useRef } from 'react'
-import { useTranslation } from 'react-i18next'
-import { Dialog } from '@base-ui/react/dialog'
+import { useCallback, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Dialog } from '@base-ui/react/dialog';
 
-import { Button } from '@/components/ui/Button/Button'
+import { Button } from '@/components/ui/Button/Button';
 
-import styles from './SideSwitchPrompt.module.css'
+import styles from './SideSwitchPrompt.module.css';
 
 export interface SideSwitchPromptProps {
-  isOpen: boolean
-  reason: 'odd-games' | 'tiebreak-interval' | null
-  onClose: () => void
+  isOpen: boolean;
+  reason: 'odd-games' | 'tiebreak-interval' | null;
+  onClose: () => void;
   /** Delay in milliseconds before auto-closing. Set to 0 to disable auto-close. */
-  autoCloseDelay?: number
+  autoCloseDelay?: number;
 }
 
 /**
@@ -25,27 +25,29 @@ export function SideSwitchPrompt({
   onClose,
   autoCloseDelay = 10000
 }: SideSwitchPromptProps) {
-  const { t } = useTranslation()
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const { t } = useTranslation();
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleOpenChange = useCallback(
     (open: boolean) => {
       if (!open) {
-        onClose()
+        onClose();
       }
     },
     [onClose]
-  )
+  );
 
   const handleBackdropRender = useCallback(
     (props: React.HTMLAttributes<HTMLDivElement>) => (
       <div {...props} data-testid="side-switch-backdrop" className={styles.overlay} />
     ),
     []
-  )
+  );
 
   const title =
-    reason === 'odd-games' ? t('match.sideSwitch.oddGames') : t('match.sideSwitch.tiebreakInterval')
+    reason === 'odd-games'
+      ? t('match.sideSwitch.oddGames')
+      : t('match.sideSwitch.tiebreakInterval');
 
   const handleTitleRender = useCallback(
     (titleProps: React.HTMLAttributes<HTMLHeadingElement>) => (
@@ -54,7 +56,7 @@ export function SideSwitchPrompt({
       </h2>
     ),
     [title]
-  )
+  );
 
   const handleDescriptionRender = useCallback(
     (descProps: React.HTMLAttributes<HTMLParagraphElement>) => (
@@ -63,7 +65,7 @@ export function SideSwitchPrompt({
       </p>
     ),
     [t]
-  )
+  );
 
   const handlePopupRender = useCallback(
     (props: React.HTMLAttributes<HTMLDivElement>) => (
@@ -89,26 +91,26 @@ export function SideSwitchPrompt({
       </div>
     ),
     [handleTitleRender, handleDescriptionRender, onClose, t]
-  )
+  );
 
   // Auto-close timer
   useEffect(() => {
     if (isOpen && autoCloseDelay > 0) {
       timeoutRef.current = setTimeout(() => {
-        onClose()
-      }, autoCloseDelay)
+        onClose();
+      }, autoCloseDelay);
     }
 
     return () => {
       if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
-        timeoutRef.current = null
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
       }
-    }
-  }, [isOpen, autoCloseDelay, onClose])
+    };
+  }, [isOpen, autoCloseDelay, onClose]);
 
   if (!reason || !isOpen) {
-    return null
+    return null;
   }
 
   return (
@@ -118,5 +120,5 @@ export function SideSwitchPrompt({
         <Dialog.Popup render={handlePopupRender} />
       </Dialog.Portal>
     </Dialog.Root>
-  )
+  );
 }

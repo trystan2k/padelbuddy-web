@@ -5,8 +5,8 @@ import {
   type CurrentMatchDecodeOkResult,
   type CurrentMatchRecord,
   type CurrentMatchSaveInput
-} from './persistence'
-import currentMatchResetNoticeStore from './reset-notice-store'
+} from './persistence';
+import currentMatchResetNoticeStore from './reset-notice-store';
 import {
   currentMatchObjectStoreName,
   persistenceDatabaseName,
@@ -16,116 +16,116 @@ import {
   waitForIndexedDbTransaction,
   withIndexedDbDatabase,
   type IndexedDbOpenMessages
-} from '@/lib/persistence/indexed-db'
+} from '@/lib/persistence/indexed-db';
 
-export const defaultDatabaseName = persistenceDatabaseName
-export const defaultDatabaseVersion = persistenceDatabaseVersion
-export const defaultObjectStoreName = currentMatchObjectStoreName
-export const currentMatchRecordKey = 'current-match'
+export const defaultDatabaseName = persistenceDatabaseName;
+export const defaultDatabaseVersion = persistenceDatabaseVersion;
+export const defaultObjectStoreName = currentMatchObjectStoreName;
+export const currentMatchRecordKey = 'current-match';
 
 const indexedDbMessages: IndexedDbOpenMessages = {
   blocked: 'Opening the current match database was blocked.',
   openFailed: 'Unable to open the current match database.'
-}
+};
 
 export interface CurrentMatchPersistenceOptions {
-  databaseName?: string
-  databaseVersion?: number
-  objectStoreName?: string
+  databaseName?: string;
+  databaseVersion?: number;
+  objectStoreName?: string;
 }
 
 export interface CurrentMatchPersistence {
-  saveCurrentMatch(input: CurrentMatchSaveInput): Promise<CurrentMatchRecord>
-  loadCurrentMatch(): Promise<CurrentMatchLoadResult>
-  clearCurrentMatch(): Promise<void>
+  saveCurrentMatch(input: CurrentMatchSaveInput): Promise<CurrentMatchRecord>;
+  loadCurrentMatch(): Promise<CurrentMatchLoadResult>;
+  clearCurrentMatch(): Promise<void>;
 }
 
 export interface CurrentMatchLoadEmptyResult {
-  status: 'empty'
+  status: 'empty';
 }
 
 export interface CurrentMatchLoadResetRequiredResult {
-  status: 'reset-required'
-  reason: 'schema-version'
-  storedSchemaVersion: number
+  status: 'reset-required';
+  reason: 'schema-version';
+  storedSchemaVersion: number;
 }
 
 export type CurrentMatchLoadResult =
   | CurrentMatchLoadEmptyResult
   | CurrentMatchDecodeOkResult
   | CurrentMatchDecodeCorruptResult
-  | CurrentMatchLoadResetRequiredResult
+  | CurrentMatchLoadResetRequiredResult;
 
 export function createCurrentMatchPersistence(
   options: CurrentMatchPersistenceOptions = {}
 ): CurrentMatchPersistence {
-  const config = resolveIndexedDbStorageConfig(options, defaultObjectStoreName)
+  const config = resolveIndexedDbStorageConfig(options, defaultObjectStoreName);
 
   const saveCurrentMatch = async (input: CurrentMatchSaveInput): Promise<CurrentMatchRecord> => {
-    const record = createCurrentMatchRecord(input)
+    const record = createCurrentMatchRecord(input);
 
     await withIndexedDbDatabase(config, indexedDbMessages, async (database) => {
-      const transaction = database.transaction(config.objectStoreName, 'readwrite')
+      const transaction = database.transaction(config.objectStoreName, 'readwrite');
 
-      transaction.objectStore(config.objectStoreName).put(record, currentMatchRecordKey)
-      await waitForIndexedDbTransaction(transaction)
-    })
+      transaction.objectStore(config.objectStoreName).put(record, currentMatchRecordKey);
+      await waitForIndexedDbTransaction(transaction);
+    });
 
-    return record
-  }
+    return record;
+  };
 
   const loadCurrentMatch = async (): Promise<CurrentMatchLoadResult> => {
     return withIndexedDbDatabase(config, indexedDbMessages, async (database) => {
-      const transaction = database.transaction(config.objectStoreName, 'readonly')
-      const request = transaction.objectStore(config.objectStoreName).get(currentMatchRecordKey)
-      const storedRecord = await waitForIndexedDbRequest(request)
+      const transaction = database.transaction(config.objectStoreName, 'readonly');
+      const request = transaction.objectStore(config.objectStoreName).get(currentMatchRecordKey);
+      const storedRecord = await waitForIndexedDbRequest(request);
 
-      await waitForIndexedDbTransaction(transaction)
+      await waitForIndexedDbTransaction(transaction);
 
       if (typeof storedRecord === 'undefined') {
         return {
           status: 'empty'
-        }
+        };
       }
 
-      const decodedRecord = decodeCurrentMatchRecord(storedRecord)
+      const decodedRecord = decodeCurrentMatchRecord(storedRecord);
 
       if (decodedRecord.status === 'reset-required') {
-        const resetTransaction = database.transaction(config.objectStoreName, 'readwrite')
+        const resetTransaction = database.transaction(config.objectStoreName, 'readwrite');
 
-        resetTransaction.objectStore(config.objectStoreName).delete(currentMatchRecordKey)
-        await waitForIndexedDbTransaction(resetTransaction)
+        resetTransaction.objectStore(config.objectStoreName).delete(currentMatchRecordKey);
+        await waitForIndexedDbTransaction(resetTransaction);
         currentMatchResetNoticeStore.set({
           reason: 'schema-version'
-        })
+        });
 
         return {
           ...decodedRecord
-        }
+        };
       }
 
-      return decodedRecord
-    })
-  }
+      return decodedRecord;
+    });
+  };
 
   const clearCurrentMatch = async (): Promise<void> => {
     await withIndexedDbDatabase(config, indexedDbMessages, async (database) => {
-      const transaction = database.transaction(config.objectStoreName, 'readwrite')
+      const transaction = database.transaction(config.objectStoreName, 'readwrite');
 
-      transaction.objectStore(config.objectStoreName).delete(currentMatchRecordKey)
-      await waitForIndexedDbTransaction(transaction)
-    })
-  }
+      transaction.objectStore(config.objectStoreName).delete(currentMatchRecordKey);
+      await waitForIndexedDbTransaction(transaction);
+    });
+  };
 
   return {
     saveCurrentMatch,
     loadCurrentMatch,
     clearCurrentMatch
-  }
+  };
 }
 
-export const currentMatchPersistence = createCurrentMatchPersistence()
+export const currentMatchPersistence = createCurrentMatchPersistence();
 export const saveCurrentMatch = (input: CurrentMatchSaveInput) =>
-  currentMatchPersistence.saveCurrentMatch(input)
-export const loadCurrentMatch = () => currentMatchPersistence.loadCurrentMatch()
-export const clearCurrentMatch = () => currentMatchPersistence.clearCurrentMatch()
+  currentMatchPersistence.saveCurrentMatch(input);
+export const loadCurrentMatch = () => currentMatchPersistence.loadCurrentMatch();
+export const clearCurrentMatch = () => currentMatchPersistence.clearCurrentMatch();

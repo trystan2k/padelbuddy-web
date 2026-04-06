@@ -1,30 +1,30 @@
 /* oxlint-disable jsx-no-new-function-as-prop -- Base UI Dialog and Select use render props for accessible composition. */
 
-import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Dialog } from '@base-ui/react/dialog'
-import { useTranslation } from 'react-i18next'
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Dialog } from '@base-ui/react/dialog';
+import { useTranslation } from 'react-i18next';
 
-import { Button } from '@/components/ui/Button/Button'
-import { Select } from '@base-ui/react/select'
-import { defaultLocale, isSupportedLocale } from '@/lib/i18n/types'
+import { Button } from '@/components/ui/Button/Button';
+import { Select } from '@base-ui/react/select';
+import { defaultLocale, isSupportedLocale } from '@/lib/i18n/types';
 import {
   findVoiceByName,
   getAllVoicesGroupedByLocale,
   getDefaultVoiceForLocale,
   getLanguageDisplayName,
   getVoiceId
-} from '@/lib/speech/voice-selector'
-import { generateSpeechMessage } from '@/lib/speech/message-generator'
+} from '@/lib/speech/voice-selector';
+import { generateSpeechMessage } from '@/lib/speech/message-generator';
 
-import styles from './VoiceSelectionModal.module.css'
+import styles from './VoiceSelectionModal.module.css';
 
 export interface VoiceSelectionModalProps {
-  isOpen: boolean
-  onClose: () => void
-  onAccept: (voiceName: string) => void
-  voices: SpeechSynthesisVoice[]
-  selectedVoiceName: string | null
-  locale: string
+  isOpen: boolean;
+  onClose: () => void;
+  onAccept: (voiceName: string) => void;
+  voices: SpeechSynthesisVoice[];
+  selectedVoiceName: string | null;
+  locale: string;
 }
 
 export function VoiceSelectionModal({
@@ -35,10 +35,10 @@ export function VoiceSelectionModal({
   selectedVoiceName,
   locale
 }: VoiceSelectionModalProps) {
-  const { t } = useTranslation()
-  const [previewVoice, setPreviewVoice] = useState<SpeechSynthesisVoice | null>(null)
+  const { t } = useTranslation();
+  const [previewVoice, setPreviewVoice] = useState<SpeechSynthesisVoice | null>(null);
 
-  const localePrefix = isSupportedLocale(locale) ? locale : defaultLocale
+  const localePrefix = isSupportedLocale(locale) ? locale : defaultLocale;
 
   // Derive preview text from the speech message generator for consistency
   const previewText = useMemo(() => {
@@ -52,86 +52,88 @@ export function VoiceSelectionModal({
       pointPressure: 'match-point',
       pointPressureTeam: 'team-1',
       verbosity: 'standard'
-    })
+    });
     // Fallback for minimal verbosity or if generation fails
-    return message ?? t('score.announcements.gamePoint', { teamName: '' })
-  }, [t])
+    return message ?? t('score.announcements.gamePoint', { teamName: '' });
+  }, [t]);
 
-  const voicesByLocale = useMemo(() => getAllVoicesGroupedByLocale(voices), [voices])
+  const voicesByLocale = useMemo(() => getAllVoicesGroupedByLocale(voices), [voices]);
 
   const orderedLocaleKeys = useMemo(
     () =>
       Object.keys(voicesByLocale).sort((leftLocale, rightLocale) => {
         if (leftLocale === localePrefix) {
-          return -1
+          return -1;
         }
 
         if (rightLocale === localePrefix) {
-          return 1
+          return 1;
         }
 
-        return leftLocale.localeCompare(rightLocale)
+        return leftLocale.localeCompare(rightLocale);
       }),
     [localePrefix, voicesByLocale]
-  )
+  );
 
   useEffect(() => {
     if (!isOpen) {
       if (typeof speechSynthesis !== 'undefined') {
-        speechSynthesis.cancel()
+        speechSynthesis.cancel();
       }
 
-      return
+      return;
     }
 
-    const selectedVoice = selectedVoiceName ? findVoiceByName(selectedVoiceName, voices) : undefined
-    const defaultVoice = getDefaultVoiceForLocale(localePrefix, voices) ?? voices[0] ?? null
+    const selectedVoice = selectedVoiceName
+      ? findVoiceByName(selectedVoiceName, voices)
+      : undefined;
+    const defaultVoice = getDefaultVoiceForLocale(localePrefix, voices) ?? voices[0] ?? null;
 
-    setPreviewVoice(selectedVoice ?? defaultVoice)
-  }, [isOpen, localePrefix, selectedVoiceName, voices])
+    setPreviewVoice(selectedVoice ?? defaultVoice);
+  }, [isOpen, localePrefix, selectedVoiceName, voices]);
 
   const handleOpenChange = useCallback(
     (open: boolean) => {
       if (!open) {
-        onClose()
+        onClose();
       }
     },
     [onClose]
-  )
+  );
 
   const handleVoiceChange = useCallback(
     (voiceId: string | null) => {
       if (voiceId === null) {
-        setPreviewVoice(null)
-        return
+        setPreviewVoice(null);
+        return;
       }
 
-      setPreviewVoice(voices.find((v) => getVoiceId(v) === voiceId) ?? null)
+      setPreviewVoice(voices.find((v) => getVoiceId(v) === voiceId) ?? null);
     },
     [voices]
-  )
+  );
 
   const handlePlayPreview = useCallback(() => {
     if (!previewVoice || typeof speechSynthesis === 'undefined') {
-      return
+      return;
     }
 
-    speechSynthesis.cancel()
+    speechSynthesis.cancel();
 
-    const utterance = new SpeechSynthesisUtterance(previewText)
-    utterance.voice = previewVoice
-    utterance.lang = previewVoice.lang || localePrefix
-    speechSynthesis.speak(utterance)
-  }, [previewText, previewVoice, localePrefix])
+    const utterance = new SpeechSynthesisUtterance(previewText);
+    utterance.voice = previewVoice;
+    utterance.lang = previewVoice.lang || localePrefix;
+    speechSynthesis.speak(utterance);
+  }, [previewText, previewVoice, localePrefix]);
 
   const handleAccept = useCallback(() => {
     if (!previewVoice) {
-      return
+      return;
     }
 
-    onAccept(previewVoice.name)
-    onClose()
-  }, [onAccept, onClose, previewVoice])
+    onAccept(previewVoice.name);
+    onClose();
+  }, [onAccept, onClose, previewVoice]);
 
   return (
     <Dialog.Root open={isOpen} onOpenChange={handleOpenChange}>
@@ -250,5 +252,5 @@ export function VoiceSelectionModal({
         />
       </Dialog.Portal>
     </Dialog.Root>
-  )
+  );
 }

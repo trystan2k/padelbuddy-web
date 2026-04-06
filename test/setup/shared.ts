@@ -1,11 +1,11 @@
-import { afterEach, vi } from 'vitest'
+import { afterEach, vi } from 'vitest';
 
 afterEach(() => {
   if (typeof document !== 'undefined') {
-    document.body.innerHTML = ''
+    document.body.innerHTML = '';
   }
 
-  vi.restoreAllMocks()
-  vi.unstubAllEnvs()
-  vi.unstubAllGlobals()
-})
+  vi.restoreAllMocks();
+  vi.unstubAllEnvs();
+  vi.unstubAllGlobals();
+});

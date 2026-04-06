@@ -1,11 +1,11 @@
 /* oxlint-disable jsx-no-new-function-as-prop -- Base UI Dialog uses render props for accessible composition. */
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Dialog } from '@base-ui/react/dialog'
-import { useTranslation } from 'react-i18next'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Dialog } from '@base-ui/react/dialog';
+import { useTranslation } from 'react-i18next';
 
-import { Button } from '@/components/ui/Button/Button'
-import { useToast } from '@/components/ui/Toast/useToast'
+import { Button } from '@/components/ui/Button/Button';
+import { useToast } from '@/components/ui/Toast/useToast';
 import {
   assignRemoteControllerBinding,
   configurableKeyboardActions,
@@ -13,151 +13,151 @@ import {
   createRemoteControllerBindings,
   getKeyboardBindingDisplayLabel,
   type ConfigurableKeyboardAction
-} from '@/lib/input/keyboard-aliases'
+} from '@/lib/input/keyboard-aliases';
 import {
   clearRemoteControllerBindings,
   loadRemoteControllerBindingsWithFallback,
   saveRemoteControllerBindings
-} from '@/lib/input/remote-controller-storage'
-import { cn } from '@/lib/utils/cn'
+} from '@/lib/input/remote-controller-storage';
+import { cn } from '@/lib/utils/cn';
 
-import styles from './RemoteConfigurationModal.module.css'
+import styles from './RemoteConfigurationModal.module.css';
 
-const ignoredCaptureKeys = new Set(['Alt', 'Control', 'Meta', 'Shift'])
+const ignoredCaptureKeys = new Set(['Alt', 'Control', 'Meta', 'Shift']);
 
 function toError(error: unknown): Error {
-  return error instanceof Error ? error : new Error(String(error))
+  return error instanceof Error ? error : new Error(String(error));
 }
 
 export interface RemoteConfigurationModalProps {
-  isOpen: boolean
-  onClose: () => void
+  isOpen: boolean;
+  onClose: () => void;
 }
 
 export function RemoteConfigurationModal({ isOpen, onClose }: RemoteConfigurationModalProps) {
-  const { t } = useTranslation()
-  const { addErrorToast, addSuccessToast } = useToast()
-  const [draftBindings, setDraftBindings] = useState(createEmptyRemoteControllerBindings())
-  const [listeningAction, setListeningAction] = useState<ConfigurableKeyboardAction | null>(null)
-  const [isSaving, setIsSaving] = useState(false)
-  const closeGuardRef = useRef(false)
+  const { t } = useTranslation();
+  const { addErrorToast, addSuccessToast } = useToast();
+  const [draftBindings, setDraftBindings] = useState(createEmptyRemoteControllerBindings());
+  const [listeningAction, setListeningAction] = useState<ConfigurableKeyboardAction | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const closeGuardRef = useRef(false);
 
   useEffect(() => {
     if (isOpen) {
-      closeGuardRef.current = false
+      closeGuardRef.current = false;
     }
-  }, [isOpen])
+  }, [isOpen]);
 
   useEffect(() => {
     if (!isOpen) {
-      setListeningAction(null)
-      return
+      setListeningAction(null);
+      return;
     }
 
-    let isMounted = true
+    let isMounted = true;
 
     void (async () => {
       try {
-        const storedBindings = await loadRemoteControllerBindingsWithFallback()
+        const storedBindings = await loadRemoteControllerBindingsWithFallback();
 
         if (!isMounted) {
-          return
+          return;
         }
 
-        setDraftBindings(storedBindings)
+        setDraftBindings(storedBindings);
       } catch (error) {
-        console.error('Failed to load remote controller bindings.', error)
+        console.error('Failed to load remote controller bindings.', error);
 
         if (!isMounted) {
-          return
+          return;
         }
 
-        setDraftBindings(createEmptyRemoteControllerBindings())
-        addErrorToast(t('setup.remoteConfig.feedback.loadError'))
+        setDraftBindings(createEmptyRemoteControllerBindings());
+        addErrorToast(t('setup.remoteConfig.feedback.loadError'));
       }
-    })()
+    })();
 
     return () => {
-      isMounted = false
-    }
-  }, [addErrorToast, isOpen, t])
+      isMounted = false;
+    };
+  }, [addErrorToast, isOpen, t]);
 
   useEffect(() => {
     if (!isOpen || !listeningAction) {
-      return
+      return;
     }
 
     const handleCapture = (event: KeyboardEvent) => {
       if (ignoredCaptureKeys.has(event.key)) {
-        return
+        return;
       }
 
-      event.preventDefault()
-      event.stopPropagation()
+      event.preventDefault();
+      event.stopPropagation();
 
       setDraftBindings((currentBindings) =>
         assignRemoteControllerBinding(currentBindings, listeningAction, event.key)
-      )
-      setListeningAction(null)
-    }
+      );
+      setListeningAction(null);
+    };
 
-    window.addEventListener('keydown', handleCapture, true)
+    window.addEventListener('keydown', handleCapture, true);
 
     return () => {
-      window.removeEventListener('keydown', handleCapture, true)
-    }
-  }, [isOpen, listeningAction])
+      window.removeEventListener('keydown', handleCapture, true);
+    };
+  }, [isOpen, listeningAction]);
 
   const requestClose = useCallback(() => {
     if (closeGuardRef.current) {
-      return
+      return;
     }
 
-    closeGuardRef.current = true
-    onClose()
-  }, [onClose])
+    closeGuardRef.current = true;
+    onClose();
+  }, [onClose]);
 
   const handleOpenChange = useCallback(
     (open: boolean) => {
       if (!open) {
-        requestClose()
+        requestClose();
       }
     },
     [requestClose]
-  )
+  );
 
   const handleSave = useCallback(async () => {
-    setIsSaving(true)
+    setIsSaving(true);
 
     try {
-      const isCleared = configurableKeyboardActions.every((action) => !draftBindings[action])
+      const isCleared = configurableKeyboardActions.every((action) => !draftBindings[action]);
 
       if (isCleared) {
-        await clearRemoteControllerBindings()
+        await clearRemoteControllerBindings();
       } else {
-        await saveRemoteControllerBindings(draftBindings)
+        await saveRemoteControllerBindings(draftBindings);
       }
 
-      addSuccessToast(t('setup.remoteConfig.feedback.saveSuccess'))
-      requestClose()
+      addSuccessToast(t('setup.remoteConfig.feedback.saveSuccess'));
+      requestClose();
     } catch (error) {
-      const saveError = toError(error)
-      addErrorToast(`${t('setup.remoteConfig.feedback.saveError')} ${saveError.message}`)
+      const saveError = toError(error);
+      addErrorToast(`${t('setup.remoteConfig.feedback.saveError')} ${saveError.message}`);
     } finally {
-      setIsSaving(false)
-      setListeningAction(null)
+      setIsSaving(false);
+      setListeningAction(null);
     }
-  }, [addErrorToast, addSuccessToast, draftBindings, requestClose, t])
+  }, [addErrorToast, addSuccessToast, draftBindings, requestClose, t]);
 
   const handleClear = useCallback(() => {
-    setListeningAction(null)
-    setDraftBindings(createEmptyRemoteControllerBindings())
-  }, [])
+    setListeningAction(null);
+    setDraftBindings(createEmptyRemoteControllerBindings());
+  }, []);
 
   const handleResetDefaults = useCallback(() => {
-    setListeningAction(null)
-    setDraftBindings(createRemoteControllerBindings())
-  }, [])
+    setListeningAction(null);
+    setDraftBindings(createRemoteControllerBindings());
+  }, []);
 
   const bindingRows = useMemo(
     () =>
@@ -183,18 +183,18 @@ export function RemoteConfigurationModal({ isOpen, onClose }: RemoteConfiguratio
           hint: t('setup.remoteConfig.rows.guardedUndoHint')
         }
       ] satisfies Array<{
-        action: ConfigurableKeyboardAction
-        label: string
-        hint: string
+        action: ConfigurableKeyboardAction;
+        label: string;
+        hint: string;
       }>,
     [t]
-  )
+  );
 
   const listeningAnnouncement = listeningAction
     ? t('setup.remoteConfig.listeningAnnouncement', {
         action: bindingRows.find((row) => row.action === listeningAction)?.label ?? ''
       })
-    : ''
+    : '';
 
   return (
     <Dialog.Root open={isOpen} onOpenChange={handleOpenChange}>
@@ -232,8 +232,8 @@ export function RemoteConfigurationModal({ isOpen, onClose }: RemoteConfiguratio
 
               <div className={styles.rows}>
                 {bindingRows.map((row) => {
-                  const binding = draftBindings[row.action]
-                  const isListening = listeningAction === row.action
+                  const binding = draftBindings[row.action];
+                  const isListening = listeningAction === row.action;
 
                   return (
                     <div key={row.action} className={styles.row}>
@@ -266,7 +266,7 @@ export function RemoteConfigurationModal({ isOpen, onClose }: RemoteConfiguratio
                         </span>
                       </Button>
                     </div>
-                  )
+                  );
                 })}
               </div>
 
@@ -307,5 +307,5 @@ export function RemoteConfigurationModal({ isOpen, onClose }: RemoteConfiguratio
         />
       </Dialog.Portal>
     </Dialog.Root>
-  )
+  );
 }

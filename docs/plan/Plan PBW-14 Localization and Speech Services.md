@@ -124,27 +124,27 @@ pnpm add react-i18next i18next i18next-browser-languagedetector i18next-http-bac
 
 ```typescript
 // Supported locales
-export const supportedLocales = ['en', 'pt', 'es'] as const
-export type SupportedLocale = (typeof supportedLocales)[number]
+export const supportedLocales = ['en', 'pt', 'es'] as const;
+export type SupportedLocale = (typeof supportedLocales)[number];
 
 // Default locale for fallback
-export const defaultLocale: SupportedLocale = 'en'
+export const defaultLocale: SupportedLocale = 'en';
 
 // Locale preference stored in IndexedDB
 export interface LocalePreference {
-  locale: SupportedLocale
-  updatedAt: string // ISO timestamp
+  locale: SupportedLocale;
+  updatedAt: string; // ISO timestamp
 }
 
 // i18n configuration options
 export interface I18nConfig {
-  fallbackLng: SupportedLocale
-  supportedLngs: SupportedLocale[]
+  fallbackLng: SupportedLocale;
+  supportedLngs: SupportedLocale[];
   detection: {
-    order: ('localStorage' | 'navigator')[]
-    caches: 'localStorage'[]
-    lookupLocalStorage: string
-  }
+    order: ('localStorage' | 'navigator')[];
+    caches: 'localStorage'[];
+    lookupLocalStorage: string;
+  };
 }
 ```
 
@@ -186,14 +186,14 @@ export interface I18nConfig {
 
 ```typescript
 export function detectBrowserLocale(): SupportedLocale | null {
-  const browserLang = navigator.language // e.g., 'en-US', 'pt-BR', 'es-ES'
-  const primaryLang = browserLang.split('-')[0].toLowerCase()
+  const browserLang = navigator.language; // e.g., 'en-US', 'pt-BR', 'es-ES'
+  const primaryLang = browserLang.split('-')[0].toLowerCase();
 
   if (supportedLocales.includes(primaryLang as SupportedLocale)) {
-    return primaryLang as SupportedLocale
+    return primaryLang as SupportedLocale;
   }
 
-  return null
+  return null;
 }
 
 export function resolveInitialLocale(
@@ -201,7 +201,7 @@ export function resolveInitialLocale(
   browserDetected: SupportedLocale | null
 ): SupportedLocale {
   // Priority: stored preference > browser detection > default
-  return storedPreference ?? browserDetected ?? defaultLocale
+  return storedPreference ?? browserDetected ?? defaultLocale;
 }
 ```
 
@@ -218,18 +218,18 @@ export function resolveInitialLocale(
 **Implementation**:
 
 ```typescript
-import i18n from 'i18next'
-import { initReactI18next } from 'react-i18next'
-import HttpBackend from 'i18next-http-backend'
+import i18n from 'i18next';
+import { initReactI18next } from 'react-i18next';
+import HttpBackend from 'i18next-http-backend';
 
-import { defaultLocale, supportedLocales, type SupportedLocale } from './types'
-import { loadLocalePreference, saveLocalePreference } from './locale-storage'
-import { detectBrowserLocale, resolveInitialLocale } from './locale-detector'
+import { defaultLocale, supportedLocales, type SupportedLocale } from './types';
+import { loadLocalePreference, saveLocalePreference } from './locale-storage';
+import { detectBrowserLocale, resolveInitialLocale } from './locale-detector';
 
 export async function initializeI18n(): Promise<void> {
-  const storedPreference = await loadLocalePreference()
-  const browserLocale = detectBrowserLocale()
-  const initialLocale = resolveInitialLocale(storedPreference, browserLocale)
+  const storedPreference = await loadLocalePreference();
+  const browserLocale = detectBrowserLocale();
+  const initialLocale = resolveInitialLocale(storedPreference, browserLocale);
 
   await i18n
     .use(HttpBackend)
@@ -244,15 +244,15 @@ export async function initializeI18n(): Promise<void> {
       backend: {
         loadPath: '/locales/{{lng}}.json'
       }
-    })
+    });
 }
 
 export function changeLocale(locale: SupportedLocale): Promise<void> {
-  await saveLocalePreference(locale)
-  await i18n.changeLanguage(locale)
+  await saveLocalePreference(locale);
+  await i18n.changeLanguage(locale);
 }
 
-export { i18n }
+export { i18n };
 ```
 
 **Validation**:
@@ -575,37 +575,37 @@ export { i18n }
 **Implementation**:
 
 ```typescript
-export const verbosityLevels = ['minimal', 'standard', 'verbose'] as const
-export type VerbosityLevel = (typeof verbosityLevels)[number]
+export const verbosityLevels = ['minimal', 'standard', 'verbose'] as const;
+export type VerbosityLevel = (typeof verbosityLevels)[number];
 
-export const defaultVerbosity: VerbosityLevel = 'standard'
+export const defaultVerbosity: VerbosityLevel = 'standard';
 
 export interface SpeechPreferences {
-  muted: boolean
-  verbosity: VerbosityLevel
-  updatedAt: string
+  muted: boolean;
+  verbosity: VerbosityLevel;
+  updatedAt: string;
 }
 
 export interface SpeechServiceConfig {
-  muted?: boolean
-  verbosity?: VerbosityLevel
-  onVoiceChange?: (voice: SpeechSynthesisVoice | null) => void
-  onError?: (error: Error) => void
+  muted?: boolean;
+  verbosity?: VerbosityLevel;
+  onVoiceChange?: (voice: SpeechSynthesisVoice | null) => void;
+  onError?: (error: Error) => void;
 }
 
 export interface SpeechService {
-  speak(text: string, options?: SpeechOptions): void
-  cancel(): void
-  getMuted(): boolean
-  setMuted(muted: boolean): void
-  getVerbosity(): VerbosityLevel
-  setVerbosity(level: VerbosityLevel): void
-  getVoice(): SpeechSynthesisVoice | null
-  isSupported(): boolean
+  speak(text: string, options?: SpeechOptions): void;
+  cancel(): void;
+  getMuted(): boolean;
+  setMuted(muted: boolean): void;
+  getVerbosity(): VerbosityLevel;
+  setVerbosity(level: VerbosityLevel): void;
+  getVoice(): SpeechSynthesisVoice | null;
+  isSupported(): boolean;
 }
 
 export interface SpeechOptions {
-  immediate?: boolean // Skip queue, speak immediately
+  immediate?: boolean; // Skip queue, speak immediately
 }
 
 export type SpeechEventType =
@@ -613,18 +613,18 @@ export type SpeechEventType =
   | 'game-won'
   | 'set-won'
   | 'match-won'
-  | 'server-change'
+  | 'server-change';
 
 export interface SpeechEventData {
-  eventType: SpeechEventType
-  team1Score?: number | string
-  team2Score?: number | string
-  team1Name?: string
-  team2Name?: string
-  winningTeam?: 'team-1' | 'team-2'
-  servingTeam?: 'team-1' | 'team-2'
-  isTiebreak?: boolean
-  verbosity: VerbosityLevel
+  eventType: SpeechEventType;
+  team1Score?: number | string;
+  team2Score?: number | string;
+  team1Name?: string;
+  team2Name?: string;
+  winningTeam?: 'team-1' | 'team-2';
+  servingTeam?: 'team-1' | 'team-2';
+  isTiebreak?: boolean;
+  verbosity: VerbosityLevel;
 }
 ```
 
@@ -658,7 +658,7 @@ export interface SpeechEventData {
 **Implementation**:
 
 ```typescript
-import { SupportedLocale, defaultLocale } from '@/lib/i18n/types'
+import { SupportedLocale, defaultLocale } from '@/lib/i18n/types';
 
 export function selectVoice(
   locale: SupportedLocale,
@@ -669,32 +669,32 @@ export function selectVoice(
   // Try to find voice matching locale
   const localeVoice = voices.find((voice) =>
     voice.lang.toLowerCase().startsWith(locale.toLowerCase())
-  )
+  );
 
   if (localeVoice) {
-    return localeVoice
+    return localeVoice;
   }
 
   // Fallback to English voice
-  const englishVoice = voices.find((voice) => voice.lang.toLowerCase().startsWith('en'))
+  const englishVoice = voices.find((voice) => voice.lang.toLowerCase().startsWith('en'));
 
-  return englishVoice ?? null
+  return englishVoice ?? null;
 }
 
 export function getAvailableVoices(): Promise<SpeechSynthesisVoice[]> {
   return new Promise((resolve) => {
-    const voices = speechSynthesis.getVoices()
+    const voices = speechSynthesis.getVoices();
 
     if (voices.length > 0) {
-      resolve(voices)
-      return
+      resolve(voices);
+      return;
     }
 
     // Voices might not be loaded yet
     speechSynthesis.onvoiceschanged = () => {
-      resolve(speechSynthesis.getVoices())
-    }
-  })
+      resolve(speechSynthesis.getVoices());
+    };
+  });
 }
 ```
 
@@ -711,49 +711,49 @@ export function getAvailableVoices(): Promise<SpeechSynthesisVoice[]> {
 **Implementation**:
 
 ```typescript
-import { t } from 'react-i18next'
-import type { VerbosityLevel, SpeechEventData } from './types'
+import { t } from 'react-i18next';
+import type { VerbosityLevel, SpeechEventData } from './types';
 
 export function generateSpeechMessage(data: SpeechEventData): string | null {
-  const { eventType, verbosity } = data
+  const { eventType, verbosity } = data;
 
   switch (eventType) {
     case 'point-scored':
-      return generatePointScoreMessage(data)
+      return generatePointScoreMessage(data);
     case 'game-won':
-      return generateGameWonMessage(data)
+      return generateGameWonMessage(data);
     case 'set-won':
-      return generateSetWonMessage(data)
+      return generateSetWonMessage(data);
     case 'match-won':
-      return generateMatchWonMessage(data)
+      return generateMatchWonMessage(data);
     case 'server-change':
-      return generateServerChangeMessage(data)
+      return generateServerChangeMessage(data);
     default:
-      return null
+      return null;
   }
 }
 
 function generatePointScoreMessage(data: SpeechEventData): string {
-  const { team1Score, team2Score, team1Name, team2Name, servingTeam, isTiebreak, verbosity } = data
+  const { team1Score, team2Score, team1Name, team2Name, servingTeam, isTiebreak, verbosity } = data;
 
   if (verbosity === 'minimal') {
-    return null // No point-by-point in minimal mode
+    return null; // No point-by-point in minimal mode
   }
 
   if (isTiebreak) {
-    return `${team1Score}-${team2Score}`
+    return `${team1Score}-${team2Score}`;
   }
 
   if (verbosity === 'standard') {
-    return formatStandardScore(team1Score, team2Score)
+    return formatStandardScore(team1Score, team2Score);
   }
 
   // Verbose
-  return formatVerboseScore(team1Score, team2Score, team1Name, team2Name, servingTeam)
+  return formatVerboseScore(team1Score, team2Score, team1Name, team2Name, servingTeam);
 }
 
 function formatStandardScore(score1: number | string, score2: number | string): string {
-  return `${score1}-${score2}`
+  return `${score1}-${score2}`;
 }
 
 function formatVerboseScore(
@@ -769,61 +769,61 @@ function formatVerboseScore(
     '30': t('score.points.30'),
     '40': t('score.points.40'),
     Ad: t('score.points.Ad')
-  }
+  };
 
-  const word1 = scoreWords[String(score1)] ?? String(score1)
-  const word2 = scoreWords[String(score2)] ?? String(score2)
+  const word1 = scoreWords[String(score1)] ?? String(score1);
+  const word2 = scoreWords[String(score2)] ?? String(score2);
 
   if (score1 === score2) {
-    return `${word1} all`
+    return `${word1} all`;
   }
 
-  const serverName = servingTeam === 'team-1' ? team1Name : team2Name
-  return `${word1} ${word2.toLowerCase()}, ${t('score.announcements.serving')} ${serverName}`
+  const serverName = servingTeam === 'team-1' ? team1Name : team2Name;
+  return `${word1} ${word2.toLowerCase()}, ${t('score.announcements.serving')} ${serverName}`;
 }
 
 function generateGameWonMessage(data: SpeechEventData): string {
-  const { winningTeam, team1Name, team2Name, verbosity } = data
-  const winnerName = winningTeam === 'team-1' ? team1Name : team2Name
+  const { winningTeam, team1Name, team2Name, verbosity } = data;
+  const winnerName = winningTeam === 'team-1' ? team1Name : team2Name;
 
   if (verbosity === 'minimal') {
-    return t('score.announcements.game')
+    return t('score.announcements.game');
   }
 
-  return `${t('score.announcements.game')}, ${winnerName}`
+  return `${t('score.announcements.game')}, ${winnerName}`;
 }
 
 function generateSetWonMessage(data: SpeechEventData): string {
-  const { winningTeam, team1Name, team2Name, verbosity } = data
-  const winnerName = winningTeam === 'team-1' ? team1Name : team2Name
+  const { winningTeam, team1Name, team2Name, verbosity } = data;
+  const winnerName = winningTeam === 'team-1' ? team1Name : team2Name;
 
   if (verbosity === 'minimal') {
-    return t('score.announcements.set')
+    return t('score.announcements.set');
   }
 
-  return `${t('score.announcements.set')}, ${winnerName}`
+  return `${t('score.announcements.set')}, ${winnerName}`;
 }
 
 function generateMatchWonMessage(data: SpeechEventData): string {
-  const { winningTeam, team1Name, team2Name, verbosity } = data
-  const winnerName = winningTeam === 'team-1' ? team1Name : team2Name
+  const { winningTeam, team1Name, team2Name, verbosity } = data;
+  const winnerName = winningTeam === 'team-1' ? team1Name : team2Name;
 
   if (verbosity === 'minimal') {
-    return t('score.announcements.match')
+    return t('score.announcements.match');
   }
 
-  return `${t('score.announcements.match')}, ${winnerName}`
+  return `${t('score.announcements.match')}, ${winnerName}`;
 }
 
 function generateServerChangeMessage(data: SpeechEventData): string {
-  const { servingTeam, team1Name, team2Name, verbosity } = data
+  const { servingTeam, team1Name, team2Name, verbosity } = data;
 
   if (verbosity === 'minimal') {
-    return null // No server change in minimal mode
+    return null; // No server change in minimal mode
   }
 
-  const serverName = servingTeam === 'team-1' ? team1Name : team2Name
-  return `${t('score.announcements.serving')} ${serverName}`
+  const serverName = servingTeam === 'team-1' ? team1Name : team2Name;
+  return `${t('score.announcements.serving')} ${serverName}`;
 }
 ```
 
@@ -841,10 +841,10 @@ function generateServerChangeMessage(data: SpeechEventData): string {
 **Implementation**:
 
 ```typescript
-import { useEffect, useRef, useState, useCallback } from 'react'
-import { i18n } from '@/lib/i18n/i18n'
-import { selectVoice, getAvailableVoices } from './voice-selector'
-import { generateSpeechMessage } from './message-generator'
+import { useEffect, useRef, useState, useCallback } from 'react';
+import { i18n } from '@/lib/i18n/i18n';
+import { selectVoice, getAvailableVoices } from './voice-selector';
+import { generateSpeechMessage } from './message-generator';
 import {
   loadSpeechPreferences,
   saveSpeechPreferences,
@@ -853,165 +853,165 @@ import {
   type SpeechServiceConfig,
   type SpeechEventData,
   type VerbosityLevel
-} from './types'
+} from './types';
 
 export function useSpeechService(config: SpeechServiceConfig = {}): SpeechService {
-  const [muted, setMutedState] = useState(config.muted ?? false)
+  const [muted, setMutedState] = useState(config.muted ?? false);
   const [verbosity, setVerbosityState] = useState<VerbosityLevel>(
     config.verbosity ?? defaultVerbosity
-  )
-  const [voice, setVoice] = useState<SpeechSynthesisVoice | null>(null)
-  const utteranceQueueRef = useRef<SpeechSynthesisUtterance[]>([])
-  const isSpeakingRef = useRef(false)
+  );
+  const [voice, setVoice] = useState<SpeechSynthesisVoice | null>(null);
+  const utteranceQueueRef = useRef<SpeechSynthesisUtterance[]>([]);
+  const isSpeakingRef = useRef(false);
 
   // Initialize from storage and load voices
   useEffect(() => {
-    let cancelled = false
+    let cancelled = false;
 
     async function initialize() {
-      const prefs = await loadSpeechPreferences()
+      const prefs = await loadSpeechPreferences();
 
-      if (cancelled) return
+      if (cancelled) return;
 
       if (prefs) {
-        setMutedState(prefs.muted)
-        setVerbosityState(prefs.verbosity)
+        setMutedState(prefs.muted);
+        setVerbosityState(prefs.verbosity);
       }
 
-      const voices = await getAvailableVoices()
-      const currentLocale = i18n.language
-      const selectedVoice = selectVoice(currentLocale, voices)
+      const voices = await getAvailableVoices();
+      const currentLocale = i18n.language;
+      const selectedVoice = selectVoice(currentLocale, voices);
 
       if (!cancelled) {
-        setVoice(selectedVoice)
-        config.onVoiceChange?.(selectedVoice)
+        setVoice(selectedVoice);
+        config.onVoiceChange?.(selectedVoice);
 
         // Graceful mute if no voice available
         if (!selectedVoice) {
-          setMutedState(true)
-          config.onError?.(new Error('No suitable voice found'))
+          setMutedState(true);
+          config.onError?.(new Error('No suitable voice found'));
         }
       }
     }
 
-    initialize()
+    initialize();
 
     return () => {
-      cancelled = true
-    }
-  }, [])
+      cancelled = true;
+    };
+  }, []);
 
   // Update voice when locale changes
   useEffect(() => {
     async function updateVoice() {
-      const voices = await getAvailableVoices()
-      const currentLocale = i18n.language
-      const selectedVoice = selectVoice(currentLocale, voices)
-      setVoice(selectedVoice)
+      const voices = await getAvailableVoices();
+      const currentLocale = i18n.language;
+      const selectedVoice = selectVoice(currentLocale, voices);
+      setVoice(selectedVoice);
     }
 
-    i18n.on('languageChanged', updateVoice)
+    i18n.on('languageChanged', updateVoice);
     return () => {
-      i18n.off('languageChanged', updateVoice)
-    }
-  }, [])
+      i18n.off('languageChanged', updateVoice);
+    };
+  }, []);
 
   const speak = useCallback(
     (text: string, options?: SpeechOptions) => {
       if (muted || !voice || !text) {
-        return
+        return;
       }
 
       // Cancel any queued utterances (rapid score change handling)
       if (options?.immediate) {
-        speechSynthesis.cancel()
-        utteranceQueueRef.current = []
+        speechSynthesis.cancel();
+        utteranceQueueRef.current = [];
       }
 
-      const utterance = new SpeechSynthesisUtterance(text)
-      utterance.voice = voice
-      utterance.rate = 1.0
-      utterance.pitch = 1.0
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.voice = voice;
+      utterance.rate = 1.0;
+      utterance.pitch = 1.0;
 
       utterance.onend = () => {
-        isSpeakingRef.current = false
-        processQueue()
-      }
+        isSpeakingRef.current = false;
+        processQueue();
+      };
 
       utterance.onerror = (event) => {
-        isSpeakingRef.current = false
-        config.onError?.(new Error(`Speech error: ${event.error}`))
-        processQueue()
-      }
+        isSpeakingRef.current = false;
+        config.onError?.(new Error(`Speech error: ${event.error}`));
+        processQueue();
+      };
 
-      utteranceQueueRef.current.push(utterance)
+      utteranceQueueRef.current.push(utterance);
 
       if (!isSpeakingRef.current) {
-        processQueue()
+        processQueue();
       }
     },
     [muted, voice, config]
-  )
+  );
 
   const processQueue = useCallback(() => {
     if (isSpeakingRef.current || utteranceQueueRef.current.length === 0) {
-      return
+      return;
     }
 
-    const utterance = utteranceQueueRef.current.shift()
+    const utterance = utteranceQueueRef.current.shift();
     if (utterance) {
-      isSpeakingRef.current = true
-      speechSynthesis.speak(utterance)
+      isSpeakingRef.current = true;
+      speechSynthesis.speak(utterance);
     }
-  }, [])
+  }, []);
 
   const cancel = useCallback(() => {
-    speechSynthesis.cancel()
-    utteranceQueueRef.current = []
-    isSpeakingRef.current = false
-  }, [])
+    speechSynthesis.cancel();
+    utteranceQueueRef.current = [];
+    isSpeakingRef.current = false;
+  }, []);
 
   const setMuted = useCallback(
     async (newMuted: boolean) => {
-      setMutedState(newMuted)
+      setMutedState(newMuted);
       await saveSpeechPreferences({
         muted: newMuted,
         verbosity,
         updatedAt: new Date().toISOString()
-      })
+      });
 
       if (newMuted) {
-        cancel()
+        cancel();
       }
     },
     [verbosity, cancel]
-  )
+  );
 
   const setVerbosity = useCallback(
     async (level: VerbosityLevel) => {
-      setVerbosityState(level)
+      setVerbosityState(level);
       await saveSpeechPreferences({
         muted,
         verbosity: level,
         updatedAt: new Date().toISOString()
-      })
+      });
     },
     [muted]
-  )
+  );
 
   const announce = useCallback(
     (eventData: Omit<SpeechEventData, 'verbosity'>) => {
       const message = generateSpeechMessage({
         ...eventData,
         verbosity
-      })
+      });
 
       if (message) {
-        speak(message, { immediate: true })
+        speak(message, { immediate: true });
       }
     },
     [verbosity, speak]
-  )
+  );
 
   return {
     speak,
@@ -1023,7 +1023,7 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
     getVoice: () => voice,
     isSupported: () => typeof speechSynthesis !== 'undefined',
     announce
-  }
+  };
 }
 ```
 
@@ -1039,34 +1039,34 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
 **File: `src/lib/i18n/index.ts`**
 
 ```typescript
-export { i18n, initializeI18n, changeLocale } from './i18n'
-export { detectBrowserLocale, resolveInitialLocale } from './locale-detector'
+export { i18n, initializeI18n, changeLocale } from './i18n';
+export { detectBrowserLocale, resolveInitialLocale } from './locale-detector';
 export {
   createLocaleStorage,
   loadLocalePreference,
   saveLocalePreference,
   clearLocalePreference
-} from './locale-storage'
+} from './locale-storage';
 export {
   supportedLocales,
   defaultLocale,
   type SupportedLocale,
   type LocalePreference,
   type I18nConfig
-} from './types'
+} from './types';
 ```
 
 **File: `src/lib/speech/index.ts`**
 
 ```typescript
-export { useSpeechService } from './speech-service'
-export { selectVoice, getAvailableVoices } from './voice-selector'
-export { generateSpeechMessage } from './message-generator'
+export { useSpeechService } from './speech-service';
+export { selectVoice, getAvailableVoices } from './voice-selector';
+export { generateSpeechMessage } from './message-generator';
 export {
   loadSpeechPreferences,
   saveSpeechPreferences,
   clearSpeechPreferences
-} from './speech-storage'
+} from './speech-storage';
 export {
   verbosityLevels,
   defaultVerbosity,
@@ -1077,7 +1077,7 @@ export {
   type SpeechOptions,
   type SpeechEventType,
   type SpeechEventData
-} from './types'
+} from './types';
 ```
 
 ### Step 13: Update Root Route for i18n Initialization
@@ -1205,84 +1205,84 @@ export function AppShell() {
 **File: `test/lib/i18n/locale-detector.test.ts`**
 
 ```typescript
-import { describe, it, expect, vi } from 'vitest'
-import { detectBrowserLocale, resolveInitialLocale } from '@/lib/i18n/locale-detector'
-import { defaultLocale, supportedLocales } from '@/lib/i18n/types'
+import { describe, it, expect, vi } from 'vitest';
+import { detectBrowserLocale, resolveInitialLocale } from '@/lib/i18n/locale-detector';
+import { defaultLocale, supportedLocales } from '@/lib/i18n/types';
 
 describe('locale-detector', () => {
   describe('detectBrowserLocale', () => {
     it('returns locale for supported language', () => {
-      vi.stubGlobal('navigator', { language: 'en-US' })
-      expect(detectBrowserLocale()).toBe('en')
+      vi.stubGlobal('navigator', { language: 'en-US' });
+      expect(detectBrowserLocale()).toBe('en');
 
-      vi.stubGlobal('navigator', { language: 'pt-BR' })
-      expect(detectBrowserLocale()).toBe('pt')
+      vi.stubGlobal('navigator', { language: 'pt-BR' });
+      expect(detectBrowserLocale()).toBe('pt');
 
-      vi.stubGlobal('navigator', { language: 'es-ES' })
-      expect(detectBrowserLocale()).toBe('es')
-    })
+      vi.stubGlobal('navigator', { language: 'es-ES' });
+      expect(detectBrowserLocale()).toBe('es');
+    });
 
     it('returns null for unsupported language', () => {
-      vi.stubGlobal('navigator', { language: 'fr-FR' })
-      expect(detectBrowserLocale()).toBeNull()
+      vi.stubGlobal('navigator', { language: 'fr-FR' });
+      expect(detectBrowserLocale()).toBeNull();
 
-      vi.stubGlobal('navigator', { language: 'de-DE' })
-      expect(detectBrowserLocale()).toBeNull()
-    })
+      vi.stubGlobal('navigator', { language: 'de-DE' });
+      expect(detectBrowserLocale()).toBeNull();
+    });
 
     it('handles lowercase language codes', () => {
-      vi.stubGlobal('navigator', { language: 'EN-us' })
-      expect(detectBrowserLocale()).toBe('en')
-    })
-  })
+      vi.stubGlobal('navigator', { language: 'EN-us' });
+      expect(detectBrowserLocale()).toBe('en');
+    });
+  });
 
   describe('resolveInitialLocale', () => {
     it('prioritizes stored preference', () => {
-      expect(resolveInitialLocale('pt', 'es')).toBe('pt')
-    })
+      expect(resolveInitialLocale('pt', 'es')).toBe('pt');
+    });
 
     it('falls back to browser detection when no stored preference', () => {
-      expect(resolveInitialLocale(null, 'es')).toBe('es')
-    })
+      expect(resolveInitialLocale(null, 'es')).toBe('es');
+    });
 
     it('falls back to default when no preference or detection', () => {
-      expect(resolveInitialLocale(null, null)).toBe(defaultLocale)
-    })
-  })
-})
+      expect(resolveInitialLocale(null, null)).toBe(defaultLocale);
+    });
+  });
+});
 ```
 
 **File: `test/lib/i18n/locale-storage.test.ts`**
 
 ```typescript
-import { describe, it, expect, beforeEach } from 'vitest'
-import { createLocaleStorage, type SupportedLocale } from '@/lib/i18n'
+import { describe, it, expect, beforeEach } from 'vitest';
+import { createLocaleStorage, type SupportedLocale } from '@/lib/i18n';
 
 describe('locale-storage', () => {
-  let storage: ReturnType<typeof createLocaleStorage>
+  let storage: ReturnType<typeof createLocaleStorage>;
 
   beforeEach(() => {
-    storage = createLocaleStorage({ databaseName: 'test-locale-db' })
-  })
+    storage = createLocaleStorage({ databaseName: 'test-locale-db' });
+  });
 
   it('saves and loads locale preference', async () => {
-    await storage.saveLocalePreference('pt' as SupportedLocale)
-    const loaded = await storage.loadLocalePreference()
-    expect(loaded).toBe('pt')
-  })
+    await storage.saveLocalePreference('pt' as SupportedLocale);
+    const loaded = await storage.loadLocalePreference();
+    expect(loaded).toBe('pt');
+  });
 
   it('returns null when no preference stored', async () => {
-    const loaded = await storage.loadLocalePreference()
-    expect(loaded).toBeNull()
-  })
+    const loaded = await storage.loadLocalePreference();
+    expect(loaded).toBeNull();
+  });
 
   it('clears locale preference', async () => {
-    await storage.saveLocalePreference('es' as SupportedLocale)
-    await storage.clearLocalePreference()
-    const loaded = await storage.loadLocalePreference()
-    expect(loaded).toBeNull()
-  })
-})
+    await storage.saveLocalePreference('es' as SupportedLocale);
+    await storage.clearLocalePreference();
+    const loaded = await storage.loadLocalePreference();
+    expect(loaded).toBeNull();
+  });
+});
 ```
 
 ### Step 16: Add Unit Tests for Speech
@@ -1290,8 +1290,8 @@ describe('locale-storage', () => {
 **File: `test/lib/speech/voice-selector.test.ts`**
 
 ```typescript
-import { describe, it, expect } from 'vitest'
-import { selectVoice } from '@/lib/speech/voice-selector'
+import { describe, it, expect } from 'vitest';
+import { selectVoice } from '@/lib/speech/voice-selector';
 
 const mockVoices = [
   { lang: 'en-US', name: 'English US' },
@@ -1299,35 +1299,35 @@ const mockVoices = [
   { lang: 'pt-BR', name: 'Portuguese Brazil' },
   { lang: 'es-ES', name: 'Spanish Spain' },
   { lang: 'fr-FR', name: 'French France' }
-] as SpeechSynthesisVoice[]
+] as SpeechSynthesisVoice[];
 
 describe('voice-selector', () => {
   it('selects voice matching locale', () => {
-    expect(selectVoice('pt', mockVoices)?.lang).toBe('pt-BR')
-    expect(selectVoice('es', mockVoices)?.lang).toBe('es-ES')
-  })
+    expect(selectVoice('pt', mockVoices)?.lang).toBe('pt-BR');
+    expect(selectVoice('es', mockVoices)?.lang).toBe('es-ES');
+  });
 
   it('falls back to English voice when locale voice unavailable', () => {
-    expect(selectVoice('fr', mockVoices)?.lang).toBe('en-US')
-  })
+    expect(selectVoice('fr', mockVoices)?.lang).toBe('en-US');
+  });
 
   it('returns null when no suitable voice found', () => {
-    expect(selectVoice('pt', [])).toBeNull()
-  })
-})
+    expect(selectVoice('pt', [])).toBeNull();
+  });
+});
 ```
 
 **File: `test/lib/speech/message-generator.test.ts`**
 
 ```typescript
-import { describe, it, expect, beforeAll } from 'vitest'
-import { generateSpeechMessage } from '@/lib/speech/message-generator'
-import { initializeI18n } from '@/lib/i18n'
+import { describe, it, expect, beforeAll } from 'vitest';
+import { generateSpeechMessage } from '@/lib/speech/message-generator';
+import { initializeI18n } from '@/lib/i18n';
 
 describe('message-generator', () => {
   beforeAll(async () => {
-    await initializeI18n()
-  })
+    await initializeI18n();
+  });
 
   describe('point-scored', () => {
     it('returns null for minimal verbosity', () => {
@@ -1336,9 +1336,9 @@ describe('message-generator', () => {
         team1Score: '15',
         team2Score: '0',
         verbosity: 'minimal'
-      })
-      expect(message).toBeNull()
-    })
+      });
+      expect(message).toBeNull();
+    });
 
     it('returns simple score for standard verbosity', () => {
       const message = generateSpeechMessage({
@@ -1346,9 +1346,9 @@ describe('message-generator', () => {
         team1Score: '15',
         team2Score: '0',
         verbosity: 'standard'
-      })
-      expect(message).toBe('15-0')
-    })
+      });
+      expect(message).toBe('15-0');
+    });
 
     it('returns detailed score for verbose mode', () => {
       const message = generateSpeechMessage({
@@ -1359,12 +1359,12 @@ describe('message-generator', () => {
         team2Name: 'Team B',
         servingTeam: 'team-1',
         verbosity: 'verbose'
-      })
-      expect(message).toContain('Fifteen')
-      expect(message).toContain('love')
-      expect(message).toContain('Team A')
-    })
-  })
+      });
+      expect(message).toContain('Fifteen');
+      expect(message).toContain('love');
+      expect(message).toContain('Team A');
+    });
+  });
 
   describe('game-won', () => {
     it('returns just "Game" for minimal verbosity', () => {
@@ -1374,9 +1374,9 @@ describe('message-generator', () => {
         team1Name: 'Team A',
         team2Name: 'Team B',
         verbosity: 'minimal'
-      })
-      expect(message).toBe('Game')
-    })
+      });
+      expect(message).toBe('Game');
+    });
 
     it('includes team name for standard/verbose', () => {
       const message = generateSpeechMessage({
@@ -1385,19 +1385,19 @@ describe('message-generator', () => {
         team1Name: 'Team A',
         team2Name: 'Team B',
         verbosity: 'standard'
-      })
-      expect(message).toBe('Game, Team A')
-    })
-  })
-})
+      });
+      expect(message).toBe('Game, Team A');
+    });
+  });
+});
 ```
 
 **File: `test/lib/speech/utterance-cancellation.test.ts`**
 
 ```typescript
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { renderHook, act } from '@testing-library/react'
-import { useSpeechService } from '@/lib/speech/speech-service'
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { renderHook, act } from '@testing-library/react';
+import { useSpeechService } from '@/lib/speech/speech-service';
 
 describe('utterance-cancellation', () => {
   beforeEach(() => {
@@ -1406,32 +1406,32 @@ describe('utterance-cancellation', () => {
       cancel: vi.fn(),
       getVoices: () => [{ lang: 'en-US', name: 'English' }],
       onvoiceschanged: null
-    })
-  })
+    });
+  });
 
   it('cancels queued utterances on immediate speak', () => {
-    const { result } = renderHook(() => useSpeechService())
+    const { result } = renderHook(() => useSpeechService());
 
     act(() => {
-      result.current.speak('First message')
-      result.current.speak('Second message', { immediate: true })
-    })
+      result.current.speak('First message');
+      result.current.speak('Second message', { immediate: true });
+    });
 
-    expect(speechSynthesis.cancel).toHaveBeenCalled()
-  })
+    expect(speechSynthesis.cancel).toHaveBeenCalled();
+  });
 
   it('cancel() clears all queued utterances', () => {
-    const { result } = renderHook(() => useSpeechService())
+    const { result } = renderHook(() => useSpeechService());
 
     act(() => {
-      result.current.speak('Message 1')
-      result.current.speak('Message 2')
-      result.current.cancel()
-    })
+      result.current.speak('Message 1');
+      result.current.speak('Message 2');
+      result.current.cancel();
+    });
 
-    expect(speechSynthesis.cancel).toHaveBeenCalled()
-  })
-})
+    expect(speechSynthesis.cancel).toHaveBeenCalled();
+  });
+});
 ```
 
 ---

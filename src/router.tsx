@@ -1,12 +1,12 @@
-import { createRouter } from '@tanstack/react-router'
+import { createRouter } from '@tanstack/react-router';
 
-import { RoutePendingBoundary } from './routes/-route-utils'
-import { routeTree } from './routeTree.gen'
+import { RoutePendingBoundary } from './routes/-route-utils';
+import { routeTree } from './routeTree.gen';
 
 export const routerPendingConfig = {
   defaultPendingMs: 180,
   defaultPendingMinMs: 120
-} as const
+} as const;
 
 function createAppRouter() {
   return createRouter({
@@ -15,15 +15,15 @@ function createAppRouter() {
     ...routerPendingConfig,
     defaultPendingComponent: RoutePendingBoundary,
     scrollRestoration: true
-  })
+  });
 }
 
-let router: ReturnType<typeof createAppRouter> | null = null
+let router: ReturnType<typeof createAppRouter> | null = null;
 
 export function getRouter() {
   if (router === null) {
-    router = createAppRouter()
+    router = createAppRouter();
   }
 
-  return router
+  return router;
 }

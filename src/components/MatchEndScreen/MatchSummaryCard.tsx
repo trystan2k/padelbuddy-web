@@ -1,20 +1,20 @@
-import { useTranslation } from 'react-i18next'
+import { useTranslation } from 'react-i18next';
 
-import { Card } from '@/components/ui/Card/Card'
-import type { TeamScore } from '@/core/match/types'
-import { cn } from '@/lib/utils/cn'
+import { Card } from '@/components/ui/Card/Card';
+import type { TeamScore } from '@/core/match/types';
+import { cn } from '@/lib/utils/cn';
 
-import type { MatchEndScreenSetRow } from './view-model'
-import styles from './MatchSummaryCard.module.css'
+import type { MatchEndScreenSetRow } from './view-model';
+import styles from './MatchSummaryCard.module.css';
 
 export interface MatchSummaryCardProps {
-  formatLabel: string
-  teamNames: TeamScore<string>
-  setRows: MatchEndScreenSetRow[]
+  formatLabel: string;
+  teamNames: TeamScore<string>;
+  setRows: MatchEndScreenSetRow[];
 }
 
 export function MatchSummaryCard({ formatLabel, teamNames, setRows }: MatchSummaryCardProps) {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   return (
     <Card className={styles.card} data-testid="match-end-summary-card">
@@ -75,5 +75,5 @@ export function MatchSummaryCard({ formatLabel, teamNames, setRows }: MatchSumma
         </ol>
       </div>
     </Card>
-  )
+  );
 }

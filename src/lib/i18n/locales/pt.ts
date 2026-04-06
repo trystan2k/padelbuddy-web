@@ -352,4 +352,4 @@ export default {
       confirm: 'Trocado'
     }
   }
-} as const
+} as const;

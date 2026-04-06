@@ -1,77 +1,77 @@
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it, vi } from 'vitest';
 
 import {
   getViewTransitionNavigationOptions,
   supportsViewTransitions
-} from '@/lib/utils/view-transitions'
+} from '@/lib/utils/view-transitions';
 
 describe('view-transitions', () => {
   describe('supportsViewTransitions', () => {
     it('returns false when document is undefined (SSR)', () => {
-      const originalDocument = globalThis.document
+      const originalDocument = globalThis.document;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ;(globalThis as any).document = undefined
+      (globalThis as any).document = undefined;
 
-      expect(supportsViewTransitions()).toBe(false)
+      expect(supportsViewTransitions()).toBe(false);
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ;(globalThis as any).document = originalDocument
-    })
+      (globalThis as any).document = originalDocument;
+    });
 
     it('returns false when startViewTransition is not a function', () => {
       const mockDoc = {
         get body() {
-          return { appendChild: vi.fn<() => void>(), removeChild: vi.fn<() => void>() }
+          return { appendChild: vi.fn<() => void>(), removeChild: vi.fn<() => void>() };
         },
         startViewTransition: undefined
-      }
+      };
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ;(globalThis as any).document = mockDoc
+      (globalThis as any).document = mockDoc;
 
-      expect(supportsViewTransitions()).toBe(false)
-    })
+      expect(supportsViewTransitions()).toBe(false);
+    });
 
     it('returns true when startViewTransition is a function', () => {
       const mockDoc = {
         get body() {
-          return { appendChild: vi.fn<() => void>(), removeChild: vi.fn<() => void>() }
+          return { appendChild: vi.fn<() => void>(), removeChild: vi.fn<() => void>() };
         },
         startViewTransition: () => ({})
-      }
+      };
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ;(globalThis as any).document = mockDoc
+      (globalThis as any).document = mockDoc;
 
-      expect(supportsViewTransitions()).toBe(true)
-    })
-  })
+      expect(supportsViewTransitions()).toBe(true);
+    });
+  });
 
   describe('getViewTransitionNavigationOptions', () => {
     it('returns empty object when view transitions are not supported', () => {
       const mockDoc = {
         get body() {
-          return { appendChild: vi.fn<() => void>(), removeChild: vi.fn<() => void>() }
+          return { appendChild: vi.fn<() => void>(), removeChild: vi.fn<() => void>() };
         },
         startViewTransition: undefined
-      }
+      };
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ;(globalThis as any).document = mockDoc
+      (globalThis as any).document = mockDoc;
 
-      const result = getViewTransitionNavigationOptions()
-      expect(result).toEqual({})
-    })
+      const result = getViewTransitionNavigationOptions();
+      expect(result).toEqual({});
+    });
 
     it('returns viewTransition true when supported', () => {
       const mockDoc = {
         get body() {
-          return { appendChild: vi.fn<() => void>(), removeChild: vi.fn<() => void>() }
+          return { appendChild: vi.fn<() => void>(), removeChild: vi.fn<() => void>() };
         },
         startViewTransition: () => ({})
-      }
+      };
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ;(globalThis as any).document = mockDoc
+      (globalThis as any).document = mockDoc;
 
-      const result = getViewTransitionNavigationOptions()
-      expect(result).toEqual({ viewTransition: true })
-    })
-  })
-})
+      const result = getViewTransitionNavigationOptions();
+      expect(result).toEqual({ viewTransition: true });
+    });
+  });
+});

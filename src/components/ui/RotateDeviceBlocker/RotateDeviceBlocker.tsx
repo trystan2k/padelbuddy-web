@@ -1,32 +1,32 @@
-import { Dialog } from '@base-ui/react/dialog'
-import { useCallback, useRef, type ComponentProps } from 'react'
-import { useTranslation } from 'react-i18next'
+import { Dialog } from '@base-ui/react/dialog';
+import { useCallback, useRef, type ComponentProps } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import styles from './RotateDeviceBlocker.module.css'
+import styles from './RotateDeviceBlocker.module.css';
 
 type DialogBackdropRenderProps = Parameters<
   Extract<ComponentProps<typeof Dialog.Backdrop>['render'], (...args: never[]) => unknown>
->[0]
+>[0];
 type DialogPopupRenderProps = Parameters<
   Extract<ComponentProps<typeof Dialog.Popup>['render'], (...args: never[]) => unknown>
->[0]
+>[0];
 type DialogTitleRenderProps = Parameters<
   Extract<ComponentProps<typeof Dialog.Title>['render'], (...args: never[]) => unknown>
->[0]
+>[0];
 type DialogDescriptionRenderProps = Parameters<
   Extract<ComponentProps<typeof Dialog.Description>['render'], (...args: never[]) => unknown>
->[0]
+>[0];
 
 export function RotateDeviceBlocker() {
-  const { t } = useTranslation()
-  const portalContainerRef = useRef<HTMLDivElement | null>(null)
-  const title = t('match.rotateDevice.title')
-  const description = t('match.rotateDevice.description')
+  const { t } = useTranslation();
+  const portalContainerRef = useRef<HTMLDivElement | null>(null);
+  const title = t('match.rotateDevice.title');
+  const description = t('match.rotateDevice.description');
 
   const renderBackdrop = useCallback(
     (props: DialogBackdropRenderProps) => <div {...props} className={styles.overlay} />,
     []
-  )
+  );
 
   const renderTitle = useCallback(
     (props: DialogTitleRenderProps) => (
@@ -35,7 +35,7 @@ export function RotateDeviceBlocker() {
       </h2>
     ),
     [title]
-  )
+  );
 
   const renderDescription = useCallback(
     (props: DialogDescriptionRenderProps) => (
@@ -44,7 +44,7 @@ export function RotateDeviceBlocker() {
       </p>
     ),
     [description]
-  )
+  );
 
   const renderPopup = useCallback(
     (props: DialogPopupRenderProps) => (
@@ -77,7 +77,7 @@ export function RotateDeviceBlocker() {
       </div>
     ),
     [renderDescription, renderTitle]
-  )
+  );
 
   return (
     <>
@@ -89,5 +89,5 @@ export function RotateDeviceBlocker() {
         </Dialog.Portal>
       </Dialog.Root>
     </>
-  )
+  );
 }

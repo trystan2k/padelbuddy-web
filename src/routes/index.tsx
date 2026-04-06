@@ -1,27 +1,27 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router';
 
-import { HomeRoute } from '@/components/HomeScreen/HomeScreen'
-import { currentMatchPersistenceRouteLoaderOptions } from '@/lib/router/current-match-route-flow'
+import { HomeRoute } from '@/components/HomeScreen/HomeScreen';
+import { currentMatchPersistenceRouteLoaderOptions } from '@/lib/router/current-match-route-flow';
 
-import { loadHomeStartup } from './-home-startup'
-import { parseMatchRouteErrorType, type MatchRouteErrorType } from './-match-route-state'
+import { loadHomeStartup } from './-home-startup';
+import { parseMatchRouteErrorType, type MatchRouteErrorType } from './-match-route-state';
 
 interface HomeRouteSearch {
-  error?: MatchRouteErrorType
+  error?: MatchRouteErrorType;
 }
 
 export const Route = createFileRoute('/')({
   ...currentMatchPersistenceRouteLoaderOptions,
   validateSearch: (search): HomeRouteSearch => {
-    const error = parseMatchRouteErrorType(search.error)
+    const error = parseMatchRouteErrorType(search.error);
 
-    return error ? { error } : {}
+    return error ? { error } : {};
   },
   loader: async () => loadHomeStartup(),
   component: function HomeRouteWrapper() {
-    const { startupState } = Route.useLoaderData()
-    const { error } = Route.useSearch()
+    const { startupState } = Route.useLoaderData();
+    const { error } = Route.useSearch();
 
-    return <HomeRoute startupState={startupState} {...(error !== undefined && { error })} />
+    return <HomeRoute startupState={startupState} {...(error !== undefined && { error })} />;
   }
-})
+});

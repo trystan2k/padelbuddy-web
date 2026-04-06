@@ -1,35 +1,35 @@
-export const persistenceDatabaseName = 'padel-buddy-web'
-export const persistenceDatabaseVersion = 6
+export const persistenceDatabaseName = 'padel-buddy-web';
+export const persistenceDatabaseVersion = 6;
 
-export const currentMatchObjectStoreName = 'current-match'
-export const localePreferenceObjectStoreName = 'locale-preference'
-export const setupPreferenceObjectStoreName = 'setup-preference'
+export const currentMatchObjectStoreName = 'current-match';
+export const localePreferenceObjectStoreName = 'locale-preference';
+export const setupPreferenceObjectStoreName = 'setup-preference';
 /** Legacy identifier used for migration check within setup-storage.ts. Not created for new databases. */
-export const speechPreferenceObjectStoreName = 'speech-preference'
-export const remoteControllerPreferenceObjectStoreName = 'remote-controller-preference'
+export const speechPreferenceObjectStoreName = 'speech-preference';
+export const remoteControllerPreferenceObjectStoreName = 'remote-controller-preference';
 
 export const sharedIndexedDbObjectStoreNames = [
   currentMatchObjectStoreName,
   localePreferenceObjectStoreName,
   setupPreferenceObjectStoreName,
   remoteControllerPreferenceObjectStoreName
-] as const
+] as const;
 
 export interface IndexedDbStorageOptions {
-  databaseName?: string
-  databaseVersion?: number
-  objectStoreName?: string
+  databaseName?: string;
+  databaseVersion?: number;
+  objectStoreName?: string;
 }
 
 export interface IndexedDbStorageConfig {
-  databaseName: string
-  databaseVersion: number
-  objectStoreName: string
+  databaseName: string;
+  databaseVersion: number;
+  objectStoreName: string;
 }
 
 export interface IndexedDbOpenMessages {
-  blocked: string
-  openFailed: string
+  blocked: string;
+  openFailed: string;
 }
 
 export function resolveIndexedDbStorageConfig(
@@ -40,7 +40,7 @@ export function resolveIndexedDbStorageConfig(
     databaseName: options.databaseName ?? persistenceDatabaseName,
     databaseVersion: options.databaseVersion ?? persistenceDatabaseVersion,
     objectStoreName: options.objectStoreName ?? defaultObjectStoreName
-  }
+  };
 }
 
 export function openIndexedDbDatabase(
@@ -48,30 +48,30 @@ export function openIndexedDbDatabase(
   messages: IndexedDbOpenMessages
 ): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
-    const request = getIndexedDb().open(config.databaseName, config.databaseVersion)
+    const request = getIndexedDb().open(config.databaseName, config.databaseVersion);
 
     request.addEventListener('upgradeneeded', () => {
-      const database = request.result
+      const database = request.result;
 
       for (const objectStoreName of getRegisteredObjectStoreNames(config.objectStoreName)) {
         if (!database.objectStoreNames.contains(objectStoreName)) {
-          database.createObjectStore(objectStoreName)
+          database.createObjectStore(objectStoreName);
         }
       }
-    })
+    });
 
     request.addEventListener('success', () => {
-      resolve(request.result)
-    })
+      resolve(request.result);
+    });
 
     request.addEventListener('error', () => {
-      reject(request.error ?? new Error(messages.openFailed))
-    })
+      reject(request.error ?? new Error(messages.openFailed));
+    });
 
     request.addEventListener('blocked', () => {
-      reject(new Error(messages.blocked))
-    })
-  })
+      reject(new Error(messages.blocked));
+    });
+  });
 }
 
 export async function withIndexedDbDatabase<T>(
@@ -79,51 +79,51 @@ export async function withIndexedDbDatabase<T>(
   messages: IndexedDbOpenMessages,
   operation: (database: IDBDatabase) => Promise<T>
 ): Promise<T> {
-  const database = await openIndexedDbDatabase(config, messages)
+  const database = await openIndexedDbDatabase(config, messages);
 
   try {
-    return await operation(database)
+    return await operation(database);
   } finally {
-    database.close()
+    database.close();
   }
 }
 
 export function waitForIndexedDbRequest<T>(request: IDBRequest<T>): Promise<T> {
   return new Promise((resolve, reject) => {
     request.addEventListener('success', () => {
-      resolve(request.result)
-    })
+      resolve(request.result);
+    });
 
     request.addEventListener('error', () => {
-      reject(request.error ?? new Error('IndexedDB request failed.'))
-    })
-  })
+      reject(request.error ?? new Error('IndexedDB request failed.'));
+    });
+  });
 }
 
 export function waitForIndexedDbTransaction(transaction: IDBTransaction): Promise<void> {
   return new Promise((resolve, reject) => {
     transaction.addEventListener('complete', () => {
-      resolve()
-    })
+      resolve();
+    });
 
     transaction.addEventListener('error', () => {
-      reject(transaction.error ?? new Error('IndexedDB transaction failed.'))
-    })
+      reject(transaction.error ?? new Error('IndexedDB transaction failed.'));
+    });
 
     transaction.addEventListener('abort', () => {
-      reject(transaction.error ?? new Error('IndexedDB transaction was aborted.'))
-    })
-  })
+      reject(transaction.error ?? new Error('IndexedDB transaction was aborted.'));
+    });
+  });
 }
 
 function getIndexedDb(): IDBFactory {
   if (typeof indexedDB === 'undefined') {
-    throw new Error('IndexedDB is not available in this environment.')
+    throw new Error('IndexedDB is not available in this environment.');
   }
 
-  return indexedDB
+  return indexedDB;
 }
 
 function getRegisteredObjectStoreNames(objectStoreName: string): string[] {
-  return [...new Set([...sharedIndexedDbObjectStoreNames, objectStoreName])]
+  return [...new Set([...sharedIndexedDbObjectStoreNames, objectStoreName])];
 }

@@ -1,58 +1,58 @@
-import { currentMatchPersistence, type CurrentMatchPersistence } from './indexed-db'
-import type { CurrentMatchResetNotice } from './reset-notice'
-import currentMatchResetNoticeStore from './reset-notice-store'
-import { createCurrentMatchSessionSnapshot, type CurrentMatchSessionSnapshot } from './session'
+import { currentMatchPersistence, type CurrentMatchPersistence } from './indexed-db';
+import type { CurrentMatchResetNotice } from './reset-notice';
+import currentMatchResetNoticeStore from './reset-notice-store';
+import { createCurrentMatchSessionSnapshot, type CurrentMatchSessionSnapshot } from './session';
 
 export interface CurrentMatchStartupOptions {
-  persistence?: CurrentMatchPersistence
+  persistence?: CurrentMatchPersistence;
 }
 
 export interface CurrentMatchStartupMatch {
-  matchId: string
-  snapshot: CurrentMatchSessionSnapshot
+  matchId: string;
+  snapshot: CurrentMatchSessionSnapshot;
 }
 
 export interface CurrentMatchStartupNoMatchResult {
-  status: 'no-match'
-  notice: CurrentMatchResetNotice | null
+  status: 'no-match';
+  notice: CurrentMatchResetNotice | null;
 }
 
 export interface CurrentMatchStartupReadyResult {
-  status: 'ready'
-  notice: CurrentMatchResetNotice | null
-  match: CurrentMatchStartupMatch
+  status: 'ready';
+  notice: CurrentMatchResetNotice | null;
+  match: CurrentMatchStartupMatch;
 }
 
 export interface CurrentMatchStartupResumeRequiredResult {
-  status: 'resume-required'
-  notice: CurrentMatchResetNotice | null
-  match: CurrentMatchStartupMatch
+  status: 'resume-required';
+  notice: CurrentMatchResetNotice | null;
+  match: CurrentMatchStartupMatch;
 }
 
 export interface CurrentMatchStartupCorruptResult {
-  status: 'corrupt'
-  notice: CurrentMatchResetNotice | null
-  message: string
+  status: 'corrupt';
+  notice: CurrentMatchResetNotice | null;
+  message: string;
 }
 
 export type CurrentMatchStartupResult =
   | CurrentMatchStartupNoMatchResult
   | CurrentMatchStartupReadyResult
   | CurrentMatchStartupResumeRequiredResult
-  | CurrentMatchStartupCorruptResult
+  | CurrentMatchStartupCorruptResult;
 
 export async function hydrateCurrentMatchStartup(
   options: CurrentMatchStartupOptions = {}
 ): Promise<CurrentMatchStartupResult> {
-  const persistence = options.persistence ?? currentMatchPersistence
-  const loadResult = await persistence.loadCurrentMatch()
-  const notice = currentMatchResetNoticeStore.clear()
+  const persistence = options.persistence ?? currentMatchPersistence;
+  const loadResult = await persistence.loadCurrentMatch();
+  const notice = currentMatchResetNoticeStore.clear();
 
   if (loadResult.status === 'empty' || loadResult.status === 'reset-required') {
     return {
       status: 'no-match',
       notice
-    }
+    };
   }
 
   if (loadResult.status === 'corrupt') {
@@ -60,7 +60,7 @@ export async function hydrateCurrentMatchStartup(
       status: 'corrupt',
       notice,
       message: loadResult.message
-    }
+    };
   }
 
   const match = {
@@ -73,19 +73,19 @@ export async function hydrateCurrentMatchStartup(
         ? { finishedAt: loadResult.record.finishedAt }
         : {})
     })
-  }
+  };
 
   if (match.snapshot.projection.derived.status === 'in-progress') {
     return {
       status: 'resume-required',
       notice,
       match
-    }
+    };
   }
 
   return {
     status: 'ready',
     notice,
     match
-  }
+  };
 }

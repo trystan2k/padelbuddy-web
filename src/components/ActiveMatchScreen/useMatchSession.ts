@@ -1,28 +1,28 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback } from 'react';
 
 import {
   createCurrentMatchSession,
   type CurrentMatchSessionSnapshot
-} from '@/lib/current-match/session'
-import type { CurrentMatchPersistence } from '@/lib/current-match/indexed-db'
-import type { MatchAction, MatchSetup, MatchTeamId } from '@/core/match/types'
+} from '@/lib/current-match/session';
+import type { CurrentMatchPersistence } from '@/lib/current-match/indexed-db';
+import type { MatchAction, MatchSetup, MatchTeamId } from '@/core/match/types';
 
 export interface UseMatchSessionOptions {
-  matchId: string
-  setup: MatchSetup
-  initialActions: MatchAction[]
-  startedAt: number
-  initialFinishedAt?: number
-  persistence?: CurrentMatchPersistence
+  matchId: string;
+  setup: MatchSetup;
+  initialActions: MatchAction[];
+  startedAt: number;
+  initialFinishedAt?: number;
+  persistence?: CurrentMatchPersistence;
 }
 
 export interface UseMatchSessionReturn {
-  snapshot: CurrentMatchSessionSnapshot
-  scorePoint: (teamId: MatchTeamId) => Promise<void>
-  undoScoreAction: () => Promise<void>
-  undoScoreActionForTeam: (teamId: MatchTeamId) => Promise<void>
-  finishMatch: () => Promise<void>
-  isLoading: boolean
+  snapshot: CurrentMatchSessionSnapshot;
+  scorePoint: (teamId: MatchTeamId) => Promise<void>;
+  undoScoreAction: () => Promise<void>;
+  undoScoreActionForTeam: (teamId: MatchTeamId) => Promise<void>;
+  finishMatch: () => Promise<void>;
+  isLoading: boolean;
 }
 
 /**
@@ -30,7 +30,7 @@ export interface UseMatchSessionReturn {
  * Provides reactive snapshot updates and async operation handling.
  */
 export function useMatchSession(options: UseMatchSessionOptions): UseMatchSessionReturn {
-  const { matchId, setup, initialActions, startedAt, initialFinishedAt, persistence } = options
+  const { matchId, setup, initialActions, startedAt, initialFinishedAt, persistence } = options;
 
   const [session] = useState(() => {
     const sessionOptions = {
@@ -39,61 +39,63 @@ export function useMatchSession(options: UseMatchSessionOptions): UseMatchSessio
       actions: initialActions,
       startedAt,
       ...(typeof initialFinishedAt === 'number' ? { finishedAt: initialFinishedAt } : {})
-    } as const
+    } as const;
 
     return persistence
       ? createCurrentMatchSession({ ...sessionOptions, persistence })
-      : createCurrentMatchSession(sessionOptions)
-  })
+      : createCurrentMatchSession(sessionOptions);
+  });
 
-  const [snapshot, setSnapshot] = useState<CurrentMatchSessionSnapshot>(() => session.getSnapshot())
-  const [isLoading, setIsLoading] = useState(false)
+  const [snapshot, setSnapshot] = useState<CurrentMatchSessionSnapshot>(() =>
+    session.getSnapshot()
+  );
+  const [isLoading, setIsLoading] = useState(false);
 
   const scorePoint = useCallback(
     async (teamId: MatchTeamId) => {
-      setIsLoading(true)
+      setIsLoading(true);
       try {
-        const newSnapshot = await session.scorePoint(teamId)
-        setSnapshot(newSnapshot)
+        const newSnapshot = await session.scorePoint(teamId);
+        setSnapshot(newSnapshot);
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
     },
     [session]
-  )
+  );
 
   const undoScoreAction = useCallback(async () => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      const newSnapshot = await session.undoScoreAction()
-      setSnapshot(newSnapshot)
+      const newSnapshot = await session.undoScoreAction();
+      setSnapshot(newSnapshot);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }, [session])
+  }, [session]);
 
   const undoScoreActionForTeam = useCallback(
     async (teamId: MatchTeamId) => {
-      setIsLoading(true)
+      setIsLoading(true);
       try {
-        const newSnapshot = await session.undoScoreActionForTeam(teamId)
-        setSnapshot(newSnapshot)
+        const newSnapshot = await session.undoScoreActionForTeam(teamId);
+        setSnapshot(newSnapshot);
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
     },
     [session]
-  )
+  );
 
   const finishMatch = useCallback(async () => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      const newSnapshot = await session.finishMatch()
-      setSnapshot(newSnapshot)
+      const newSnapshot = await session.finishMatch();
+      setSnapshot(newSnapshot);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }, [session])
+  }, [session]);
 
   return {
     snapshot,
@@ -102,5 +104,5 @@ export function useMatchSession(options: UseMatchSessionOptions): UseMatchSessio
     undoScoreActionForTeam,
     finishMatch,
     isLoading
-  }
+  };
 }
