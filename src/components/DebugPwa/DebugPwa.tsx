@@ -17,14 +17,9 @@ interface CacheInfo {
   cacheName: string;
 }
 
-const STORAGE_KEY = 'debug-pwa-closed';
-
 export function DebugPwa() {
   const { t } = useTranslation();
-  const [isVisible, setIsVisible] = useState(() => {
-    if (typeof window === 'undefined') return true;
-    return !localStorage.getItem(STORAGE_KEY);
-  });
+  const [isVisible, setIsVisible] = useState(false);
   const [swState, setSwState] = useState<SWRegistrationState | null>(null);
   const [cacheInfo, setCacheInfo] = useState<CacheInfo | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
@@ -32,11 +27,9 @@ export function DebugPwa() {
 
   const handleClose = useCallback(() => {
     setIsVisible(false);
-    localStorage.setItem(STORAGE_KEY, 'true');
   }, []);
 
   const handleReopen = useCallback(() => {
-    localStorage.removeItem(STORAGE_KEY);
     setIsVisible(true);
   }, []);
 

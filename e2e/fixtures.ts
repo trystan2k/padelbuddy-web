@@ -34,10 +34,6 @@ export const test = base.extend({
   page: async ({ page, baseURL }, use, testInfo) => {
     const resolvedBaseUrl = baseURL ?? 'http://localhost:4000';
 
-    await page.addInitScript(() => {
-      localStorage.setItem('debug-pwa-closed', 'true');
-    });
-
     await clearBrowserState(page, resolvedBaseUrl);
 
     try {

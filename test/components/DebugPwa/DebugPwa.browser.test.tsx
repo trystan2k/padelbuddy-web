@@ -1,6 +1,6 @@
 /* oxlint-disable jsx-no-new-function-as-prop -- Test files use inline functions for readability */
 
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 
 import { DebugPwa } from '@/components/DebugPwa/DebugPwa';
@@ -18,12 +18,42 @@ vi.mock('@/lib/pwa/registration', () => ({
   clearSWCache: () => mockClearSWCache()
 }));
 
-const STORAGE_KEY = 'debug-pwa-closed';
+function clickReopenButton() {
+  const reopenButton = document.querySelector('button[class*="reopenButton"]');
+
+  if (!reopenButton) {
+    throw new Error('Reopen button not found');
+  }
+
+  reopenButton.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+}
+
+async function openDebugPanel() {
+  clickReopenButton();
+
+  await vi.waitFor(() => {
+    expect(document.querySelector('#debug-pwa-title')?.textContent).toContain('PWA Debug');
+  });
+}
+
+async function closeDebugPanel() {
+  const closeButton = document.querySelector('button[aria-label="Close"]');
+
+  if (!closeButton) {
+    throw new Error('Close button not found');
+  }
+
+  closeButton.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+  await vi.waitFor(() => {
+    expect(document.querySelector('#debug-pwa-title')).toBeNull();
+    expect(document.querySelector('button[class*="reopenButton"]')).toBeTruthy();
+  });
+}
 
 describe('DebugPwa', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    localStorage.clear();
     mockGetSWState.mockResolvedValue({
       supported: true,
       registered: true,
@@ -34,22 +64,22 @@ describe('DebugPwa', () => {
     mockClearSWCache.mockResolvedValue(true);
   });
 
-  afterEach(() => {
-    localStorage.clear();
-  });
-
-  test('renders the debug panel with title', async () => {
+  test('renders the hidden reopen button by default', async () => {
     const screen = await render(<DebugPwa />);
 
-    await expect.element(screen.getByText('PWA Debug')).toBeInTheDocument();
+    await vi.waitFor(() => {
+      const reopenButton = document.querySelector('button[class*="reopenButton"]');
+      expect(reopenButton).toBeTruthy();
+      expect(screen.container.textContent).toContain('Open PWA Debug');
+      expect(document.querySelector('#debug-pwa-title')).toBeNull();
+    });
   });
 
   test('shows reopen button when close is clicked', async () => {
-    const screen = await render(<DebugPwa />);
+    await render(<DebugPwa />);
 
-    // Use dispatchEvent for reliable click in browser test environment
-    const closeElement = screen.getByRole('button', { name: 'Close' }).element();
-    closeElement.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    await openDebugPanel();
+    await closeDebugPanel();
 
     await vi.waitFor(
       () => {
@@ -59,24 +89,14 @@ describe('DebugPwa', () => {
       },
       { timeout: 5000 }
     );
-    expect(localStorage.getItem(STORAGE_KEY)).toBe('true');
   });
 
   test('restores the panel when reopen is clicked', async () => {
-    localStorage.setItem(STORAGE_KEY, 'true');
-
     await render(<DebugPwa />);
 
-    // Use dispatchEvent for reliable click in browser test environment
-    const reopenElement = await vi.waitFor(
-      () => {
-        const el = document.querySelector('button[class*="reopenButton"]');
-        if (!el) throw new Error('Reopen button not found yet');
-        return el;
-      },
-      { timeout: 5000 }
-    );
-    reopenElement.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    await openDebugPanel();
+    await closeDebugPanel();
+    clickReopenButton();
 
     await vi.waitFor(
       () => {
@@ -86,11 +106,12 @@ describe('DebugPwa', () => {
       },
       { timeout: 5000 }
     );
-    expect(localStorage.getItem(STORAGE_KEY)).toBeNull();
   });
 
   test('displays SW states as check marks', async () => {
     const screen = await render(<DebugPwa />);
+
+    await openDebugPanel();
 
     // Wait for the async getSWState to resolve
     await vi.waitFor(() => {
@@ -105,6 +126,8 @@ describe('DebugPwa', () => {
 
   test('shows version and cache info when SW is registered', async () => {
     const screen = await render(<DebugPwa />);
+
+    await openDebugPanel();
 
     await vi.waitFor(() => {
       expect(mockGetSWVersion).toHaveBeenCalled();
@@ -124,6 +147,8 @@ describe('DebugPwa', () => {
 
     const screen = await render(<DebugPwa />);
 
+    await openDebugPanel();
+
     await vi.waitFor(() => {
       expect(mockGetSWState).toHaveBeenCalled();
     });
@@ -141,6 +166,8 @@ describe('DebugPwa', () => {
     });
 
     const screen = await render(<DebugPwa />);
+
+    await openDebugPanel();
 
     await vi.waitFor(() => {
       expect(mockGetSWState).toHaveBeenCalled();
@@ -166,6 +193,8 @@ describe('DebugPwa', () => {
 
     const screen = await render(<DebugPwa />);
 
+    await openDebugPanel();
+
     await vi.waitFor(() => {
       expect(mockGetSWState).toHaveBeenCalled();
     });
@@ -188,6 +217,8 @@ describe('DebugPwa', () => {
 
     const screen = await render(<DebugPwa />);
 
+    await openDebugPanel();
+
     await vi.waitFor(() => {
       expect(mockGetSWState).toHaveBeenCalled();
     });
@@ -201,6 +232,8 @@ describe('DebugPwa', () => {
 
   test('clears cache when clear cache button is clicked', async () => {
     const screen = await render(<DebugPwa />);
+
+    await openDebugPanel();
 
     await vi.waitFor(() => {
       expect(mockGetSWState).toHaveBeenCalled();
@@ -218,6 +251,8 @@ describe('DebugPwa', () => {
     mockClearSWCache.mockRejectedValue(new Error('Clear failed'));
 
     const screen = await render(<DebugPwa />);
+
+    await openDebugPanel();
 
     await vi.waitFor(() => {
       expect(mockGetSWState).toHaveBeenCalled();
@@ -237,6 +272,8 @@ describe('DebugPwa', () => {
     mockClearSWCache.mockResolvedValue(false);
 
     const screen = await render(<DebugPwa />);
+
+    await openDebugPanel();
 
     await vi.waitFor(() => {
       expect(mockGetSWState).toHaveBeenCalled();
