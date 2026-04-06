@@ -86,6 +86,7 @@ function RootErrorState(props: ErrorComponentProps) {
     <html lang={getRootErrorDocumentLanguage()}>
       <head>
         <HeadContent />
+        <meta name="google-adsense-account" content="ca-pub-2277025637309109" />
       </head>
       <body>
         <RouteErrorCard {...props} eyebrowKey="error.unexpectedLabel" />

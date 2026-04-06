@@ -458,7 +458,7 @@ function SetupFormController({
       </button>
       <button
         type="button"
-        type-testid="validate"
+        data-testid="validate"
         onClick={() => {
           formState.validate();
         }}
