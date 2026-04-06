@@ -18,6 +18,9 @@
     "dev": "vite",
     "prebuild": "pnpm tokens:build",
     "build": "vite build",
+    "cap:sync": "npx cap sync",
+    "cap:open:android": "pnpm cap:sync && npx cap open android",
+    "cap:open:ios": "pnpm cap:sync && npx cap open ios",
     "tokens:build": "style-dictionary build --config design-tokens/style-dictionary.config.json",
     "prepare": "husky",
     "lint": "pnpm lint:oxlint && pnpm lint:stylelint",
@@ -39,6 +42,9 @@
   },
   "dependencies": {
     "@base-ui/react": "~1.3.0",
+    "@capacitor/android": "~8.3.0",
+    "@capacitor/core": "~8.3.0",
+    "@capacitor/ios": "~8.3.0",
     "@fontsource/inter": "~5.2.8",
     "@fontsource/outfit": "~5.2.8",
     "@tanstack/react-router": "~1.168.10",
@@ -51,6 +57,7 @@
     "react-i18next": "~17.0.2"
   },
   "devDependencies": {
+    "@capacitor/cli": "~8.3.0",
     "@commitlint/cli": "~20.5.0",
     "@commitlint/config-conventional": "~20.5.0",
     "@playwright/test": "~1.59.1",

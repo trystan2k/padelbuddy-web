@@ -57,6 +57,7 @@ Docs-only exception:
 - Production deploy: automatic only when a GitHub release is published from the merged Release Please PR
 - Deployment mechanism: GitHub Actions on GitHub-hosted runners deploy to Cloudflare Pages
 - Build model: static Pages output prepared from `dist/`; `dist/server` is never deployed
+- Capacitor note: native Android/iOS wrappers embed `dist/client` locally, but native app packaging/distribution is outside the Cloudflare Pages deployment flow and must be synced separately
 
 ## 6) PWA and Update Policy
 

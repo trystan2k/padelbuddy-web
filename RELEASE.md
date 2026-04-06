@@ -92,6 +92,17 @@ Why:
 - `dist/server` is not part of the static Pages deployment payload
 - using `dist/client` directly keeps the workflows simpler and avoids extra packaging logic
 
+## Capacitor Native Wrappers
+
+The repository also contains Capacitor native wrappers under `android/` and `ios/`.
+
+Important:
+
+- GitHub release and Cloudflare Pages deployment only publish the web app artifact from `dist/client`
+- Capacitor native projects are not built or distributed by the Pages release flow
+- Native wrappers must be refreshed manually from the current web build with `pnpm cap:sync`, `pnpm cap:sync:android`, or `pnpm cap:sync:ios`
+- Native debugging/opening is done locally with `pnpm cap:open:android` and `pnpm cap:open:ios`
+
 ## Required Secrets
 
 GitHub Actions requires these secrets:

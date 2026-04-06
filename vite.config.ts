@@ -85,7 +85,8 @@ export const appViteConfig = {
   ],
   build: {
     manifest: true
-  }
+  },
+  base: './'
 } satisfies UserConfig;
 
 export default defineConfig(appViteConfig);

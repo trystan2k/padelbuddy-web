@@ -4,6 +4,8 @@
 
 Padel Buddy Web is currently a client-only **TanStack Start** application built on **Vite** and **React 19**. The app uses TanStack Start file-based routes for the shell, **Base UI** for accessible primitives, and TypeScript domain modules under `src/core` for shared match-related types and constants.
 
+The web build is also embedded inside **Capacitor** native wrappers for **iOS** and **Android**. Capacitor loads the production web bundle from `dist/client` into native shells located under `ios/` and `android/`. Native branding assets are committed in the platform projects, and Android uses a dedicated native launch activity to render the branded `icon + text` launch screen before opening the Capacitor `MainActivity`.
+
 Delivery automation is handled by **GitHub Actions**, **Release Please**, and **Cloudflare Pages**. Pull requests and `main` pushes flow through explicit CI checks, the Release Please release PR is the only branch that receives a preview deployment, and production deploys are gated by published GitHub releases.
 
 Automated testing is centered on **Vitest** with two explicit projects:
@@ -31,6 +33,23 @@ Automated testing is centered on **Vitest** with two explicit projects:
 ├── .husky/                        # Git hooks
 │   └── pre-commit                 # Runs staged-file quality checks through lint-staged
 ├── docs/                          # Planning and project documentation
+├── android/                       # Capacitor Android wrapper project
+│   └── app/
+│       └── src/main/
+│           ├── java/com/padelbuddy/web/
+│           │   ├── LaunchActivity.java # Native Android launch screen handoff activity
+│           │   └── MainActivity.java   # Capacitor WebView host activity
+│           └── res/
+│               ├── layout/activity_launch.xml # Native Android branded launch layout
+│               ├── mipmap-*/             # Android launcher icon assets
+│               ├── drawable*/            # Android splash assets
+│               └── values*/              # Android theme, color, and splash configuration
+├── ios/                           # Capacitor iOS wrapper project
+│   └── App/App/
+│       ├── Assets.xcassets/       # iOS app icon and splash assets
+│       └── Base.lproj/LaunchScreen.storyboard # iOS native launch screen
+├── scripts/
+│   └── generate_capacitor_brand_assets.swift # Regenerates native splash/icon assets from web brand assets
 ├── src/
 │   ├── components/
 │   │   ├── AppShell.tsx           # Foundation shell shown on the home route
@@ -75,7 +94,8 @@ Automated testing is centered on **Vitest** with two explicit projects:
 ├── .oxfmtrc.json                  # Formatting
 ├── .stylelintrc.json              # CSS Module linting rules
 ├── CHANGELOG.md                   # Release Please-managed changelog
-├── package.json                   # Scripts and dependencies
+├── capacitor.config.ts            # Capacitor app id/name and embedded web build directory
+├── package.json                   # Scripts, dependencies, and Capacitor sync/open helpers
 ├── release-please-config.json     # Release Please package/release settings
 ├── release-please-manifest.json   # Release Please version state
 ├── vite.config.ts                 # App build/runtime config
@@ -102,6 +122,19 @@ Automated testing is centered on **Vitest** with two explicit projects:
 - `src/core/match/derived-state.ts` derives serving, winner, side-switch, and score-display metadata strictly from setup plus canonical state.
 - `src/core/match/replay.ts` projects full state from ordered score actions and exposes undo and continue-playing helpers.
 - `src/core/match/index.ts` is the public re-export entry for that domain module.
+
+### 3.4 Native Shells
+
+- `capacitor.config.ts` points Capacitor at `dist/client`, so native projects always embed the production web bundle rather than a separate mobile-only build.
+- `android/` contains the Capacitor Android project. `MainActivity` remains the Capacitor host activity, while `LaunchActivity` is the Android launcher entry point used to show a fully native branded launch screen before handing off into the WebView.
+- `ios/` contains the Capacitor iOS project. iOS branding is handled through `Assets.xcassets` plus `LaunchScreen.storyboard`.
+- `scripts/generate_capacitor_brand_assets.swift` regenerates the committed native splash and icon PNGs from `public/icon-512x512.png`.
+
+### 3.5 Native Launch Behavior
+
+- **iOS** uses the standard launch storyboard and splash asset catalog, so a composed branded splash image can be shown directly.
+- **Android pre-12** can use a full splash drawable background through the launch theme.
+- **Android 12+** system splash behavior is more constrained, so the project uses a dedicated native `LaunchActivity` with `activity_launch.xml` to render the exact branded `icon + text` composition consistently before opening `MainActivity`.
 
 ## 4. Testing Architecture
 
@@ -143,6 +176,8 @@ The local developer workflow is:
 5. Use `pnpm format` to apply Oxfmt or `pnpm format:check` for a non-mutating formatting check.
 6. Use `pnpm run complete-check` for the repo's local verification flow; note that this command may modify files (it runs `lint:fix` and `format`) and is not used by CI.
 7. If the browser suite reports missing Playwright binaries, run `pnpm exec playwright install chromium` once and retry.
+8. Use `pnpm cap:sync`, `pnpm cap:sync:android`, or `pnpm cap:sync:ios` after rebuilding the web app when native wrappers need the latest `dist/client` bundle.
+9. Use `pnpm cap:open:android` or `pnpm cap:open:ios` to open the native projects in Android Studio or Xcode.
 
 Pre-commit hooks are installed through Husky, and `lint-staged` reads `.lintstagedrc.json` to keep staged-file checks limited to Oxlint, CSS Module Stylelint, and a final Oxfmt pass.
 
