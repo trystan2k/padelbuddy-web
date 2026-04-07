@@ -172,7 +172,7 @@ jobs:
   e2e_tests:
     name: E2E Tests
     needs: detect_changes
-    if: needs.detect_changes.outputs.docs_only != 'true' && (github.ref == 'refs/heads/main' || startsWith(github.head_ref, 'release-please--branches--main') || contains(github.event.pull_request.labels.*.name, 'dependabot'))
+    if: needs.detect_changes.outputs.docs_only != 'true' && (startsWith(github.head_ref, 'release-please--branches--main') || contains(github.event.pull_request.labels.*.name, 'dependabot'))
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
