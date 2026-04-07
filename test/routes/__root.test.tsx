@@ -46,7 +46,7 @@ describe('root route', () => {
     expect(headResult.meta).toContainEqual({ charSet: 'utf-8' });
     expect(headResult.meta).toContainEqual({
       name: 'viewport',
-      content: 'width=device-width, initial-scale=1'
+      content: 'width=device-width, initial-scale=1, viewport-fit=cover'
     });
     expect(headResult.meta).toContainEqual({ title: 'Padel Buddy' });
     expect(markup).toContain('<html lang="en">');
