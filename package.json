@@ -18,7 +18,7 @@
     "dev": "vite",
     "prebuild": "pnpm tokens:build",
     "build": "vite build",
-    "sync:mobile": "pnpm build && pnpm exec cap sync",
+    "sync:mobile": "VITE_IS_NATIVE=true pnpm build && pnpm exec cap sync",
     "open:android": "pnpm sync:mobile && pnpm exec cap open android",
     "open:ios": "pnpm sync:mobile && pnpm exec cap open ios",
     "tokens:build": "style-dictionary build --config design-tokens/style-dictionary.config.json",

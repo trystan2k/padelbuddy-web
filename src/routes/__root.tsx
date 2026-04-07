@@ -81,11 +81,14 @@ export const Route = createRootRoute({
         href: '/apple-touch-icon.png'
       }
     ],
-    scripts: [
-      {
-        src: 'https://pl29090824.profitablecpmratenetwork.com/02/2b/8f/022b8faecb5dfe718fdb48e75a83b7cb.js'
-      }
-    ]
+    scripts:
+      import.meta.env.VITE_IS_NATIVE === 'true'
+        ? []
+        : [
+            {
+              src: 'https://pl29090824.profitablecpmratenetwork.com/02/2b/8f/022b8faecb5dfe718fdb48e75a83b7cb.js'
+            }
+          ]
   }),
   component: RootDocument,
   errorComponent: RootErrorState,
