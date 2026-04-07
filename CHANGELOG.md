@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.5.0](https://github.com/trystan2k/padelbuddy-web/compare/v2.4.0...v2.5.0) (2026-04-07)
+
+
+### Features
+
+* conditionally load external script for native builds ([1a12fc4](https://github.com/trystan2k/padelbuddy-web/commit/1a12fc4c7e016146222d50e64f6d01d1d4636263))
+
+
+### Bug Fixes
+
+* include scripts in development for non-native builds ([f312713](https://github.com/trystan2k/padelbuddy-web/commit/f312713fb97a180b9e730c8d77037523d836462a))
+
 ## [2.4.0](https://github.com/trystan2k/padelbuddy-web/compare/v2.3.0...v2.4.0) (2026-04-07)
 
 
