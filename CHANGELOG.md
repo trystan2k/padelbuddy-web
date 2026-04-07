@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.0](https://github.com/trystan2k/padelbuddy-web/compare/v2.1.0...v2.2.0) (2026-04-07)
+
+
+### Features
+
+* add favicon link to root route ([a322f62](https://github.com/trystan2k/padelbuddy-web/commit/a322f62df4729aafd10a7fb9f4870b8c88a6dd6d))
+
 ## [2.1.0](https://github.com/trystan2k/padelbuddy-web/compare/v2.0.0...v2.1.0) (2026-04-07)
 
 
