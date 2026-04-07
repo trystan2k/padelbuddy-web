@@ -14,7 +14,7 @@ The web app is also packaged as native **Capacitor** apps for **Android** and **
 - **i18n**: react-i18next
 - **Persistence**: IndexedDB
 - **Deployment**: Cloudflare Pages
-- **Native Wrappers**: Capacitor Android + iOS
+- **Native Wrappers**: Capacitor Android + iOS, Capacitor + Android
 
 ## Requirements
 
