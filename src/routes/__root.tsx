@@ -63,10 +63,6 @@ export const Route = createRootRoute({
       {
         name: 'apple-mobile-web-app-title',
         content: i18n.t('app.title')
-      },
-      {
-        name: 'google-adsense-account',
-        content: 'ca-pub-2277025637309109'
       }
     ],
     links: [
@@ -81,14 +77,13 @@ export const Route = createRootRoute({
       },
       {
         rel: 'apple-touch-icon',
-        href: '/icon.png'
+        sizes: '180x180',
+        href: '/apple-touch-icon.png'
       }
     ],
     scripts: [
       {
-        src: 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2277025637309109',
-        async: true,
-        crossOrigin: 'anonymous'
+        src: 'https://pl29090733.profitablecpmratenetwork.com/5c/8b/38/5c8b38db2a872e2f52703a2b610ad4b6.js'
       }
     ]
   }),
