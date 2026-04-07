@@ -83,7 +83,7 @@ export const Route = createRootRoute({
     ],
     scripts: [
       {
-        src: 'https://pl29090733.profitablecpmratenetwork.com/5c/8b/38/5c8b38db2a872e2f52703a2b610ad4b6.js'
+        src: 'https://pl29090824.profitablecpmratenetwork.com/02/2b/8f/022b8faecb5dfe718fdb48e75a83b7cb.js'
       }
     ]
   }),
