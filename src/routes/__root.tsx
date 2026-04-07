@@ -82,7 +82,7 @@ export const Route = createRootRoute({
       }
     ],
     scripts:
-      import.meta.env.VITE_IS_NATIVE === 'true'
+      import.meta.env.VITE_IS_NATIVE === 'true' || import.meta.env.DEV
         ? []
         : [
             {
