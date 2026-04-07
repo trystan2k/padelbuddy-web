@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.0](https://github.com/trystan2k/padelbuddy-web/compare/v2.0.0...v2.1.0) (2026-04-07)
+
+
+### Features
+
+* **mobile:** update Capacitor native projects for iOS and Android folder ([c2c8671](https://github.com/trystan2k/padelbuddy-web/commit/c2c8671cfc5ed2d5c290aea206ed6acd7e34ca46))
+
 ## [2.0.0](https://github.com/trystan2k/padelbuddy-web/compare/v1.2.0...v2.0.0) (2026-04-06)
 
 
