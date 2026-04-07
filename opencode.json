@@ -30,7 +30,13 @@
         "--enable-web-dashboard",
         "false",
         "--project",
-        "padelbuddy-web"
+        "padelbuddy-web",
+        "--mode",
+        "interactive",
+        "--mode",
+        "editing",
+        "--mode",
+        "no-memories"
       ]
     }
   }
