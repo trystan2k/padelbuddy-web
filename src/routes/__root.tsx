@@ -35,7 +35,7 @@ export const Route = createRootRoute({
       },
       {
         name: 'viewport',
-        content: 'width=device-width, initial-scale=1'
+        content: 'width=device-width, initial-scale=1, viewport-fit=cover'
       },
       {
         title: i18n.t('app.title')
@@ -46,7 +46,7 @@ export const Route = createRootRoute({
       },
       {
         name: 'theme-color',
-        content: '#2F7CF6'
+        content: '#F4F0E7'
       },
       {
         name: 'mobile-web-app-capable',
