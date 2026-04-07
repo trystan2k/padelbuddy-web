@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.3.0](https://github.com/trystan2k/padelbuddy-web/compare/v2.2.0...v2.3.0) (2026-04-07)
+
+
+### Features
+
+* **layout:** add support for safe area insets and viewport fit ([e9056ba](https://github.com/trystan2k/padelbuddy-web/commit/e9056ba885ec61762f9a47d8105c74baf793aabe))
+
+
+### Bug Fixes
+
+* add viewport-fit=cover for better mobile display ([ba19ced](https://github.com/trystan2k/padelbuddy-web/commit/ba19cedd314d9b21697f455663e0e082354b2e74))
+
 ## [2.2.0](https://github.com/trystan2k/padelbuddy-web/compare/v2.1.0...v2.2.0) (2026-04-07)
 
 
