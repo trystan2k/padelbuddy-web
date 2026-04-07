@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.0.0](https://github.com/trystan2k/padelbuddy-web/compare/v1.2.0...v2.0.0) (2026-04-06)
+
+
+### ⚠ BREAKING CHANGES
+
+* **capacitor:** add native Android/iOS wrappers with branded launch screens
+
+### Features
+
+* **capacitor:** add native Android/iOS wrappers with branded launch screens ([4ce50b2](https://github.com/trystan2k/padelbuddy-web/commit/4ce50b2d253765575adf2781bef4bbf6c6456d14))
+* **seo:** add Google AdSense meta tag and script to head ([4b42c04](https://github.com/trystan2k/padelbuddy-web/commit/4b42c0481d7d5693bbff1d257cf6e5f3e5499878))
+
 ## [1.2.0](https://github.com/trystan2k/padelbuddy-web/compare/v1.1.0...v1.2.0) (2026-04-06)
 
 
