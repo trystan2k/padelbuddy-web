@@ -34,26 +34,21 @@
   object-fit: contain;
 }
 
-.appName {
-  margin: 0;
+.titleText {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: var(--base-space-4);
   min-width: 0;
+}
+
+.appName {
+  margin: 0;
   font-family: var(--semantic-typography-family-display);
   font-size: var(--base-font-size-34);
   font-weight: var(--semantic-typography-weight-heading);
   color: var(--semantic-color-content-primary);
   letter-spacing: var(--base-font-letter-spacing-tight-xl);
   line-height: 1;
-}
-
-.version {
-  font-family: var(--semantic-typography-family-body);
-  font-size: var(--base-font-size-11);
-  font-weight: var(--semantic-typography-weight-normal);
-  color: var(--semantic-color-content-secondary);
-  letter-spacing: normal;
 }
 
 .subtitle {
@@ -99,7 +94,6 @@
     font-size: var(--base-font-size-24);
   }
 
-  .version,
   .subtitle {
     display: none;
   }

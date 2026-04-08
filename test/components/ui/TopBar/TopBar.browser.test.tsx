@@ -78,4 +78,33 @@ describe('TopBar', () => {
     const img = screen.container.querySelector('img');
     expect(img?.hasAttribute('aria-hidden')).toBe(false);
   });
+
+  test('does not render inline APP_VERSION text by default', async () => {
+    const screen = await render(<TopBar title="My App" />);
+
+    // Version text should not appear in the DOM
+    const versionText = screen.container.querySelector('[class*="version"]');
+    expect(versionText).toBeNull();
+  });
+
+  test('renders help trigger when showHelpTrigger is true (default)', async () => {
+    const screen = await render(<TopBar title="My App" />);
+
+    const helpTrigger = screen.getByTestId('help-trigger');
+    await expect.element(helpTrigger).toBeInTheDocument();
+  });
+
+  test('does not render help trigger when showHelpTrigger=false', async () => {
+    const screen = await render(<TopBar title="My App" showHelpTrigger={false} />);
+
+    const helpTrigger = screen.container.querySelector('[data-testid="help-trigger"]');
+    expect(helpTrigger).toBeNull();
+  });
+
+  test('help trigger is not rendered when title is not provided', async () => {
+    const screen = await render(<TopBar showHelpTrigger={true} />);
+
+    const helpTrigger = screen.container.querySelector('[data-testid="help-trigger"]');
+    expect(helpTrigger).toBeNull();
+  });
 });

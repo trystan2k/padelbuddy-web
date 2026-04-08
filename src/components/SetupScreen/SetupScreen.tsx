@@ -34,6 +34,7 @@ import { RemoteConfigurationModal } from './RemoteConfigurationModal';
 import { VoiceSelectionModal } from './VoiceSelectionModal';
 import { useSetupForm } from './useSetupForm';
 import styles from './SetupScreen.module.css';
+import { StoreButtons } from '../StoreButtons/StoreButtons';
 
 // Generate a URL-safe match ID
 function generateMatchId(): string {
@@ -291,6 +292,7 @@ export function SetupScreen() {
         iconAlt=""
         title={t('app.title')}
         subtitle={t('setup.header.subtitle')}
+        showFirstVisitHelpSpotlight={true}
       >
         <LocaleSelector />
       </TopBar>
@@ -409,6 +411,9 @@ export function SetupScreen() {
           >
             {t('setup.remoteConfig.trigger')}
           </Button>
+          <div className={styles.storeBadgesContainer}>
+            <StoreButtons />
+          </div>
         </div>
 
         {/* Right column - Options */}

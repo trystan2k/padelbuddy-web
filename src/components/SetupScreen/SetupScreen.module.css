@@ -258,6 +258,12 @@
   }
 }
 
+.storeBadgesContainer {
+  display: flex;
+  justify-content: center;
+  padding: var(--base-space-16);
+}
+
 /* Responsive: two columns on tablet/desktop */
 @media (width >= 768px) {
   .mainContent {

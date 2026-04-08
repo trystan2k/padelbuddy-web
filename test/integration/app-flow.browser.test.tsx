@@ -50,6 +50,13 @@ vi.mock('@tanstack/react-router', async (importOriginal) => {
   };
 });
 
+// Mock spotlight storage to prevent first-visit spotlight from appearing in integration tests.
+// The spotlight overlay intercepts pointer events and blocks interaction with SetupScreen.
+vi.mock('@/lib/user/help_spotlight_storage', () => ({
+  isHelpSpotlightSeen: () => true,
+  markHelpSpotlightSeen: () => {}
+}));
+
 describe('app flow integration', () => {
   beforeEach(async () => {
     vi.clearAllMocks();

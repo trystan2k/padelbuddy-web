@@ -91,6 +91,8 @@ vi.mock('@/components/SetupScreen/VoiceSelectionModal', () => ({
 describe('SetupScreen', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // Mark spotlight as seen to prevent overlay from blocking interactions
+    localStorage.setItem('padelbuddy_help_spotlight_seen', '1');
     mockLoadRemoteControllerBindings.mockResolvedValue(createEmptyRemoteControllerBindings());
     mockLoadSetupPreferences.mockResolvedValue(null);
     mockLoadSpeechPreferences.mockResolvedValue(null);
@@ -277,5 +279,29 @@ describe('SetupScreen', () => {
     await vi.waitFor(() => {
       expect(mockSaveSetupPreferenceSlice).toHaveBeenCalledWith({ voiceName: 'Alex' });
     });
+  });
+
+  test('shows first-visit help spotlight on setup screen', async () => {
+    // Clear any existing spotlight seen state
+    localStorage.removeItem('padelbuddy_help_spotlight_seen');
+
+    const screen = await render(<SetupScreen />);
+
+    // Wait for the spotlight to appear
+    await vi.waitFor(
+      () => {
+        const overlay = screen.container.querySelector('[data-testid="spotlight-overlay"]');
+        if (!overlay) throw new Error('Spotlight overlay not found');
+      },
+      { timeout: 5000 }
+    );
+
+    // Verify the spotlight overlay is present
+    const overlay = screen.container.querySelector('[data-testid="spotlight-overlay"]');
+    expect(overlay).toBeInTheDocument();
+
+    // Verify the dismiss button is present
+    const dismissButton = screen.getByTestId('spotlight-dismiss');
+    expect(dismissButton).toBeInTheDocument();
   });
 });

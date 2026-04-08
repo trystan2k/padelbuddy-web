@@ -1,0 +1,238 @@
+/* AppHelpDialog.module.css */
+
+/* Backdrop overlay - uses shared CSS variables */
+.backdrop {
+  composes: sharedoverlay from '../../../styles/shared-overlays.module.css';
+}
+
+/* Trigger button - positioned next to the title in TopBar */
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--base-space-28);
+  height: var(--base-space-28);
+  padding: 0;
+  border: none;
+  border-radius: var(--base-radius-full);
+  background-color: transparent;
+  color: var(--semantic-color-content-secondary);
+  cursor: pointer;
+  transition:
+    background-color var(--base-motion-duration-fast) var(--base-motion-easing-default),
+    color var(--base-motion-duration-fast) var(--base-motion-easing-default);
+  flex-shrink: 0;
+}
+
+.trigger:hover {
+  background-color: var(--semantic-color-interactive-subtle-hover);
+  color: var(--semantic-color-content-primary);
+}
+
+.trigger:focus-visible {
+  outline: var(--base-focus-ring-width) var(--base-focus-ring-style) var(--base-focus-ring-color);
+  outline-offset: var(--base-focus-ring-offset);
+}
+
+.triggerIcon {
+  width: var(--base-space-18);
+  height: var(--base-space-18);
+}
+
+/* Popup - centered modal box, wider for detailed content */
+.popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: var(--base-priority-xxl);
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  gap: var(--base-space-16);
+  width: min(calc(100vw - (var(--base-space-16) * 2)), 64rem);
+  max-height: calc(100dvh - (var(--base-space-16) * 2));
+  overflow-y: auto;
+  padding: var(--base-space-24);
+  background-color: var(--semantic-color-background-surface);
+  border-radius: var(--base-radius-24);
+  box-shadow: 0 12px 36px rgb(0 0 0 / 18%);
+}
+
+/* Modal header */
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--base-space-8);
+  padding-right: var(--base-space-32);
+}
+
+.title {
+  margin: 0;
+  font-family: var(--semantic-typography-family-display);
+  font-size: var(--semantic-typography-size-title-md);
+  font-weight: var(--semantic-typography-weight-strong);
+  color: var(--semantic-color-content-primary);
+  letter-spacing: var(--base-font-letter-spacing-tight-xl);
+  line-height: 1;
+}
+
+.description {
+  margin: 0;
+  font-family: var(--semantic-typography-family-body);
+  font-size: var(--semantic-typography-size-body-md);
+  color: var(--semantic-color-content-secondary);
+  line-height: var(--base-font-line-height-relaxed);
+}
+
+/* Scrollable sections area */
+.sections {
+  display: flex;
+  flex-direction: column;
+  gap: var(--base-space-20);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--base-space-6);
+}
+
+.sectionTitle {
+  margin: 0;
+  font-family: var(--semantic-typography-family-display);
+  font-size: var(--semantic-typography-size-body-lg);
+  font-weight: var(--semantic-typography-weight-strong);
+  color: var(--semantic-color-content-primary);
+  letter-spacing: var(--base-font-letter-spacing-wide-xs);
+}
+
+.sectionBody {
+  margin: 0;
+  font-family: var(--semantic-typography-family-body);
+  font-size: var(--semantic-typography-size-body-sm);
+  color: var(--semantic-color-content-secondary);
+  line-height: var(--base-font-line-height-relaxed);
+  white-space: pre-line;
+}
+
+/* Store badges */
+.storeBadges {
+  display: flex;
+  gap: var(--base-space-12);
+  margin-top: var(--base-space-4);
+  flex-wrap: wrap;
+}
+
+.storeBadgeLink {
+  display: inline-block;
+  line-height: 0;
+}
+
+.storeBadge {
+  height: var(--base-space-40);
+  width: auto;
+  border-radius: var(--base-radius-8);
+}
+
+.storeBadgeLink:focus-visible {
+  outline: var(--base-focus-ring-width) var(--base-focus-ring-style) var(--base-focus-ring-color);
+  outline-offset: var(--base-focus-ring-offset);
+}
+
+/* Footer with app name and version */
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--base-space-8);
+  padding-top: var(--base-space-8);
+  border-top: 1px solid var(--semantic-color-border-default);
+}
+
+.footerAppName {
+  font-family: var(--semantic-typography-family-display);
+  font-size: var(--semantic-typography-size-body-sm);
+  font-weight: var(--semantic-typography-weight-strong);
+  color: var(--semantic-color-content-secondary);
+  letter-spacing: var(--base-font-letter-spacing-wide-xs);
+}
+
+.footerVersion {
+  font-family: var(--semantic-typography-family-body);
+  font-size: var(--semantic-typography-size-body-sm);
+  font-weight: var(--semantic-typography-weight-normal);
+  color: var(--semantic-color-content-tertiary);
+  letter-spacing: var(--base-font-letter-spacing-normal);
+}
+
+/* Close button - positioned top-right of popup */
+.closeButton {
+  position: absolute;
+  top: var(--base-space-16);
+  right: var(--base-space-16);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--base-space-32);
+  height: var(--base-space-32);
+  padding: 0;
+  border: none;
+  border-radius: var(--base-radius-full);
+  background-color: transparent;
+  color: var(--semantic-color-content-secondary);
+  cursor: pointer;
+  transition:
+    background-color var(--base-motion-duration-fast) var(--base-motion-easing-default),
+    color var(--base-motion-duration-fast) var(--base-motion-easing-default);
+}
+
+.closeButton:hover {
+  background-color: var(--semantic-color-interactive-subtle-hover);
+  color: var(--semantic-color-content-primary);
+}
+
+.closeButton:focus-visible {
+  outline: var(--base-focus-ring-width) var(--base-focus-ring-style) var(--base-focus-ring-color);
+  outline-offset: var(--base-focus-ring-offset);
+}
+
+.closeButton svg {
+  width: var(--base-space-18);
+  height: var(--base-space-18);
+}
+
+/* Responsive adjustments */
+@media (width < 480px) {
+  .popup {
+    width: calc(100vw - (var(--base-space-16) * 2));
+    padding: var(--base-space-20);
+  }
+
+  .title {
+    font-size: var(--base-font-size-24);
+  }
+
+  .storeBadge {
+    height: var(--base-space-36);
+  }
+}
+
+@media (height <= 480px) {
+  .popup {
+    gap: var(--base-space-12);
+    padding: var(--base-space-16);
+  }
+
+  .title {
+    font-size: var(--base-font-size-24);
+  }
+
+  .description,
+  .sectionBody {
+    font-size: var(--semantic-typography-size-body-xs);
+  }
+
+  .storeBadge {
+    height: var(--base-space-32);
+  }
+}

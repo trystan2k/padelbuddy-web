@@ -2,7 +2,7 @@ export default {
   common: {
     loading: 'Carregando...',
     loadingLabel: 'Carregando',
-    loadingPleaseWait: 'Carregando, por favor aguarde...',
+    loadingPleaseWait: 'Por favor aguarde...',
     close: 'Fechar',
     retry: 'Tentar novamente',
     dismiss: 'Dispensar'
@@ -350,6 +350,32 @@ export default {
       tiebreakInterval: 'Trocar de lado (tiebreak)',
       description: 'Os jogadores devem trocar de lado agora.',
       confirm: 'Trocado'
+    }
+  },
+  help: {
+    title: 'Padel Buddy',
+    triggerLabel: 'Abrir ajuda',
+    about:
+      'Padel Buddy é um rastreador de pontuação ao vivo para partidas de padel. Acompanhe pontos, games e sets em tempo real.',
+    howToUse: {
+      title: 'Como usar',
+      body: 'O aplicativo orienta você através de três telas principais:\n\nTela de configuração — Insira os nomes dos times, escolha um formato de partida (Melhor de 1, 3 ou 5 sets) e configure regras opcionais como Ponto de Ouro, Super Tiebreak, Avisos de Troca de Lado, Indicador de Saque e Cronômetro. Você também pode configurar um controle remoto Bluetooth e selecionar uma voz para os anúncios de pontuação.\n\nTela de partida ao vivo — Toque no painel de pontuação de um time para adicionar um ponto, ou use seu controle remoto configurado. Toque no botão desfazer para reverter a última ação de pontuação daquele time. Quando o Indicador de Saque está ativado, o cartão do time que está sacando fica destacado. Quando os anúncios de áudio estão ativados, uma voz anuncia cada ponto. Um aviso de troca de lado aparece entre os games quando essa opção está ativa.\n\nTela de fim de partida — Mostra o resultado final e as estatísticas da partida. O vencedor é determinado apenas pelos sets completados. Se ambos os times venceram a mesma quantidade de sets, o resultado é um empate mesmo que um terceiro set esteja em andamento. Use o botão Compartilhar para distribuir a imagem do resultado, ou o botão Continuar para continuar jogando sem encerrar a partida.\n\nSe o aplicativo ou a aba do navegador for fechada durante uma partida ativa, o estado da partida é salvo automaticamente. Quando você reabrir o aplicativo, pode retomar a partida de onde parou ou descartá-la e começar novamente.'
+    },
+    advertising: {
+      title: 'Obter o app',
+      body: 'Baixe o aplicativo móvel para uma experiência dedicada e sem anúncios no seu dispositivo.',
+      getItOnGooglePlay: 'Disponível no Google Play',
+      downloadOnAppStore: 'Baixar na App Store',
+      noAds: 'Os aplicativos móveis não contêm anúncios.'
+    },
+    pwa: {
+      title: 'Instalar app',
+      body: 'Padel Buddy é um Aplicativo Web Progressivo (PWA). Você pode instalá-lo em qualquer dispositivo abrindo o menu compartilhar do seu navegador e selecionando "Adicionar à tela inicial" (ou opção similar). Uma vez instalado, Padel Buddy funciona completamente offline — não é necessária conexão com a internet durante as partidas.'
+    },
+    spotlight: {
+      title: 'Bem-vindo ao Padel Buddy',
+      message: 'Comece aqui se tiver alguma dúvida',
+      dismiss: 'Entendi'
     }
   }
 } as const;
