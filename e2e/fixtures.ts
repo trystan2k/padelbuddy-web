@@ -13,9 +13,8 @@ async function clearBrowserState(page: Page, baseURL: string) {
     localStorage.clear();
     sessionStorage.clear();
 
-    // Mark the help spotlight as seen so it doesn't appear during general E2E flows.
-    // This prevents the spotlight overlay from intercepting clicks on setup screen elements.
-    // Spotlight-specific behavior is tested in browser/component tests instead.
+    // Mark the help spotlight as seen so first-visit UI stays out of general E2E flows.
+    // This keeps setup/navigation scenarios focused on their primary behavior.
     localStorage.setItem('padelbuddy_help_spotlight_seen', '1');
 
     await new Promise<void>((resolve) => {

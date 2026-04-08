@@ -29,27 +29,43 @@ export function AppHelpSpotlight({ triggerRef, onDismiss }: AppHelpSpotlightProp
   const [triggerRect, setTriggerRect] = useState<DOMRect | null>(null);
   const liveRegionRef = useRef<HTMLDivElement>(null);
 
-  // Measure the trigger on mount and resize
+  const measureTriggerRect = useCallback(() => {
+    if (triggerRef.current) {
+      setTriggerRect(triggerRef.current.getBoundingClientRect());
+    }
+  }, [triggerRef]);
+
+  // Measure the trigger on mount and keep it aligned during resize, scroll, and layout shifts
   useEffect(() => {
-    const measure = () => {
-      if (triggerRef.current) {
-        setTriggerRect(triggerRef.current.getBoundingClientRect());
-      }
+    measureTriggerRect();
+
+    const handleViewportChange = () => {
+      measureTriggerRect();
     };
 
-    measure();
+    window.addEventListener('resize', handleViewportChange, { passive: true });
+    window.addEventListener('scroll', handleViewportChange, {
+      capture: true,
+      passive: true
+    });
 
-    // Re-measure on resize
-    const handleResize = () => {
-      measure();
-    };
+    const resizeObserver =
+      typeof ResizeObserver === 'undefined' || !triggerRef.current
+        ? null
+        : new ResizeObserver(() => {
+            measureTriggerRect();
+          });
 
-    window.addEventListener('resize', handleResize, { passive: true });
+    if (resizeObserver && triggerRef.current) {
+      resizeObserver.observe(triggerRef.current);
+    }
 
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('resize', handleViewportChange);
+      window.removeEventListener('scroll', handleViewportChange, true);
+      resizeObserver?.disconnect();
     };
-  }, [triggerRef]);
+  }, [measureTriggerRect, triggerRef]);
 
   const handleDismiss = useCallback(() => {
     markHelpSpotlightSeen();

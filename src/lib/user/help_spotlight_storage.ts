@@ -2,7 +2,7 @@ const HELP_SPOTLIGHT_SEEN_KEY = 'padelbuddy_help_spotlight_seen';
 
 /**
  * Returns true if the help spotlight has already been seen in this browser.
- * SSR-safe: returns false when localStorage is unavailable.
+ * SSR-safe: returns true (fail-closed) when localStorage is unavailable.
  */
 export function isHelpSpotlightSeen(): boolean {
   if (typeof localStorage === 'undefined') {

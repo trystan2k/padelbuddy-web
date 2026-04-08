@@ -224,7 +224,13 @@ describe('AppHelpSpotlight', () => {
     const screen = await render(<AppHelpDialog appTitle="Padel Buddy" />);
 
     // Wait for any effects to settle
-    await vi.waitFor(() => {}, { timeout: 1000 });
+    await vi.waitFor(
+      () => {
+        const overlay = screen.container.querySelector('[data-testid="spotlight-overlay"]');
+        expect(overlay).not.toBeInTheDocument();
+      },
+      { timeout: 1000 }
+    );
 
     // Spotlight should not be in the DOM
     const overlay = screen.container.querySelector('[data-testid="spotlight-overlay"]');
@@ -240,7 +246,13 @@ describe('AppHelpSpotlight', () => {
     );
 
     // Wait for effects to settle
-    await vi.waitFor(() => {}, { timeout: 1000 });
+    await vi.waitFor(
+      () => {
+        const overlay = screen.container.querySelector('[data-testid="spotlight-overlay"]');
+        expect(overlay).not.toBeInTheDocument();
+      },
+      { timeout: 1000 }
+    );
 
     // Spotlight should not be in the DOM
     const overlay = screen.container.querySelector('[data-testid="spotlight-overlay"]');

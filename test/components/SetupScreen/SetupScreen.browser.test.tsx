@@ -91,7 +91,7 @@ vi.mock('@/components/SetupScreen/VoiceSelectionModal', () => ({
 describe('SetupScreen', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    // Mark spotlight as seen to prevent overlay from blocking interactions
+    // Mark spotlight as seen so unrelated first-visit spotlight UI does not appear in these tests
     localStorage.setItem('padelbuddy_help_spotlight_seen', '1');
     mockLoadRemoteControllerBindings.mockResolvedValue(createEmptyRemoteControllerBindings());
     mockLoadSetupPreferences.mockResolvedValue(null);
