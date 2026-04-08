@@ -352,7 +352,6 @@ export default {
     }
   },
   help: {
-    title: 'Padel Buddy',
     triggerLabel: 'Open help',
     about:
       'Padel Buddy is a live score tracker for padel matches. Track points, games, and sets in real time.',

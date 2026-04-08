@@ -29,12 +29,12 @@ import { TextInput } from '@/components/ui/TextInput/TextInput';
 import { Toggle } from '@/components/ui/Toggle/Toggle';
 import { TopBar } from '@/components/ui/TopBar/TopBar';
 import { LocaleSelector } from '@/components/ui/LocaleSelector/LocaleSelector';
+import { StoreButtons } from '@/components/StoreButtons/StoreButtons';
 
 import { RemoteConfigurationModal } from './RemoteConfigurationModal';
 import { VoiceSelectionModal } from './VoiceSelectionModal';
 import { useSetupForm } from './useSetupForm';
 import styles from './SetupScreen.module.css';
-import { StoreButtons } from '../StoreButtons/StoreButtons';
 
 // Generate a URL-safe match ID
 function generateMatchId(): string {

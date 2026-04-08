@@ -353,7 +353,6 @@ export default {
     }
   },
   help: {
-    title: 'Padel Buddy',
     triggerLabel: 'Abrir ayuda',
     about:
       'Padel Buddy es un rastreador de puntuación en vivo para partidos de pádel. Registra puntos, juegos y sets en tiempo real.',

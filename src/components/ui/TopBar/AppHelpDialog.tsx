@@ -11,11 +11,11 @@ import { Dialog } from '@base-ui/react/dialog';
 import { useTranslation } from 'react-i18next';
 import { isHelpSpotlightSeen, markHelpSpotlightSeen } from '@/lib/user/help_spotlight_storage';
 import { APP_VERSION } from '@/version';
+import { StoreButtons } from '@/components/StoreButtons/StoreButtons';
 
 import { AppHelpSpotlight } from './AppHelpSpotlight';
 
 import styles from './AppHelpDialog.module.css';
-import { StoreButtons } from '../../StoreButtons/StoreButtons';
 
 /** Inline SVG question-mark icon to avoid external icon library dependency. */
 function HelpIcon({ className }: { className?: string | undefined }) {
@@ -94,10 +94,10 @@ export function AppHelpDialog({ appTitle, showFirstVisitSpotlight = false }: App
   const handleTitleRender = useCallback(
     (titleProps: HTMLAttributes<HTMLHeadingElement>) => (
       <h2 {...titleProps} id="help-dialog-title" className={styles.title}>
-        {t('help.title')}
+        {appTitle}
       </h2>
     ),
-    [t]
+    [appTitle]
   );
 
   const handleDescriptionRender = useCallback(
