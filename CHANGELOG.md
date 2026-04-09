@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.6.0](https://github.com/trystan2k/padelbuddy-web/compare/v2.5.0...v2.6.0) (2026-04-09)
+
+
+### Features
+
+* add help modal with app information and first-visit spotlight ([#84](https://github.com/trystan2k/padelbuddy-web/issues/84)) ([76244c9](https://github.com/trystan2k/padelbuddy-web/commit/76244c902fd9174f80dfd0134d4b4b05fc316b02))
+
 ## [2.5.0](https://github.com/trystan2k/padelbuddy-web/compare/v2.4.0...v2.5.0) (2026-04-07)
 
 
