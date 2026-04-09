@@ -9,7 +9,7 @@ export type ConfigurableKeyboardAction = (typeof configurableKeyboardActions)[nu
 export type KeyboardAction = ConfigurableKeyboardAction | 'undo' | 'unknown';
 export type RemoteControllerBindings = Record<ConfigurableKeyboardAction, string | null>;
 
-export interface KeyboardAliasMap {
+interface KeyboardAliasMap {
   [key: string]: KeyboardAction;
 }
 
@@ -32,7 +32,7 @@ const legacyKeyboardAliases: KeyboardAliasMap = {
   r: 'undo'
 };
 
-export const defaultRemoteControllerBindings: RemoteControllerBindings = {
+const defaultRemoteControllerBindings: RemoteControllerBindings = {
   'add-team-1': 'ArrowLeft',
   'revert-team-1': 'Backspace',
   'add-team-2': 'ArrowRight',

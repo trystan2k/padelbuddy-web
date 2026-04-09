@@ -17,14 +17,3 @@ export interface LocalePreference {
   locale: SupportedLocale;
   updatedAt: string; // ISO timestamp
 }
-
-// i18n configuration options
-export interface I18nConfig {
-  fallbackLng: SupportedLocale;
-  supportedLngs: SupportedLocale[];
-  detection: {
-    order: ('localStorage' | 'navigator')[];
-    caches: 'localStorage'[];
-    lookupLocalStorage: string;
-  };
-}

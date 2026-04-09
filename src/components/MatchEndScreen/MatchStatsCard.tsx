@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils/cn';
 
 import styles from './MatchStatsCard.module.css';
 
-export interface MatchStatsCardProps {
+interface MatchStatsCardProps {
   durationValue: string;
   totalGames: number;
 }

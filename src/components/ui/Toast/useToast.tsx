@@ -3,7 +3,7 @@ import { useCallback, type ReactNode } from 'react';
 
 import { ToastViewport } from './ToastViewport';
 
-export type ToastType = 'error' | 'success' | 'info';
+type ToastType = 'error' | 'success' | 'info';
 
 // Global singleton toast manager — exported for use in components that need to subscribe
 export const globalToastManager = BaseToast.createToastManager();
@@ -62,11 +62,6 @@ export function useToast(): UseToastReturn {
     addSuccessToast,
     addInfoToast
   };
-}
-
-// ToastList must be called inside a ToastProvider — uses context-based manager
-export function useToastManager() {
-  return BaseToast.useToastManager();
 }
 
 export function ToastProvider({ children }: { children: ReactNode }) {

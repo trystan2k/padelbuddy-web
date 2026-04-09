@@ -7,7 +7,7 @@ import type { MatchTeamId } from '@/core/match/types';
 
 import styles from './TeamPanel.module.css';
 
-export interface TeamPanelProps extends Omit<ComponentPropsWithoutRef<'button'>, 'onClick'> {
+interface TeamPanelProps extends Omit<ComponentPropsWithoutRef<'button'>, 'onClick'> {
   teamId: MatchTeamId;
   teamName: string;
   score: string;

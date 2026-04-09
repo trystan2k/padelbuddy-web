@@ -31,7 +31,7 @@ export function getActiveSet(state: MatchState): ActiveMatchSet | null {
   return lastSet && !lastSet.completed ? lastSet : null;
 }
 
-export function getSetsWon(state: MatchState): TeamScore<number> {
+function getSetsWon(state: MatchState): TeamScore<number> {
   return getCompletedSetCount(getCompletedSets(state));
 }
 
@@ -65,10 +65,7 @@ function getTiebreakOpeningServer(set: ActiveMatchSet): MatchTeamId {
   return toggleServer(set.firstServer, getTotalScore(set.games));
 }
 
-export function getTiebreakServingTeam(
-  openingServer: MatchTeamId,
-  pointsPlayed: number
-): MatchTeamId {
+function getTiebreakServingTeam(openingServer: MatchTeamId, pointsPlayed: number): MatchTeamId {
   if (pointsPlayed === 0) {
     return openingServer;
   }
@@ -132,7 +129,7 @@ function getLatestCompletedSetPrompt(state: MatchState): MatchSideSwitchState {
   };
 }
 
-export function getSideSwitchState(setup: MatchSetup, state: MatchState): MatchSideSwitchState {
+function getSideSwitchState(setup: MatchSetup, state: MatchState): MatchSideSwitchState {
   if (!setup.sideSwitchPrompts) {
     return {
       shouldPrompt: false,

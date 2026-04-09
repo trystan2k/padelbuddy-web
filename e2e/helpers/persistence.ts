@@ -8,16 +8,21 @@ import {
   createCurrentMatchRecord,
   type CurrentMatchRecord
 } from '../../src/lib/current-match/persistence';
+
 import {
-  currentMatchRecordKey,
-  defaultDatabaseName,
-  defaultDatabaseVersion,
-  defaultObjectStoreName
-} from '../../src/lib/current-match/indexed-db';
-import { sharedIndexedDbObjectStoreNames } from '../../src/lib/persistence/indexed-db';
+  sharedIndexedDbObjectStoreNames,
+  currentMatchObjectStoreName,
+  persistenceDatabaseName,
+  persistenceDatabaseVersion
+} from '../../src/lib/persistence/indexed-db';
 
 const defaultStartedAt = 1_700_000_000_000;
 const defaultFinishedAt = defaultStartedAt + 5 * 60 * 1000;
+
+const defaultDatabaseName = persistenceDatabaseName;
+const defaultDatabaseVersion = persistenceDatabaseVersion;
+const defaultObjectStoreName = currentMatchObjectStoreName;
+const currentMatchRecordKey = 'current-match';
 
 interface SeedMatchOptions {
   matchId?: string;
@@ -109,7 +114,7 @@ async function putRecord(page: Page, record: unknown): Promise<void> {
   );
 }
 
-export function buildCompletedMatchRecord(options: SeedMatchOptions = {}): CurrentMatchRecord {
+function buildCompletedMatchRecord(options: SeedMatchOptions = {}): CurrentMatchRecord {
   const {
     matchId = 'completed-match',
     team1Name = 'Team A',
@@ -132,7 +137,7 @@ export function buildCompletedMatchRecord(options: SeedMatchOptions = {}): Curre
   });
 }
 
-export function buildInProgressMatchRecord(options: SeedMatchOptions = {}): CurrentMatchRecord {
+function buildInProgressMatchRecord(options: SeedMatchOptions = {}): CurrentMatchRecord {
   const {
     matchId = 'in-progress-match',
     team1Name = 'Team A',
@@ -154,7 +159,7 @@ export function buildInProgressMatchRecord(options: SeedMatchOptions = {}): Curr
   });
 }
 
-export function buildInvalidCurrentMatchRecord(): Record<string, unknown> {
+function buildInvalidCurrentMatchRecord(): Record<string, unknown> {
   return {
     schemaVersion: currentMatchSchemaVersion,
     matchId: '',
@@ -164,7 +169,7 @@ export function buildInvalidCurrentMatchRecord(): Record<string, unknown> {
   };
 }
 
-export function buildSchemaMismatchRecord(options: SeedMatchOptions = {}): Record<string, unknown> {
+function buildSchemaMismatchRecord(options: SeedMatchOptions = {}): Record<string, unknown> {
   const record = buildInProgressMatchRecord(options);
 
   return {

@@ -137,18 +137,6 @@ export function findVoiceByName(
 }
 
 /**
- * Finds a voice by its unique ID (voiceURI::lang composite).
- * Falls back to name-based lookup for backwards compatibility with stored preferences
- * that pre-date this ID scheme.
- */
-export function findVoiceById(
-  id: string,
-  voices: SpeechSynthesisVoice[]
-): SpeechSynthesisVoice | undefined {
-  return voices.find((voice) => getVoiceId(voice) === id);
-}
-
-/**
  * Gets the default voice for a locale, preferring local voices.
  */
 export function getDefaultVoiceForLocale(

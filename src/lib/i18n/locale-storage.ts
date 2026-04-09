@@ -16,13 +16,13 @@ const indexedDbMessages: IndexedDbOpenMessages = {
   openFailed: 'Unable to open the locale preference database.'
 };
 
-export interface LocaleStorageOptions {
+interface LocaleStorageOptions {
   databaseName?: string;
   databaseVersion?: number;
   objectStoreName?: string;
 }
 
-export interface LocaleStorage {
+interface LocaleStorage {
   saveLocalePreference(locale: SupportedLocale): Promise<void>;
   loadLocalePreference(): Promise<SupportedLocale | null>;
   clearLocalePreference(): Promise<void>;
@@ -81,8 +81,7 @@ export function createLocaleStorage(options: LocaleStorageOptions = {}): LocaleS
   };
 }
 
-export const localeStorage = createLocaleStorage();
+const localeStorage = createLocaleStorage();
 export const saveLocalePreference = (locale: SupportedLocale) =>
   localeStorage.saveLocalePreference(locale);
 export const loadLocalePreference = () => localeStorage.loadLocalePreference();
-export const clearLocalePreference = () => localeStorage.clearLocalePreference();

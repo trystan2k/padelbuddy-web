@@ -9,8 +9,6 @@ import {
 import currentMatchResetNoticeStore from './reset-notice-store';
 import {
   currentMatchObjectStoreName,
-  persistenceDatabaseName,
-  persistenceDatabaseVersion,
   resolveIndexedDbStorageConfig,
   waitForIndexedDbRequest,
   waitForIndexedDbTransaction,
@@ -18,17 +16,15 @@ import {
   type IndexedDbOpenMessages
 } from '@/lib/persistence/indexed-db';
 
-export const defaultDatabaseName = persistenceDatabaseName;
-export const defaultDatabaseVersion = persistenceDatabaseVersion;
-export const defaultObjectStoreName = currentMatchObjectStoreName;
-export const currentMatchRecordKey = 'current-match';
+const defaultObjectStoreName = currentMatchObjectStoreName;
+const currentMatchRecordKey = 'current-match';
 
 const indexedDbMessages: IndexedDbOpenMessages = {
   blocked: 'Opening the current match database was blocked.',
   openFailed: 'Unable to open the current match database.'
 };
 
-export interface CurrentMatchPersistenceOptions {
+interface CurrentMatchPersistenceOptions {
   databaseName?: string;
   databaseVersion?: number;
   objectStoreName?: string;

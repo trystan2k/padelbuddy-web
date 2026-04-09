@@ -12,7 +12,7 @@ import { cn } from '@/lib/utils/cn';
 
 import styles from './PadelCourtSpinner.module.css';
 
-export interface PadelCourtSpinnerProps extends Omit<ComponentPropsWithoutRef<'div'>, 'children'> {
+interface PadelCourtSpinnerProps extends Omit<ComponentPropsWithoutRef<'div'>, 'children'> {
   ref?: Ref<HTMLDivElement>;
   label?: string;
   silent?: boolean;

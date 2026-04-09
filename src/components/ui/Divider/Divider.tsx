@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils/cn';
 
 import styles from './Divider.module.css';
 
-export type DividerProps = ComponentPropsWithoutRef<'div'>;
+type DividerProps = ComponentPropsWithoutRef<'div'>;
 
 export function Divider({ className, ...props }: DividerProps) {
   return (

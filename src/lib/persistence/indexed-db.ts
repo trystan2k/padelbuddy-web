@@ -21,7 +21,7 @@ export interface IndexedDbStorageOptions {
   objectStoreName?: string;
 }
 
-export interface IndexedDbStorageConfig {
+interface IndexedDbStorageConfig {
   databaseName: string;
   databaseVersion: number;
   objectStoreName: string;
@@ -43,7 +43,7 @@ export function resolveIndexedDbStorageConfig(
   };
 }
 
-export function openIndexedDbDatabase(
+function openIndexedDbDatabase(
   config: IndexedDbStorageConfig,
   messages: IndexedDbOpenMessages
 ): Promise<IDBDatabase> {

@@ -5,7 +5,7 @@ import { AppHelpDialog } from './AppHelpDialog';
 
 import styles from './TopBar.module.css';
 
-export interface TopBarProps extends ComponentPropsWithoutRef<'div'> {
+interface TopBarProps extends ComponentPropsWithoutRef<'div'> {
   /** Optional brand icon source displayed next to the title. */
   iconSrc?: string;
   /** Alt text for the brand icon. Use an empty string to mark it as decorative (`aria-hidden`). */

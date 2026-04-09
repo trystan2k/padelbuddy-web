@@ -5,14 +5,11 @@ import { cn } from '@/lib/utils/cn';
 
 import styles from './Button.module.css';
 
-export type ButtonVariant = 'solid' | 'outline' | 'soft';
-export type ButtonSize = 'sm' | 'lg';
-export type ButtonAccent = 'primary' | 'secondary' | 'success' | 'danger';
+type ButtonVariant = 'solid' | 'outline' | 'soft';
+type ButtonSize = 'sm' | 'lg';
+type ButtonAccent = 'primary' | 'secondary' | 'success' | 'danger';
 
-export interface ButtonProps extends Omit<
-  ComponentPropsWithoutRef<'button'>,
-  'children' | 'className'
-> {
+interface ButtonProps extends Omit<ComponentPropsWithoutRef<'button'>, 'children' | 'className'> {
   ref?: Ref<HTMLButtonElement>;
   children: ReactNode;
   className?: string | undefined;

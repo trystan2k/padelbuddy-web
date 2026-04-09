@@ -84,7 +84,7 @@ const RemoteBindingRow = ({
   );
 };
 
-export interface RemoteConfigurationModalProps {
+interface RemoteConfigurationModalProps {
   isOpen: boolean;
   onClose: () => void;
 }

@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils/cn';
 
 import styles from './Layout.module.css';
 
-export interface LayoutProps extends Omit<ComponentPropsWithoutRef<'main'>, 'children'> {
+interface LayoutProps extends Omit<ComponentPropsWithoutRef<'main'>, 'children'> {
   ref?: Ref<HTMLElement>;
   /** Optional header content (navigation, metadata, etc.) */
   header?: ReactNode;

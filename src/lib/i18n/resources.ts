@@ -3,7 +3,7 @@ import type { ResourceLanguage } from 'i18next';
 import enTranslation from './locales/en';
 import type { SupportedLocale } from './types';
 
-export interface TranslationResource {
+interface TranslationResource {
   [key: string]: string | TranslationResource;
 }
 

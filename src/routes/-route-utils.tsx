@@ -90,7 +90,7 @@ export function getOptionalFinishedAt(
   return typeof finishedAt === 'number' ? { finishedAt } : {};
 }
 
-export async function loadReadyMatchRouteState(matchId: string, mode: MatchRouteMode) {
+async function loadReadyMatchRouteState(matchId: string, mode: MatchRouteMode) {
   const matchData = await loadCurrentMatch();
   const routeState = resolveMatchRouteState(matchId, matchData, mode);
 

@@ -6,7 +6,7 @@ import { Card } from '@/components/ui/Card/Card';
 import styles from './SetsCard.module.css';
 import { useEffect, useRef } from 'react';
 
-export interface SetsCardProps {
+interface SetsCardProps {
   sets: MatchSetState[];
   currentSetIndex: number | null;
 }

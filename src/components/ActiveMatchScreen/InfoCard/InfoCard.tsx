@@ -4,7 +4,7 @@ import { Card } from '@/components/ui/Card/Card';
 
 import styles from './InfoCard.module.css';
 
-export interface InfoCardProps {
+interface InfoCardProps {
   isGoldenPoint: boolean;
   isSuperTiebreak: boolean;
   sideSwitchPrompts: boolean;

@@ -2,7 +2,7 @@ import { deriveMatchState } from './derived-state';
 import { applyMatchAction, createInitialMatchState } from './engine';
 import type { MatchAction, MatchProjection, MatchSetup, MatchState } from './types';
 
-export function projectMatchState(setup: MatchSetup, actions: MatchAction[]): MatchState {
+function projectMatchState(setup: MatchSetup, actions: MatchAction[]): MatchState {
   return actions.reduce(
     (state, action) => applyMatchAction(setup, state, action),
     createInitialMatchState(setup)

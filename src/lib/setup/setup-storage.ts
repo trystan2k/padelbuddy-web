@@ -60,7 +60,7 @@ type StoredRecordStatus =
   | { status: 'invalid' }
   | { status: 'ok'; record: StoredSetupPreferences };
 
-export interface SetupStorage {
+interface SetupStorage {
   saveSetupPreferences(preferences: SetupPreferences): Promise<void>;
   saveSetupPreferenceSlice(
     preferences: SetupPreferenceSlice,
@@ -475,14 +475,10 @@ function isMatchGameMode(value: unknown): value is MatchGameMode {
   return typeof value === 'string' && gameModes.some((gameMode) => gameMode === value);
 }
 
-export const setupStorage = createSetupStorage();
-export const saveSetupPreferences = (preferences: SetupPreferences) =>
-  setupStorage.saveSetupPreferences(preferences);
+const setupStorage = createSetupStorage();
 export const saveSetupPreferenceSlice = (preferences: SetupPreferenceSlice) =>
   setupStorage.saveSetupPreferenceSlice(preferences);
 export const loadSetupPreferences = () => setupStorage.loadSetupPreferences();
-export const clearSetupPreferences = () => setupStorage.clearSetupPreferences();
 export const saveSpeechPreferences = (preferences: SpeechPreferences) =>
   setupStorage.saveSpeechPreferences(preferences);
 export const loadSpeechPreferences = () => setupStorage.loadSpeechPreferences();
-export const clearSpeechPreferences = () => setupStorage.clearSpeechPreferences();

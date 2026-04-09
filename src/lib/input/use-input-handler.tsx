@@ -9,7 +9,7 @@ import { type UseWakeLockReturn, useWakeLock } from './wake-lock';
 
 const defaultBufferedAddWindowMs = 380;
 
-export interface UseInputHandlerOptions {
+interface UseInputHandlerOptions {
   actions: MatchAction[];
   bindings?: RemoteControllerBindings | null;
   enabled?: boolean;
@@ -17,14 +17,14 @@ export interface UseInputHandlerOptions {
   bufferedAddWindowMs?: number;
 }
 
-export interface UseInputHandlerCallbacks {
+interface UseInputHandlerCallbacks {
   onAdd: (teamId: MatchTeamId) => Promise<void> | void;
   onUndo: () => Promise<void> | void;
   onUndoForTeam: (teamId: MatchTeamId) => Promise<void> | void;
   onError?: (error: Error) => void;
 }
 
-export interface UseInputHandlerReturn {
+interface UseInputHandlerReturn {
   scorePoint: (teamId: MatchTeamId) => Promise<void>;
   undo: () => Promise<void>;
   handlers: {

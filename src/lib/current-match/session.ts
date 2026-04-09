@@ -4,7 +4,7 @@ import type { MatchAction, MatchProjection, MatchSetup, MatchTeamId } from '@/co
 import { currentMatchPersistence, type CurrentMatchPersistence } from './indexed-db';
 import { undoLastScoringActionForTeam } from './helpers';
 
-export interface CurrentMatchSessionInput {
+interface CurrentMatchSessionInput {
   setup: MatchSetup;
   actions: MatchAction[];
   startedAt: number;
@@ -19,7 +19,7 @@ export interface CurrentMatchSessionSnapshot {
   projection: MatchProjection;
 }
 
-export interface CurrentMatchSession {
+interface CurrentMatchSession {
   getSnapshot(): CurrentMatchSessionSnapshot;
   scorePoint(teamId: MatchTeamId): Promise<CurrentMatchSessionSnapshot>;
   undoScoreAction(): Promise<CurrentMatchSessionSnapshot>;
@@ -28,7 +28,7 @@ export interface CurrentMatchSession {
   finishMatch(): Promise<CurrentMatchSessionSnapshot>;
 }
 
-export interface CreateCurrentMatchSessionOptions extends CurrentMatchSessionInput {
+interface CreateCurrentMatchSessionOptions extends CurrentMatchSessionInput {
   matchId?: string;
   persistence?: CurrentMatchPersistence;
 }

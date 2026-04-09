@@ -13,7 +13,7 @@ const homeRouteErrorContent: Record<MatchRouteErrorType, string> = {
   'no-match': 'error.noMatch.body'
 };
 
-export interface HomeRouteProps {
+interface HomeRouteProps {
   startupState: CurrentMatchStartupResult;
   error?: MatchRouteErrorType;
 }

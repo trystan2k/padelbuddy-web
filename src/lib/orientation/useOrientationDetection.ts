@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-export interface OrientationState {
+interface OrientationState {
   isPortrait: boolean;
   isLandscape: boolean;
 }

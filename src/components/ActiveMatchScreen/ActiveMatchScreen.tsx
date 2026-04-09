@@ -25,7 +25,7 @@ import { useMatchTimer } from './useMatchTimer';
 
 import styles from './ActiveMatchScreen.module.css';
 
-export interface ActiveMatchScreenProps {
+interface ActiveMatchScreenProps {
   matchId: string;
   initialSetup: MatchSetup;
   initialActions: MatchAction[];

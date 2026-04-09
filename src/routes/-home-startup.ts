@@ -4,11 +4,11 @@ import {
   type CurrentMatchStartupResult
 } from '@/lib/current-match/startup';
 
-export interface HomeStartupLoaderData {
+interface HomeStartupLoaderData {
   startupState: CurrentMatchStartupResult;
 }
 
-export interface LoadHomeStartupOptions {
+interface LoadHomeStartupOptions {
   startup?: CurrentMatchStartupOptions;
 }
 

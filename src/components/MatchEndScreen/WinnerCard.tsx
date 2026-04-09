@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils/cn';
 
 import styles from './WinnerCard.module.css';
 
-export interface WinnerCardProps {
+interface WinnerCardProps {
   winnerLabel: string;
   winnerName: string;
   winnerTeamId?: MatchTeamId;

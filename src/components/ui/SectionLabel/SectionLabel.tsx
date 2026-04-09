@@ -7,7 +7,7 @@ import styles from './SectionLabel.module.css';
 
 export type SectionLabelAccent = Accent;
 
-export interface SectionLabelProps extends HTMLAttributes<HTMLParagraphElement> {
+interface SectionLabelProps extends HTMLAttributes<HTMLParagraphElement> {
   accent?: SectionLabelAccent;
 }
 

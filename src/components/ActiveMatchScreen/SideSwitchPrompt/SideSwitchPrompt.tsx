@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/Button/Button';
 
 import styles from './SideSwitchPrompt.module.css';
 
-export interface SideSwitchPromptProps {
+interface SideSwitchPromptProps {
   isOpen: boolean;
   reason: 'odd-games' | 'tiebreak-interval' | null;
   onClose: () => void;

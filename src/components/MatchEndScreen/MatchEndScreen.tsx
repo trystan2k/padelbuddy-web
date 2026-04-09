@@ -23,7 +23,7 @@ import { useMatchEndShare } from './useMatchEndShare';
 
 import styles from './MatchEndScreen.module.css';
 
-export interface MatchEndScreenProps {
+interface MatchEndScreenProps {
   matchId: string;
   setup: MatchSetup;
   actions: MatchAction[];

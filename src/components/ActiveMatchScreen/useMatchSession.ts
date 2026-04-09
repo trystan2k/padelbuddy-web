@@ -7,7 +7,7 @@ import {
 import type { CurrentMatchPersistence } from '@/lib/current-match/indexed-db';
 import type { MatchAction, MatchSetup, MatchTeamId } from '@/core/match/types';
 
-export interface UseMatchSessionOptions {
+interface UseMatchSessionOptions {
   matchId: string;
   setup: MatchSetup;
   initialActions: MatchAction[];
@@ -16,7 +16,7 @@ export interface UseMatchSessionOptions {
   persistence?: CurrentMatchPersistence;
 }
 
-export interface UseMatchSessionReturn {
+interface UseMatchSessionReturn {
   snapshot: CurrentMatchSessionSnapshot;
   scorePoint: (teamId: MatchTeamId) => Promise<void>;
   undoScoreAction: () => Promise<void>;

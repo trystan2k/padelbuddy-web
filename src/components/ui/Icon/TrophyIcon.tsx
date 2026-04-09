@@ -1,6 +1,6 @@
 import type { ComponentPropsWithoutRef } from 'react';
 
-export interface TrophyIconProps extends Omit<
+interface TrophyIconProps extends Omit<
   ComponentPropsWithoutRef<'svg'>,
   'children' | 'height' | 'width'
 > {

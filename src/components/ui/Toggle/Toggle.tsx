@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils/cn';
 
 import styles from './Toggle.module.css';
 
-export interface ToggleProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'onChange'> {
+interface ToggleProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'onChange'> {
   checked: boolean;
   onChange: (checked: boolean) => void;
   label: string;

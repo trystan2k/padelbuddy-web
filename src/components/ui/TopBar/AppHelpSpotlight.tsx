@@ -14,7 +14,7 @@ import { markHelpSpotlightSeen } from '@/lib/user/help_spotlight_storage';
 
 import styles from './AppHelpSpotlight.module.css';
 
-export interface AppHelpSpotlightProps {
+interface AppHelpSpotlightProps {
   /** The help trigger button element to spotlight. */
   triggerRef: RefObject<HTMLButtonElement | null>;
   /** Callback fired when the spotlight is dismissed. */

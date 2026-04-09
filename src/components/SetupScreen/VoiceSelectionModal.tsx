@@ -54,7 +54,7 @@ const VoiceGroup = ({
   </Select.Group>
 );
 
-export interface VoiceSelectionModalProps {
+interface VoiceSelectionModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAccept: (voiceName: string) => void;

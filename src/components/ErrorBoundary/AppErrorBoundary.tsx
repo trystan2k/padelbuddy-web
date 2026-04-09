@@ -13,7 +13,7 @@ interface AppErrorBoundaryFallbackProps {
   reset: () => void;
 }
 
-export interface AppErrorBoundaryProps {
+interface AppErrorBoundaryProps {
   children: ReactNode;
   fallback?: ReactNode | ((props: AppErrorBoundaryFallbackProps) => ReactNode);
 }

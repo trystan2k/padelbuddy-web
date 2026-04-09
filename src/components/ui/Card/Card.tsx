@@ -7,7 +7,7 @@ import styles from './Card.module.css';
 
 export type CardAccent = Accent;
 
-export interface CardProps extends ComponentPropsWithoutRef<'div'> {
+interface CardProps extends ComponentPropsWithoutRef<'div'> {
   children: ReactNode;
   className?: string | undefined;
   accent?: CardAccent;

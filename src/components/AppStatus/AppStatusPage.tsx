@@ -2,7 +2,7 @@ import { useId, type ReactNode } from 'react';
 
 import styles from './AppStatusPage.module.css';
 
-export interface AppStatusPageProps {
+interface AppStatusPageProps {
   body: ReactNode;
   children?: ReactNode;
   eyebrow: ReactNode;
@@ -37,7 +37,7 @@ export function AppStatusPage({
   );
 }
 
-export interface AppStatusDetailProps {
+interface AppStatusDetailProps {
   children: ReactNode;
   role?: 'alert' | 'status';
 }
@@ -50,7 +50,7 @@ export function AppStatusDetail({ children, role }: AppStatusDetailProps) {
   );
 }
 
-export interface AppStatusActionsProps {
+interface AppStatusActionsProps {
   children: ReactNode;
 }
 

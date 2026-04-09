@@ -9,10 +9,7 @@ import styles from './TextInput.module.css';
 
 export type TextInputAccent = Accent;
 
-export interface TextInputProps extends Omit<
-  ComponentPropsWithoutRef<'input'>,
-  'onChange' | 'value'
-> {
+interface TextInputProps extends Omit<ComponentPropsWithoutRef<'input'>, 'onChange' | 'value'> {
   value: string;
   onChange: (value: string) => void;
   accent?: TextInputAccent;

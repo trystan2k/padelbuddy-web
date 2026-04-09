@@ -5,18 +5,18 @@ import { matchTeamIds, type MatchProjection, type MatchTeamId } from '@/core/mat
 import { normalizeScoreValue } from './message-generator';
 import type { SpeechEventData } from './types';
 
-export type MatchSpeechEvent = Omit<SpeechEventData, 'verbosity'>;
+type MatchSpeechEvent = Omit<SpeechEventData, 'verbosity'>;
 
-export interface MatchPointPressureContext {
+interface MatchPointPressureContext {
   pressure: SpeechEventData['pointPressure'];
   team: MatchTeamId | null;
 }
 
-export function getCompletedSetCount(projection: MatchProjection): number {
+function getCompletedSetCount(projection: MatchProjection): number {
   return projection.state.sets.filter((set) => set.completed).length;
 }
 
-export function getTotalGamesWon(projection: MatchProjection): Record<MatchTeamId, number> {
+function getTotalGamesWon(projection: MatchProjection): Record<MatchTeamId, number> {
   return projection.state.sets.reduce(
     (totals, set) => ({
       'team-1': totals['team-1'] + set.games['team-1'],
@@ -26,7 +26,7 @@ export function getTotalGamesWon(projection: MatchProjection): Record<MatchTeamI
   );
 }
 
-export function getGameWinner(
+function getGameWinner(
   previousProjection: MatchProjection,
   currentProjection: MatchProjection
 ): MatchTeamId | null {
@@ -44,7 +44,7 @@ export function getGameWinner(
   return null;
 }
 
-export function getLeadingTeam(projection: MatchProjection): MatchTeamId | null {
+function getLeadingTeam(projection: MatchProjection): MatchTeamId | null {
   if (projection.derived.scoreDisplay.kind !== 'standard') {
     return null;
   }
@@ -164,7 +164,7 @@ export function createPointScoredEvent(
   };
 }
 
-export function createSpeechEvent(
+function createSpeechEvent(
   previousProjection: MatchProjection,
   currentProjection: MatchProjection,
   previousActionCount: number,

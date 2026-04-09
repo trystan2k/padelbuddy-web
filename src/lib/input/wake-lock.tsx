@@ -18,15 +18,11 @@ export async function requestScreenWakeLock(): Promise<WakeLockSentinel | null> 
   }
 }
 
-export function isScreenWakeLockActive(): boolean {
-  return wakeLockManager.isActive();
-}
-
 export function _resetWakeLockManager(): void {
   wakeLockManager.reset();
 }
 
-export interface UseWakeLockOptions {
+interface UseWakeLockOptions {
   enabled?: boolean;
   onError?: (error: Error) => void;
 }

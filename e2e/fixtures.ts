@@ -3,9 +3,11 @@ import path from 'node:path';
 
 import { test as base, expect, type Page } from '@playwright/test';
 
-import { defaultDatabaseName } from '../src/lib/current-match/indexed-db';
+import { persistenceDatabaseName } from '../src/lib/persistence/indexed-db';
 
 export { expect };
+
+const defaultDatabaseName = persistenceDatabaseName;
 
 async function clearBrowserState(page: Page, baseURL: string) {
   await page.goto(baseURL);

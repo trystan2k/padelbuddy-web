@@ -1,6 +1,6 @@
 import type { CurrentMatchResetNotice } from './reset-notice';
 
-export interface CurrentMatchResetNoticeStore {
+interface CurrentMatchResetNoticeStore {
   get(): CurrentMatchResetNotice | null;
   set(notice: CurrentMatchResetNotice): void;
   clear(): CurrentMatchResetNotice | null;

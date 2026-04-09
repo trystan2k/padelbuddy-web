@@ -46,7 +46,7 @@ function CloseIcon() {
   );
 }
 
-export interface AppHelpDialogProps {
+interface AppHelpDialogProps {
   appTitle: string;
   /** Show the first-visit spotlight on the help trigger (setup screen only). */
   showFirstVisitSpotlight?: boolean;

@@ -9,7 +9,7 @@ import type {
   MatchTeamId
 } from '../../src/core/match/types';
 
-export interface StartMatchOptions {
+interface StartMatchOptions {
   team1Name?: string;
   team2Name?: string;
   format?: MatchFormat;

@@ -14,14 +14,8 @@ import { getViewTransitionNavigationOptions } from '@/lib/utils/view-transitions
 
 import styles from './CurrentMatchStartupGate.module.css';
 
-export interface CurrentMatchStartupGateProps extends HTMLAttributes<HTMLElement> {
+interface CurrentMatchStartupGateProps extends HTMLAttributes<HTMLElement> {
   startupState: CurrentMatchStartupResult;
-  persistence?: CurrentMatchPersistence;
-  portalContainer?: HTMLElement | null;
-}
-
-export interface CurrentMatchStartupGateResolvedProps extends HTMLAttributes<HTMLElement> {
-  initialState: CurrentMatchStartupResult;
   persistence?: CurrentMatchPersistence;
   portalContainer?: HTMLElement | null;
 }
@@ -56,13 +50,6 @@ export function clearCurrentMatchStartup(
     status: 'no-match',
     notice: currentState.notice
   };
-}
-
-export function CurrentMatchStartupGateResolved({
-  initialState,
-  ...props
-}: CurrentMatchStartupGateResolvedProps) {
-  return <CurrentMatchStartupGate startupState={initialState} {...props} />;
 }
 
 export function CurrentMatchStartupGate({

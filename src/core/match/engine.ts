@@ -43,7 +43,7 @@ function createGameStateForSetMode(mode: MatchSetMode): MatchGameState {
     : createStandardGameState();
 }
 
-export function getSetMode(setup: MatchSetup, setIndex: number): MatchSetMode {
+function getSetMode(setup: MatchSetup, setIndex: number): MatchSetMode {
   if (setup.setCap === null) {
     return 'standard';
   }

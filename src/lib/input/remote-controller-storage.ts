@@ -22,18 +22,18 @@ const indexedDbMessages: IndexedDbOpenMessages = {
   openFailed: 'Unable to open the remote controller database.'
 };
 
-export interface RemoteControllerStorageOptions {
+interface RemoteControllerStorageOptions {
   databaseName?: string;
   databaseVersion?: number;
   objectStoreName?: string;
 }
 
-export interface StoredRemoteControllerBindings {
+interface StoredRemoteControllerBindings {
   bindings: RemoteControllerBindings;
   updatedAt: string;
 }
 
-export interface RemoteControllerStorage {
+interface RemoteControllerStorage {
   saveRemoteControllerBindings(bindings: RemoteControllerBindings): Promise<void>;
   loadRemoteControllerBindings(): Promise<RemoteControllerBindings | null>;
   clearRemoteControllerBindings(): Promise<void>;
@@ -102,9 +102,7 @@ export function createRemoteControllerStorage(
   };
 }
 
-export function parseStoredRemoteControllerBindings(
-  value: unknown
-): RemoteControllerBindings | null {
+function parseStoredRemoteControllerBindings(value: unknown): RemoteControllerBindings | null {
   if (!isStoredRemoteControllerBindings(value)) {
     return null;
   }
@@ -112,7 +110,7 @@ export function parseStoredRemoteControllerBindings(
   return sanitizeRemoteControllerBindings(value.bindings);
 }
 
-export function sanitizeRemoteControllerBindings(
+function sanitizeRemoteControllerBindings(
   bindings: Partial<RemoteControllerBindings>
 ): RemoteControllerBindings {
   const sanitizedBindings = createEmptyRemoteControllerBindings();
@@ -148,10 +146,9 @@ function isStoredRemoteControllerBindings(value: unknown): value is StoredRemote
   });
 }
 
-export const remoteControllerStorage = createRemoteControllerStorage();
+const remoteControllerStorage = createRemoteControllerStorage();
 export const saveRemoteControllerBindings = (bindings: RemoteControllerBindings) =>
   remoteControllerStorage.saveRemoteControllerBindings(bindings);
-export const loadRemoteControllerBindings = () =>
-  remoteControllerStorage.loadRemoteControllerBindings();
+const loadRemoteControllerBindings = () => remoteControllerStorage.loadRemoteControllerBindings();
 export const clearRemoteControllerBindings = () =>
   remoteControllerStorage.clearRemoteControllerBindings();

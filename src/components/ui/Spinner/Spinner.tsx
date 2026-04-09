@@ -5,10 +5,10 @@ import { cn } from '@/lib/utils/cn';
 
 import styles from './Spinner.module.css';
 
-export type SpinnerSize = 'sm' | 'md' | 'lg';
-export type SpinnerColor = 'primary' | 'secondary';
+type SpinnerSize = 'sm' | 'md' | 'lg';
+type SpinnerColor = 'primary' | 'secondary';
 
-export interface SpinnerProps extends Omit<ComponentPropsWithoutRef<'span'>, 'children'> {
+interface SpinnerProps extends Omit<ComponentPropsWithoutRef<'span'>, 'children'> {
   ref?: Ref<HTMLSpanElement>;
   size?: SpinnerSize;
   color?: SpinnerColor;

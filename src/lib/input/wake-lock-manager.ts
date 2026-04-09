@@ -1,6 +1,6 @@
 'use client';
 
-export interface WakeLockManager {
+interface WakeLockManager {
   isActive(): boolean;
   isSupported(): boolean;
   request(): Promise<WakeLockSentinel | null>;

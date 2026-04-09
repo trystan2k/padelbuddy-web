@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils/cn';
 import type { MatchEndScreenSetRow } from './view-model';
 import styles from './MatchSummaryCard.module.css';
 
-export interface MatchSummaryCardProps {
+interface MatchSummaryCardProps {
   formatLabel: string;
   teamNames: TeamScore<string>;
   setRows: MatchEndScreenSetRow[];

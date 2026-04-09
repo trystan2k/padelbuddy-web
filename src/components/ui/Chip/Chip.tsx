@@ -6,10 +6,10 @@ import { cn } from '@/lib/utils/cn';
 
 import styles from './Chip.module.css';
 
-export type ChipVariant = 'toggle' | 'button';
+type ChipVariant = 'toggle' | 'button';
 export type ChipSize = 'sm' | 'md';
 
-export interface ChipProps extends HTMLAttributes<HTMLElement> {
+interface ChipProps extends HTMLAttributes<HTMLElement> {
   children: ReactNode;
   pressed?: boolean;
   onPressedChange?: (pressed: boolean) => void;

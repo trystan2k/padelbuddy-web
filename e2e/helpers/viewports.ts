@@ -1,4 +1,4 @@
-export interface CatalogViewport {
+interface CatalogViewport {
   name: string;
   width: number;
   height: number;
@@ -26,9 +26,9 @@ export const landscapeViewportCatalog = [
   { name: 'MacBook Pro 14 landscape', width: 1512, height: 982 }
 ] as const satisfies ReadonlyArray<CatalogViewport>;
 
-export type ViewportOrientation = 'portrait' | 'landscape';
+type ViewportOrientation = 'portrait' | 'landscape';
 
-export function getViewportOrientation(
+function getViewportOrientation(
   viewport: Pick<CatalogViewport, 'width' | 'height'>
 ): ViewportOrientation {
   return viewport.height >= viewport.width ? 'portrait' : 'landscape';

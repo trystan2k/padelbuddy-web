@@ -24,14 +24,14 @@ export interface MatchEndScreenSummary {
   elapsedSeconds: number;
 }
 
-export interface CreateMatchEndScreenSummaryOptions {
+interface CreateMatchEndScreenSummaryOptions {
   projection: MatchProjection;
   startedAt: number;
   finishedAt?: number;
   now?: number;
 }
 
-export interface MatchDurationParts {
+interface MatchDurationParts {
   hours: number;
   minutes: number;
 }

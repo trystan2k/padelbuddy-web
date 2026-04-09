@@ -8,7 +8,7 @@ import { LOCALE_FLAGS, LOCALE_LABELS } from '@/lib/i18n/locale-display';
 
 import styles from './LocaleSelector.module.css';
 
-export interface LocaleSelectorProps {
+interface LocaleSelectorProps {
   currentLocale?: SupportedLocale;
   onLocaleChange?: (locale: SupportedLocale) => void;
 }

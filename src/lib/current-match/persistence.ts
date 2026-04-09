@@ -36,7 +36,7 @@ export interface CurrentMatchDecodeOkResult {
   record: CurrentMatchRecord;
 }
 
-export interface CurrentMatchDecodeResetRequiredResult {
+interface CurrentMatchDecodeResetRequiredResult {
   status: 'reset-required';
   reason: 'schema-version';
   storedSchemaVersion: number;
@@ -47,7 +47,7 @@ export interface CurrentMatchDecodeCorruptResult {
   message: string;
 }
 
-export type CurrentMatchDecodeResult =
+type CurrentMatchDecodeResult =
   | CurrentMatchDecodeOkResult
   | CurrentMatchDecodeResetRequiredResult
   | CurrentMatchDecodeCorruptResult;

@@ -6,7 +6,7 @@ import { TopBar } from '@/components/ui/TopBar/TopBar';
 import styles from './ShareScreen.module.css';
 import { cn } from '@/lib/utils/cn';
 
-export interface ShareScreenProps {
+interface ShareScreenProps {
   ref?: import('react').Ref<HTMLDivElement>;
   winnerName: string;
   team1Name: string;
