@@ -1,6 +1,8 @@
 import styles from './StoreButtons.module.css';
 import { useTranslation } from 'react-i18next';
 
+const storeBadgeBaseUrl = `${import.meta.env.BASE_URL}stores`;
+
 export function StoreButtons() {
   const { t, i18n } = useTranslation();
 
@@ -12,14 +14,14 @@ export function StoreButtons() {
     <div className={styles.storeBadges}>
       <a href="#android-store" className={styles.storeBadgeLink} data-testid="store-link-android">
         <img
-          src={`/stores/GooglePlay_${storeBadgeSuffix}.svg`}
+          src={`${storeBadgeBaseUrl}/GooglePlay_${storeBadgeSuffix}.svg`}
           alt={t('help.advertising.getItOnGooglePlay')}
           className={styles.storeBadge}
         />
       </a>
       <a href="#ios-store" className={styles.storeBadgeLink} data-testid="store-link-ios">
         <img
-          src={`/stores/AppStore_${storeBadgeSuffix}.svg`}
+          src={`${storeBadgeBaseUrl}/AppStore_${storeBadgeSuffix}.svg`}
           alt={t('help.advertising.downloadOnAppStore')}
           className={styles.storeBadge}
         />

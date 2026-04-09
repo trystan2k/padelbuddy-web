@@ -182,9 +182,9 @@ describe('AppHelpDialog', () => {
     await expect.element(androidImg).toBeInTheDocument();
     await expect.element(iosImg).toBeInTheDocument();
 
-    // Default locale is 'en' so expected suffix is 'en'
-    await expect.element(androidImg).toHaveAttribute('src', '/stores/GooglePlay_en.svg');
-    await expect.element(iosImg).toHaveAttribute('src', '/stores/AppStore_en.svg');
+    // Default locale is 'en' so the asset name should match regardless of the configured base path
+    expect(androidImg?.getAttribute('src')).toMatch(/stores\/GooglePlay_en\.svg$/);
+    expect(iosImg?.getAttribute('src')).toMatch(/stores\/AppStore_en\.svg$/);
   });
 
   test('footer displays app title and version', async () => {

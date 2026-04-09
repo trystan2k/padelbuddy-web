@@ -176,17 +176,21 @@ export function AppHelpDialog({ appTitle, showFirstVisitSpotlight = false }: App
             <p className={styles.sectionBody}>{t('help.howToUse.body')}</p>
           </section>
 
-          <section className={styles.section}>
-            <h3 className={styles.sectionTitle}>{t('help.advertising.title')}</h3>
-            <p className={styles.sectionBody}>{t('help.advertising.body')}</p>
-            <StoreButtons />
-            <p className={styles.sectionBody}>{t('help.advertising.noAds')}</p>
-          </section>
+          {import.meta.env.VITE_IS_NATIVE !== 'true' && (
+            <>
+              <section className={styles.section}>
+                <h3 className={styles.sectionTitle}>{t('help.advertising.title')}</h3>
+                <p className={styles.sectionBody}>{t('help.advertising.body')}</p>
+                <StoreButtons />
+                <p className={styles.sectionBody}>{t('help.advertising.noAds')}</p>
+              </section>
 
-          <section className={styles.section}>
-            <h3 className={styles.sectionTitle}>{t('help.pwa.title')}</h3>
-            <p className={styles.sectionBody}>{t('help.pwa.body')}</p>
-          </section>
+              <section className={styles.section}>
+                <h3 className={styles.sectionTitle}>{t('help.pwa.title')}</h3>
+                <p className={styles.sectionBody}>{t('help.pwa.body')}</p>
+              </section>
+            </>
+          )}
         </div>
 
         <footer className={styles.footer}>

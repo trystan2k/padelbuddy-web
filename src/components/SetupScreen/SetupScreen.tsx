@@ -411,9 +411,11 @@ export function SetupScreen() {
           >
             {t('setup.remoteConfig.trigger')}
           </Button>
-          <div className={styles.storeBadgesContainer}>
-            <StoreButtons />
-          </div>
+          {import.meta.env.VITE_IS_NATIVE !== 'true' && (
+            <div className={styles.storeBadgesContainer}>
+              <StoreButtons />
+            </div>
+          )}
         </div>
 
         {/* Right column - Options */}
