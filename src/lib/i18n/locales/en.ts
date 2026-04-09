@@ -350,5 +350,30 @@ export default {
       description: 'Players should switch sides now.',
       confirm: 'Switched'
     }
+  },
+  help: {
+    triggerLabel: 'Open help',
+    about:
+      'Padel Buddy is a live score tracker for padel matches. Track points, games, and sets in real time.',
+    howToUse: {
+      title: 'How to Use',
+      body: "The app guides you through three main screens:\n\nSetup Screen — Enter team names, choose a match format (Best of 1, 3, or 5 sets), and configure optional rules such as Golden Point, Super Tiebreak, Side-switch Prompts, Serving Indicator, and Countdown Timer. You can also configure a Bluetooth remote controller and select a voice for audio score announcements.\n\nActive Match Screen — Tap a team's score panel to add a point, or use your configured remote control. Tap the undo button to revert the last scoring action for that team. When the Serving Indicator is enabled, the serving team's card is highlighted. When audio announcements are enabled, a voice announces each point. A side-switch prompt appears between games when that option is active.\n\nMatch End Screen — Shows the final result and match statistics. The winner is determined only by completed sets. If both teams have won the same number of sets, the result is a tie even if a third set is in progress. Use the Share button to distribute the result image, or the Continue button to keep playing without ending the match.\n\nIf the app or browser tab closes during an active match, the match state is saved automatically. When you reopen the app, you can resume the match from where you left off or discard it and start fresh."
+    },
+    advertising: {
+      title: 'Get the App',
+      body: 'Download the mobile app for a dedicated, ad-free experience on your device.',
+      getItOnGooglePlay: 'Get it on Google Play',
+      downloadOnAppStore: 'Download on the App Store',
+      noAds: 'The mobile apps do not contain advertisements.'
+    },
+    pwa: {
+      title: 'Install App',
+      body: 'Padel Buddy is a Progressive Web App (PWA). You can install it on any device by opening your browser\'s share menu and selecting "Add to Home Screen" (or similar option). Once installed, Padel Buddy works completely offline — no internet connection is required during matches.'
+    },
+    spotlight: {
+      title: 'Welcome to Padel Buddy',
+      message: 'Start here if you have any questions',
+      dismiss: 'Got it'
+    }
   }
 } as const;

@@ -47,6 +47,7 @@ export function ShareScreen({
         iconAlt=""
         title={t('share.topbar.appName')}
         subtitle={matchCompleteBadge}
+        showHelpTrigger={false}
       />
 
       <div className={styles.content}>

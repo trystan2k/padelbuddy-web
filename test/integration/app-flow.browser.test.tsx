@@ -50,6 +50,13 @@ vi.mock('@tanstack/react-router', async (importOriginal) => {
   };
 });
 
+// Mock spotlight storage to keep first-visit UI out of general integration test flows.
+// This keeps setup/navigation scenarios focused on their primary behavior.
+vi.mock('@/lib/user/help_spotlight_storage', () => ({
+  isHelpSpotlightSeen: () => true,
+  markHelpSpotlightSeen: () => {}
+}));
+
 describe('app flow integration', () => {
   beforeEach(async () => {
     vi.clearAllMocks();

@@ -13,6 +13,10 @@ async function clearBrowserState(page: Page, baseURL: string) {
     localStorage.clear();
     sessionStorage.clear();
 
+    // Mark the help spotlight as seen so first-visit UI stays out of general E2E flows.
+    // This keeps setup/navigation scenarios focused on their primary behavior.
+    localStorage.setItem('padelbuddy_help_spotlight_seen', '1');
+
     await new Promise<void>((resolve) => {
       const request = indexedDB.deleteDatabase(databaseName);
 

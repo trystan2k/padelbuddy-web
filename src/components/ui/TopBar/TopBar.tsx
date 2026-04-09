@@ -1,6 +1,7 @@
 import { type ComponentPropsWithoutRef, type ReactNode } from 'react';
-import { APP_VERSION } from '@/version';
 import { cn } from '@/lib/utils/cn';
+
+import { AppHelpDialog } from './AppHelpDialog';
 
 import styles from './TopBar.module.css';
 
@@ -15,6 +16,10 @@ export interface TopBarProps extends ComponentPropsWithoutRef<'div'> {
   subtitle?: string;
   /** Optional right-side actions slot content. */
   children?: ReactNode;
+  /** Hide the help trigger, e.g. for surfaces that should not expose it (share capture). */
+  showHelpTrigger?: boolean;
+  /** Show the first-visit help spotlight on the help trigger (setup screen only). */
+  showFirstVisitHelpSpotlight?: boolean;
 }
 
 export function TopBar({
@@ -24,6 +29,8 @@ export function TopBar({
   subtitle,
   children,
   className,
+  showHelpTrigger = true,
+  showFirstVisitHelpSpotlight = false,
   ...props
 }: TopBarProps) {
   const hasBranding = iconSrc || title || subtitle;
@@ -42,10 +49,15 @@ export function TopBar({
               />
             )}
             {title && (
-              <h1 className={styles.appName}>
-                {title}
-                <span className={styles.version}>({APP_VERSION})</span>
-              </h1>
+              <div className={styles.titleText}>
+                <h1 className={styles.appName}>{title}</h1>
+                {showHelpTrigger && (
+                  <AppHelpDialog
+                    appTitle={title}
+                    showFirstVisitSpotlight={showFirstVisitHelpSpotlight}
+                  />
+                )}
+              </div>
             )}
           </div>
           {subtitle && <p className={styles.subtitle}>{subtitle}</p>}

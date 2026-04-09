@@ -29,6 +29,7 @@ import { TextInput } from '@/components/ui/TextInput/TextInput';
 import { Toggle } from '@/components/ui/Toggle/Toggle';
 import { TopBar } from '@/components/ui/TopBar/TopBar';
 import { LocaleSelector } from '@/components/ui/LocaleSelector/LocaleSelector';
+import { StoreButtons } from '@/components/StoreButtons/StoreButtons';
 
 import { RemoteConfigurationModal } from './RemoteConfigurationModal';
 import { VoiceSelectionModal } from './VoiceSelectionModal';
@@ -291,6 +292,7 @@ export function SetupScreen() {
         iconAlt=""
         title={t('app.title')}
         subtitle={t('setup.header.subtitle')}
+        showFirstVisitHelpSpotlight={true}
       >
         <LocaleSelector />
       </TopBar>
@@ -409,6 +411,11 @@ export function SetupScreen() {
           >
             {t('setup.remoteConfig.trigger')}
           </Button>
+          {import.meta.env.VITE_IS_NATIVE !== 'true' && (
+            <div className={styles.storeBadgesContainer}>
+              <StoreButtons />
+            </div>
+          )}
         </div>
 
         {/* Right column - Options */}
