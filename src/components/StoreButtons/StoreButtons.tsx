@@ -14,7 +14,6 @@ export function StoreButtons() {
         <img
           src={`/stores/GooglePlay_${storeBadgeSuffix}.svg`}
           alt={t('help.advertising.getItOnGooglePlay')}
-          title={t('help.advertising.getItOnGooglePlay')}
           className={styles.storeBadge}
         />
       </a>
@@ -22,7 +21,6 @@ export function StoreButtons() {
         <img
           src={`/stores/AppStore_${storeBadgeSuffix}.svg`}
           alt={t('help.advertising.downloadOnAppStore')}
-          title={t('help.advertising.downloadOnAppStore')}
           className={styles.storeBadge}
         />
       </a>
