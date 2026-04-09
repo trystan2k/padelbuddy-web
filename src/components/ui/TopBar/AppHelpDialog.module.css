@@ -16,7 +16,7 @@
   border: none;
   border-radius: var(--base-radius-full);
   background-color: transparent;
-  color: var(--semantic-color-content-secondary);
+  color: var(--semantic-color-content-accent-primary);
   cursor: pointer;
   transition:
     background-color var(--base-motion-duration-fast) var(--base-motion-easing-default),
