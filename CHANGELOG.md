@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.7.0](https://github.com/trystan2k/padelbuddy-web/compare/v2.6.0...v2.7.0) (2026-04-09)
+
+
+### Features
+
+* update help dialog close button color to accent primary ([6ea5dc7](https://github.com/trystan2k/padelbuddy-web/commit/6ea5dc788d6b77fa8deeea35bc9877738512496e))
+
 ## [2.6.0](https://github.com/trystan2k/padelbuddy-web/compare/v2.5.0...v2.6.0) (2026-04-09)
 
 
