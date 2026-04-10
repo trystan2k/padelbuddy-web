@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.8.0](https://github.com/trystan2k/padelbuddy-web/compare/v2.7.0...v2.8.0) (2026-04-10)
+
+
+### Features
+
+* **android:** add configurable Play Store install check ([b99a84e](https://github.com/trystan2k/padelbuddy-web/commit/b99a84e3bf87e20796e56c6b3486924f500f88b2))
+* implement Google Play Licensing (LVL) for Android ([d4a4b6a](https://github.com/trystan2k/padelbuddy-web/commit/d4a4b6a904c65df53f932bb9fb298c6534112f69))
+
+
+### Bug Fixes
+
+* **android:** switch from LVL to Play Billing library for license verification ([db86b4e](https://github.com/trystan2k/padelbuddy-web/commit/db86b4efcaee101433c953c5e9754e0f6d252ecf))
+* **test:** use importOriginal in LicenseGate react-i18next mock ([264fbb1](https://github.com/trystan2k/padelbuddy-web/commit/264fbb1319a747c758bed86740b86e9f703bcf3e))
+
 ## [2.7.0](https://github.com/trystan2k/padelbuddy-web/compare/v2.6.0...v2.7.0) (2026-04-09)
 
 
