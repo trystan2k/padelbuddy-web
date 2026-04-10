@@ -1,0 +1,6 @@
+// iOS Release Signing Configuration
+// These values are loaded from environment variables in CI
+
+CODE_SIGN_IDENTITY = $(SIGNING identity)
+CODE_SIGNING_REQUIRED = YES
+CODE_SIGNING_ALLOWED = NO
