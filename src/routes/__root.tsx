@@ -117,19 +117,19 @@ function AppShell() {
   useRemoveHydrationSpinner(routePendingRef);
 
   return (
-    <LicenseGate>
-      <html lang={currentLang}>
-        <head>
-          <HeadContent />
-        </head>
-        <body>
-          <PadelCourtSpinner
-            ref={routePendingRef}
-            className={styles.routePendingSpinner}
-            silent={true}
-            aria-hidden="true"
-          />
-          <ToastProvider>
+    <html lang={currentLang}>
+      <head>
+        <HeadContent />
+      </head>
+      <body>
+        <PadelCourtSpinner
+          ref={routePendingRef}
+          className={styles.routePendingSpinner}
+          silent={true}
+          aria-hidden="true"
+        />
+        <ToastProvider>
+          <LicenseGate>
             <div className={styles.routeShell}>
               <RoutePendingOverlay />
               <div className={styles.routeViewport}>
@@ -138,12 +138,12 @@ function AppShell() {
                 </AppErrorBoundary>
               </div>
             </div>
-          </ToastProvider>
-          <Scripts />
-          {import.meta.env.DEV && <DebugPwa />}
-        </body>
-      </html>
-    </LicenseGate>
+          </LicenseGate>
+        </ToastProvider>
+        <Scripts />
+        {import.meta.env.DEV && <DebugPwa />}
+      </body>
+    </html>
   );
 }
 

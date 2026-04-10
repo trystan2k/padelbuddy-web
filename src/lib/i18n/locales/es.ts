@@ -31,9 +31,9 @@ export default {
     description: 'Base cliente de TanStack Start para el rastreador de puntuación de Padel Buddy.',
     license: {
       blocked: {
-        eyebrow: 'Licencia requerida',
-        title: 'App no autorizada',
-        body: 'Esta versión de Padel Buddy no tiene licencia. Si compraste la app, descárgala desde Google Play Store para recuperar el acceso.'
+        eyebrow: 'Google Play requerido',
+        title: 'Instala desde Google Play',
+        body: 'Esta compilación solo puede ejecutarse si fue instalada desde Google Play Store. Si compraste Padel Buddy, vuelve a instalarla desde Google Play para recuperar el acceso.'
       }
     }
   },

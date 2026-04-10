@@ -17,6 +17,9 @@ export const LicenseStatusValues = {
 const LICENSE_CHECK_KEY = 'pbw_license_v1';
 const LICENSE_TTL_MS = 24 * 60 * 60 * 1000;
 
+// The native Android plugin currently verifies Play Store install source.
+// We keep the broader "license" naming here so the JS contract stays stable.
+
 interface PluginMethod {
   (...args: unknown[]): Promise<unknown>;
 }

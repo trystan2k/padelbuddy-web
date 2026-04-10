@@ -31,9 +31,9 @@ export default {
     description: 'Client-only TanStack Start foundation for the Padel Buddy score tracker.',
     license: {
       blocked: {
-        eyebrow: 'License required',
-        title: 'App not licensed',
-        body: 'This version of Padel Buddy is not licensed for use. If you purchased the app, please download it from the Google Play Store to restore access.'
+        eyebrow: 'Google Play required',
+        title: 'Install from Google Play',
+        body: 'This build can only run when installed from the Google Play Store. If you purchased Padel Buddy, reinstall it from Google Play to restore access.'
       }
     }
   },

@@ -6,9 +6,9 @@ import * as licenseLib from '@/lib/license';
 
 const translationMap = {
   'common.loadingPleaseWait': 'Loading, please wait...',
-  'license.blocked.eyebrow': 'License required',
-  'license.blocked.title': 'App not licensed',
-  'license.blocked.body': 'This version of Padel Buddy is not licensed.',
+  'app.license.blocked.eyebrow': 'Google Play required',
+  'app.license.blocked.title': 'Install from Google Play',
+  'app.license.blocked.body': 'This build can only run when installed from the Google Play Store.',
   'common.retry': 'Try again'
 } satisfies Record<string, string>;
 
@@ -59,7 +59,7 @@ describe('LicenseGate', () => {
     expect(markup).not.toContain('role="status"');
   });
 
-  test('renders loading spinner while checking on native', () => {
+  test('renders children on the initial native render to avoid hydration mismatch', () => {
     mockIsNativePlatform.mockReturnValue(true);
     vi.mocked(licenseLib.checkLicenseStatus).mockImplementationOnce(() => new Promise(() => {}));
     const markup = renderToStaticMarkup(
@@ -67,6 +67,6 @@ describe('LicenseGate', () => {
         <div>app content</div>
       </LicenseGate>
     );
-    expect(markup).toContain('role="status"');
+    expect(markup).toContain('app content');
   });
 });
