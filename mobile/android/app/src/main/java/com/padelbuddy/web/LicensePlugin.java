@@ -9,21 +9,28 @@ import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
-import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.common.api.CommonStatusCodes;
-import com.google.android.gms.licenseverification.LicenseVerificationClient;
-import com.google.android.gms.licenseverification.LicenseVerificationData;
+import com.android.billingclient.api.BillingClient;
+import com.android.billingclient.api.BillingClientStateListener;
+import com.android.billingclient.api.BillingResult;
+import com.android.billingclient.api.ProductDetails;
+import com.android.billingclient.api.Purchase;
+import com.android.billingclient.api.PurchasesUpdatedListener;
+import com.android.billingclient.api.QueryPurchasesParams;
+
+import java.util.List;
 
 @CapacitorPlugin(name = "License")
-public class LicensePlugin extends Plugin {
+public class LicensePlugin extends Plugin implements PurchasesUpdatedListener {
     private static final String TAG = "LicensePlugin";
-    private static final int LICENSED_RESPONSE = 0x010c0000;
     private static final long GRACE_PERIOD_MS = 24 * 60 * 60 * 1000L;
     private static final String PREFS_NAME = "PadelBuddyLicense";
     private static final String KEY_LICENSE_STATUS = "license_status";
     private static final String KEY_LICENSE_TIMESTAMP = "license_timestamp";
 
     private static volatile int lastLicenseStatus = -1;
+    private static volatile boolean hasActivePurchase = false;
+
+    private BillingClient billingClient;
 
     public static int getLastLicenseStatus() {
         return lastLicenseStatus;
@@ -32,33 +39,72 @@ public class LicensePlugin extends Plugin {
     @Override
     public void load() {
         super.load();
-        runLicenseCheckInBackground();
+        initBillingClient();
     }
 
-    private void runLicenseCheckInBackground() {
+    private void initBillingClient() {
         Context ctx = getContext();
         if (ctx == null) return;
-        LicenseVerificationClient client = LicenseVerificationClient.getInstance(ctx);
-        client.isAllowed(new LicenseVerificationData())
-            .addOnSuccessListener(response -> {
-                int code = response.getResponseCode();
-                int status = (code == LICENSED_RESPONSE) ? LicenseResult.LICENSED : LicenseResult.NOT_LICENSED;
-                lastLicenseStatus = status;
-                saveLicenseResult(status);
-                Log.d(TAG, "LVL check done: " + status);
-            })
-            .addOnFailureListener(e -> {
-                int status = LicenseResult.ERROR;
-                if (e instanceof ApiException) {
-                    int sc = ((ApiException) e).getStatusCode();
-                    if (sc == CommonStatusCodes.ERROR_SERVICE_DISABLED) {
-                        status = LicenseResult.ERROR;
-                    }
+
+        billingClient = new BillingClient.Builder(ctx)
+            .setListener(this)
+            .enablePendingPurchases()
+            .build();
+
+        billingClient.startConnection(new BillingClientStateListener() {
+            @Override
+            public void onBillingServiceDisconnected() {
+                Log.d(TAG, "Billing service disconnected");
+                int cached = getCachedLicenseResult();
+                lastLicenseStatus = cached;
+            }
+
+            @Override
+            public void onBillingSetupFinished(BillingResult result) {
+                if (result.getResponseCode() == BillingClient.BillingResponseCode.OK) {
+                    Log.d(TAG, "Billing client connected");
+                    queryPurchases();
+                } else {
+                    Log.e(TAG, "Billing setup failed: " + result.getResponseCode());
+                    int cached = getCachedLicenseResult();
+                    lastLicenseStatus = cached;
                 }
-                lastLicenseStatus = status;
-                saveLicenseResult(status);
-                Log.e(TAG, "LVL check failed", e);
-            });
+            }
+        });
+    }
+
+    private void queryPurchases() {
+        if (billingClient == null || !billingClient.isConnected()) return;
+
+        billingClient.queryPurchasesAsync(
+            QueryPurchasesParams.newBuilder()
+                .setProductType(BillingClient.ProductType.APP)
+                .build(),
+            (billingResult, purchases) -> {
+                if (billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK) {
+                    boolean purchased = purchases != null && !purchases.isEmpty();
+                    hasActivePurchase = purchased;
+                    lastLicenseStatus = purchased ? LicenseResult.LICENSED : LicenseResult.NOT_LICENSED;
+                    saveLicenseResult(lastLicenseStatus);
+                    Log.d(TAG, "Purchase check done: purchased=" + purchased + ", count=" + (purchases != null ? purchases.size() : 0));
+                } else {
+                    Log.e(TAG, "queryPurchases failed: " + billingResult.getResponseCode());
+                    int cached = getCachedLicenseResult();
+                    lastLicenseStatus = cached;
+                }
+            }
+        );
+    }
+
+    @Override
+    public void onPurchasesUpdated(BillingResult result, List<Purchase> purchases) {
+        if (result.getResponseCode() == BillingClient.BillingResponseCode.OK && purchases != null) {
+            boolean purchased = !purchases.isEmpty();
+            hasActivePurchase = purchased;
+            lastLicenseStatus = purchased ? LicenseResult.LICENSED : LicenseResult.NOT_LICENSED;
+            saveLicenseResult(lastLicenseStatus);
+            Log.d(TAG, "Purchase updated: " + purchased);
+        }
     }
 
     private void saveLicenseResult(int status) {
@@ -93,6 +139,9 @@ public class LicensePlugin extends Plugin {
 
     @PluginMethod
     public void checkLicense(PluginCall call) {
+        if (billingClient != null && billingClient.isConnected()) {
+            queryPurchases();
+        }
         int status = lastLicenseStatus;
         if (status == -1) {
             status = getCachedLicenseResult();

@@ -20,8 +20,8 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
-# Google Play Licensing / LVL
--keep class com.google.android.gms.licenseverification.** { *; }
+# Google Play Billing
+-keep class com.android.billingclient.** { *; }
 -keep class com.padelbuddy.web.LicensePlugin { *; }
 -keep class com.padelbuddy.web.LicenseResult { *; }
 
