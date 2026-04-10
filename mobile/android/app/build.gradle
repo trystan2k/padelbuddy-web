@@ -1,8 +1,13 @@
 apply plugin: 'com.android.application'
 
+def enablePlayInstallCheck = project.findProperty('PADDELBUDDY_ENABLE_PLAY_INSTALL_CHECK') ?: System.getenv('PADDELBUDDY_ENABLE_PLAY_INSTALL_CHECK') ?: 'true'
+
 android {
     namespace = "com.padelbuddy.web"
     compileSdk = rootProject.ext.compileSdkVersion
+    buildFeatures {
+        buildConfig = true
+    }
     defaultConfig {
         applicationId "com.padelbuddy.web"
         minSdkVersion rootProject.ext.minSdkVersion
@@ -10,10 +15,11 @@ android {
         versionCode 20700
         versionName "2.7.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField "boolean", "ENABLE_PLAY_INSTALL_CHECK", enablePlayInstallCheck.toString()
         aaptOptions {
-             // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
-             // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
-            ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
+              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
+              // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
+             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
     buildTypes {

@@ -38,6 +38,13 @@ public class LicensePlugin extends Plugin {
             return;
         }
 
+        if (!BuildConfig.ENABLE_PLAY_INSTALL_CHECK) {
+            lastLicenseStatus = LicenseResult.LICENSED;
+            saveLicenseResult(LicenseResult.LICENSED);
+            Log.d(TAG, "Play install check disabled by config");
+            return;
+        }
+
         int status = isInstalledFromPlayStore(context)
             ? LicenseResult.LICENSED
             : LicenseResult.NOT_LICENSED;
