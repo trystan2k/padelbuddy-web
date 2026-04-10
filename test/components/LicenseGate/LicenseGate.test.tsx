@@ -12,11 +12,15 @@ const translationMap = {
   'common.retry': 'Try again'
 } satisfies Record<string, string>;
 
-vi.mock('react-i18next', () => ({
-  useTranslation: () => ({
-    t: (key: string) => translationMap[key as keyof typeof translationMap] ?? key
-  })
-}));
+vi.mock('react-i18next', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('react-i18next')>();
+  return {
+    ...actual,
+    useTranslation: () => ({
+      t: (key: string) => translationMap[key as keyof typeof translationMap] ?? key
+    })
+  };
+});
 
 vi.mock('@/lib/license', () => ({
   checkLicenseStatus:
