@@ -28,7 +28,14 @@ export default {
   },
   app: {
     title: 'Padel Buddy',
-    description: 'Base client-only do TanStack Start para o placar do Padel Buddy.'
+    description: 'Base client-only do TanStack Start para o placar do Padel Buddy.',
+    license: {
+      blocked: {
+        eyebrow: 'Licença necessária',
+        title: 'App não licenciada',
+        body: 'Esta versão do Padel Buddy não possui licença. Se você comprou o app, baixe-o na Google Play Store para restaurar o acesso.'
+      }
+    }
   },
   debugPwa: {
     reopen: 'Abrir depuração PWA',

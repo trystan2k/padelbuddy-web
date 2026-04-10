@@ -13,6 +13,7 @@ import { useRef } from 'react';
 
 import { AppErrorBoundary } from '@/components/ErrorBoundary/AppErrorBoundary';
 import { DebugPwa } from '@/components/DebugPwa/DebugPwa';
+import { LicenseGate } from '@/components/LicenseGate/LicenseGate';
 import { NotFoundPage } from '@/components/NotFoundPage/NotFoundPage';
 import { PadelCourtSpinner } from '@/components/PadelCourtSpinner/PadelCourtSpinner';
 import { ToastProvider } from '@/components/ui/Toast/useToast';
@@ -116,31 +117,33 @@ function AppShell() {
   useRemoveHydrationSpinner(routePendingRef);
 
   return (
-    <html lang={currentLang}>
-      <head>
-        <HeadContent />
-      </head>
-      <body>
-        <PadelCourtSpinner
-          ref={routePendingRef}
-          className={styles.routePendingSpinner}
-          silent={true}
-          aria-hidden="true"
-        />
-        <ToastProvider>
-          <div className={styles.routeShell}>
-            <RoutePendingOverlay />
-            <div className={styles.routeViewport}>
-              <AppErrorBoundary>
-                <Outlet />
-              </AppErrorBoundary>
+    <LicenseGate>
+      <html lang={currentLang}>
+        <head>
+          <HeadContent />
+        </head>
+        <body>
+          <PadelCourtSpinner
+            ref={routePendingRef}
+            className={styles.routePendingSpinner}
+            silent={true}
+            aria-hidden="true"
+          />
+          <ToastProvider>
+            <div className={styles.routeShell}>
+              <RoutePendingOverlay />
+              <div className={styles.routeViewport}>
+                <AppErrorBoundary>
+                  <Outlet />
+                </AppErrorBoundary>
+              </div>
             </div>
-          </div>
-        </ToastProvider>
-        <Scripts />
-        {import.meta.env.DEV && <DebugPwa />}
-      </body>
-    </html>
+          </ToastProvider>
+          <Scripts />
+          {import.meta.env.DEV && <DebugPwa />}
+        </body>
+      </html>
+    </LicenseGate>
   );
 }
 

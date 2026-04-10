@@ -83,6 +83,12 @@
         "jsx-no-new-array-as-prop": "off",
         "jsx-no-new-object-as-prop": "off"
       }
+    },
+    {
+      "files": ["src/lib/license/**/*.{ts,tsx}"],
+      "rules": {
+        "typescript/no-unsafe-type-assertion": "off"
+      }
     }
   ]
 }

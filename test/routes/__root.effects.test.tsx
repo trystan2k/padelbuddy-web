@@ -20,7 +20,11 @@ const { initializeI18nMock, i18nMock, registerSWMock, routerStateMock, translati
       'error.unexpectedLabel': 'Unexpected error',
       'error.unexpectedTitle': 'Something went wrong',
       'error.unexpectedBody': 'Please try again.',
-      'common.retry': 'Try again'
+      'common.retry': 'Try again',
+      'common.loadingPleaseWait': 'Loading, please wait...',
+      'license.blocked.eyebrow': 'License required',
+      'license.blocked.title': 'App not licensed',
+      'license.blocked.body': 'This version of Padel Buddy is not licensed for use.'
     } satisfies Record<string, string>
   }));
 
@@ -48,6 +52,12 @@ vi.mock('@/lib/i18n/i18n', () => ({
 
 vi.mock('@/lib/pwa/registration', () => ({
   registerSW: registerSWMock
+}));
+
+vi.mock('@capacitor/core', () => ({
+  Capacitor: {
+    isNativePlatform: () => false
+  }
 }));
 
 vi.mock('@/components/DebugPwa/DebugPwa', () => ({

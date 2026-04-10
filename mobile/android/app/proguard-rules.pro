@@ -19,3 +19,11 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# Google Play Licensing / LVL
+-keep class com.google.android.gms.licenseverification.** { *; }
+-keep class com.padelbuddy.web.LicensePlugin { *; }
+-keep class com.padelbuddy.web.LicenseResult { *; }
+
+# Capacitor plugin annotation
+-keep class com.getcapacitor.annotation.** { *; }
