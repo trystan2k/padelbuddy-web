@@ -11,14 +11,16 @@ let package = Package(
             targets: ["CapApp-SPM"])
     ],
     dependencies: [
-        .package(url: "https://github.com/ionic-team/capacitor-swift-pm.git", exact: "8.3.0")
+        .package(url: "https://github.com/ionic-team/capacitor-swift-pm.git", exact: "8.3.0"),
+        .package(name: "CapacitorCommunityTextToSpeech", path: "../../../../node_modules/.pnpm/@capacitor-community+text-to-speech@8.0.0_@capacitor+core@8.3.0/node_modules/@capacitor-community/text-to-speech")
     ],
     targets: [
         .target(
             name: "CapApp-SPM",
             dependencies: [
                 .product(name: "Capacitor", package: "capacitor-swift-pm"),
-                .product(name: "Cordova", package: "capacitor-swift-pm")
+                .product(name: "Cordova", package: "capacitor-swift-pm"),
+                .product(name: "CapacitorCommunityTextToSpeech", package: "CapacitorCommunityTextToSpeech")
             ]
         )
     ]

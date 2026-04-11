@@ -1,12 +1,26 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 
-import { useSpeechService } from '@/lib/speech/speech-service';
+import { i18n } from '@/lib/i18n/i18n';
+import { unlockSpeechEngine, useSpeechService } from '@/lib/speech/speech-service';
+
+const setupStorageMocks = vi.hoisted(() => ({
+  saveSpeechPreferences: vi.fn<() => Promise<void>>().mockResolvedValue(undefined),
+  loadSpeechPreferences: vi.fn<
+    () => Promise<{
+      muted: boolean;
+      verbosity: 'standard' | 'minimal' | 'detailed';
+      voiceName: string | null;
+      updatedAt: string;
+    } | null>
+  >(),
+  clearSpeechPreferences: vi.fn<() => Promise<void>>().mockResolvedValue(undefined)
+}));
 
 vi.mock('@/lib/setup/setup-storage', () => ({
-  saveSpeechPreferences: vi.fn<() => Promise<void>>().mockResolvedValue(undefined),
-  loadSpeechPreferences: vi.fn<() => Promise<null>>(),
-  clearSpeechPreferences: vi.fn<() => Promise<void>>().mockResolvedValue(undefined)
+  saveSpeechPreferences: setupStorageMocks.saveSpeechPreferences,
+  loadSpeechPreferences: setupStorageMocks.loadSpeechPreferences,
+  clearSpeechPreferences: setupStorageMocks.clearSpeechPreferences
 }));
 
 function SpeechTestComponent({
@@ -78,6 +92,8 @@ describe('useSpeechService', () => {
 
   beforeEach(() => {
     utterances = [];
+    setupStorageMocks.loadSpeechPreferences.mockResolvedValue(null);
+    i18n.language = 'en';
     mockSpeechSynthesis = {
       speak: vi.fn<(utterance: SpeechSynthesisUtterance) => void>(),
       cancel: vi.fn<() => void>(),
@@ -181,6 +197,47 @@ describe('useSpeechService', () => {
         );
       });
     });
+
+    it('restores a stored preferred voice when it exists', async () => {
+      setupStorageMocks.loadSpeechPreferences.mockResolvedValueOnce({
+        muted: false,
+        verbosity: 'standard',
+        voiceName: 'English',
+        updatedAt: '2026-04-11T00:00:00.000Z'
+      });
+
+      const { getByTestId } = await render(
+        <SpeechTestComponent
+          // oxlint-disable-next-line jsx-no-new-object-as-prop
+          config={{}}
+        />
+      );
+
+      await expect.element(getByTestId('voice')).toHaveTextContent('English');
+    });
+
+    it('waits for the preferred voice when the stored voice is not initially available', async () => {
+      setupStorageMocks.loadSpeechPreferences.mockResolvedValueOnce({
+        muted: false,
+        verbosity: 'standard',
+        voiceName: 'Missing Voice',
+        updatedAt: '2026-04-11T00:00:00.000Z'
+      });
+
+      await render(
+        <SpeechTestComponent
+          // oxlint-disable-next-line jsx-no-new-object-as-prop
+          config={{}}
+        />
+      );
+
+      await vi.waitFor(() => {
+        expect(mockSpeechSynthesis.addEventListener).toHaveBeenCalledWith(
+          'voiceschanged',
+          expect.any(Function)
+        );
+      });
+    });
   });
 
   describe('speak', () => {
@@ -221,6 +278,63 @@ describe('useSpeechService', () => {
 
       serviceRef.current!.speak('Hello');
       expect(mockSpeechSynthesis.speak).not.toHaveBeenCalled();
+    });
+
+    it('caps pending announcements at the maximum when voice selection is delayed', async () => {
+      let voicesLoaded = false;
+      const listeners = new Map<string, Set<EventListener>>();
+
+      mockSpeechSynthesis.getVoices = vi.fn<() => SpeechSynthesisVoice[]>(() => {
+        if (voicesLoaded) {
+          return [
+            {
+              lang: 'en-US',
+              name: 'English',
+              default: false,
+              localService: true,
+              voiceURI: 'test'
+            }
+          ];
+        }
+
+        return [];
+      });
+      mockSpeechSynthesis.addEventListener = vi.fn<(type: string, listener: EventListener) => void>(
+        (type, listener) => {
+          const set = listeners.get(type) ?? new Set<EventListener>();
+          set.add(listener);
+          listeners.set(type, set);
+        }
+      );
+      mockSpeechSynthesis.removeEventListener = vi.fn<
+        (type: string, listener: EventListener) => void
+      >((type, listener) => {
+        listeners.get(type)?.delete(listener);
+      });
+
+      // oxlint-disable-next-line jsx-no-new-object-as-prop
+      const serviceRef = { current: null as ReturnType<typeof useSpeechService> | null };
+      await render(
+        <SpeechTestComponent
+          // oxlint-disable-next-line jsx-no-new-object-as-prop
+          config={{}}
+          onServiceRef={serviceRef}
+        />
+      );
+
+      for (let index = 0; index < 11; index += 1) {
+        serviceRef.current!.speak(`Message ${index + 1}`);
+      }
+
+      voicesLoaded = true;
+      const voicesChangedListeners = listeners.get('voiceschanged') ?? new Set<EventListener>();
+      for (const listener of voicesChangedListeners) {
+        listener(new Event('voiceschanged'));
+      }
+
+      await vi.waitFor(() => {
+        expect(utterances).toHaveLength(10);
+      });
     });
 
     it('speaks when not muted and voice is available', async () => {
@@ -312,6 +426,70 @@ describe('useSpeechService', () => {
       expect(mockSpeechSynthesis.resume).toHaveBeenCalledTimes(1);
       expect(mockSpeechSynthesis.speak).toHaveBeenCalledTimes(1);
     });
+
+    it('falls back to the default locale when the voice has no language', async () => {
+      mockSpeechSynthesis.getVoices = vi.fn<() => SpeechSynthesisVoice[]>(() => [
+        {
+          lang: '',
+          name: 'English Blank',
+          default: false,
+          localService: true,
+          voiceURI: 'blank'
+        },
+        {
+          lang: 'en-US',
+          name: 'English',
+          default: false,
+          localService: true,
+          voiceURI: 'test'
+        }
+      ]);
+      setupStorageMocks.loadSpeechPreferences.mockResolvedValueOnce({
+        muted: false,
+        verbosity: 'standard',
+        voiceName: 'English Blank',
+        updatedAt: '2026-04-11T00:00:00.000Z'
+      });
+      i18n.language = undefined as unknown as string;
+
+      // oxlint-disable-next-line jsx-no-new-object-as-prop
+      const serviceRef = { current: null as ReturnType<typeof useSpeechService> | null };
+      await render(
+        <SpeechTestComponent
+          // oxlint-disable-next-line jsx-no-new-object-as-prop
+          config={{}}
+          onServiceRef={serviceRef}
+        />
+      );
+
+      await vi.waitFor(() => {
+        expect(serviceRef.current?.getVoice()).not.toBeNull();
+      });
+
+      serviceRef.current!.speak('Hello');
+
+      expect(utterances[0]?.lang).toBe('en');
+    });
+
+    it('does nothing when browser speech synthesis becomes unavailable before speaking', async () => {
+      // oxlint-disable-next-line jsx-no-new-object-as-prop
+      const serviceRef = { current: null as ReturnType<typeof useSpeechService> | null };
+      await render(
+        <SpeechTestComponent
+          // oxlint-disable-next-line jsx-no-new-object-as-prop
+          config={{}}
+          onServiceRef={serviceRef}
+        />
+      );
+
+      await vi.waitFor(() => {
+        expect(serviceRef.current?.getVoice()).not.toBeNull();
+      });
+
+      vi.stubGlobal('speechSynthesis', undefined);
+
+      expect(() => serviceRef.current!.speak('Hello')).not.toThrow();
+    });
   });
 
   describe('cancel', () => {
@@ -375,6 +553,38 @@ describe('useSpeechService', () => {
       await vi.waitFor(() => {
         expect(mockSpeechSynthesis.cancel).toHaveBeenCalled();
       });
+    });
+
+    it('does not cancel speech when unmuting', async () => {
+      // oxlint-disable-next-line jsx-no-new-object-as-prop
+      const serviceRef = { current: null as ReturnType<typeof useSpeechService> | null };
+      await render(
+        <SpeechTestComponent
+          // oxlint-disable-next-line jsx-no-new-object-as-prop
+          config={{ muted: true }}
+          onServiceRef={serviceRef}
+        />
+      );
+
+      serviceRef.current!.setMuted(false);
+
+      expect(mockSpeechSynthesis.cancel).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('unlockSpeechEngine', () => {
+    it('issues a silent utterance when speechSynthesis is available', () => {
+      unlockSpeechEngine();
+
+      expect(mockSpeechSynthesis.speak).toHaveBeenCalledTimes(1);
+      expect(utterances[0]?.text).toBe('');
+    });
+
+    it('does nothing when speechSynthesis is unavailable', () => {
+      vi.unstubAllGlobals();
+      vi.stubGlobal('speechSynthesis', undefined);
+
+      expect(() => unlockSpeechEngine()).not.toThrow();
     });
   });
 

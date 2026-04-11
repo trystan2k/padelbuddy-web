@@ -12,7 +12,7 @@ import { createMatchSetup } from '@/core/match/validation';
 import { saveCurrentMatch } from '@/lib/current-match/indexed-db';
 import { defaultLocale, isSupportedLocale } from '@/lib/i18n/types';
 import { saveSetupPreferenceSlice } from '@/lib/setup/setup-storage';
-import { getAvailableVoices } from '@/lib/speech/voice-selector';
+import { getAvailableVoices } from '@/lib/speech/unified-tts';
 import { unlockSpeechEngine } from '@/lib/speech/speech-service';
 import { requestScreenWakeLock } from '@/lib/input/wake-lock';
 import { prepareCurrentMatchRouteNavigation } from '@/lib/router/current-match-route-flow';

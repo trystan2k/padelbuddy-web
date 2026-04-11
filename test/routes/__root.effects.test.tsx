@@ -56,7 +56,8 @@ vi.mock('@/lib/pwa/registration', () => ({
 
 vi.mock('@capacitor/core', () => ({
   Capacitor: {
-    isNativePlatform: () => false
+    isNativePlatform: () => false,
+    getPlatform: () => 'web'
   }
 }));
 

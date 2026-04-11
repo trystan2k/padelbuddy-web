@@ -27,7 +27,8 @@ export function LicenseGate({ children }: LicenseGateProps) {
   }, []);
 
   useEffect(() => {
-    if (!Capacitor.isNativePlatform()) {
+    const platform = Capacitor.getPlatform();
+    if (platform !== 'android') {
       return;
     }
 

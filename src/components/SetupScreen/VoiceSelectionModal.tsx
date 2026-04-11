@@ -10,16 +10,19 @@ import {
   getAllVoicesGroupedByLocale,
   getDefaultVoiceForLocale,
   getLanguageDisplayName,
-  getVoiceId
-} from '@/lib/speech/voice-selector';
+  getVoiceId,
+  speakWithVoice,
+  stopSpeech,
+  type UnifiedVoice
+} from '@/lib/speech/unified-tts';
 import { generateSpeechMessage } from '@/lib/speech/message-generator';
 
 import styles from './VoiceSelectionModal.module.css';
 
-const EMPTY_ARRAY: SpeechSynthesisVoice[] = [];
+const EMPTY_ARRAY: UnifiedVoice[] = [];
 
 interface VoiceItemProps {
-  voice: SpeechSynthesisVoice;
+  voice: UnifiedVoice;
   onIndicatorRender: (props: React.HTMLAttributes<HTMLSpanElement>) => React.ReactElement;
 }
 
@@ -32,7 +35,7 @@ const VoiceItem = ({ voice, onIndicatorRender }: VoiceItemProps) => (
 
 interface VoiceGroupProps {
   groupLocale: string;
-  voices: SpeechSynthesisVoice[];
+  voices: UnifiedVoice[];
   onGroupLabelRender: (props: React.HTMLAttributes<HTMLDivElement>) => React.ReactElement;
   onItemIndicatorRender: (props: React.HTMLAttributes<HTMLSpanElement>) => React.ReactElement;
 }
@@ -149,17 +152,13 @@ export function VoiceSelectionModal({
     [voices]
   );
 
-  const handlePlayPreview = useCallback(() => {
-    if (!previewVoice || typeof speechSynthesis === 'undefined') {
+  const handlePlayPreview = useCallback(async () => {
+    if (!previewVoice) {
       return;
     }
 
-    speechSynthesis.cancel();
-
-    const utterance = new SpeechSynthesisUtterance(previewText);
-    utterance.voice = previewVoice;
-    utterance.lang = previewVoice.lang || localePrefix;
-    speechSynthesis.speak(utterance);
+    await stopSpeech();
+    await speakWithVoice(previewText, previewVoice.name, localePrefix);
   }, [previewText, previewVoice, localePrefix]);
 
   const handleAccept = useCallback(() => {

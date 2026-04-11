@@ -72,18 +72,30 @@ export function getAvailableVoices(signal?: AbortSignal): Promise<SpeechSynthesi
     }
 
     let settled = false;
+    let pollInterval: ReturnType<typeof setInterval> | null = null;
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
     const cleanup = () => {
       if (settled) return;
       settled = true;
-      clearTimeout(timeout);
+      if (pollInterval) {
+        clearInterval(pollInterval);
+        pollInterval = null;
+      }
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+        timeoutId = null;
+      }
       speechSynthesis?.removeEventListener('voiceschanged', handleVoicesChanged);
       signal?.removeEventListener('abort', handleAbort);
     };
 
     const handleVoicesChanged = () => {
-      cleanup();
-      resolve(speechSynthesis.getVoices());
+      const loadedVoices = speechSynthesis.getVoices();
+      if (loadedVoices.length > 0) {
+        cleanup();
+        resolve(loadedVoices);
+      }
     };
 
     const handleAbort = () => {
@@ -91,13 +103,26 @@ export function getAvailableVoices(signal?: AbortSignal): Promise<SpeechSynthesi
       reject(new Error('Operation aborted'));
     };
 
-    const timeout = setTimeout(() => {
+    const startPolling = () => {
+      pollInterval = setInterval(() => {
+        const currentVoices = speechSynthesis.getVoices();
+        if (currentVoices.length > 0) {
+          cleanup();
+          resolve(currentVoices);
+        }
+      }, 500);
+    };
+
+    timeoutId = setTimeout(() => {
       cleanup();
-      resolve([]);
-    }, 3000);
+      const finalVoices = speechSynthesis.getVoices();
+      resolve(finalVoices.length > 0 ? finalVoices : []);
+    }, 10000);
 
     speechSynthesis.addEventListener('voiceschanged', handleVoicesChanged);
     signal?.addEventListener('abort', handleAbort);
+
+    startPolling();
   });
 }
 

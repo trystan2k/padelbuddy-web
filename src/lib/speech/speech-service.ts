@@ -13,7 +13,33 @@ import {
   type SpeechServiceConfig,
   type VerbosityLevel
 } from './types';
-import { findVoiceByName, getAvailableVoices, selectVoice } from './voice-selector';
+import {
+  findVoiceByName as findVoiceByNameUnified,
+  getAvailableVoices as getAvailableVoicesUnified,
+  selectVoice as selectVoiceUnified,
+  speakWithVoice,
+  stopSpeech,
+  isNativePlatform,
+  type UnifiedVoice
+} from './unified-tts';
+
+type BrowserVoice = SpeechSynthesisVoice;
+type BrowserVoiceArray = BrowserVoice[];
+
+const findVoiceByName = (name: string, voices: BrowserVoiceArray): BrowserVoice | undefined => {
+  const result = findVoiceByNameUnified(name, voices as UnifiedVoice[]);
+  return result as BrowserVoice | undefined;
+};
+
+const selectVoice = (locale: SupportedLocale, voices: BrowserVoiceArray): BrowserVoice | null => {
+  const result = selectVoiceUnified(locale, voices as UnifiedVoice[]);
+  return result as BrowserVoice | null;
+};
+
+const getAvailableVoices = async (signal?: AbortSignal): Promise<BrowserVoiceArray> => {
+  const voices = await getAvailableVoicesUnified(signal);
+  return voices as BrowserVoiceArray;
+};
 
 const maxPendingAnnouncements = 10;
 
@@ -61,8 +87,8 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
   const [verbosity, setVerbosityState] = useState<VerbosityLevel>(
     config.verbosity ?? defaultVerbosity
   );
-  const [voice, setVoice] = useState<SpeechSynthesisVoice | null>(null);
-  const voiceRef = useRef<SpeechSynthesisVoice | null>(null);
+  const [voice, setVoice] = useState<UnifiedVoice | null>(null);
+  const voiceRef = useRef<UnifiedVoice | null>(null);
   const mutedRef = useRef(muted);
   mutedRef.current = muted;
   const pendingAnnouncementsRef = useRef<
@@ -175,7 +201,10 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
       // when destroy() is called (genuine unmount), not during React Strict Mode remount cycles.
       if (destroyedRef.current) return;
 
-      if (typeof speechSynthesis === 'undefined') {
+      const nativePlatform = isNativePlatform();
+
+      // On native platforms, we don't have speechSynthesis but we have native TTS
+      if (!nativePlatform && typeof speechSynthesis === 'undefined') {
         setMutedState(true);
         onErrorRef.current?.(new Error('Speech synthesis is not supported'));
         return;
@@ -198,8 +227,10 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
           onVoiceChangeRef.current?.(selectedVoice);
 
           if (preferredVoiceNameRef.current && !preferredVoice) {
-            waitForPreferredVoice();
-          } else {
+            if (!nativePlatform) {
+              waitForPreferredVoice();
+            }
+          } else if (!nativePlatform) {
             clearVoicesChangedListener();
           }
 
@@ -226,7 +257,19 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
     const { signal } = abortController;
 
     async function updateVoice() {
-      if (typeof speechSynthesis === 'undefined' || signal.aborted || destroyedRef.current) return;
+      const nativePlatform = isNativePlatform();
+
+      if (
+        !nativePlatform &&
+        (typeof speechSynthesis === 'undefined' || signal.aborted || destroyedRef.current)
+      ) {
+        return;
+      }
+
+      // On native platforms, skip if aborted/destroyed
+      if (nativePlatform && (signal.aborted || destroyedRef.current)) {
+        return;
+      }
 
       try {
         const voices = await getAvailableVoices(signal);
@@ -241,8 +284,10 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
         onVoiceChangeRef.current?.(selectedVoice);
 
         if (preferredVoiceNameRef.current && !preferredVoice) {
-          waitForPreferredVoice();
-        } else {
+          if (!nativePlatform) {
+            waitForPreferredVoice();
+          }
+        } else if (!nativePlatform) {
           clearVoicesChangedListener();
         }
       } catch {
@@ -288,7 +333,7 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
   }, []);
 
   const speak = useCallback(
-    (text: string, options?: SpeechOptions) => {
+    async (text: string, options?: SpeechOptions) => {
       const currentVoice = voiceRef.current;
       if (destroyedRef.current || mutedRef.current || !text) {
         return;
@@ -306,6 +351,11 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
         return;
       }
 
+      if (isNativePlatform()) {
+        await speakWithVoice(text, currentVoice.name, getSafeLocale(i18n.language));
+        return;
+      }
+
       if (typeof speechSynthesis === 'undefined') {
         return;
       }
@@ -318,8 +368,11 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
       }
 
       const utterance = new SpeechSynthesisUtterance(text);
-      utterance.voice = currentVoice;
-      utterance.lang = options?.lang || currentVoice?.lang || getSafeLocale(i18n.language);
+      utterance.voice = currentVoice as SpeechSynthesisVoice;
+      utterance.lang =
+        options?.lang ||
+        (currentVoice as SpeechSynthesisVoice)?.lang ||
+        getSafeLocale(i18n.language);
       utterance.rate = 1.0;
       utterance.pitch = 1.0;
 
@@ -351,11 +404,14 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
     const pending = pendingAnnouncementsRef.current.splice(0);
 
     for (const { text, options } of pending) {
-      speak(text, options);
+      void speak(text, options);
     }
   }, [voice, speak]);
 
-  const cancel = useCallback(() => {
+  const cancel = useCallback(async () => {
+    if (isNativePlatform()) {
+      await stopSpeech();
+    }
     if (typeof speechSynthesis !== 'undefined') {
       speechSynthesis.cancel();
     }
@@ -380,7 +436,7 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
       });
 
       if (newMuted) {
-        cancel();
+        void cancel();
       }
     },
     [verbosity, cancel]
@@ -412,7 +468,7 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
       });
 
       if (message) {
-        speak(message, { immediate: true });
+        void speak(message, { immediate: true });
         return;
       }
     },
@@ -442,7 +498,7 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
       // Cancel any ongoing speech and prevent further speaking
       destroyedRef.current = true;
       pendingAnnouncementsRef.current = [];
-      cancel();
+      void cancel();
       abortControllerRef.current?.abort();
       languageUnsubscribeRef.current?.();
       languageUnsubscribeRef.current = null;
