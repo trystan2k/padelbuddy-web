@@ -14,18 +14,17 @@ const mockCapacitor = vi.hoisted(() => ({
 }));
 
 const mockNativeTts = vi.hoisted(() => ({
-  getNativeVoices:
-    vi.fn<
-      () => Promise<
-        Array<{
-          name: string;
-          lang: string;
-          localService: boolean;
-          default: boolean;
-          voiceURI: string;
-        }>
-      >
-    >(),
+  getNativeVoices: vi.fn<
+    () => Promise<
+      Array<{
+        name: string;
+        lang: string;
+        localService: boolean;
+        default: boolean;
+        voiceURI: string;
+      }>
+    >
+  >(),
   speakWithNative: vi.fn<() => Promise<void>>(),
   stopNativeSpeech: vi.fn<() => Promise<void>>()
 }));

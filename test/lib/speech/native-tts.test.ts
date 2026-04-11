@@ -7,18 +7,17 @@ const mockCapacitor = vi.hoisted(() => ({
 }));
 
 const mockTextToSpeech = vi.hoisted(() => ({
-  getSupportedVoices:
-    vi.fn<
-      () => Promise<{
-        voices: Array<{
-          name: string;
-          lang: string;
-          localService: boolean;
-          default: boolean;
-          voiceURI: string;
-        }>;
-      }>
-    >(),
+  getSupportedVoices: vi.fn<
+    () => Promise<{
+      voices: Array<{
+        name: string;
+        lang: string;
+        localService: boolean;
+        default: boolean;
+        voiceURI: string;
+      }>;
+    }>
+  >(),
   speak: vi.fn<() => Promise<void>>(),
   stop: vi.fn<() => Promise<void>>()
 }));
