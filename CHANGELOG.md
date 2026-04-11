@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.9.0](https://github.com/trystan2k/padelbuddy-web/compare/v2.8.0...v2.9.0) (2026-04-11)
+
+
+### Features
+
+* **speech:** add native text-to-speech support via Capacitor plugin ([cfb6e1c](https://github.com/trystan2k/padelbuddy-web/commit/cfb6e1c1720a88a757d8dafd045b2d025dc4b44d))
+
 ## [2.8.0](https://github.com/trystan2k/padelbuddy-web/compare/v2.7.0...v2.8.0) (2026-04-10)
 
 
