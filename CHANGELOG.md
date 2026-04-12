@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.10.0](https://github.com/trystan2k/padelbuddy-web/compare/v2.9.0...v2.10.0) (2026-04-12)
+
+
+### Features
+
+* add inactivity auto-hide footer in compact landscape with exit fullscreen button ([1554353](https://github.com/trystan2k/padelbuddy-web/commit/1554353b0f8ca13e3023e18c253930aab51ffb26))
+
 ## [2.9.0](https://github.com/trystan2k/padelbuddy-web/compare/v2.8.0...v2.9.0) (2026-04-11)
 
 
