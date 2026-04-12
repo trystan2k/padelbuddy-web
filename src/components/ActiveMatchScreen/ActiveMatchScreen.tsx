@@ -5,13 +5,18 @@ import { useTranslation } from 'react-i18next';
 import { Layout } from '@/components/Layout/Layout';
 import { RotateDeviceBlocker } from '@/components/ui/RotateDeviceBlocker/RotateDeviceBlocker';
 import { TopBar } from '@/components/ui/TopBar/TopBar';
-import { createEmptyRemoteControllerBindings } from '@/lib/input/keyboard-aliases';
+import {
+  createEmptyRemoteControllerBindings,
+  getActionFromKey
+} from '@/lib/input/keyboard-aliases';
 import { loadRemoteControllerBindingsWithFallback } from '@/lib/input/remote-controller-storage';
 import { useInputHandler } from '@/lib/input/use-input-handler';
 import { prepareCurrentMatchRouteNavigation } from '@/lib/router/current-match-route-flow';
 import { useOrientationDetection } from '@/lib/orientation/useOrientationDetection';
 import { cn } from '@/lib/utils/cn';
 import { getViewTransitionNavigationOptions } from '@/lib/utils/view-transitions';
+
+import { useInactivityTimer } from '@/hooks/useInactivityTimer';
 
 import { getMatchTeamName } from '@/core/match/team-name';
 import type { MatchAction, MatchSetup, MatchTeamId } from '@/core/match/types';
@@ -24,6 +29,9 @@ import { useMatchSession } from './useMatchSession';
 import { useMatchTimer } from './useMatchTimer';
 
 import styles from './ActiveMatchScreen.module.css';
+
+// Selectors for score control elements - used by inactivity timer to ignore interactions
+const SCORE_CONTROL_SELECTORS: string[] = ['[data-inactivity-ignore]'];
 
 interface ActiveMatchScreenProps {
   matchId: string;
@@ -47,6 +55,30 @@ export function ActiveMatchScreen({
   const [sideSwitchDismissed, setSideSwitchDismissed] = useState(false);
   const [isNavigatingToFinish, setIsNavigatingToFinish] = useState(false);
   const [remoteBindings, setRemoteBindings] = useState(createEmptyRemoteControllerBindings());
+  const [isCompactHeight, setIsCompactHeight] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (typeof window.matchMedia !== 'function') return;
+
+    const query = window.matchMedia('(max-height: 480px)');
+    setIsCompactHeight(query.matches);
+
+    const handler = (e: MediaQueryListEvent) => setIsCompactHeight(e.matches);
+    if (typeof query.addEventListener === 'function') {
+      query.addEventListener('change', handler);
+    } else {
+      // Fallback for browsers that only support addListener/removeListener
+      query.addListener(handler);
+    }
+    return () => {
+      if (typeof query.removeEventListener === 'function') {
+        query.removeEventListener('change', handler);
+      } else {
+        query.removeListener(handler);
+      }
+    };
+  }, []);
   const { snapshot, scorePoint, undoScoreAction, undoScoreActionForTeam, finishMatch, isLoading } =
     useMatchSession({
       matchId,
@@ -235,6 +267,44 @@ export function ActiveMatchScreen({
     }
   );
 
+  const shouldIgnoreRemoteKey = useCallback(
+    (event: KeyboardEvent): boolean => {
+      const action = getActionFromKey(event.key, remoteBindings);
+      return (
+        action === 'add-team-1' ||
+        action === 'add-team-2' ||
+        action === 'revert-team-1' ||
+        action === 'revert-team-2'
+      );
+    },
+    [remoteBindings]
+  );
+
+  const shouldEnableInactivityTimer = isCompactHeight && !isPortrait;
+
+  const shouldIgnoreEvent = useCallback(
+    (event: Event) => {
+      if (event instanceof KeyboardEvent) {
+        return shouldIgnoreRemoteKey(event);
+      }
+      return false;
+    },
+    [shouldIgnoreRemoteKey]
+  );
+
+  const { isActive: isInactivityTimerActive, reset: resetInactivityTimer } = useInactivityTimer({
+    enabled: shouldEnableInactivityTimer,
+    timeoutMs: 5000,
+    ignoredTargetSelectors: SCORE_CONTROL_SELECTORS,
+    shouldIgnoreEvent
+  });
+
+  const shouldHideControls = shouldEnableInactivityTimer && !isInactivityTimerActive;
+
+  const handleExitFullscreenClick = useCallback(() => {
+    resetInactivityTimer();
+  }, [resetInactivityTimer]);
+
   const handleFinish = useCallback(async () => {
     if (isLoading || isMatchCompleted) {
       return;
@@ -275,6 +345,16 @@ export function ActiveMatchScreen({
         title={t('match.header.appName')}
         subtitle={t('match.header.subtitle')}
       >
+        {shouldHideControls && (
+          <button
+            type="button"
+            className={styles.exitFullscreenButton}
+            onClick={handleExitFullscreenClick}
+            data-testid="exit-fullscreen-button"
+          >
+            {t('match.actions.exitFullscreen')}
+          </button>
+        )}
         <div
           role="timer"
           aria-label={t(timerLabelKey, { time: formattedTime })}
@@ -285,7 +365,7 @@ export function ActiveMatchScreen({
         </div>
       </TopBar>
     ),
-    [formattedTime, t, timerLabelKey]
+    [formattedTime, handleExitFullscreenClick, shouldHideControls, t, timerLabelKey]
   );
 
   const footerContent = useMemo(
@@ -305,7 +385,11 @@ export function ActiveMatchScreen({
 
   return (
     <>
-      <Layout header={headerContent} footer={footerContent}>
+      <Layout
+        header={headerContent}
+        footer={footerContent}
+        data-controls-hidden={shouldHideControls ? 'true' : undefined}
+      >
         <div className={styles.scorePanel}>
           <div className={styles.teamColumn}>
             <TeamPanel
@@ -323,6 +407,7 @@ export function ActiveMatchScreen({
               onClick={handleRevertTeam1}
               disabled={isUndoTeam1Disabled}
               data-testid="revert-button-team-1"
+              data-inactivity-ignore=""
             >
               {t('match.actions.revertPoint')}
             </button>
@@ -344,6 +429,7 @@ export function ActiveMatchScreen({
               onClick={handleRevertTeam2}
               disabled={isUndoTeam2Disabled}
               data-testid="revert-button-team-2"
+              data-inactivity-ignore=""
             >
               {t('match.actions.revertPoint')}
             </button>

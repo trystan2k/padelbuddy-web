@@ -44,6 +44,7 @@ export function TeamPanel({
       aria-label={t('match.scorePointFor', { teamName })}
       aria-describedby={shouldShowServing ? servingStatusId : undefined}
       data-testid={`team-panel-${teamId}`}
+      data-inactivity-ignore=""
     >
       <span className={styles.teamName}>{teamName}</span>
       <span className={styles.score} aria-live="polite">

@@ -47,13 +47,30 @@
 @media (height <= 640px) and (orientation: landscape) {
   .container {
     gap: var(--base-space-8);
-    padding: calc(var(--base-space-8) + var(--safe-area-inset-top))
-      calc(var(--base-space-8) + var(--safe-area-inset-right))
-      calc(var(--base-space-8) + var(--safe-area-inset-bottom))
-      calc(var(--base-space-8) + var(--safe-area-inset-left));
+    padding: var(--safe-area-inset-top) calc(var(--base-space-8) + var(--safe-area-inset-right))
+      var(--safe-area-inset-bottom) calc(var(--base-space-8) + var(--safe-area-inset-left));
   }
 
   .header {
-    min-height: var(--base-space-40);
+    min-height: var(--base-space-32);
+  }
+}
+
+/* Compact height: auto-hide footer (not header) when data-controls-hidden='true' on root main */
+@media (height <= 480px) {
+  .layout[data-controls-hidden='true'] .footer {
+    opacity: 0;
+    transform: translateY(100%);
+    max-height: 0;
+    margin: 0;
+    overflow: hidden;
+    visibility: hidden;
+  }
+
+  .footer {
+    transition:
+      opacity 300ms ease,
+      transform 300ms ease,
+      visibility 300ms ease;
   }
 }

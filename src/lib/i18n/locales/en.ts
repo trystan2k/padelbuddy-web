@@ -349,7 +349,8 @@ export default {
     },
     actions: {
       revertPoint: 'Revert point',
-      finishMatch: 'Finish Game'
+      finishMatch: 'Finish Game',
+      exitFullscreen: 'Exit fullscreen'
     },
     sideSwitch: {
       oddGames: 'Switch sides (odd games)',
