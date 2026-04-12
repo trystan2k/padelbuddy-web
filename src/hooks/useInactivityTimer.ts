@@ -102,10 +102,11 @@ export function useInactivityTimer(
 
       // Check target selectors for ignored elements
       const selectors = ignoredTargetSelectorsRef.current;
-      if (selectors.length > 0 && event.target instanceof HTMLElement) {
+      if (selectors.length > 0 && event.target instanceof Element) {
+        const target = event.target;
         for (const selector of selectors) {
           try {
-            if (event.target.closest(selector)) {
+            if (target.closest(selector)) {
               return true;
             }
           } catch {
@@ -164,10 +165,7 @@ export function useInactivityTimer(
       clearTimer();
       document.removeEventListener('pointerdown', handlePointerDown);
       document.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('scroll', handleScroll, {
-        capture: true,
-        passive: true
-      } as EventListenerOptions);
+      window.removeEventListener('scroll', handleScroll, true);
     };
     // Intentionally omit isIgnoredInteraction from deps - it reads from refs
     // eslint-disable-next-line react-hooks/exhaustive-deps

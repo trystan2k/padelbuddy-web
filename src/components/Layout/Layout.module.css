@@ -73,8 +73,6 @@
     transition:
       opacity 300ms ease,
       transform 300ms ease,
-      max-height 300ms ease,
-      margin 300ms ease,
       visibility 300ms ease;
   }
 }
