@@ -59,6 +59,7 @@ export function ActiveMatchScreen({
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
+    if (typeof window.matchMedia !== 'function') return;
 
     const query = window.matchMedia('(max-height: 480px)');
     setIsCompactHeight(query.matches);
