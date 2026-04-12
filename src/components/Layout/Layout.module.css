@@ -47,10 +47,8 @@
 @media (height <= 640px) and (orientation: landscape) {
   .container {
     gap: var(--base-space-8);
-    padding: calc(var(--base-space-8) + var(--safe-area-inset-top))
-      calc(var(--base-space-8) + var(--safe-area-inset-right))
-      calc(var(--base-space-8) + var(--safe-area-inset-bottom))
-      calc(var(--base-space-8) + var(--safe-area-inset-left));
+    padding: var(--safe-area-inset-top) calc(var(--base-space-8) + var(--safe-area-inset-right))
+      var(--safe-area-inset-bottom) calc(var(--base-space-8) + var(--safe-area-inset-left));
   }
 
   .header {
