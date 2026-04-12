@@ -350,7 +350,8 @@ export default {
     },
     actions: {
       revertPoint: 'Desfazer ponto',
-      finishMatch: 'Encerrar Partida'
+      finishMatch: 'Encerrar Partida',
+      exitFullscreen: 'Sair da tela cheia'
     },
     sideSwitch: {
       oddGames: 'Trocar de lado (jogos ímpares)',

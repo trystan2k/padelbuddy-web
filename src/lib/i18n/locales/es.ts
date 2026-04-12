@@ -350,7 +350,8 @@ export default {
     },
     actions: {
       revertPoint: 'Deshacer punto',
-      finishMatch: 'Terminar Partido'
+      finishMatch: 'Terminar Partido',
+      exitFullscreen: 'Salir de pantalla completa'
     },
     sideSwitch: {
       oddGames: 'Cambiar de lado (juegos impares)',

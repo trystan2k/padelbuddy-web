@@ -54,6 +54,27 @@
   }
 
   .header {
-    min-height: var(--base-space-40);
+    min-height: var(--base-space-32);
+  }
+}
+
+/* Compact height: auto-hide footer (not header) when data-controls-hidden='true' on root main */
+@media (height <= 480px) {
+  .layout[data-controls-hidden='true'] .footer {
+    opacity: 0;
+    transform: translateY(100%);
+    max-height: 0;
+    margin: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .footer {
+    transition:
+      opacity 300ms ease,
+      transform 300ms ease,
+      max-height 300ms ease,
+      margin 300ms ease,
+      overflow 300ms ease;
   }
 }

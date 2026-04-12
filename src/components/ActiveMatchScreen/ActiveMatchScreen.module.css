@@ -162,4 +162,39 @@
     padding: var(--base-space-12) var(--base-space-16);
     font-size: var(--base-font-size-20);
   }
+
+  .exitFullscreenButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--base-space-6) var(--base-space-12);
+    border: 1px solid var(--semantic-color-border-subtle);
+    border-radius: var(--base-radius-16);
+    background-color: transparent;
+    color: var(--semantic-color-content-secondary);
+    font-family: var(--semantic-typography-family-display);
+    font-size: var(--base-font-size-14);
+    font-weight: var(--semantic-typography-weight-heading);
+    letter-spacing: var(--semantic-typography-letter-spacing-heading);
+    cursor: pointer;
+    transition:
+      transform 150ms ease,
+      background-color 150ms ease,
+      border-color 150ms ease,
+      opacity 150ms ease;
+  }
+
+  .exitFullscreenButton:hover {
+    transform: translateY(-1px);
+    background-color: var(--semantic-color-background-surface);
+  }
+
+  .exitFullscreenButton:active {
+    transform: translateY(0);
+  }
+
+  .exitFullscreenButton:focus-visible {
+    outline: 3px solid var(--semantic-color-content-primary);
+    outline-offset: 3px;
+  }
 }

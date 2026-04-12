@@ -788,6 +788,257 @@ describe('ActiveMatchScreen', () => {
 
     await expect.element(screen.getByTestId('rotate-device-blocker')).toBeInTheDocument();
   });
+
+  test('does not set data-controls-hidden when not in compact height', async () => {
+    // Mock matchMedia to return false for max-height: 480px
+    const matchMediaMock = vi
+      .fn<
+        (query: string) => {
+          matches: boolean;
+          addEventListener: () => void;
+          removeEventListener: () => void;
+        }
+      >()
+      .mockReturnValue({
+        matches: false,
+        addEventListener: vi.fn<() => void>(),
+        removeEventListener: vi.fn<() => void>()
+      });
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      value: matchMediaMock
+    });
+
+    const screen = await render(
+      <ActiveMatchScreen
+        matchId="test-match"
+        initialSetup={createTestSetup()}
+        initialActions={[]}
+        startedAt={defaultStartedAt}
+      />
+    );
+
+    await expect.element(screen.getByTestId('layout-body')).toBeInTheDocument();
+    expect(screen.container.querySelector('[data-controls-hidden]')).toBeNull();
+  });
+
+  test('sets data-controls-hidden after inactivity timeout in compact height landscape', async () => {
+    vi.useFakeTimers();
+
+    // Mock matchMedia to return true for max-height: 480px
+    vi.spyOn(window, 'matchMedia').mockReturnValue({
+      matches: true,
+      addEventListener: vi.fn<() => void>(),
+      removeEventListener: vi.fn<() => void>(),
+      addListener: vi.fn<() => void>(),
+      removeListener: vi.fn<() => void>(),
+      dispatchEvent: vi.fn<() => boolean>(),
+      media: '',
+      onchange: null
+    } as unknown as MediaQueryList);
+
+    const screen = await render(
+      <ActiveMatchScreen
+        matchId="test-match"
+        initialSetup={createTestSetup()}
+        initialActions={[]}
+        startedAt={defaultStartedAt}
+      />
+    );
+
+    // Flush useEffect microtasks so matchMedia and inactivity timer effects run
+    await vi.advanceTimersByTimeAsync(0);
+
+    // Initially, data-controls-hidden should not be set (timer just started)
+    expect(screen.container.querySelector('[data-controls-hidden]')).toBeNull();
+
+    // Advance timers past the 5 second inactivity timeout
+    await vi.advanceTimersByTimeAsync(5000);
+
+    // After timeout, data-controls-hidden should be 'true' on the Layout root <main>
+    await expect
+      .element(screen.container.querySelector('main'))
+      .toHaveAttribute('data-controls-hidden', 'true');
+  });
+
+  test('removes data-controls-hidden on user interaction in compact height landscape', async () => {
+    vi.useFakeTimers();
+
+    // Mock matchMedia to return true for max-height: 480px
+    vi.spyOn(window, 'matchMedia').mockReturnValue({
+      matches: true,
+      addEventListener: vi.fn<() => void>(),
+      removeEventListener: vi.fn<() => void>(),
+      addListener: vi.fn<() => void>(),
+      removeListener: vi.fn<() => void>(),
+      dispatchEvent: vi.fn<() => boolean>(),
+      media: '',
+      onchange: null
+    } as unknown as MediaQueryList);
+
+    const screen = await render(
+      <ActiveMatchScreen
+        matchId="test-match"
+        initialSetup={createTestSetup()}
+        initialActions={[]}
+        startedAt={defaultStartedAt}
+      />
+    );
+
+    // Flush useEffect microtasks so matchMedia and inactivity timer effects run
+    await vi.advanceTimersByTimeAsync(0);
+
+    // Advance timers partway (4 seconds)
+    await vi.advanceTimersByTimeAsync(4000);
+
+    // Simulate user interaction (click on body, not on score controls)
+    document.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+
+    // Flush any state updates triggered by the interaction
+    await vi.advanceTimersByTimeAsync(0);
+
+    // Advance remaining time (another 4000ms to reach 5s timeout)
+    await vi.advanceTimersByTimeAsync(4000);
+
+    // Timer should have been reset by the click, so controls should not be hidden yet
+    expect(screen.container.querySelector('[data-controls-hidden]')).toBeNull();
+
+    // Advance past the new 5 second timeout
+    await vi.advanceTimersByTimeAsync(5000);
+
+    // Now controls should be hidden on the Layout root <main>
+    await expect
+      .element(screen.container.querySelector('main'))
+      .toHaveAttribute('data-controls-hidden', 'true');
+  });
+
+  test('score control interactions do not reset inactivity timer', async () => {
+    vi.useFakeTimers();
+
+    // Mock matchMedia to return true for max-height: 480px
+    vi.spyOn(window, 'matchMedia').mockReturnValue({
+      matches: true,
+      addEventListener: vi.fn<() => void>(),
+      removeEventListener: vi.fn<() => void>(),
+      addListener: vi.fn<() => void>(),
+      removeListener: vi.fn<() => void>(),
+      dispatchEvent: vi.fn<() => boolean>(),
+      media: '',
+      onchange: null
+    } as unknown as MediaQueryList);
+
+    const screen = await render(
+      <ActiveMatchScreen
+        matchId="test-match"
+        initialSetup={createTestSetup()}
+        initialActions={[]}
+        startedAt={defaultStartedAt}
+      />
+    );
+
+    // Flush useEffect microtasks so matchMedia and inactivity timer effects run
+    await vi.advanceTimersByTimeAsync(0);
+
+    // Advance timers partway (4 seconds)
+    await vi.advanceTimersByTimeAsync(4000);
+
+    // Click on team panel (score control) - should NOT reset the timer
+    await screen.getByTestId('team-panel-team-1').click();
+
+    // Flush any state updates triggered by the interaction
+    await vi.advanceTimersByTimeAsync(0);
+
+    // Advance just 2 more seconds (total 6s, past the original 5s timeout)
+    await vi.advanceTimersByTimeAsync(2000);
+
+    // Controls should be hidden because score control interactions don't reset the timer
+    await expect
+      .element(screen.container.querySelector('main'))
+      .toHaveAttribute('data-controls-hidden', 'true');
+  });
+
+  test('shows exit fullscreen button when footer is hidden in compact landscape', async () => {
+    vi.useFakeTimers();
+
+    // Mock matchMedia to return true for max-height: 480px
+    vi.spyOn(window, 'matchMedia').mockReturnValue({
+      matches: true,
+      addEventListener: vi.fn<() => void>(),
+      removeEventListener: vi.fn<() => void>(),
+      addListener: vi.fn<() => void>(),
+      removeListener: vi.fn<() => void>(),
+      dispatchEvent: vi.fn<() => boolean>(),
+      media: '',
+      onchange: null
+    } as unknown as MediaQueryList);
+
+    const screen = await render(
+      <ActiveMatchScreen
+        matchId="test-match"
+        initialSetup={createTestSetup()}
+        initialActions={[]}
+        startedAt={defaultStartedAt}
+      />
+    );
+
+    // Flush useEffect microtasks
+    await vi.advanceTimersByTimeAsync(0);
+
+    // Initially, exit fullscreen button should not be visible
+    expect(screen.container.querySelector('[data-testid="exit-fullscreen-button"]')).toBeNull();
+
+    // Advance past the 5 second inactivity timeout
+    await vi.advanceTimersByTimeAsync(5000);
+
+    // After timeout, exit fullscreen button should appear
+    await expect.element(screen.getByTestId('exit-fullscreen-button')).toBeInTheDocument();
+  });
+
+  test('clicking exit fullscreen button reveals footer and hides button', async () => {
+    vi.useFakeTimers();
+
+    // Mock matchMedia to return true for max-height: 480px
+    vi.spyOn(window, 'matchMedia').mockReturnValue({
+      matches: true,
+      addEventListener: vi.fn<() => void>(),
+      removeEventListener: vi.fn<() => void>(),
+      addListener: vi.fn<() => void>(),
+      removeListener: vi.fn<() => void>(),
+      dispatchEvent: vi.fn<() => boolean>(),
+      media: '',
+      onchange: null
+    } as unknown as MediaQueryList);
+
+    const screen = await render(
+      <ActiveMatchScreen
+        matchId="test-match"
+        initialSetup={createTestSetup()}
+        initialActions={[]}
+        startedAt={defaultStartedAt}
+      />
+    );
+
+    // Flush useEffect microtasks
+    await vi.advanceTimersByTimeAsync(0);
+
+    // Advance past the 5 second inactivity timeout
+    await vi.advanceTimersByTimeAsync(5000);
+
+    // After timeout, exit fullscreen button should be visible
+    await expect.element(screen.getByTestId('exit-fullscreen-button')).toBeInTheDocument();
+
+    // Click the exit fullscreen button
+    await screen.getByTestId('exit-fullscreen-button').click();
+
+    // Flush state updates
+    await vi.advanceTimersByTimeAsync(0);
+
+    // Exit fullscreen button should be hidden again
+    expect(screen.container.querySelector('[data-testid="exit-fullscreen-button"]')).toBeNull();
+
+    // Footer should be revealed (data-controls-hidden should not be set)
+    expect(screen.container.querySelector('[data-controls-hidden]')).toBeNull();
+  });
 });
 
 function readDisplayedScore(
