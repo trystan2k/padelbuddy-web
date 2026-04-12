@@ -40,7 +40,6 @@ export function useInactivityTimer(
 
   const [isActive, setIsActive] = useState(true);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const isActiveRef = useRef(true);
   // Track the current enabled state so timeout callback can check it
   const enabledRef = useRef(enabled);
 
@@ -80,7 +79,6 @@ export function useInactivityTimer(
       if (!enabledRef.current) {
         return;
       }
-      isActiveRef.current = false;
       setIsActive(false);
     }, timeoutMs);
   }, [clearTimer, timeoutMs]);
@@ -89,7 +87,6 @@ export function useInactivityTimer(
     if (!enabled) {
       return;
     }
-    isActiveRef.current = true;
     setIsActive(true);
     startTimer();
   }, [enabled, startTimer]);
@@ -127,7 +124,6 @@ export function useInactivityTimer(
   useEffect(() => {
     if (!enabled) {
       clearTimer();
-      isActiveRef.current = true;
       setIsActive(true);
       return;
     }
@@ -159,13 +155,19 @@ export function useInactivityTimer(
 
     document.addEventListener('pointerdown', handlePointerDown);
     document.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('scroll', handleScroll, { capture: true });
+    window.addEventListener('scroll', handleScroll, {
+      capture: true,
+      passive: true
+    } as AddEventListenerOptions);
 
     return () => {
       clearTimer();
       document.removeEventListener('pointerdown', handlePointerDown);
       document.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('scroll', handleScroll, { capture: true });
+      window.removeEventListener('scroll', handleScroll, {
+        capture: true,
+        passive: true
+      } as EventListenerOptions);
     };
     // Intentionally omit isIgnoredInteraction from deps - it reads from refs
     // eslint-disable-next-line react-hooks/exhaustive-deps

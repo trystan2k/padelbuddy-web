@@ -49,7 +49,7 @@ Add compact-height inactivity auto-hide behavior to ActiveMatchScreen: only the 
 ## Validation Performed
 
 - pnpm complete-check: pass — 80 test files, 903 tests
-- Live browser verification on Pixel 7 landscape (915x412): footer hides after 6s, Exit fullscreen button appears, clicking reveals footer
+- Live browser verification on Pixel 7 landscape (915x412): footer hides after 5s, Exit fullscreen button appears, clicking reveals footer
 - TypeScript, lint, format: all pass
 
 ## Risks and Follow-ups
