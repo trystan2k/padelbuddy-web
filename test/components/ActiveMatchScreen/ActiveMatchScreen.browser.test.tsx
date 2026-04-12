@@ -791,23 +791,16 @@ describe('ActiveMatchScreen', () => {
 
   test('does not set data-controls-hidden when not in compact height', async () => {
     // Mock matchMedia to return false for max-height: 480px
-    const matchMediaMock = vi
-      .fn<
-        (query: string) => {
-          matches: boolean;
-          addEventListener: () => void;
-          removeEventListener: () => void;
-        }
-      >()
-      .mockReturnValue({
-        matches: false,
-        addEventListener: vi.fn<() => void>(),
-        removeEventListener: vi.fn<() => void>()
-      });
-    Object.defineProperty(window, 'matchMedia', {
-      writable: true,
-      value: matchMediaMock
-    });
+    vi.spyOn(window, 'matchMedia').mockReturnValue({
+      matches: false,
+      addEventListener: vi.fn<() => void>(),
+      removeEventListener: vi.fn<() => void>(),
+      addListener: vi.fn<() => void>(),
+      removeListener: vi.fn<() => void>(),
+      dispatchEvent: vi.fn<() => boolean>(),
+      media: '',
+      onchange: null
+    } as unknown as MediaQueryList);
 
     const screen = await render(
       <ActiveMatchScreen

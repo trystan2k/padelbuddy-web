@@ -74,7 +74,6 @@
       opacity 300ms ease,
       transform 300ms ease,
       max-height 300ms ease,
-      margin 300ms ease,
-      overflow 300ms ease;
+      margin 300ms ease;
   }
 }

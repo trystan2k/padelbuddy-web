@@ -8,14 +8,12 @@ function InactivityTimerHarness({
   enabled = true,
   timeoutMs = 5000,
   ignoredTargetSelectors = [],
-  shouldIgnoreEvent,
-  _onStateChange
+  shouldIgnoreEvent
 }: {
   enabled?: boolean;
   timeoutMs?: number;
   ignoredTargetSelectors?: string[];
   shouldIgnoreEvent?: (event: Event) => boolean;
-  _onStateChange?: (isActive: boolean) => void;
 }) {
   const config: Parameters<typeof useInactivityTimer>[0] = {
     enabled,
@@ -117,7 +115,7 @@ describe('useInactivityTimer', () => {
       await expect.element(screen.getByTestId('is-active')).toHaveTextContent('true');
     });
 
-    test('starts inactive when enabled is false', async () => {
+    test('starts in active state when enabled is false', async () => {
       const screen = await render(<InactivityTimerHarness enabled={false} />);
 
       await expect.element(screen.getByTestId('is-active')).toHaveTextContent('true');

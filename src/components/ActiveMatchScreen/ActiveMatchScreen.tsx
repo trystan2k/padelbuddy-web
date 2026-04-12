@@ -31,12 +31,7 @@ import { useMatchTimer } from './useMatchTimer';
 import styles from './ActiveMatchScreen.module.css';
 
 // Selectors for score control elements - used by inactivity timer to ignore interactions
-const SCORE_CONTROL_SELECTORS: string[] = [
-  '[data-testid="team-panel-team-1"]',
-  '[data-testid="team-panel-team-2"]',
-  '[data-testid="revert-button-team-1"]',
-  '[data-testid="revert-button-team-2"]'
-];
+const SCORE_CONTROL_SELECTORS: string[] = ['[data-inactivity-ignore]'];
 
 interface ActiveMatchScreenProps {
   matchId: string;
@@ -69,8 +64,19 @@ export function ActiveMatchScreen({
     setIsCompactHeight(query.matches);
 
     const handler = (e: MediaQueryListEvent) => setIsCompactHeight(e.matches);
-    query.addEventListener('change', handler);
-    return () => query.removeEventListener('change', handler);
+    if (typeof query.addEventListener === 'function') {
+      query.addEventListener('change', handler);
+    } else {
+      // Fallback for browsers that only support addListener/removeListener
+      query.addListener(handler);
+    }
+    return () => {
+      if (typeof query.removeEventListener === 'function') {
+        query.removeEventListener('change', handler);
+      } else {
+        query.removeListener(handler);
+      }
+    };
   }, []);
   const { snapshot, scorePoint, undoScoreAction, undoScoreActionForTeam, finishMatch, isLoading } =
     useMatchSession({
@@ -400,6 +406,7 @@ export function ActiveMatchScreen({
               onClick={handleRevertTeam1}
               disabled={isUndoTeam1Disabled}
               data-testid="revert-button-team-1"
+              data-inactivity-ignore=""
             >
               {t('match.actions.revertPoint')}
             </button>
@@ -421,6 +428,7 @@ export function ActiveMatchScreen({
               onClick={handleRevertTeam2}
               disabled={isUndoTeam2Disabled}
               data-testid="revert-button-team-2"
+              data-inactivity-ignore=""
             >
               {t('match.actions.revertPoint')}
             </button>
