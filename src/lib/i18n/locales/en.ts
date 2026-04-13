@@ -219,32 +219,44 @@ export default {
     },
     remoteConfig: {
       trigger: 'Remote Configuration',
-      title: 'Bluetooth Remote Controller',
+      title: 'Remote Controller',
       description:
-        'Assign one button per action. Revert buttons always remove the latest scoring action for that team only.',
-      helper:
-        'While listening, press any remote or keyboard button once. Saving with every action cleared removes the custom mapping.',
+        'You can use your keyboard or media buttons (Volume Up/Down, Next/Previous Track) to control the match. Click a keyboard button to capture your preferred key.',
       listening: 'Listening...',
       listeningAnnouncement: 'Press a button on your remote to assign it to {{action}}.',
       notSet: 'Not set',
+      mediaButtons: {
+        volumeUp: 'Volume Up',
+        volumeUpShort: '+ Volume',
+        volumeDown: 'Volume Down',
+        volumeDownShort: '- Volume',
+        nextTrack: 'Next Track',
+        nextTrackShort: '>> Next track',
+        previousTrack: 'Previous Track',
+        previousTrackShort: '<< Previous track',
+        notConfigurable: 'Not configurable'
+      },
       rows: {
         singlePressHint: 'Single press to add a point',
-        guardedUndoHint: "Removes that team's latest scoring action"
+        guardedUndoHint: "Removes that team's latest scoring action",
+        mediaBadgeTooltip: 'Fixed media button assignment'
       },
       actions: {
-        addTeam1: 'Add Team 1',
+        addTeam1: 'Score Team 1',
         revertTeam1: 'Revert Team 1',
-        addTeam2: 'Add Team 2',
+        addTeam2: 'Score Team 2',
         revertTeam2: 'Revert Team 2',
-        clear: 'Empty bindings',
-        resetDefaults: 'Reset defaults',
         cancel: 'Cancel',
-        save: 'Save'
+        save: 'Save',
+        clear: 'Clear',
+        resetDefaults: 'Reset Defaults'
       },
       feedback: {
         loadError: 'Could not load the remote controller bindings.',
         saveError: 'Could not save the remote controller bindings.',
-        saveSuccess: 'Remote controller bindings saved.'
+        saveSuccess: 'Remote controller bindings saved.',
+        clearSuccess: 'Remote controller bindings cleared.',
+        resetSuccess: 'Remote controller bindings reset to defaults.'
       }
     },
     voiceSelection: {

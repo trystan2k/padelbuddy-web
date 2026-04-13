@@ -15,6 +15,10 @@ import { saveSetupPreferenceSlice } from '@/lib/setup/setup-storage';
 import { getAvailableVoices } from '@/lib/speech/unified-tts';
 import { unlockSpeechEngine } from '@/lib/speech/speech-service';
 import { requestScreenWakeLock } from '@/lib/input/wake-lock';
+import {
+  loadRemoteControllerConfigWithFallback,
+  type RemoteControllerConfig
+} from '@/lib/input/remote-controller-storage';
 import { prepareCurrentMatchRouteNavigation } from '@/lib/router/current-match-route-flow';
 import { cn } from '@/lib/utils/cn';
 import { getViewTransitionNavigationOptions } from '@/lib/utils/view-transitions';
@@ -43,6 +47,42 @@ function generateMatchId(): string {
   return Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('');
 }
 
+/**
+ * Primes the Web Media Session API so the app can receive media button events.
+ * Must be called from within a user gesture context to work reliably.
+ * Note: Only 'nexttrack' and 'previoustrack' are valid MediaSessionAction values.
+ * Volume buttons are handled via DOM keydown events only.
+ */
+function primeMediaSession(): void {
+  if (typeof navigator === 'undefined') {
+    return;
+  }
+
+  const mediaSession = navigator.mediaSession;
+
+  if (!mediaSession) {
+    return;
+  }
+
+  try {
+    // Set up minimal action handlers to prime the session for receiving events.
+    // Only 'nexttrack' and 'previoustrack' are valid MediaSessionAction values.
+    const supportedActions: Array<'nexttrack' | 'previoustrack'> = ['nexttrack', 'previoustrack'];
+
+    for (const action of supportedActions) {
+      try {
+        mediaSession.setActionHandler(action, () => {
+          // No-op handler to prime the session
+        });
+      } catch {
+        // Some actions may not be supported; ignore
+      }
+    }
+  } catch {
+    // Media Session API not supported; ignore
+  }
+}
+
 // Format key mapping for translations
 const formatKeys: Record<MatchFormat, string> = {
   'best-of-1': 'bestOf1',
@@ -65,6 +105,7 @@ export function SetupScreen() {
   const [isVoiceSelectionOpen, setIsVoiceSelectionOpen] = useState(false);
   const [selectedVoiceName, setSelectedVoiceName] = useState<string | null>(null);
   const [availableVoices, setAvailableVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const [remoteConfig, setRemoteConfig] = useState<RemoteControllerConfig | null>(null);
 
   const {
     formData,
@@ -89,6 +130,26 @@ export function SetupScreen() {
     setSelectedVoiceName(formData.voiceName);
   }, [formData.voiceName]);
 
+  // Load remote controller config early to know which mode is selected
+  useEffect(() => {
+    let isMounted = true;
+
+    void (async () => {
+      try {
+        const config = await loadRemoteControllerConfigWithFallback();
+        if (isMounted) {
+          setRemoteConfig(config);
+        }
+      } catch (error) {
+        console.error('Failed to load remote controller config:', error);
+      }
+    })();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   const hasErrors = Object.keys(errors).length > 0;
   const currentLocale = isSupportedLocale(i18n.language) ? i18n.language : defaultLocale;
 
@@ -106,6 +167,13 @@ export function SetupScreen() {
 
     // Request wake lock on user interaction (required by iOS Safari)
     void requestScreenWakeLock();
+
+    // Prime the media session when in media-buttons mode so we can receive
+    // media button events even when audio announcements are disabled.
+    // This must happen within the user gesture context.
+    if (remoteConfig?.mode === 'media-buttons') {
+      primeMediaSession();
+    }
 
     setIsStarting(true);
 
@@ -149,7 +217,7 @@ export function SetupScreen() {
       console.error('Failed to start match:', error);
       setIsStarting(false);
     }
-  }, [formData, navigate, router, validate]);
+  }, [formData, navigate, router, remoteConfig, validate]);
 
   const handleFormatChange = useCallback(
     (format: MatchFormat) => {

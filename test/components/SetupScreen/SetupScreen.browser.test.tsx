@@ -2,10 +2,11 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 
 import { SetupScreen } from '@/components/SetupScreen/SetupScreen';
+import { createRemoteControllerBindings } from '@/lib/input/keyboard-aliases';
 import {
-  createEmptyRemoteControllerBindings,
-  createRemoteControllerBindings
-} from '@/lib/input/keyboard-aliases';
+  createDefaultRemoteControllerConfig,
+  createKeyboardMappingConfig
+} from '@/lib/input/remote-controller-config';
 
 const {
   mockClearSpeechPreferences,
@@ -14,7 +15,7 @@ const {
   mockLoadSpeechPreferences,
   mockNavigate,
   mockPreloadRoute,
-  mockLoadRemoteControllerBindings,
+  mockLoadRemoteControllerConfig,
   mockSaveSetupPreferenceSlice,
   mockSaveSpeechPreferences
 } = vi.hoisted(() => ({
@@ -24,7 +25,7 @@ const {
   mockLoadSpeechPreferences: vi.fn<() => Promise<object | null>>(),
   mockNavigate: vi.fn<(options: object) => void>(),
   mockPreloadRoute: vi.fn<() => Promise<void>>(),
-  mockLoadRemoteControllerBindings: vi.fn<() => Promise<object>>(),
+  mockLoadRemoteControllerConfig: vi.fn<() => Promise<object>>(),
   mockSaveSetupPreferenceSlice: vi.fn<() => Promise<void>>(),
   mockSaveSpeechPreferences: vi.fn<() => Promise<void>>()
 }));
@@ -47,7 +48,7 @@ vi.mock('@/lib/input/remote-controller-storage', async (importOriginal) => {
 
   return {
     ...actual,
-    loadRemoteControllerBindingsWithFallback: mockLoadRemoteControllerBindings
+    loadRemoteControllerConfigWithFallback: mockLoadRemoteControllerConfig
   };
 });
 
@@ -93,7 +94,7 @@ describe('SetupScreen', () => {
     vi.clearAllMocks();
     // Mark spotlight as seen so unrelated first-visit spotlight UI does not appear in these tests
     localStorage.setItem('padelbuddy_help_spotlight_seen', '1');
-    mockLoadRemoteControllerBindings.mockResolvedValue(createEmptyRemoteControllerBindings());
+    mockLoadRemoteControllerConfig.mockResolvedValue(createDefaultRemoteControllerConfig());
     mockLoadSetupPreferences.mockResolvedValue(null);
     mockLoadSpeechPreferences.mockResolvedValue(null);
     mockSaveSetupPreferenceSlice.mockResolvedValue(undefined);
@@ -238,33 +239,53 @@ describe('SetupScreen', () => {
     ).toBeTruthy();
   });
 
-  test('opens the remote configuration modal and loads empty bindings when nothing is saved', async () => {
+  test('opens the remote configuration modal and shows unified rows by default', async () => {
     const screen = await render(<SetupScreen />);
 
     await screen.getByRole('button', { name: /remote configuration/i }).click();
 
     await expect.element(screen.getByTestId('remote-configuration-modal')).toBeVisible();
-    expect(mockLoadRemoteControllerBindings).toHaveBeenCalledTimes(1);
-    await expect
-      .element(screen.getByTestId('remote-binding-add-team-1'))
-      .toHaveTextContent('Not set');
+    expect(mockLoadRemoteControllerConfig).toHaveBeenCalled();
+
+    // Unified view shows four keyboard capture rows and media badges
+    const captureButtons = document.querySelectorAll('[data-testid^="remote-binding-"]');
+    expect(captureButtons.length).toBe(4);
+
+    const mediaBadges = document.querySelectorAll(
+      '[class*="mediaBadge"]:not([class*="Separator"]):not([class*="Label"])'
+    );
+    expect(mediaBadges.length).toBe(4);
 
     await screen.getByRole('button', { name: /cancel/i }).click();
+
+    // Wait for the modal portal to fully unmount before test cleanup
+    await vi.waitFor(() => {
+      expect(document.querySelector('[data-testid="remote-configuration-modal"]')).toBeNull();
+    });
   });
 
-  test('opens the remote configuration modal and loads saved bindings', async () => {
-    mockLoadRemoteControllerBindings.mockResolvedValue(createRemoteControllerBindings());
+  test('opens the remote configuration modal and loads saved keyboard bindings', async () => {
+    mockLoadRemoteControllerConfig.mockResolvedValue(
+      createKeyboardMappingConfig(createRemoteControllerBindings())
+    );
     const screen = await render(<SetupScreen />);
 
     await screen.getByRole('button', { name: /remote configuration/i }).click();
 
     await expect.element(screen.getByTestId('remote-configuration-modal')).toBeVisible();
-    expect(mockLoadRemoteControllerBindings).toHaveBeenCalledTimes(1);
+    expect(mockLoadRemoteControllerConfig).toHaveBeenCalled();
+
+    // Unified view shows saved keyboard bindings in capture buttons
     await expect
       .element(screen.getByTestId('remote-binding-add-team-1'))
       .toHaveTextContent('← Left');
 
     await screen.getByRole('button', { name: /cancel/i }).click();
+
+    // Wait for the modal portal to fully unmount before shared.ts clears body
+    await vi.waitFor(() => {
+      expect(document.querySelector('[data-testid="remote-configuration-modal"]')).toBeNull();
+    });
   });
 
   test('saves the selected voice through setup storage', async () => {

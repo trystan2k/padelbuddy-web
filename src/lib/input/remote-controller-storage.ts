@@ -14,6 +14,14 @@ import {
   normalizeKeyboardBindingKey
 } from './keyboard-aliases';
 
+import {
+  createDefaultRemoteControllerConfig,
+  createKeyboardMappingConfig,
+  isLegacyRemoteControllerBindings,
+  isRemoteControllerConfig,
+  type RemoteControllerConfig
+} from './remote-controller-config';
+
 const defaultObjectStoreName = remoteControllerPreferenceObjectStoreName;
 const remoteControllerBindingsKey = 'remote-controller-bindings';
 
@@ -22,39 +30,35 @@ const indexedDbMessages: IndexedDbOpenMessages = {
   openFailed: 'Unable to open the remote controller database.'
 };
 
-interface RemoteControllerStorageOptions {
-  databaseName?: string;
-  databaseVersion?: number;
-  objectStoreName?: string;
-}
-
-interface StoredRemoteControllerBindings {
-  bindings: RemoteControllerBindings;
+interface StoredRemoteControllerConfig {
+  mode: RemoteControllerConfig['mode'];
+  keyboardBindings: RemoteControllerBindings;
   updatedAt: string;
 }
 
 interface RemoteControllerStorage {
-  saveRemoteControllerBindings(bindings: RemoteControllerBindings): Promise<void>;
-  loadRemoteControllerBindings(): Promise<RemoteControllerBindings | null>;
-  clearRemoteControllerBindings(): Promise<void>;
+  saveRemoteControllerConfig(config: RemoteControllerConfig): Promise<void>;
+  loadRemoteControllerConfig(): Promise<RemoteControllerConfig | null>;
+  clearRemoteControllerConfig(): Promise<void>;
 }
 
-export async function loadRemoteControllerBindingsWithFallback(): Promise<RemoteControllerBindings> {
-  const storedBindings = await loadRemoteControllerBindings();
+export function loadRemoteControllerConfigWithFallback(): Promise<RemoteControllerConfig> {
+  const storedConfig = loadRemoteControllerConfig();
 
-  return storedBindings ?? createEmptyRemoteControllerBindings();
+  return storedConfig.then((config) => config ?? createDefaultRemoteControllerConfig());
 }
 
 export function createRemoteControllerStorage(
-  options: RemoteControllerStorageOptions = {}
+  options: { databaseName?: string; databaseVersion?: number; objectStoreName?: string } = {}
 ): RemoteControllerStorage {
   const config = resolveIndexedDbStorageConfig(options, defaultObjectStoreName);
 
-  const saveRemoteControllerBindings = async (
-    bindings: RemoteControllerBindings
+  const saveRemoteControllerConfig = async (
+    configToSave: RemoteControllerConfig
   ): Promise<void> => {
-    const record: StoredRemoteControllerBindings = {
-      bindings: sanitizeRemoteControllerBindings(bindings),
+    const record: StoredRemoteControllerConfig = {
+      mode: configToSave.mode,
+      keyboardBindings: sanitizeRemoteControllerBindings(configToSave.keyboardBindings),
       updatedAt: new Date().toISOString()
     };
 
@@ -66,15 +70,15 @@ export function createRemoteControllerStorage(
     });
   };
 
-  const loadRemoteControllerBindings = async (): Promise<RemoteControllerBindings | null> => {
+  const loadRemoteControllerConfig = async (): Promise<RemoteControllerConfig | null> => {
     return withIndexedDbDatabase(config, indexedDbMessages, async (database) => {
       const transaction = database.transaction(config.objectStoreName, 'readonly');
       const request = transaction
         .objectStore(config.objectStoreName)
         .get(remoteControllerBindingsKey);
-      const storedRecord = await waitForIndexedDbRequest<
-        StoredRemoteControllerBindings | undefined
-      >(request);
+      const storedRecord = await waitForIndexedDbRequest<StoredRemoteControllerConfig | undefined>(
+        request
+      );
 
       await waitForIndexedDbTransaction(transaction);
 
@@ -82,11 +86,11 @@ export function createRemoteControllerStorage(
         return null;
       }
 
-      return parseStoredRemoteControllerBindings(storedRecord);
+      return parseStoredRemoteControllerConfig(storedRecord);
     });
   };
 
-  const clearRemoteControllerBindings = async (): Promise<void> => {
+  const clearRemoteControllerConfig = async (): Promise<void> => {
     await withIndexedDbDatabase(config, indexedDbMessages, async (database) => {
       const transaction = database.transaction(config.objectStoreName, 'readwrite');
 
@@ -96,18 +100,27 @@ export function createRemoteControllerStorage(
   };
 
   return {
-    saveRemoteControllerBindings,
-    loadRemoteControllerBindings,
-    clearRemoteControllerBindings
+    saveRemoteControllerConfig,
+    loadRemoteControllerConfig,
+    clearRemoteControllerConfig
   };
 }
 
-function parseStoredRemoteControllerBindings(value: unknown): RemoteControllerBindings | null {
-  if (!isStoredRemoteControllerBindings(value)) {
-    return null;
+function parseStoredRemoteControllerConfig(value: unknown): RemoteControllerConfig | null {
+  if (isRemoteControllerConfig(value)) {
+    return {
+      mode: value.mode,
+      keyboardBindings: sanitizeRemoteControllerBindings(value.keyboardBindings),
+      updatedAt: value.updatedAt
+    };
   }
 
-  return sanitizeRemoteControllerBindings(value.bindings);
+  if (isLegacyRemoteControllerBindings(value)) {
+    // Migrate legacy keyboard-only config to keyboard-mapping mode
+    return createKeyboardMappingConfig(sanitizeRemoteControllerBindings(value.bindings));
+  }
+
+  return null;
 }
 
 function sanitizeRemoteControllerBindings(
@@ -125,30 +138,13 @@ function sanitizeRemoteControllerBindings(
   return sanitizedBindings;
 }
 
-function isStoredRemoteControllerBindings(value: unknown): value is StoredRemoteControllerBindings {
-  if (!value || typeof value !== 'object') {
-    return false;
-  }
-
-  const candidate = value as Partial<StoredRemoteControllerBindings>;
-
-  if (!candidate.bindings || typeof candidate.bindings !== 'object') {
-    return false;
-  }
-
-  if (typeof candidate.updatedAt !== 'string') {
-    return false;
-  }
-
-  return configurableKeyboardActions.every((action) => {
-    const binding = candidate.bindings?.[action];
-    return binding === null || typeof binding === 'string';
-  });
-}
-
 const remoteControllerStorage = createRemoteControllerStorage();
-export const saveRemoteControllerBindings = (bindings: RemoteControllerBindings) =>
-  remoteControllerStorage.saveRemoteControllerBindings(bindings);
-const loadRemoteControllerBindings = () => remoteControllerStorage.loadRemoteControllerBindings();
-export const clearRemoteControllerBindings = () =>
-  remoteControllerStorage.clearRemoteControllerBindings();
+export const saveRemoteControllerConfig = (config: RemoteControllerConfig) =>
+  remoteControllerStorage.saveRemoteControllerConfig(config);
+const loadRemoteControllerConfig = () => remoteControllerStorage.loadRemoteControllerConfig();
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const clearRemoteControllerConfig = () => remoteControllerStorage.clearRemoteControllerConfig();
+
+// Re-export the config types for convenience
+export type { RemoteControllerConfig } from './remote-controller-config';
+export { createDefaultRemoteControllerConfig } from './remote-controller-config';

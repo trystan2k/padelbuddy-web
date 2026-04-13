@@ -1,10 +1,8 @@
 import { afterEach, describe, expect, test, vi } from 'vitest';
 
-import {
-  createRemoteControllerBindings,
-  type RemoteControllerBindings
-} from '@/lib/input/keyboard-aliases';
+import { createRemoteControllerBindings } from '@/lib/input/keyboard-aliases';
 import { createRemoteControllerStorage } from '@/lib/input/remote-controller-storage';
+import type { RemoteControllerConfig } from '@/lib/input/remote-controller-config';
 import { sharedIndexedDbObjectStoreNames } from '@/lib/persistence/indexed-db';
 
 describe('remote-controller-storage', () => {
@@ -12,7 +10,7 @@ describe('remote-controller-storage', () => {
     vi.unstubAllGlobals();
   });
 
-  test('saves and loads remote controller bindings', async () => {
+  test('saves and loads remote controller config', async () => {
     const fakeIndexedDb = createFakeIndexedDb();
     vi.stubGlobal('indexedDB', fakeIndexedDb.factory);
 
@@ -24,31 +22,45 @@ describe('remote-controller-storage', () => {
       'revert-team-2': 'x'
     });
 
-    await storage.saveRemoteControllerBindings(bindings);
+    const config: RemoteControllerConfig = {
+      mode: 'keyboard-mapping',
+      keyboardBindings: bindings,
+      updatedAt: new Date().toISOString()
+    };
 
-    await expect(storage.loadRemoteControllerBindings()).resolves.toEqual(bindings);
+    await storage.saveRemoteControllerConfig(config);
+
+    const loaded = await storage.loadRemoteControllerConfig();
+    expect(loaded).toEqual(
+      expect.objectContaining({
+        mode: 'keyboard-mapping',
+        keyboardBindings: bindings
+      })
+    );
+    expect(loaded!.updatedAt).toBeTruthy();
   });
 
-  test('clears remote controller bindings', async () => {
+  test('clears remote controller config', async () => {
     const fakeIndexedDb = createFakeIndexedDb();
     vi.stubGlobal('indexedDB', fakeIndexedDb.factory);
 
     const storage = createRemoteControllerStorage({ databaseName: 'clear-remote-db' });
 
-    await storage.saveRemoteControllerBindings(createRemoteControllerBindings());
-    await storage.clearRemoteControllerBindings();
+    const config: RemoteControllerConfig = {
+      mode: 'keyboard-mapping',
+      keyboardBindings: createRemoteControllerBindings(),
+      updatedAt: new Date().toISOString()
+    };
+    await storage.saveRemoteControllerConfig(config);
+    await storage.clearRemoteControllerConfig();
 
-    await expect(storage.loadRemoteControllerBindings()).resolves.toBeNull();
+    await expect(storage.loadRemoteControllerConfig()).resolves.toBeNull();
   });
 
   test('returns null when the stored record is malformed', async () => {
     const fakeIndexedDb = createFakeIndexedDb({
       seedValue: {
-        bindings: {
-          'add-team-1': 'q',
-          'revert-team-1': 'z',
-          'add-team-2': 'w'
-        },
+        mode: 'invalid-mode',
         updatedAt: '2024-01-01T00:00:00.000Z'
       }
     });
@@ -56,13 +68,14 @@ describe('remote-controller-storage', () => {
 
     const storage = createRemoteControllerStorage({ databaseName: 'invalid-remote-db' });
 
-    await expect(storage.loadRemoteControllerBindings()).resolves.toBeNull();
+    await expect(storage.loadRemoteControllerConfig()).resolves.toBeNull();
   });
 
   test('returns null when the stored metadata is invalid', async () => {
     const fakeIndexedDb = createFakeIndexedDb({
       seedValue: {
-        bindings: createRemoteControllerBindings(),
+        mode: 'keyboard-mapping',
+        keyboardBindings: createRemoteControllerBindings(),
         updatedAt: 123
       }
     });
@@ -70,7 +83,7 @@ describe('remote-controller-storage', () => {
 
     const storage = createRemoteControllerStorage({ databaseName: 'invalid-remote-meta-db' });
 
-    await expect(storage.loadRemoteControllerBindings()).resolves.toBeNull();
+    await expect(storage.loadRemoteControllerConfig()).resolves.toBeNull();
   });
 
   test('registers the shared IndexedDB stores during upgrade', async () => {
@@ -79,7 +92,7 @@ describe('remote-controller-storage', () => {
 
     const storage = createRemoteControllerStorage({ databaseName: 'shared-remote-db' });
 
-    await expect(storage.loadRemoteControllerBindings()).resolves.toBeNull();
+    await expect(storage.loadRemoteControllerConfig()).resolves.toBeNull();
     expect(fakeIndexedDb.createdObjectStores).toEqual([...sharedIndexedDbObjectStoreNames]);
   });
 
@@ -88,7 +101,7 @@ describe('remote-controller-storage', () => {
 
     const storage = createRemoteControllerStorage({ databaseName: 'missing-indexeddb' });
 
-    await expect(storage.loadRemoteControllerBindings()).rejects.toThrowError(
+    await expect(storage.loadRemoteControllerConfig()).rejects.toThrowError(
       'IndexedDB is not available in this environment.'
     );
   });
@@ -101,7 +114,7 @@ describe('remote-controller-storage', () => {
 
     const storage = createRemoteControllerStorage({ databaseName: 'null-seed-db' });
 
-    await expect(storage.loadRemoteControllerBindings()).resolves.toBeNull();
+    await expect(storage.loadRemoteControllerConfig()).resolves.toBeNull();
   });
 
   test('returns null when stored value is a primitive string', async () => {
@@ -112,7 +125,7 @@ describe('remote-controller-storage', () => {
 
     const storage = createRemoteControllerStorage({ databaseName: 'primitive-seed-db' });
 
-    await expect(storage.loadRemoteControllerBindings()).resolves.toBeNull();
+    await expect(storage.loadRemoteControllerConfig()).resolves.toBeNull();
   });
 
   test('returns null when stored bindings is missing', async () => {
@@ -125,7 +138,7 @@ describe('remote-controller-storage', () => {
 
     const storage = createRemoteControllerStorage({ databaseName: 'missing-bindings-db' });
 
-    await expect(storage.loadRemoteControllerBindings()).resolves.toBeNull();
+    await expect(storage.loadRemoteControllerConfig()).resolves.toBeNull();
   });
 
   test('returns null when stored bindings is a string instead of object', async () => {
@@ -139,13 +152,14 @@ describe('remote-controller-storage', () => {
 
     const storage = createRemoteControllerStorage({ databaseName: 'string-bindings-db' });
 
-    await expect(storage.loadRemoteControllerBindings()).resolves.toBeNull();
+    await expect(storage.loadRemoteControllerConfig()).resolves.toBeNull();
   });
 
-  test('returns null when stored binding value is a number instead of string', async () => {
+  test('returns null when stored keyboardBindings value is a number instead of string', async () => {
     const fakeIndexedDb = createFakeIndexedDb({
       seedValue: {
-        bindings: {
+        mode: 'keyboard-mapping',
+        keyboardBindings: {
           'add-team-1': 123,
           'revert-team-1': null,
           'add-team-2': 'w',
@@ -158,7 +172,10 @@ describe('remote-controller-storage', () => {
 
     const storage = createRemoteControllerStorage({ databaseName: 'number-binding-db' });
 
-    await expect(storage.loadRemoteControllerBindings()).resolves.toBeNull();
+    const loaded = await storage.loadRemoteControllerConfig();
+    expect(loaded).not.toBeNull();
+    expect(loaded!.keyboardBindings['add-team-1']).toBeNull();
+    expect(loaded!.keyboardBindings['add-team-2']).toBe('w');
   });
 });
 
@@ -243,10 +260,10 @@ class FakeTransaction extends EventTarget {
   objectStore(_name: string) {
     return {
       get: (key: unknown) => {
-        const request = new FakeRequest<RemoteControllerBindings | undefined>();
+        const request = new FakeRequest<RemoteControllerConfig | undefined>();
 
         queueMicrotask(() => {
-          request.result = this.storage.get(String(key)) as RemoteControllerBindings | undefined;
+          request.result = this.storage.get(String(key)) as RemoteControllerConfig | undefined;
           request.dispatchEvent(new Event('success'));
           queueMicrotask(() => {
             this.dispatchEvent(new Event('complete'));
