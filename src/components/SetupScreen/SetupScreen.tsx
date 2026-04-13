@@ -171,7 +171,9 @@ export function SetupScreen() {
     // Prime the media session when in media-buttons mode so we can receive
     // media button events even when audio announcements are disabled.
     // This must happen within the user gesture context.
-    if (remoteConfig?.mode === 'media-buttons') {
+    // Default to 'media-buttons' mode when remoteConfig is null (not yet loaded)
+    // to ensure media buttons work reliably on the first match.
+    if ((remoteConfig?.mode ?? 'media-buttons') === 'media-buttons') {
       primeMediaSession();
     }
 

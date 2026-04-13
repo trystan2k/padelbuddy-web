@@ -142,8 +142,6 @@ const remoteControllerStorage = createRemoteControllerStorage();
 export const saveRemoteControllerConfig = (config: RemoteControllerConfig) =>
   remoteControllerStorage.saveRemoteControllerConfig(config);
 const loadRemoteControllerConfig = () => remoteControllerStorage.loadRemoteControllerConfig();
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const clearRemoteControllerConfig = () => remoteControllerStorage.clearRemoteControllerConfig();
 
 // Re-export the config types for convenience
 export type { RemoteControllerConfig } from './remote-controller-config';

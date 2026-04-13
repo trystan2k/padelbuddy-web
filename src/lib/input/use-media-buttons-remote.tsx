@@ -108,6 +108,12 @@ export function useMediaButtonsRemote(
       return;
     }
 
+    // Skip registration when disabled to avoid claiming media key events
+    // that the OS may still want to handle
+    if (!enabled) {
+      return;
+    }
+
     const mediaSession = navigator.mediaSession;
 
     if (!mediaSession) {
@@ -148,7 +154,7 @@ export function useMediaButtonsRemote(
     }
 
     return () => {
-      // Clean up action handlers
+      // Clean up action handlers by setting to null when disabled or unmounting
       for (const action of supportedActions) {
         try {
           mediaSession.setActionHandler(action, null);
@@ -157,7 +163,7 @@ export function useMediaButtonsRemote(
         }
       }
     };
-  }, [onMediaButtonPress]);
+  }, [enabled, onMediaButtonPress]);
 
   // Native platform media button listener (Android/iOS via Capacitor plugin)
   useEffect(() => {
@@ -169,6 +175,11 @@ export function useMediaButtonsRemote(
       return;
     }
 
+    // Skip registration when disabled to avoid capturing events we shouldn't handle
+    if (!enabled) {
+      return;
+    }
+
     const handleNativeButtonAction = (action: MediaButtonAction) => {
       handleMediaButtonAction(action);
     };
@@ -176,7 +187,7 @@ export function useMediaButtonsRemote(
     const cleanup = listenToNativeMediaButtons(handleNativeButtonAction);
 
     return cleanup;
-  }, [handleMediaButtonAction]);
+  }, [enabled, handleMediaButtonAction]);
 
   // DOM keydown fallback for media keys (including volumeup/volumedown which aren't MediaSession actions)
   useEffect(() => {

@@ -254,6 +254,9 @@ export function RemoteConfigurationModal({ isOpen, onClose }: RemoteConfiguratio
       return;
     }
 
+    // Cancel any in-progress key listening to prevent stray keydown capture
+    setListeningAction(null);
+
     setDraftConfig((currentConfig) => {
       if (!currentConfig) {
         return currentConfig;
@@ -271,6 +274,9 @@ export function RemoteConfigurationModal({ isOpen, onClose }: RemoteConfiguratio
     if (!draftConfig) {
       return;
     }
+
+    // Cancel any in-progress key listening to prevent stray keydown capture
+    setListeningAction(null);
 
     setDraftConfig((currentConfig) => {
       if (!currentConfig) {

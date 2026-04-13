@@ -230,7 +230,9 @@ describe('use-media-buttons-remote browser', () => {
       );
 
       // Volume down would normally trigger revert-team-1, but disabled prevents it
-      // The button uses state.handlers.onMediaButtonPress which checks enabledRef
+      window.dispatchEvent(new KeyboardEvent('keydown', { code: 'VolumeDown' }));
+
+      expect(onUndoForTeam).not.toHaveBeenCalled();
     });
   });
 

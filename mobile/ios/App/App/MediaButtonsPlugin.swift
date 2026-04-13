@@ -2,6 +2,7 @@ import Foundation
 import Capacitor
 
 @objc(MediaButtonsPlugin)
+@CAPPlugin(name: "MediaButtons")
 public class MediaButtonsPlugin: CAPPlugin {
     private let tag = "MediaButtonsPlugin"
 

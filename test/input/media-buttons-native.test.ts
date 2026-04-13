@@ -12,15 +12,20 @@ const mockAddListener =
     (eventName: string, callback: (event: unknown) => void) => Promise<{ remove: () => void }>
   >();
 
+// Mutable plugins object so tests can add/remove MediaButtons at runtime
+const mockPlugins: Record<string, unknown> = {
+  MediaButtons: {
+    addListener: (eventName: string, callback: (event: unknown) => void) =>
+      mockAddListener(eventName, callback),
+    dispatchButton: vi.fn<(...args: unknown[]) => Promise<void>>()
+  }
+};
+
 vi.mock('@capacitor/core', () => ({
   Capacitor: {
     isNativePlatform: () => mockIsNativePlatform(),
-    Plugins: {
-      MediaButtons: {
-        addListener: (eventName: string, callback: (event: unknown) => void) =>
-          mockAddListener(eventName, callback),
-        dispatchButton: vi.fn<(...args: unknown[]) => Promise<void>>()
-      }
+    get Plugins() {
+      return mockPlugins;
     }
   }
 }));
@@ -65,14 +70,23 @@ describe('media-buttons-native', () => {
     });
 
     test('returns a no-op cleanup when MediaButtons plugin is not available', () => {
-      // When isNativePlatform returns true but no MediaButtons plugin exists,
-      // the function logs a warning and returns a no-op cleanup.
-      // This branch is covered by the code at lines 50-53 of media-buttons-native.ts.
-      // Since the vi.mock at the top always provides MediaButtons in Plugins,
-      // we document that this branch requires a native environment without the plugin.
-      // The branch is exercised when Capacitor.isNativePlatform() returns true
-      // and Capacitor.Plugins has no MediaButtons key.
-      expect(true).toBe(true);
+      mockIsNativePlatform.mockReturnValue(true);
+
+      // Temporarily remove MediaButtons from Plugins
+      const saved = mockPlugins['MediaButtons'];
+      delete mockPlugins['MediaButtons'];
+
+      const callback = vi.fn<() => void>();
+      const cleanup = listenToNativeMediaButtons(callback);
+
+      expect(typeof cleanup).toBe('function');
+      expect(mockAddListener).not.toHaveBeenCalled();
+
+      // Calling cleanup should not throw
+      cleanup();
+
+      // Restore MediaButtons for subsequent tests
+      mockPlugins['MediaButtons'] = saved;
     });
 
     test('registers a listener and returns a cleanup function on native platform', async () => {

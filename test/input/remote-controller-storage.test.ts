@@ -155,7 +155,7 @@ describe('remote-controller-storage', () => {
     await expect(storage.loadRemoteControllerConfig()).resolves.toBeNull();
   });
 
-  test('returns null when stored keyboardBindings value is a number instead of string', async () => {
+  test('sanitizes invalid keyboardBindings values to null instead of returning null config', async () => {
     const fakeIndexedDb = createFakeIndexedDb({
       seedValue: {
         mode: 'keyboard-mapping',
