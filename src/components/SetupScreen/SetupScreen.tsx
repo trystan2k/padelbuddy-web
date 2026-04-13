@@ -16,6 +16,7 @@ import { getAvailableVoices } from '@/lib/speech/unified-tts';
 import { unlockSpeechEngine } from '@/lib/speech/speech-service';
 import { requestScreenWakeLock } from '@/lib/input/wake-lock';
 import {
+  createDefaultRemoteControllerConfig,
   loadRemoteControllerConfigWithFallback,
   type RemoteControllerConfig
 } from '@/lib/input/remote-controller-storage';
@@ -105,7 +106,7 @@ export function SetupScreen() {
   const [isVoiceSelectionOpen, setIsVoiceSelectionOpen] = useState(false);
   const [selectedVoiceName, setSelectedVoiceName] = useState<string | null>(null);
   const [availableVoices, setAvailableVoices] = useState<SpeechSynthesisVoice[]>([]);
-  const [_remoteConfig, setRemoteConfig] = useState<RemoteControllerConfig | null>(null);
+  const [remoteConfig, setRemoteConfig] = useState(createDefaultRemoteControllerConfig());
 
   const {
     formData,
@@ -130,7 +131,8 @@ export function SetupScreen() {
     setSelectedVoiceName(formData.voiceName);
   }, [formData.voiceName]);
 
-  // Load remote controller config early to know which mode is selected
+  // Keep the latest saved remote config in memory so match start can synchronously
+  // decide whether Media Session priming should run inside the user gesture.
   useEffect(() => {
     let isMounted = true;
 
@@ -168,12 +170,8 @@ export function SetupScreen() {
     // Request wake lock on user interaction (required by iOS Safari)
     void requestScreenWakeLock();
 
-    // Re-load config fresh to ensure we have latest (user may have changed it in modal
-    // or load may have raced with mount). Prime media session when in media-buttons mode
-    // so we can receive media button events even when audio announcements are disabled.
-    // This must happen within the user gesture context.
-    const config = await loadRemoteControllerConfigWithFallback();
-    if (config.mode === 'media-buttons') {
+    // Prime media session synchronously inside the user gesture when media buttons are enabled.
+    if (remoteConfig.mode === 'media-buttons') {
       primeMediaSession();
     }
 
@@ -219,7 +217,11 @@ export function SetupScreen() {
       console.error('Failed to start match:', error);
       setIsStarting(false);
     }
-  }, [formData, navigate, router, validate]);
+  }, [formData, navigate, remoteConfig.mode, router, validate]);
+
+  const handleRemoteConfigSaved = useCallback((config: RemoteControllerConfig) => {
+    setRemoteConfig(config);
+  }, []);
 
   const handleFormatChange = useCallback(
     (format: MatchFormat) => {
@@ -644,6 +646,7 @@ export function SetupScreen() {
       <RemoteConfigurationModal
         isOpen={isRemoteConfigurationOpen}
         onClose={handleCloseRemoteConfiguration}
+        onSaved={handleRemoteConfigSaved}
       />
       <VoiceSelectionModal
         isOpen={isVoiceSelectionOpen}

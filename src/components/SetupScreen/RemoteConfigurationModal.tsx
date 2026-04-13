@@ -119,9 +119,14 @@ const UnifiedRow = ({
 interface RemoteConfigurationModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onSaved?: (config: RemoteControllerConfig) => void;
 }
 
-export function RemoteConfigurationModal({ isOpen, onClose }: RemoteConfigurationModalProps) {
+export function RemoteConfigurationModal({
+  isOpen,
+  onClose,
+  onSaved
+}: RemoteConfigurationModalProps) {
   const { t } = useTranslation();
   const { addErrorToast, addSuccessToast } = useToast();
   const [draftConfig, setDraftConfig] = useState<RemoteControllerConfig | null>(null);
@@ -242,6 +247,7 @@ export function RemoteConfigurationModal({ isOpen, onClose }: RemoteConfiguratio
 
     try {
       await saveRemoteControllerConfig(draftConfig);
+      onSaved?.(draftConfig);
 
       addSuccessToast(t('setup.remoteConfig.feedback.saveSuccess'));
       requestClose();
@@ -252,7 +258,7 @@ export function RemoteConfigurationModal({ isOpen, onClose }: RemoteConfiguratio
       setIsSaving(false);
       setListeningAction(null);
     }
-  }, [addErrorToast, addSuccessToast, draftConfig, requestClose, t]);
+  }, [addErrorToast, addSuccessToast, draftConfig, onSaved, requestClose, t]);
 
   const handleClear = useCallback(() => {
     if (!draftConfig) {
