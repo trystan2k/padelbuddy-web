@@ -8,5 +8,6 @@
     "@capacitor/core",
     "@fontsource/inter",
     "@fontsource/outfit"
-  ]
+  ],
+  "ignoreFiles": []
 }

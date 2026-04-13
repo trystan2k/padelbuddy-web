@@ -5,12 +5,14 @@ import { useTranslation } from 'react-i18next';
 import { Layout } from '@/components/Layout/Layout';
 import { RotateDeviceBlocker } from '@/components/ui/RotateDeviceBlocker/RotateDeviceBlocker';
 import { TopBar } from '@/components/ui/TopBar/TopBar';
+import { getActionFromKey } from '@/lib/input/keyboard-aliases';
 import {
-  createEmptyRemoteControllerBindings,
-  getActionFromKey
-} from '@/lib/input/keyboard-aliases';
-import { loadRemoteControllerBindingsWithFallback } from '@/lib/input/remote-controller-storage';
+  createDefaultRemoteControllerConfig,
+  loadRemoteControllerConfigWithFallback,
+  type RemoteControllerConfig
+} from '@/lib/input/remote-controller-storage';
 import { useInputHandler } from '@/lib/input/use-input-handler';
+import { useMediaButtonsRemote } from '@/lib/input/use-media-buttons-remote';
 import { prepareCurrentMatchRouteNavigation } from '@/lib/router/current-match-route-flow';
 import { useOrientationDetection } from '@/lib/orientation/useOrientationDetection';
 import { cn } from '@/lib/utils/cn';
@@ -54,7 +56,7 @@ export function ActiveMatchScreen({
   const { isPortrait } = useOrientationDetection();
   const [sideSwitchDismissed, setSideSwitchDismissed] = useState(false);
   const [isNavigatingToFinish, setIsNavigatingToFinish] = useState(false);
-  const [remoteBindings, setRemoteBindings] = useState(createEmptyRemoteControllerBindings());
+  const [remoteConfig, setRemoteConfig] = useState<RemoteControllerConfig | null>(null);
   const [isCompactHeight, setIsCompactHeight] = useState(false);
 
   useEffect(() => {
@@ -128,21 +130,21 @@ export function ActiveMatchScreen({
 
     void (async () => {
       try {
-        const storedBindings = await loadRemoteControllerBindingsWithFallback();
+        const storedConfig = await loadRemoteControllerConfigWithFallback();
 
         if (!isMounted) {
           return;
         }
 
-        setRemoteBindings(storedBindings);
+        setRemoteConfig(storedConfig);
       } catch (error) {
-        console.error('Failed to load remote controller bindings.', error);
+        console.error('Failed to load remote controller config.', error);
 
         if (!isMounted) {
           return;
         }
 
-        setRemoteBindings(createEmptyRemoteControllerBindings());
+        setRemoteConfig(createDefaultRemoteControllerConfig());
       }
     })();
 
@@ -253,10 +255,11 @@ export function ActiveMatchScreen({
     [isLoading, isMatchCompleted, undoScoreActionForTeam]
   );
 
+  // Use keyboard input handler (always enabled - works alongside media buttons)
   useInputHandler(
     {
       actions: snapshot.actions,
-      bindings: remoteBindings,
+      bindings: remoteConfig?.keyboardBindings ?? null,
       enabled: !isMatchCompleted,
       useWakeLock: true
     },
@@ -267,9 +270,22 @@ export function ActiveMatchScreen({
     }
   );
 
+  // Use media buttons remote handler (always enabled when match is active)
+  useMediaButtonsRemote(
+    {
+      actions: snapshot.actions,
+      enabled: !isMatchCompleted,
+      useWakeLock: true
+    },
+    {
+      onAdd: handleRemoteAdd,
+      onUndoForTeam: handleRemoteUndoForTeam
+    }
+  );
+
   const shouldIgnoreRemoteKey = useCallback(
     (event: KeyboardEvent): boolean => {
-      const action = getActionFromKey(event.key, remoteBindings);
+      const action = getActionFromKey(event.key, remoteConfig?.keyboardBindings ?? null);
       return (
         action === 'add-team-1' ||
         action === 'add-team-2' ||
@@ -277,7 +293,7 @@ export function ActiveMatchScreen({
         action === 'revert-team-2'
       );
     },
-    [remoteBindings]
+    [remoteConfig?.keyboardBindings]
   );
 
   const shouldEnableInactivityTimer = isCompactHeight && !isPortrait;

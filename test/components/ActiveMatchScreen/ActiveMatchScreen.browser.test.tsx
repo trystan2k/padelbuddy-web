@@ -3,7 +3,14 @@ import { render } from 'vitest-browser-react';
 
 import { ActiveMatchScreen } from '@/components/ActiveMatchScreen/ActiveMatchScreen';
 import teamPanelStyles from '@/components/ActiveMatchScreen/TeamPanel/TeamPanel.module.css';
-import { createRemoteControllerBindings } from '@/lib/input/keyboard-aliases';
+import {
+  createEmptyRemoteControllerBindings,
+  createRemoteControllerBindings
+} from '@/lib/input/keyboard-aliases';
+import {
+  createDefaultRemoteControllerConfig,
+  createKeyboardMappingConfig
+} from '@/lib/input/remote-controller-config';
 
 import {
   createTestSetup,
@@ -23,7 +30,7 @@ const {
   mockInvalidate,
   mockNavigate,
   mockPreloadRoute,
-  mockLoadRemoteControllerBindings,
+  mockLoadRemoteControllerConfig,
   mockSpeechAnnounce,
   mockSpeechDestroy,
   mockUseOrientationDetection
@@ -31,8 +38,8 @@ const {
   mockInvalidate: vi.fn<() => Promise<void>>(async () => undefined),
   mockNavigate: vi.fn<() => void>(),
   mockPreloadRoute: vi.fn<() => Promise<void>>(async () => undefined),
-  mockLoadRemoteControllerBindings:
-    vi.fn<() => Promise<ReturnType<typeof createRemoteControllerBindings> | null>>(),
+  mockLoadRemoteControllerConfig:
+    vi.fn<() => Promise<ReturnType<typeof createDefaultRemoteControllerConfig>>>(),
   mockSpeechAnnounce: vi.fn<(args: unknown) => void>(),
   mockSpeechDestroy: vi.fn<() => void>(),
   mockUseOrientationDetection: vi.fn<() => { isPortrait: boolean; isLandscape: boolean }>(() => ({
@@ -69,7 +76,7 @@ vi.mock('@/lib/input/remote-controller-storage', async (importOriginal) => {
 
   return {
     ...actual,
-    loadRemoteControllerBindingsWithFallback: mockLoadRemoteControllerBindings
+    loadRemoteControllerConfigWithFallback: mockLoadRemoteControllerConfig
   };
 });
 
@@ -104,7 +111,7 @@ describe('ActiveMatchScreen', () => {
     vi.clearAllMocks();
     mockInvalidate.mockResolvedValue(undefined);
     mockPreloadRoute.mockResolvedValue(undefined);
-    mockLoadRemoteControllerBindings.mockResolvedValue(null);
+    mockLoadRemoteControllerConfig.mockResolvedValue(createDefaultRemoteControllerConfig());
     mockSpeechAnnounce.mockReset();
     mockSpeechDestroy.mockReset();
     mockUseOrientationDetection.mockReturnValue({
@@ -558,11 +565,15 @@ describe('ActiveMatchScreen', () => {
     );
 
     await vi.waitFor(() => {
-      expect(mockLoadRemoteControllerBindings).toHaveBeenCalledTimes(1);
+      expect(mockLoadRemoteControllerConfig).toHaveBeenCalledTimes(1);
     });
   });
 
-  test('legacy Backspace continues to undo when no remote is configured', async () => {
+  test('legacy Backspace continues to undo in keyboard-mapping mode with no custom bindings', async () => {
+    mockLoadRemoteControllerConfig.mockResolvedValue(
+      createKeyboardMappingConfig(createEmptyRemoteControllerBindings())
+    );
+
     const screen = await render(
       <ActiveMatchScreen
         matchId="test-match"
@@ -573,7 +584,7 @@ describe('ActiveMatchScreen', () => {
     );
 
     await vi.waitFor(() => {
-      expect(mockLoadRemoteControllerBindings).toHaveBeenCalledTimes(1);
+      expect(mockLoadRemoteControllerConfig).toHaveBeenCalledTimes(1);
     });
 
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Backspace' }));
@@ -583,7 +594,11 @@ describe('ActiveMatchScreen', () => {
     });
   });
 
-  test('legacy Delete continues to undo when no remote is configured', async () => {
+  test('legacy Delete continues to undo in keyboard-mapping mode with no custom bindings', async () => {
+    mockLoadRemoteControllerConfig.mockResolvedValue(
+      createKeyboardMappingConfig(createEmptyRemoteControllerBindings())
+    );
+
     const screen = await render(
       <ActiveMatchScreen
         matchId="test-match"
@@ -594,7 +609,7 @@ describe('ActiveMatchScreen', () => {
     );
 
     await vi.waitFor(() => {
-      expect(mockLoadRemoteControllerBindings).toHaveBeenCalledTimes(1);
+      expect(mockLoadRemoteControllerConfig).toHaveBeenCalledTimes(1);
     });
 
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Delete' }));
@@ -606,13 +621,15 @@ describe('ActiveMatchScreen', () => {
 
   test('mapped remote add waits for the buffered window before scoring', async () => {
     vi.useFakeTimers();
-    mockLoadRemoteControllerBindings.mockResolvedValue(
-      createRemoteControllerBindings({
-        'add-team-1': 'q',
-        'revert-team-1': 'z',
-        'add-team-2': 'w',
-        'revert-team-2': 'x'
-      })
+    mockLoadRemoteControllerConfig.mockResolvedValue(
+      createKeyboardMappingConfig(
+        createRemoteControllerBindings({
+          'add-team-1': 'q',
+          'revert-team-1': 'z',
+          'add-team-2': 'w',
+          'revert-team-2': 'x'
+        })
+      )
     );
 
     const screen = await render(
@@ -625,7 +642,7 @@ describe('ActiveMatchScreen', () => {
     );
 
     await vi.waitFor(() => {
-      expect(mockLoadRemoteControllerBindings).toHaveBeenCalledTimes(1);
+      expect(mockLoadRemoteControllerConfig).toHaveBeenCalledTimes(1);
     });
 
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'q' }));
@@ -639,13 +656,15 @@ describe('ActiveMatchScreen', () => {
   });
 
   test('remote team-specific revert removes the last score for that team', async () => {
-    mockLoadRemoteControllerBindings.mockResolvedValue(
-      createRemoteControllerBindings({
-        'add-team-1': 'q',
-        'revert-team-1': 'z',
-        'add-team-2': 'w',
-        'revert-team-2': 'x'
-      })
+    mockLoadRemoteControllerConfig.mockResolvedValue(
+      createKeyboardMappingConfig(
+        createRemoteControllerBindings({
+          'add-team-1': 'q',
+          'revert-team-1': 'z',
+          'add-team-2': 'w',
+          'revert-team-2': 'x'
+        })
+      )
     );
 
     const screen = await render(
@@ -658,7 +677,7 @@ describe('ActiveMatchScreen', () => {
     );
 
     await vi.waitFor(() => {
-      expect(mockLoadRemoteControllerBindings).toHaveBeenCalledTimes(1);
+      expect(mockLoadRemoteControllerConfig).toHaveBeenCalledTimes(1);
     });
 
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'z' }));
@@ -670,13 +689,15 @@ describe('ActiveMatchScreen', () => {
   });
 
   test('remote team-specific revert leaves the score unchanged when that team has no actions', async () => {
-    mockLoadRemoteControllerBindings.mockResolvedValue(
-      createRemoteControllerBindings({
-        'add-team-1': 'q',
-        'revert-team-1': 'z',
-        'add-team-2': 'w',
-        'revert-team-2': 'x'
-      })
+    mockLoadRemoteControllerConfig.mockResolvedValue(
+      createKeyboardMappingConfig(
+        createRemoteControllerBindings({
+          'add-team-1': 'q',
+          'revert-team-1': 'z',
+          'add-team-2': 'w',
+          'revert-team-2': 'x'
+        })
+      )
     );
 
     const screen = await render(
@@ -689,7 +710,7 @@ describe('ActiveMatchScreen', () => {
     );
 
     await vi.waitFor(() => {
-      expect(mockLoadRemoteControllerBindings).toHaveBeenCalledTimes(1);
+      expect(mockLoadRemoteControllerConfig).toHaveBeenCalledTimes(1);
     });
 
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'z' }));

@@ -12,6 +12,7 @@ import {
 import { createLocaleStorage } from '@/lib/i18n/locale-storage';
 import type { SupportedLocale } from '@/lib/i18n/types';
 import { createRemoteControllerBindings } from '@/lib/input/keyboard-aliases';
+import type { RemoteControllerConfig } from '@/lib/input/remote-controller-config';
 import { createRemoteControllerStorage } from '@/lib/input/remote-controller-storage';
 import { createSetupStorage, type SetupPreferences } from '@/lib/setup/setup-storage';
 
@@ -75,12 +76,16 @@ describe('current match IndexedDB persistence', () => {
     const localeStorage = createLocaleStorage({ databaseName });
     const remoteControllerStorage = createRemoteControllerStorage({ databaseName });
     const setupStorage = createSetupStorage({ databaseName });
-    const remoteBindings = createRemoteControllerBindings({
-      'add-team-1': 'q',
-      'revert-team-1': 'z',
-      'add-team-2': 'w',
-      'revert-team-2': 'x'
-    });
+    const remoteConfig: RemoteControllerConfig = {
+      mode: 'keyboard-mapping',
+      keyboardBindings: createRemoteControllerBindings({
+        'add-team-1': 'q',
+        'revert-team-1': 'z',
+        'add-team-2': 'w',
+        'revert-team-2': 'x'
+      }),
+      updatedAt: new Date().toISOString()
+    };
     const setupPreferences: SetupPreferences = {
       muted: false,
       verbosity: 'standard',
@@ -106,13 +111,14 @@ describe('current match IndexedDB persistence', () => {
       startedAt: Date.now()
     });
 
-    await remoteControllerStorage.saveRemoteControllerBindings(remoteBindings);
+    await remoteControllerStorage.saveRemoteControllerConfig(remoteConfig);
     await setupStorage.saveSetupPreferences(setupPreferences);
 
     await expect(localeStorage.loadLocalePreference()).resolves.toBe('es');
-    await expect(remoteControllerStorage.loadRemoteControllerBindings()).resolves.toEqual(
-      remoteBindings
-    );
+    const loadedRemoteConfig = await remoteControllerStorage.loadRemoteControllerConfig();
+    expect(loadedRemoteConfig).not.toBeNull();
+    expect(loadedRemoteConfig!.mode).toBe('keyboard-mapping');
+    expect(loadedRemoteConfig!.keyboardBindings).toEqual(remoteConfig.keyboardBindings);
     await expect(setupStorage.loadSetupPreferences()).resolves.toEqual(setupPreferences);
     await expect(persistence.loadCurrentMatch()).resolves.toEqual({
       status: 'ok',

@@ -220,32 +220,44 @@ export default {
     },
     remoteConfig: {
       trigger: 'Config. del control remoto',
-      title: 'Control remoto Bluetooth',
+      title: 'Control Remoto',
       description:
-        'Asigna un botón por acción. Los botones de revertir siempre eliminan solo la última acción de puntuación de ese equipo.',
-      helper:
-        'Mientras está escuchando, presiona una vez cualquier botón del control o teclado. Guardar con todas las acciones vacías elimina la configuración personalizada.',
+        'Puedes usar tu teclado o los botones de medios (Subir/Bajar Volumen, Siguiente/Anterior) para controlar el partido. Haz clic en un botón del teclado para capturar tu tecla preferida.',
       listening: 'Escuchando...',
       listeningAnnouncement: 'Presiona un botón en tu control para asignarlo a {{action}}.',
       notSet: 'Sin asignar',
+      mediaButtons: {
+        volumeUp: 'Subir volumen',
+        volumeUpShort: '+ Subir',
+        volumeDown: 'Bajar volumen',
+        volumeDownShort: '- Bajar',
+        nextTrack: 'Siguiente pista',
+        nextTrackShort: '>> Siguiente',
+        previousTrack: 'Pista anterior',
+        previousTrackShort: '<< Anterior',
+        notConfigurable: 'No configurable'
+      },
       rows: {
         singlePressHint: 'Una pulsación para sumar un punto',
-        guardedUndoHint: 'Elimina la última acción de puntuación de ese equipo'
+        guardedUndoHint: 'Elimina la última acción de puntuación de ese equipo',
+        mediaBadgeTooltip: 'Asignación fija de botón de medios'
       },
       actions: {
-        addTeam1: 'Sumar Equipo 1',
+        addTeam1: 'Punto Equipo 1',
         revertTeam1: 'Revertir Equipo 1',
-        addTeam2: 'Sumar Equipo 2',
+        addTeam2: 'Punto Equipo 2',
         revertTeam2: 'Revertir Equipo 2',
-        clear: 'Asignaciones vacías',
-        resetDefaults: 'Restablecer predeterminados',
         cancel: 'Cancelar',
-        save: 'Guardar'
+        save: 'Guardar',
+        clear: 'Limpiar',
+        resetDefaults: 'Restablecer'
       },
       feedback: {
         loadError: 'No se pudo cargar la configuración del control remoto.',
         saveError: 'No se pudo guardar la configuración del control remoto.',
-        saveSuccess: 'Configuración del control remoto guardada.'
+        saveSuccess: 'Configuración del control remoto guardada.',
+        clearSuccess: 'Configuración del control remoto limpiada.',
+        resetSuccess: 'Configuración del control remoto restablecida.'
       }
     },
     voiceSelection: {

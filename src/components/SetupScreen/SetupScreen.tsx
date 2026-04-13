@@ -15,6 +15,11 @@ import { saveSetupPreferenceSlice } from '@/lib/setup/setup-storage';
 import { getAvailableVoices } from '@/lib/speech/unified-tts';
 import { unlockSpeechEngine } from '@/lib/speech/speech-service';
 import { requestScreenWakeLock } from '@/lib/input/wake-lock';
+import {
+  createDefaultRemoteControllerConfig,
+  loadRemoteControllerConfigWithFallback,
+  type RemoteControllerConfig
+} from '@/lib/input/remote-controller-storage';
 import { prepareCurrentMatchRouteNavigation } from '@/lib/router/current-match-route-flow';
 import { cn } from '@/lib/utils/cn';
 import { getViewTransitionNavigationOptions } from '@/lib/utils/view-transitions';
@@ -43,6 +48,42 @@ function generateMatchId(): string {
   return Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('');
 }
 
+/**
+ * Primes the Web Media Session API so the app can receive media button events.
+ * Must be called from within a user gesture context to work reliably.
+ * Note: Only 'nexttrack' and 'previoustrack' are valid MediaSessionAction values.
+ * Volume buttons are handled via DOM keydown events only.
+ */
+function primeMediaSession(): void {
+  if (typeof navigator === 'undefined') {
+    return;
+  }
+
+  const mediaSession = navigator.mediaSession;
+
+  if (!mediaSession) {
+    return;
+  }
+
+  try {
+    // Set up minimal action handlers to prime the session for receiving events.
+    // Only 'nexttrack' and 'previoustrack' are valid MediaSessionAction values.
+    const supportedActions: Array<'nexttrack' | 'previoustrack'> = ['nexttrack', 'previoustrack'];
+
+    for (const action of supportedActions) {
+      try {
+        mediaSession.setActionHandler(action, () => {
+          // No-op handler to prime the session
+        });
+      } catch {
+        // Some actions may not be supported; ignore
+      }
+    }
+  } catch {
+    // Media Session API not supported; ignore
+  }
+}
+
 // Format key mapping for translations
 const formatKeys: Record<MatchFormat, string> = {
   'best-of-1': 'bestOf1',
@@ -65,6 +106,7 @@ export function SetupScreen() {
   const [isVoiceSelectionOpen, setIsVoiceSelectionOpen] = useState(false);
   const [selectedVoiceName, setSelectedVoiceName] = useState<string | null>(null);
   const [availableVoices, setAvailableVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const [remoteConfig, setRemoteConfig] = useState(createDefaultRemoteControllerConfig());
 
   const {
     formData,
@@ -89,6 +131,27 @@ export function SetupScreen() {
     setSelectedVoiceName(formData.voiceName);
   }, [formData.voiceName]);
 
+  // Keep the latest saved remote config in memory so match start can synchronously
+  // decide whether Media Session priming should run inside the user gesture.
+  useEffect(() => {
+    let isMounted = true;
+
+    void (async () => {
+      try {
+        const config = await loadRemoteControllerConfigWithFallback();
+        if (isMounted) {
+          setRemoteConfig(config);
+        }
+      } catch (error) {
+        console.error('Failed to load remote controller config:', error);
+      }
+    })();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   const hasErrors = Object.keys(errors).length > 0;
   const currentLocale = isSupportedLocale(i18n.language) ? i18n.language : defaultLocale;
 
@@ -106,6 +169,11 @@ export function SetupScreen() {
 
     // Request wake lock on user interaction (required by iOS Safari)
     void requestScreenWakeLock();
+
+    // Prime media session synchronously inside the user gesture when media buttons are enabled.
+    if (remoteConfig.mode === 'media-buttons') {
+      primeMediaSession();
+    }
 
     setIsStarting(true);
 
@@ -149,7 +217,11 @@ export function SetupScreen() {
       console.error('Failed to start match:', error);
       setIsStarting(false);
     }
-  }, [formData, navigate, router, validate]);
+  }, [formData, navigate, remoteConfig.mode, router, validate]);
+
+  const handleRemoteConfigSaved = useCallback((config: RemoteControllerConfig) => {
+    setRemoteConfig(config);
+  }, []);
 
   const handleFormatChange = useCallback(
     (format: MatchFormat) => {
@@ -574,6 +646,7 @@ export function SetupScreen() {
       <RemoteConfigurationModal
         isOpen={isRemoteConfigurationOpen}
         onClose={handleCloseRemoteConfiguration}
+        onSaved={handleRemoteConfigSaved}
       />
       <VoiceSelectionModal
         isOpen={isVoiceSelectionOpen}

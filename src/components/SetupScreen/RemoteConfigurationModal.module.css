@@ -5,6 +5,7 @@
 .container {
   composes: modalcontainer from '../../styles/shared-setup-modal.module.css';
   width: min(calc(100vw - var(--base-space-32)), 40rem);
+  min-width: 20rem;
   max-height: min(90vh, 43rem);
 }
 
@@ -79,6 +80,37 @@
   color: var(--semantic-color-content-accent-primary);
 }
 
+/* Unified row display */
+.unifiedControls {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+/* Media badge for unified row display - styled exactly like the captureButton (outline sm) */
+.mediaBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 8rem;
+  padding: var(--component-button-revert-padding-y) var(--component-button-revert-padding-x);
+  background-color: var(--semantic-color-background-canvas);
+  border: 1px solid var(--semantic-color-border-subtle);
+  border-radius: var(--component-button-revert-radius);
+  font-family: var(--semantic-typography-family-display);
+  font-size: var(--base-font-size-18);
+  font-weight: var(--semantic-typography-weight-strong);
+  color: var(--semantic-color-content-primary);
+  letter-spacing: var(--semantic-typography-letter-spacing-display);
+}
+
+.mediaBadgeSeparator {
+  margin: 0 var(--base-space-8);
+  color: var(--semantic-color-content-tertiary);
+  font-family: var(--semantic-typography-family-body);
+  font-size: var(--semantic-typography-size-body-sm);
+}
+
 .helperText {
   margin: 0;
   font-family: var(--semantic-typography-family-body);
@@ -107,5 +139,21 @@
 
   .captureButton {
     width: 100%;
+  }
+
+  .unifiedControls {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: var(--base-space-8);
+  }
+
+  .mediaBadgeSeparator {
+    display: none;
+  }
+
+  .mediaBadge {
+    flex: 1;
+    min-width: auto;
+    justify-content: center;
   }
 }
