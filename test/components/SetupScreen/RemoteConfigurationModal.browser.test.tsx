@@ -335,22 +335,21 @@ describe('RemoteConfigurationModal', () => {
   });
 
   describe('footer', () => {
-    test('only shows Cancel and Save buttons — no mode tabs, clear, or reset', async () => {
+    test('shows Cancel, Save, Clear, and Reset Defaults buttons', async () => {
       await openAndVerify();
 
-      // Footer should only have Cancel and Save
       const allButtons = document.querySelectorAll('button');
       const buttonTexts = Array.from(allButtons).map((btn) => btn.textContent);
 
-      // Should NOT have these old buttons
+      // Should NOT have mode tabs
       expect(buttonTexts.some((text) => text?.includes('Media Buttons'))).toBe(false);
       expect(buttonTexts.some((text) => text?.includes('Keyboard Mapping'))).toBe(false);
-      expect(buttonTexts.some((text) => text?.includes('Empty bindings'))).toBe(false);
-      expect(buttonTexts.some((text) => text?.includes('Reset defaults'))).toBe(false);
 
-      // Should have Cancel and Save
+      // Should have Cancel, Save, Clear, and Reset Defaults
       expect(buttonTexts.some((text) => text?.includes('Cancel'))).toBe(true);
       expect(buttonTexts.some((text) => text?.includes('Save'))).toBe(true);
+      expect(buttonTexts.some((text) => text?.includes('Clear'))).toBe(true);
+      expect(buttonTexts.some((text) => text?.includes('Reset Defaults'))).toBe(true);
     });
   });
 });

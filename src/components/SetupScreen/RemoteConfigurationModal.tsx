@@ -38,6 +38,7 @@ interface UnifiedRowProps {
   mediaBadgeLabel: string;
   mediaIconName: MediaButtonIconName;
   mediaButtonLabel: string;
+  disabled: boolean;
 }
 
 const iconMap: Record<MediaButtonIconName, React.FC<{ size?: number; className?: string }>> = {
@@ -56,7 +57,8 @@ const UnifiedRow = ({
   action,
   mediaBadgeLabel,
   mediaIconName,
-  mediaButtonLabel
+  mediaButtonLabel,
+  disabled
 }: UnifiedRowProps) => {
   const { t } = useTranslation();
 
@@ -80,6 +82,7 @@ const UnifiedRow = ({
           size="sm"
           accent={isListening ? 'primary' : 'secondary'}
           onClick={handleCapture}
+          disabled={disabled}
           aria-pressed={isListening}
           data-testid={`remote-binding-${action}`}
         >
@@ -184,6 +187,7 @@ export function RemoteConfigurationModal({ isOpen, onClose }: RemoteConfiguratio
       event.stopPropagation();
 
       if (!draftConfig) {
+        setListeningAction(null);
         return;
       }
 
@@ -398,6 +402,7 @@ export function RemoteConfigurationModal({ isOpen, onClose }: RemoteConfiguratio
               mediaBadgeLabel={row.mediaBadgeLabel}
               mediaIconName={row.mediaIconName}
               mediaButtonLabel={row.mediaButtonLabel}
+              disabled={!draftConfig}
             />
           ))}
         </div>

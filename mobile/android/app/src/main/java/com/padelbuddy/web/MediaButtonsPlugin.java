@@ -1,7 +1,5 @@
 package com.padelbuddy.web;
 
-import android.util.Log;
-
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
@@ -10,9 +8,11 @@ import com.getcapacitor.annotation.CapacitorPlugin;
 
 @CapacitorPlugin(name = "MediaButtons")
 public class MediaButtonsPlugin extends Plugin {
-    private static final String TAG = "MediaButtonsPlugin";
-
     /**
+     * Note: This plugin only supports manual button dispatch via dispatchButton().
+     * It does NOT hook into actual Android hardware media/volume button events.
+     * Hardware button interception requires more complex implementation.
+     */
      * Supported button IDs that can be dispatched from native.
      */
     private static final String BUTTON_VOLUME_UP = "media-volume-up";

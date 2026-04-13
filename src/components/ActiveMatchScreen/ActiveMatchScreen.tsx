@@ -270,11 +270,11 @@ export function ActiveMatchScreen({
     }
   );
 
-  // Use media buttons remote handler (always enabled - works alongside keyboard)
+  // Use media buttons remote handler (only in media-buttons mode)
   useMediaButtonsRemote(
     {
       actions: snapshot.actions,
-      enabled: !isMatchCompleted,
+      enabled: !isMatchCompleted && remoteConfig?.mode === 'media-buttons',
       useWakeLock: true
     },
     {
