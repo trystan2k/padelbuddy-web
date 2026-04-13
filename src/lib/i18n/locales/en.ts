@@ -252,11 +252,11 @@ export default {
         resetDefaults: 'Reset Defaults'
       },
       feedback: {
-        loadError: 'Could not load the remote controller bindings.',
-        saveError: 'Could not save the remote controller bindings.',
-        saveSuccess: 'Remote controller bindings saved.',
-        clearSuccess: 'Remote controller bindings cleared.',
-        resetSuccess: 'Remote controller bindings reset to defaults.'
+        loadError: 'Could not load the remote controller configuration.',
+        saveError: 'Could not save the remote controller configuration.',
+        saveSuccess: 'Remote controller configuration saved.',
+        clearSuccess: 'Remote controller configuration cleared.',
+        resetSuccess: 'Remote controller configuration reset to defaults.'
       }
     },
     voiceSelection: {

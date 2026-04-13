@@ -198,7 +198,6 @@ export function RemoteConfigurationModal({ isOpen, onClose }: RemoteConfiguratio
 
         return {
           ...currentConfig,
-          mode: 'keyboard-mapping',
           keyboardBindings: assignRemoteControllerBinding(
             currentConfig.keyboardBindings,
             listeningAction,
