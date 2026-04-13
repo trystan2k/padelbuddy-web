@@ -105,7 +105,7 @@ export function SetupScreen() {
   const [isVoiceSelectionOpen, setIsVoiceSelectionOpen] = useState(false);
   const [selectedVoiceName, setSelectedVoiceName] = useState<string | null>(null);
   const [availableVoices, setAvailableVoices] = useState<SpeechSynthesisVoice[]>([]);
-  const [remoteConfig, setRemoteConfig] = useState<RemoteControllerConfig | null>(null);
+  const [_remoteConfig, setRemoteConfig] = useState<RemoteControllerConfig | null>(null);
 
   const {
     formData,
@@ -168,12 +168,12 @@ export function SetupScreen() {
     // Request wake lock on user interaction (required by iOS Safari)
     void requestScreenWakeLock();
 
-    // Prime the media session when in media-buttons mode so we can receive
-    // media button events even when audio announcements are disabled.
+    // Re-load config fresh to ensure we have latest (user may have changed it in modal
+    // or load may have raced with mount). Prime media session when in media-buttons mode
+    // so we can receive media button events even when audio announcements are disabled.
     // This must happen within the user gesture context.
-    // Default to 'media-buttons' mode when remoteConfig is null (not yet loaded)
-    // to ensure media buttons work reliably on the first match.
-    if ((remoteConfig?.mode ?? 'media-buttons') === 'media-buttons') {
+    const config = await loadRemoteControllerConfigWithFallback();
+    if (config.mode === 'media-buttons') {
       primeMediaSession();
     }
 
@@ -219,7 +219,7 @@ export function SetupScreen() {
       console.error('Failed to start match:', error);
       setIsStarting(false);
     }
-  }, [formData, navigate, router, remoteConfig, validate]);
+  }, [formData, navigate, router, validate]);
 
   const handleFormatChange = useCallback(
     (format: MatchFormat) => {

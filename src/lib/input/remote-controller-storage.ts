@@ -23,7 +23,9 @@ import {
 } from './remote-controller-config';
 
 const defaultObjectStoreName = remoteControllerPreferenceObjectStoreName;
-const remoteControllerBindingsKey = 'remote-controller-bindings';
+const remoteControllerConfigKey = 'remote-controller-bindings';
+// Backward compatibility alias
+const remoteControllerBindingsKey = remoteControllerConfigKey;
 
 const indexedDbMessages: IndexedDbOpenMessages = {
   blocked: 'Opening the remote controller database was blocked.',

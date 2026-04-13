@@ -12,6 +12,13 @@ public class MediaButtonsPlugin: CAPPlugin {
     private let buttonTrackNext = "media-track-next"
     private let buttonTrackPrevious = "media-track-previous"
 
+    /**
+     * Dispatches a media button event to JavaScript listeners.
+     *
+     * Note: This plugin supports **manual dispatch only** - it does not hook into
+     * iOS hardware media button events. Use the `dispatchButton` method to
+     * programmatically trigger button events for testing or debugging purposes.
+     */
     @objc func dispatchButton(_ call: CAPPluginCall) {
         guard let buttonId = call.getString("buttonId"), !buttonId.isEmpty else {
             call.reject("buttonId is required")

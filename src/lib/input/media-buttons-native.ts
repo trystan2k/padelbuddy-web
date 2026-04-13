@@ -56,13 +56,18 @@ export function listenToNativeMediaButtons(callback: MediaButtonsNativeCallback)
   const storedCallback = callback;
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion, @typescript-eslint/no-explicit-any
-  const subscription = (plugin as any).addListener('mediaButton', (event: { buttonId: string }) => {
-    const action = mediaButtonMapping[event.buttonId];
+  const subscription = (plugin as any)
+    .addListener('mediaButton', (event: { buttonId: string }) => {
+      const action = mediaButtonMapping[event.buttonId];
 
-    if (action) {
-      storedCallback(action);
-    }
-  });
+      if (action) {
+        storedCallback(action);
+      }
+    })
+    .catch((error: unknown) => {
+      console.warn('[MediaButtons] Failed to register native media button listener:', error);
+      return null;
+    });
 
   // Return cleanup function
   return () => {
