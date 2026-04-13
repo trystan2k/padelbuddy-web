@@ -255,8 +255,6 @@ export function ActiveMatchScreen({
     [isLoading, isMatchCompleted, undoScoreActionForTeam]
   );
 
-  const isKeyboardMappingMode = remoteConfig?.mode === 'keyboard-mapping';
-
   // Use keyboard input handler (always enabled - works alongside media buttons)
   useInputHandler(
     {
@@ -287,11 +285,6 @@ export function ActiveMatchScreen({
 
   const shouldIgnoreRemoteKey = useCallback(
     (event: KeyboardEvent): boolean => {
-      // Only ignore keys in keyboard-mapping mode; media-buttons mode uses different handlers
-      if (!isKeyboardMappingMode) {
-        return false;
-      }
-
       const action = getActionFromKey(event.key, remoteConfig?.keyboardBindings ?? null);
       return (
         action === 'add-team-1' ||
@@ -300,7 +293,7 @@ export function ActiveMatchScreen({
         action === 'revert-team-2'
       );
     },
-    [isKeyboardMappingMode, remoteConfig?.keyboardBindings]
+    [remoteConfig?.keyboardBindings]
   );
 
   const shouldEnableInactivityTimer = isCompactHeight && !isPortrait;

@@ -103,6 +103,7 @@ const UnifiedRow = ({
         <span
           className={styles.mediaBadge}
           aria-label={mediaBadgeLabel}
+          role="img"
           title={`${mediaButtonLabel} - ${t('setup.remoteConfig.mediaButtons.notConfigurable')}`}
         >
           <MediaIcon size={22} />
