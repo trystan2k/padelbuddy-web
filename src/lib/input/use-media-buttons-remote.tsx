@@ -63,28 +63,49 @@ export function useMediaButtonsRemote(
     onError: onWakeLockError
   });
 
-  const handleMediaButtonAction = useCallback((action: MediaButtonAction) => {
-    if (!enabledRef.current) {
-      return;
-    }
+  const invokeCallbackSafely = useCallback(
+    (callback: (teamId: MatchTeamId) => Promise<void> | void, teamId: MatchTeamId) => {
+      try {
+        const result = callback(teamId);
+        if (result instanceof Promise) {
+          result.catch((error) => {
+            callbacksRef.current.onError?.(
+              error instanceof Error ? error : new Error(String(error))
+            );
+          });
+        }
+      } catch (error) {
+        callbacksRef.current.onError?.(error instanceof Error ? error : new Error(String(error)));
+      }
+    },
+    []
+  );
 
-    const teamId = actionToTeamId(action);
-
-    if (isAddAction(action)) {
-      void callbacksRef.current.onAdd(teamId);
-    } else {
-      // MatchAction is currently ScorePointAction only; guard is future-proof if new action types are added
-      const hasScoringAction = actionsRef.current.some(
-        (a) => a.type === 'score-point' && a.teamId === teamId
-      );
-
-      if (!hasScoringAction) {
+  const handleMediaButtonAction = useCallback(
+    (action: MediaButtonAction) => {
+      if (!enabledRef.current) {
         return;
       }
 
-      void callbacksRef.current.onUndoForTeam(teamId);
-    }
-  }, []);
+      const teamId = actionToTeamId(action);
+
+      if (isAddAction(action)) {
+        invokeCallbackSafely(callbacksRef.current.onAdd, teamId);
+      } else {
+        // MatchAction is currently ScorePointAction only; guard is future-proof if new action types are added
+        const hasScoringAction = actionsRef.current.some(
+          (a) => a.type === 'score-point' && a.teamId === teamId
+        );
+
+        if (!hasScoringAction) {
+          return;
+        }
+
+        invokeCallbackSafely(callbacksRef.current.onUndoForTeam, teamId);
+      }
+    },
+    [invokeCallbackSafely]
+  );
 
   const onMediaButtonPress = useCallback(
     (buttonId: string) => {

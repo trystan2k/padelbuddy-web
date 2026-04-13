@@ -256,14 +256,13 @@ export function ActiveMatchScreen({
   );
 
   const isKeyboardMappingMode = remoteConfig?.mode === 'keyboard-mapping';
-  const isMediaButtonsMode = remoteConfig?.mode === 'media-buttons';
 
-  // Use keyboard input handler only in keyboard-mapping mode
+  // Use keyboard input handler (always enabled - works alongside media buttons)
   useInputHandler(
     {
       actions: snapshot.actions,
       bindings: remoteConfig?.keyboardBindings ?? null,
-      enabled: !isMatchCompleted && isKeyboardMappingMode,
+      enabled: !isMatchCompleted,
       useWakeLock: true
     },
     {
@@ -273,11 +272,11 @@ export function ActiveMatchScreen({
     }
   );
 
-  // Use media buttons remote handler only in media-buttons mode
+  // Use media buttons remote handler (always enabled - works alongside keyboard)
   useMediaButtonsRemote(
     {
       actions: snapshot.actions,
-      enabled: !isMatchCompleted && isMediaButtonsMode,
+      enabled: !isMatchCompleted,
       useWakeLock: true
     },
     {

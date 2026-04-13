@@ -193,6 +193,7 @@ export function RemoteConfigurationModal({ isOpen, onClose }: RemoteConfiguratio
 
         return {
           ...currentConfig,
+          mode: 'keyboard-mapping',
           keyboardBindings: assignRemoteControllerBinding(
             currentConfig.keyboardBindings,
             listeningAction,
@@ -267,8 +268,7 @@ export function RemoteConfigurationModal({ isOpen, onClose }: RemoteConfiguratio
         keyboardBindings: createEmptyRemoteControllerBindings()
       };
     });
-    addSuccessToast(t('setup.remoteConfig.feedback.clearSuccess'));
-  }, [draftConfig, addSuccessToast, t]);
+  }, [draftConfig]);
 
   const handleResetDefaults = useCallback(() => {
     if (!draftConfig) {

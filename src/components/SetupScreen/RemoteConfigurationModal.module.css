@@ -131,7 +131,7 @@
   composes: modalfooter from '../../styles/shared-setup-modal.module.css';
 }
 
-@media (width <= 480px) {
+@media (width < 480px) {
   .row {
     flex-direction: column;
     align-items: stretch;
