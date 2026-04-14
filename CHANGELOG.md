@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.11.0](https://github.com/trystan2k/padelbuddy-web/compare/v2.10.0...v2.11.0) (2026-04-13)
+
+
+### Features
+
+* add Media Buttons remote control mode ([788c75c](https://github.com/trystan2k/padelbuddy-web/commit/788c75cdcfcb69948516393e8abd5e1e9c3cd895))
+
 ## [2.10.0](https://github.com/trystan2k/padelbuddy-web/compare/v2.9.0...v2.10.0) (2026-04-12)
 
 

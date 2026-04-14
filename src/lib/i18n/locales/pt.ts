@@ -149,8 +149,9 @@ export default {
       deuce: 'Deuce',
       goldenPoint: 'Ponto de Ouro',
       correction: 'Correção.',
+      advantageTeam: 'Vantagem {{teamName}}',
       gamePoint: 'Game point {{teamName}}',
-      breakPoint: 'Break point',
+      breakPoint: 'Break point {{teamName}}',
       setPoint: 'Set point {{teamName}}',
       matchPoint: 'Match point {{teamName}}'
     }
@@ -222,24 +223,24 @@ export default {
       trigger: 'Config. controle remoto',
       title: 'Controle Remoto',
       description:
-        'Você pode usar seu teclado ou os botões de mídia (Aumentar/Diminuir Volume, Próxima/Anterior) para controlar a partida. Clique em um botão do teclado para capturar sua tecla preferida.',
+        'Você pode usar seu teclado ou os botões de faixa (Anterior/Próxima) para controlar a partida. Clique em um botão do teclado para capturar sua tecla preferida.',
       listening: 'Escutando...',
       listeningAnnouncement: 'Pressione um botão no seu controle para atribuí-lo a {{action}}.',
       notSet: 'Não configurado',
       mediaButtons: {
-        volumeUp: 'Aumentar volume',
-        volumeUpShort: '+ Aumentar',
-        volumeDown: 'Diminuir volume',
-        volumeDownShort: '- Diminuir',
-        nextTrack: 'Próxima faixa',
-        nextTrackShort: '>> Próxima',
-        previousTrack: 'Faixa anterior',
-        previousTrackShort: '<< Anterior',
+        nextTrack: 'Próxima um clique',
+        nextTrackDouble: 'Próxima duplo cliques',
+        nextTrackShort: '>> Próxima um clique',
+        nextTrackShortDouble: '>> Próxima duplo cliques',
+        previousTrack: 'Anterior um clique',
+        previousTrackDouble: 'Anterior duplo cliques',
+        previousTrackShort: '<< Anterior um clique',
+        previousTrackShortDouble: '<< Anterior duplo cliques',
         notConfigurable: 'Não configurável'
       },
       rows: {
-        singlePressHint: 'Um toque para adicionar um ponto',
-        guardedUndoHint: 'Remove a última ação de pontuação daquele time',
+        addPointHint: 'Pressione para adicionar um ponto a esse time',
+        revertPointHint: 'Pressione para reverter o ponto desse time',
         mediaBadgeTooltip: 'Atribuição fixa do botão de mídia'
       },
       actions: {

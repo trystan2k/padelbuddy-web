@@ -13,6 +13,8 @@ vi.mock('@/lib/setup/setup-storage', () => ({
     muted: false,
     verbosity: 'standard',
     voiceName: null,
+    team1Name: null,
+    team2Name: null,
     audioAnnouncementsEnabled: true,
     servingIndicatorEnabled: true,
     countdownTimerEnabled: false,
@@ -119,6 +121,8 @@ describe('useSetupForm', () => {
       muted: true,
       verbosity: 'verbose',
       voiceName: 'Alex',
+      team1Name: 'Padel Wizards',
+      team2Name: 'Court Kings',
       audioAnnouncementsEnabled: true,
       servingIndicatorEnabled: false,
       countdownTimerEnabled: true,
@@ -139,6 +143,8 @@ describe('useSetupForm', () => {
     await expect.element(screen.getByTestId('form-tester')).toBeInTheDocument();
 
     await vi.waitFor(() => {
+      expect(capturedState?.formData.team1Name).toBe('Padel Wizards');
+      expect(capturedState?.formData.team2Name).toBe('Court Kings');
       expect(capturedState?.formData.voiceName).toBe('Alex');
       expect(capturedState?.formData.audioAnnouncementsEnabled).toBe(true);
       expect(capturedState?.formData.servingIndicatorEnabled).toBe(false);
@@ -157,6 +163,8 @@ describe('useSetupForm', () => {
       muted: false,
       verbosity: 'standard',
       voiceName: 'Alex',
+      team1Name: 'Padel Wizards',
+      team2Name: null,
       audioAnnouncementsEnabled: false,
       servingIndicatorEnabled: true,
       countdownTimerEnabled: false,
@@ -177,8 +185,50 @@ describe('useSetupForm', () => {
     await expect.element(screen.getByTestId('form-tester')).toBeInTheDocument();
 
     await vi.waitFor(() => {
+      expect(capturedState?.formData.team1Name).toBe('Padel Wizards');
+      expect(capturedState?.formData.team2Name).toBe('Team B');
       expect(capturedState?.formData.audioAnnouncementsEnabled).toBe(false);
       expect(capturedState?.formData.voiceName).toBeNull();
+    });
+  });
+
+  test('persists custom team names as setup preference slices', async () => {
+    const screen = await render(<SetupFormController />);
+
+    await vi.waitFor(() => {
+      expect(mockLoadSetupPreferences).toHaveBeenCalledTimes(1);
+    });
+
+    await screen.getByTestId('update-team1').click();
+    await screen.getByTestId('update-team2').click();
+
+    await vi.waitFor(() => {
+      expect(mockSaveSetupPreferenceSlice).toHaveBeenNthCalledWith(1, {
+        team1Name: 'Alpha Team'
+      });
+      expect(mockSaveSetupPreferenceSlice).toHaveBeenNthCalledWith(2, {
+        team2Name: 'Beta Team'
+      });
+    });
+  });
+
+  test('stores null for cleared team names so translated defaults can be restored', async () => {
+    const screen = await render(<SetupFormController />);
+
+    await vi.waitFor(() => {
+      expect(mockLoadSetupPreferences).toHaveBeenCalledTimes(1);
+    });
+
+    await screen.getByTestId('clear-team1').click();
+    await screen.getByTestId('clear-team2').click();
+
+    await vi.waitFor(() => {
+      expect(mockSaveSetupPreferenceSlice).toHaveBeenNthCalledWith(1, {
+        team1Name: null
+      });
+      expect(mockSaveSetupPreferenceSlice).toHaveBeenNthCalledWith(2, {
+        team2Name: null
+      });
     });
   });
 
@@ -766,18 +816,15 @@ describe('useSetupForm interactions', () => {
       />
     );
 
-    // Make form invalid
     await screen.getByTestId('clear-team1').click();
     await screen.getByTestId('validate').click();
     await screen.getByTestId('get-state').click();
 
     expect(formState!.errors.team1Name).toBeDefined();
 
-    // Fix the field
     await screen.getByTestId('update-team1').click();
     await screen.getByTestId('get-state').click();
 
-    // Error should be cleared
     expect(formState!.errors.team1Name).toBeUndefined();
   });
 

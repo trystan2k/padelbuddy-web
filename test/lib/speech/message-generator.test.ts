@@ -21,10 +21,17 @@ const testTranslations = {
       deuce: 'Deuce',
       goldenPoint: 'Golden Point',
       correction: 'Correction.',
+      advantageTeam: 'Advantage {{teamName}}',
       gamePoint: 'Game point {{teamName}}',
       breakPoint: 'Break point',
       setPoint: 'Set point {{teamName}}',
       matchPoint: 'Match point {{teamName}}'
+    }
+  },
+  setup: {
+    teams: {
+      team1Default: 'Team A',
+      team2Default: 'Team B'
     }
   }
 };
@@ -271,7 +278,20 @@ describe('message-generator', () => {
           team2Score: '40',
           verbosity: 'standard'
         })
-      ).toBe('Advantage - Forty');
+      ).toBe('Advantage Team A');
+    });
+
+    it('announces advantage for team 2 by team name', () => {
+      expect(
+        generateSpeechMessage({
+          eventType: 'point-scored',
+          team1Score: '40',
+          team2Score: 'ad',
+          team1Name: 'Sharks',
+          team2Name: 'Lions',
+          verbosity: 'standard'
+        })
+      ).toBe('Advantage Lions');
     });
 
     it('uses chair-umpire phrasing in verbose mode', () => {

@@ -54,6 +54,28 @@ function formatChairUmpireScore(
   return `${team1Word} - ${team2Word}`;
 }
 
+function getTeamName(data: SpeechEventData, teamId: 'team-1' | 'team-2'): string {
+  if (teamId === 'team-1') {
+    return data.team1Name?.trim() || i18n.t('setup.teams.team1Default');
+  }
+
+  return data.team2Name?.trim() || i18n.t('setup.teams.team2Default');
+}
+
+function getAdvantageTeamMessage(data: SpeechEventData): string | null {
+  const normalizedTeam1 = normalizeScoreValue(data.team1Score ?? '');
+  const normalizedTeam2 = normalizeScoreValue(data.team2Score ?? '');
+
+  if (normalizedTeam1 !== 'Ad' && normalizedTeam2 !== 'Ad') {
+    return null;
+  }
+
+  const advantageTeam = normalizedTeam1 === 'Ad' ? 'team-1' : 'team-2';
+  const teamName = getTeamName(data, advantageTeam);
+
+  return i18n.t('score.announcements.advantageTeam', { teamName });
+}
+
 function getPointPressureMessage(data: SpeechEventData): string | null {
   const t = i18n.t.bind(i18n);
 
@@ -61,12 +83,7 @@ function getPointPressureMessage(data: SpeechEventData): string | null {
     (data.pointPressure === 'set-point' || data.pointPressure === 'match-point') &&
     data.pointPressureTeam
   ) {
-    const pointPressureTeamName =
-      data.pointPressureTeam === 'team-1' ? data.team1Name : data.team2Name;
-
-    if (!pointPressureTeamName) {
-      return null;
-    }
+    const pointPressureTeamName = getTeamName(data, data.pointPressureTeam);
 
     return data.pointPressure === 'match-point'
       ? t('score.announcements.matchPoint', { teamName: pointPressureTeamName })
@@ -74,25 +91,43 @@ function getPointPressureMessage(data: SpeechEventData): string | null {
   }
 
   if (data.pointPressure === 'break-point') {
-    return t('score.announcements.breakPoint');
+    const teamId = data.pointPressureTeam
+      ? data.pointPressureTeam === 'team-1'
+        ? 'team-2'
+        : 'team-1'
+      : data.servingTeam
+        ? data.servingTeam === 'team-1'
+          ? 'team-2'
+          : 'team-1'
+        : null;
+
+    if (!teamId) {
+      return null;
+    }
+
+    const teamName = getTeamName(data, teamId);
+
+    return t('score.announcements.breakPoint', { teamName });
   }
 
   if (data.pointPressure === 'game-point') {
     // Prefer pointPressureTeam when present (e.g. when serving indicator is disabled)
     // Fall back to servingTeam only when pointPressureTeam is not set
-    const teamName = data.pointPressureTeam
+    const teamId = data.pointPressureTeam
       ? data.pointPressureTeam === 'team-1'
-        ? data.team1Name
-        : data.team2Name
+        ? 'team-1'
+        : 'team-2'
       : data.servingTeam
         ? data.servingTeam === 'team-1'
-          ? data.team1Name
-          : data.team2Name
+          ? 'team-1'
+          : 'team-2'
         : null;
 
-    if (!teamName) {
+    if (!teamId) {
       return null;
     }
+
+    const teamName = getTeamName(data, teamId);
 
     return t('score.announcements.gamePoint', { teamName });
   }
@@ -156,6 +191,16 @@ function generatePointScoreMessage(data: SpeechEventData): string | null {
   }
 
   const pointPressureMessage = getPointPressureMessage(data);
+  const advantageTeamMessage = getAdvantageTeamMessage(data);
+
+  if (advantageTeamMessage) {
+    return withCorrectionPrefix(
+      pointPressureMessage
+        ? `${advantageTeamMessage}. ${pointPressureMessage}`
+        : advantageTeamMessage,
+      data.isCorrection
+    );
+  }
 
   if (isTiebreak) {
     const baseMessage = `${team1Score}-${team2Score}`;

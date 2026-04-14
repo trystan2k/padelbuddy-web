@@ -1,10 +1,25 @@
 import { Capacitor } from '@capacitor/core';
-import type { MatchTeamId } from '@/core/match/types';
-
-import { actionToTeamId, mediaButtonMapping, type MediaButtonAction } from './media-buttons';
-
 interface PluginMethod {
   (...args: unknown[]): Promise<unknown>;
+}
+
+interface MediaButtonsPluginEvent {
+  buttonId: string;
+}
+
+interface MediaButtonsListenerHandle {
+  remove: () => Promise<void> | void;
+}
+
+function buttonIdToTeamId(buttonId: string): 'team-1' | 'team-2' | null {
+  switch (buttonId) {
+    case 'media-track-previous':
+      return 'team-1';
+    case 'media-track-next':
+      return 'team-2';
+    default:
+      return null;
+  }
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -30,7 +45,15 @@ function callPluginMethod<T>(
   return method(...args) as any;
 }
 
-type MediaButtonsNativeCallback = (action: MediaButtonAction) => void;
+type MediaButtonsNativeCallback = (buttonId: string) => void;
+
+async function startNativeMediaButtonsListening(): Promise<void> {
+  await callPluginMethod('MediaButtons', 'startListening');
+}
+
+async function stopNativeMediaButtonsListening(): Promise<void> {
+  await callPluginMethod('MediaButtons', 'stopListening');
+}
 
 /**
  * Listens to native media button events on Android/iOS.
@@ -55,29 +78,81 @@ export function listenToNativeMediaButtons(callback: MediaButtonsNativeCallback)
   // Store the callback to avoid it being garbage collected
   const storedCallback = callback;
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion, @typescript-eslint/no-explicit-any
-  const subscription = (plugin as any)
-    .addListener('mediaButton', (event: { buttonId: string }) => {
-      const action = mediaButtonMapping[event.buttonId];
+  let listenerHandle: MediaButtonsListenerHandle | null = null;
+  let listenerHandlePromise: Promise<MediaButtonsListenerHandle> | null = null;
+  let disposed = false;
+  let listenerRemoved = false;
 
-      if (action) {
-        storedCallback(action);
+  const removeListenerOnce = (handle: MediaButtonsListenerHandle | null): void => {
+    if (!handle || listenerRemoved) {
+      return;
+    }
+
+    listenerRemoved = true;
+
+    try {
+      void Promise.resolve(handle.remove()).catch(() => {
+        // Ignore cleanup errors
+      });
+    } catch {
+      // Ignore cleanup errors
+    }
+  };
+
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion, @typescript-eslint/no-explicit-any
+    const listenerResult = (plugin as any).addListener(
+      'mediaButton',
+      (event: MediaButtonsPluginEvent) => {
+        const teamId = buttonIdToTeamId(event.buttonId);
+        if (teamId === null) {
+          return;
+        }
+        storedCallback(event.buttonId);
       }
-    })
-    .catch((error: unknown) => {
-      console.warn('[MediaButtons] Failed to register native media button listener:', error);
-      return null;
-    });
+    ) as MediaButtonsListenerHandle | Promise<MediaButtonsListenerHandle>;
+
+    listenerHandlePromise = Promise.resolve(listenerResult);
+
+    void listenerHandlePromise
+      .then((handle) => {
+        listenerHandlePromise = null;
+
+        if (disposed) {
+          removeListenerOnce(handle);
+          return;
+        }
+
+        listenerHandle = handle;
+        return;
+      })
+      .catch((error: unknown) => {
+        console.warn('[MediaButtons] Failed to register native media button listener:', error);
+      });
+  } catch (error) {
+    console.warn('[MediaButtons] Failed to register native media button listener:', error);
+  }
+
+  void startNativeMediaButtonsListening().catch((error: unknown) => {
+    console.warn('[MediaButtons] Failed to start native media button listener:', error);
+  });
 
   // Return cleanup function
   return () => {
-    subscription
-      .then((sub: { remove: () => void }) => {
-        return sub.remove();
-      })
-      .catch(() => {
-        // Ignore cleanup errors
+    disposed = true;
+
+    removeListenerOnce(listenerHandle);
+
+    if (!listenerHandle) {
+      void listenerHandlePromise?.then((handle) => {
+        removeListenerOnce(handle);
+        return;
       });
+    }
+
+    void stopNativeMediaButtonsListening().catch(() => {
+      // Ignore cleanup errors
+    });
   };
 }
 
@@ -96,15 +171,4 @@ export async function dispatchNativeMediaButton(buttonId: string): Promise<void>
   }
 }
 
-/**
- * Maps a buttonId to the team ID for scoring/reverting.
- */
-export function buttonIdToTeamId(buttonId: string): MatchTeamId | null {
-  const action = mediaButtonMapping[buttonId];
-
-  if (!action) {
-    return null;
-  }
-
-  return actionToTeamId(action);
-}
+export { buttonIdToTeamId };

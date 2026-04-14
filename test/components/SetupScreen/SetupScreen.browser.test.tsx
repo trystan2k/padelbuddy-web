@@ -57,6 +57,8 @@ vi.mock('@/lib/setup/setup-storage', () => ({
     muted: false,
     verbosity: 'standard',
     voiceName: null,
+    team1Name: null,
+    team2Name: null,
     audioAnnouncementsEnabled: true,
     servingIndicatorEnabled: true,
     countdownTimerEnabled: false,
@@ -254,7 +256,8 @@ describe('SetupScreen', () => {
     const mediaBadges = document.querySelectorAll(
       '[class*="mediaBadge"]:not([class*="Separator"]):not([class*="Label"])'
     );
-    expect(mediaBadges.length).toBe(4);
+    // 8 badges: 2 per row for revert rows (double icons) + 1 per row for add rows = 8 total
+    expect(mediaBadges.length).toBe(8);
 
     await screen.getByRole('button', { name: /cancel/i }).click();
 

@@ -148,8 +148,9 @@ export default {
       deuce: 'Deuce',
       goldenPoint: 'Golden Point',
       correction: 'Correction.',
+      advantageTeam: 'Advantage {{teamName}}',
       gamePoint: 'Game point {{teamName}}',
-      breakPoint: 'Break point',
+      breakPoint: 'Break point {{teamName}}',
       setPoint: 'Set point {{teamName}}',
       matchPoint: 'Match point {{teamName}}'
     }
@@ -221,24 +222,24 @@ export default {
       trigger: 'Remote Configuration',
       title: 'Remote Controller',
       description:
-        'You can use your keyboard or media buttons (Volume Up/Down, Next/Previous Track) to control the match. Click a keyboard button to capture your preferred key.',
+        'You can use your keyboard or the media track buttons (Previous/Next Track) to control the match. Click a keyboard button to capture your preferred key.',
       listening: 'Listening...',
       listeningAnnouncement: 'Press a button on your remote to assign it to {{action}}.',
       notSet: 'Not set',
       mediaButtons: {
-        volumeUp: 'Volume Up',
-        volumeUpShort: '+ Volume',
-        volumeDown: 'Volume Down',
-        volumeDownShort: '- Volume',
-        nextTrack: 'Next Track',
-        nextTrackShort: '>> Next track',
-        previousTrack: 'Previous Track',
-        previousTrackShort: '<< Previous track',
+        nextTrack: 'Next Single Click',
+        nextTrackDouble: 'Next Double Click',
+        nextTrackShort: '>> Next Single Click',
+        nextTrackShortDouble: '>> Next Double Click',
+        previousTrack: 'Previous Single Click',
+        previousTrackDouble: 'Previous Double Click',
+        previousTrackShort: '<< Previous Single Click',
+        previousTrackShortDouble: '<< Previous Double Click',
         notConfigurable: 'Not configurable'
       },
       rows: {
-        singlePressHint: 'Single press to add a point',
-        guardedUndoHint: "Removes that team's latest scoring action",
+        addPointHint: 'Press to add a point to that team',
+        revertPointHint: 'Press to revert the point of that team',
         mediaBadgeTooltip: 'Fixed media button assignment'
       },
       actions: {

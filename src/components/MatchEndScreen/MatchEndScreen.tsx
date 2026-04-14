@@ -9,6 +9,7 @@ import { TopBar } from '@/components/ui/TopBar/TopBar';
 import type { MatchAction, MatchFormat, MatchProjection, MatchSetup } from '@/core/match/types';
 import { clearCurrentMatch } from '@/lib/current-match/indexed-db';
 import { createCurrentMatchSession } from '@/lib/current-match/session';
+import { primeWebMediaSession } from '@/lib/input/web-media-session';
 import { defaultLocale, isSupportedLocale } from '@/lib/i18n/types';
 import { useSpeechService } from '@/lib/speech/speech-service';
 import { prepareCurrentMatchRouteNavigation } from '@/lib/router/current-match-route-flow';
@@ -255,6 +256,8 @@ export function MatchEndScreen({
       return;
     }
 
+    primeWebMediaSession();
+
     setIsContinuingMatch(true);
 
     try {
@@ -267,6 +270,14 @@ export function MatchEndScreen({
       });
 
       await session.continuePlaying();
+      await prepareCurrentMatchRouteNavigation(
+        router,
+        {
+          to: '/match/$id',
+          params: { id: matchId }
+        },
+        { invalidate: true }
+      );
       await navigate({
         to: '/match/$id',
         params: { id: matchId },
@@ -277,7 +288,7 @@ export function MatchEndScreen({
       logRuntimeError('Failed to continue the current match.', error);
       setIsContinuingMatch(false);
     }
-  }, [actions, finishedAt, isContinuingMatch, matchId, navigate, setup, startedAt]);
+  }, [actions, finishedAt, isContinuingMatch, matchId, navigate, router, setup, startedAt]);
 
   const handleShareButtonClick = useCallback(() => {
     handleShareClick();

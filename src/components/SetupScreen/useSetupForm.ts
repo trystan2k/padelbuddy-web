@@ -84,6 +84,14 @@ export function useSetupForm() {
         }
 
         if (setupPreferences) {
+          if (setupPreferences.team1Name !== null) {
+            team1Touched.current = true;
+          }
+
+          if (setupPreferences.team2Name !== null) {
+            team2Touched.current = true;
+          }
+
           lastPersistedSetupSlice.current = {
             audioAnnouncementsEnabled: setupPreferences.audioAnnouncementsEnabled,
             servingIndicatorEnabled: setupPreferences.servingIndicatorEnabled,
@@ -96,6 +104,8 @@ export function useSetupForm() {
 
           setFormData((prev) => ({
             ...prev,
+            team1Name: setupPreferences.team1Name ?? prev.team1Name,
+            team2Name: setupPreferences.team2Name ?? prev.team2Name,
             voiceName: setupPreferences.audioAnnouncementsEnabled
               ? setupPreferences.voiceName
               : null,
@@ -189,7 +199,9 @@ export function useSetupForm() {
 
   const updateTeamName = useCallback(
     (teamId: MatchTeamId, name: string) => {
-      // Mark as touched when user modifies the name
+      const normalizedTeamName = name.trim();
+      const persistedName = normalizedTeamName.length > 0 ? normalizedTeamName : null;
+
       if (teamId === 'team-1') {
         team1Touched.current = true;
         updateField('team1Name', name);
@@ -197,6 +209,12 @@ export function useSetupForm() {
         team2Touched.current = true;
         updateField('team2Name', name);
       }
+
+      void saveSetupPreferenceSlice(
+        teamId === 'team-1' ? { team1Name: persistedName } : { team2Name: persistedName }
+      ).catch((error) => {
+        console.error('[useSetupForm] Failed to persist team name:', error);
+      });
     },
     [updateField]
   );

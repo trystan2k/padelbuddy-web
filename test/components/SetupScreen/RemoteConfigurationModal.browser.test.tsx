@@ -105,20 +105,21 @@ describe('RemoteConfigurationModal', () => {
       const mediaBadges = document.querySelectorAll(
         '[class*="mediaBadge"]:not([class*="Separator"]):not([class*="Label"])'
       );
-      expect(mediaBadges.length).toBe(4);
+      // 8 badges: 4 rows, each row has 1 badge (revert rows have double icons but single badge span)
+      expect(mediaBadges.length).toBe(8);
 
       // Verify badge aria-labels contain the expected short label text (for screen readers)
       const badgeAriaLabels = Array.from(mediaBadges).map((badge) =>
         badge.getAttribute('aria-label')
       );
-      expect(badgeAriaLabels.some((label) => label?.includes('+ Volume'))).toBe(true);
-      expect(badgeAriaLabels.some((label) => label?.includes('- Volume'))).toBe(true);
-      expect(badgeAriaLabels.some((label) => label?.includes('>>'))).toBe(true);
+      // previous track labels contain <<
       expect(badgeAriaLabels.some((label) => label?.includes('<<'))).toBe(true);
+      // next track labels contain >>
+      expect(badgeAriaLabels.some((label) => label?.includes('>>'))).toBe(true);
 
-      // Verify textContent is empty (icon only, no visible text)
+      // Verify textContent is empty or just '+' for double-press badges (icon only, no visible text)
       const badgeTexts = Array.from(mediaBadges).map((badge) => badge.textContent?.trim());
-      expect(badgeTexts.every((text) => text === '' || text === null)).toBe(true);
+      expect(badgeTexts.every((text) => text === '' || text === null || text === '+')).toBe(true);
     });
 
     test('media badges are read-only spans, not buttons', async () => {

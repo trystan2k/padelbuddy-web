@@ -648,7 +648,7 @@ describe('ActiveMatchScreen', () => {
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'q' }));
     expect(readDisplayedScore(screen, 'team-1')).toBe('0');
 
-    await vi.advanceTimersByTimeAsync(380);
+    await vi.advanceTimersByTimeAsync(600);
 
     await vi.waitFor(() => {
       expect(readDisplayedScore(screen, 'team-1')).toBe('15');

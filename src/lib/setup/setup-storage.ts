@@ -40,6 +40,8 @@ export interface SetupPreferences {
   muted: boolean;
   verbosity: VerbosityLevel;
   voiceName: string | null;
+  team1Name: string | null;
+  team2Name: string | null;
   audioAnnouncementsEnabled: boolean;
   servingIndicatorEnabled: boolean;
   countdownTimerEnabled: boolean;
@@ -77,6 +79,8 @@ export const defaultSetupPreferences: SetupPreferences = {
   muted: false,
   verbosity: defaultVerbosity,
   voiceName: null,
+  team1Name: null,
+  team2Name: null,
   audioAnnouncementsEnabled: defaultAudioAnnouncementsEnabled,
   servingIndicatorEnabled: defaultServingIndicatorEnabled,
   countdownTimerEnabled: defaultCountdownTimerEnabled,
@@ -206,7 +210,15 @@ function mergeSetupPreferences(
       // clears the stored value, while an omitted property means "no change".
       'voiceName' in nextPreferences
         ? nextPreferences.voiceName
-        : (currentPreferences?.voiceName ?? defaultSetupPreferences.voiceName)
+        : (currentPreferences?.voiceName ?? defaultSetupPreferences.voiceName),
+    team1Name:
+      'team1Name' in nextPreferences
+        ? nextPreferences.team1Name
+        : (currentPreferences?.team1Name ?? defaultSetupPreferences.team1Name),
+    team2Name:
+      'team2Name' in nextPreferences
+        ? nextPreferences.team2Name
+        : (currentPreferences?.team2Name ?? defaultSetupPreferences.team2Name)
   };
 }
 
@@ -225,6 +237,8 @@ function toSetupPreferences(record: StoredSetupPreferences): SetupPreferences {
     muted: record.muted,
     verbosity: record.verbosity,
     voiceName: record.voiceName,
+    team1Name: record.team1Name,
+    team2Name: record.team2Name,
     audioAnnouncementsEnabled: record.audioAnnouncementsEnabled,
     servingIndicatorEnabled: record.servingIndicatorEnabled,
     countdownTimerEnabled: record.countdownTimerEnabled,
@@ -389,6 +403,14 @@ function parseStoredSetupPreferences(value: unknown): StoredSetupPreferences | n
     return null;
   }
 
+  if (typeof candidate.team1Name !== 'string' && candidate.team1Name !== null) {
+    return null;
+  }
+
+  if (typeof candidate.team2Name !== 'string' && candidate.team2Name !== null) {
+    return null;
+  }
+
   if (typeof candidate.audioAnnouncementsEnabled !== 'boolean') {
     return null;
   }
@@ -421,6 +443,8 @@ function parseStoredSetupPreferences(value: unknown): StoredSetupPreferences | n
     muted: candidate.muted,
     verbosity: candidate.verbosity,
     voiceName: candidate.voiceName,
+    team1Name: candidate.team1Name,
+    team2Name: candidate.team2Name,
     audioAnnouncementsEnabled: candidate.audioAnnouncementsEnabled,
     servingIndicatorEnabled: candidate.servingIndicatorEnabled,
     countdownTimerEnabled: candidate.countdownTimerEnabled,

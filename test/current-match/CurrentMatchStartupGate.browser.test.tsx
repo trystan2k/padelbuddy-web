@@ -24,12 +24,20 @@ const { mockInvalidate, mockNavigate, mockPreloadRoute } = vi.hoisted(() => ({
   mockPreloadRoute: vi.fn<() => Promise<void>>(async () => undefined)
 }));
 
+const { mockPrimeWebMediaSession } = vi.hoisted(() => ({
+  mockPrimeWebMediaSession: vi.fn<() => void>()
+}));
+
 vi.mock('@tanstack/react-router', () => ({
   useNavigate: () => mockNavigate,
   useRouter: () => ({
     invalidate: mockInvalidate,
     preloadRoute: mockPreloadRoute
   })
+}));
+
+vi.mock('@/lib/input/web-media-session', () => ({
+  primeWebMediaSession: mockPrimeWebMediaSession
 }));
 
 describe('CurrentMatchStartupGate browser', () => {
@@ -42,6 +50,7 @@ describe('CurrentMatchStartupGate browser', () => {
     mockNavigate.mockReset();
     mockInvalidate.mockReset();
     mockPreloadRoute.mockReset();
+    mockPrimeWebMediaSession.mockReset();
     databaseName = `padel-buddy-startup-gate-${crypto.randomUUID()}`;
     persistence = createCurrentMatchPersistence({
       databaseName,
@@ -99,6 +108,8 @@ describe('CurrentMatchStartupGate browser', () => {
     await expect.element(screen.getByRole('button', { name: 'Discard match' })).toBeVisible();
 
     await resumeButton.click();
+
+    expect(mockPrimeWebMediaSession).toHaveBeenCalledTimes(1);
 
     expect(mockNavigate).toHaveBeenCalledWith(
       expect.objectContaining({

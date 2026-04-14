@@ -34,6 +34,7 @@ const {
   mockContinuePlaying,
   mockCreateCurrentMatchSession,
   mockDomToBlob,
+  mockPrimeWebMediaSession,
   mockSpeechSpeak,
   mockSpeechDestroy
 } = vi.hoisted(() => {
@@ -43,6 +44,7 @@ const {
   const mockClearCurrentMatchFn = vi.fn<() => Promise<void>>(async () => undefined);
   const mockContinuePlayingFn = vi.fn<() => Promise<void>>(async () => undefined);
   const mockDomToBlobFn = vi.fn<() => Promise<Blob>>();
+  const mockPrimeWebMediaSessionFn = vi.fn<() => void>();
   const mockSpeechSpeakFn = vi.fn<(message: string, options: object) => void>();
   const mockSpeechDestroyFn = vi.fn<() => void>();
   const mockCreateCurrentMatchSessionFn = vi.fn<
@@ -59,6 +61,7 @@ const {
     mockContinuePlaying: mockContinuePlayingFn,
     mockCreateCurrentMatchSession: mockCreateCurrentMatchSessionFn,
     mockDomToBlob: mockDomToBlobFn,
+    mockPrimeWebMediaSession: mockPrimeWebMediaSessionFn,
     mockSpeechSpeak: mockSpeechSpeakFn,
     mockSpeechDestroy: mockSpeechDestroyFn
   };
@@ -82,6 +85,10 @@ vi.mock('@/lib/current-match/indexed-db', () => ({
 
 vi.mock('@/lib/current-match/session', () => ({
   createCurrentMatchSession: mockCreateCurrentMatchSession
+}));
+
+vi.mock('@/lib/input/web-media-session', () => ({
+  primeWebMediaSession: mockPrimeWebMediaSession
 }));
 
 vi.mock('@/lib/speech/speech-service', async (importOriginal) => {
@@ -132,6 +139,7 @@ describe('MatchEndScreen', () => {
     mockDomToBlob.mockResolvedValue(createPngBlob());
     mockSpeechSpeak.mockReset();
     mockSpeechDestroy.mockReset();
+    mockPrimeWebMediaSession.mockReset();
     createObjectUrlMock = vi.fn<(_blob: Blob) => string>(() => 'blob:match-end-screen');
     revokeObjectUrlMock = vi.fn<(_url: string) => void>();
     restoreNavigatorProperty('share', originalNavigatorShareDescriptor);
@@ -495,6 +503,7 @@ describe('MatchEndScreen', () => {
     await screen.getByTestId('continue-match-button').click();
 
     await vi.waitFor(() => {
+      expect(mockPrimeWebMediaSession).toHaveBeenCalledTimes(1);
       expect(mockCreateCurrentMatchSession).toHaveBeenCalledWith({
         matchId: 'test-match',
         setup,
@@ -503,6 +512,11 @@ describe('MatchEndScreen', () => {
         finishedAt
       });
       expect(mockContinuePlaying).toHaveBeenCalledTimes(1);
+      expect(mockInvalidate).toHaveBeenCalledTimes(1);
+      expect(mockPreloadRoute).toHaveBeenCalledWith({
+        to: '/match/$id',
+        params: { id: 'test-match' }
+      });
       expect(mockNavigate).toHaveBeenCalledWith({
         to: '/match/$id',
         params: { id: 'test-match' },

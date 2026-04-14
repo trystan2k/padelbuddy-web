@@ -6,6 +6,7 @@ import { Dialog } from '@base-ui/react/dialog';
 import { Button } from '@/components/ui/Button/Button';
 import { clearCurrentMatch, type CurrentMatchPersistence } from '@/lib/current-match/indexed-db';
 import type { CurrentMatchStartupResult } from '@/lib/current-match/startup';
+import { primeWebMediaSession } from '@/lib/input/web-media-session';
 import {
   invalidateCurrentMatchPersistenceRoutes,
   prepareCurrentMatchRouteNavigation
@@ -120,6 +121,8 @@ export function CurrentMatchStartupGate({
   }, [persistence, router, t]);
 
   const resumeSavedMatch = useCallback(() => {
+    primeWebMediaSession();
+
     setClearErrorMessage(null);
     setStartupState((currentState) => {
       if (currentState.status === 'resume-required') {

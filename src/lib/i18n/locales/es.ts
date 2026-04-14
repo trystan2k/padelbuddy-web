@@ -134,7 +134,7 @@ export default {
   },
   score: {
     points: {
-      '0': 'Cero',
+      '0': 'Nada',
       '15': 'Quince',
       '30': 'Treinta',
       '40': 'Cuarenta',
@@ -146,11 +146,12 @@ export default {
       match: 'Partido',
       serving: 'Sacando',
       all: 'Iguales',
-      deuce: 'Deuce',
+      deuce: 'Cuarenta Iguales',
       goldenPoint: 'Punto de Oro',
       correction: 'Corrección.',
+      advantageTeam: 'Ventaja {{teamName}}',
       gamePoint: 'Game Point {{teamName}}',
-      breakPoint: 'Break point',
+      breakPoint: 'Break point {{teamName}}',
       setPoint: 'Set Point {{teamName}}',
       matchPoint: 'Match point {{teamName}}'
     }
@@ -222,24 +223,24 @@ export default {
       trigger: 'Config. del control remoto',
       title: 'Control Remoto',
       description:
-        'Puedes usar tu teclado o los botones de medios (Subir/Bajar Volumen, Siguiente/Anterior) para controlar el partido. Haz clic en un botón del teclado para capturar tu tecla preferida.',
+        'Puedes usar tu teclado o los botones de pista (Anterior/Siguiente) para controlar el partido. Haz clic en un botón del teclado para capturar tu tecla preferida.',
       listening: 'Escuchando...',
       listeningAnnouncement: 'Presiona un botón en tu control para asignarlo a {{action}}.',
       notSet: 'Sin asignar',
       mediaButtons: {
-        volumeUp: 'Subir volumen',
-        volumeUpShort: '+ Subir',
-        volumeDown: 'Bajar volumen',
-        volumeDownShort: '- Bajar',
-        nextTrack: 'Siguiente pista',
-        nextTrackShort: '>> Siguiente',
-        previousTrack: 'Pista anterior',
-        previousTrackShort: '<< Anterior',
+        nextTrack: 'Siguiente un clic',
+        nextTrackDouble: 'Siguiente doble clic',
+        nextTrackShort: '>> Siguiente un clic',
+        nextTrackShortDouble: '>> Siguiente doble clic',
+        previousTrack: 'Anterior un clic',
+        previousTrackDouble: 'Anterior doble clic',
+        previousTrackShort: '<< Anterior un clic',
+        previousTrackShortDouble: '<< Anterior doble clic',
         notConfigurable: 'No configurable'
       },
       rows: {
-        singlePressHint: 'Una pulsación para sumar un punto',
-        guardedUndoHint: 'Elimina la última acción de puntuación de ese equipo',
+        addPointHint: 'Presiona para sumar un punto a ese equipo',
+        revertPointHint: 'Presiona para revertir el punto de ese equipo',
         mediaBadgeTooltip: 'Asignación fija de botón de medios'
       },
       actions: {
