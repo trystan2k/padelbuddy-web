@@ -148,6 +148,7 @@ export default {
       deuce: 'Deuce',
       goldenPoint: 'Golden Point',
       correction: 'Correction.',
+      advantageTeam: 'Advantage {{teamName}}',
       gamePoint: 'Game point {{teamName}}',
       breakPoint: 'Break point {{teamName}}',
       setPoint: 'Set point {{teamName}}',
