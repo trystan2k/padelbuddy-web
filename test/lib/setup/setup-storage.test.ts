@@ -26,6 +26,8 @@ describe('setup-storage', () => {
       muted: true,
       verbosity: 'verbose',
       voiceName: 'Alex',
+      team1Name: 'Padel Wizards',
+      team2Name: 'Court Kings',
       audioAnnouncementsEnabled: false,
       servingIndicatorEnabled: false,
       countdownTimerEnabled: true,
@@ -79,6 +81,8 @@ describe('setup-storage', () => {
       muted: true,
       verbosity: 'minimal',
       voiceName: 'Alex',
+      team1Name: null,
+      team2Name: null,
       audioAnnouncementsEnabled: false,
       servingIndicatorEnabled: false,
       countdownTimerEnabled: true,
@@ -91,6 +95,8 @@ describe('setup-storage', () => {
       muted: true,
       verbosity: 'minimal',
       voiceName: 'Alex',
+      team1Name: null,
+      team2Name: null,
       audioAnnouncementsEnabled: false,
       servingIndicatorEnabled: false,
       countdownTimerEnabled: true,
@@ -166,6 +172,8 @@ describe('setup-storage', () => {
       muted: true,
       verbosity: 'verbose',
       voiceName: 'Alex',
+      team1Name: 'Padel Wizards',
+      team2Name: 'Court Kings',
       audioAnnouncementsEnabled: false,
       servingIndicatorEnabled: false,
       countdownTimerEnabled: true,
@@ -179,6 +187,8 @@ describe('setup-storage', () => {
 
     await expect(storage.loadSetupPreferences()).resolves.toEqual({
       ...defaultSetupPreferences,
+      team1Name: 'Padel Wizards',
+      team2Name: 'Court Kings',
       audioAnnouncementsEnabled: false,
       servingIndicatorEnabled: false,
       countdownTimerEnabled: true,
@@ -210,6 +220,8 @@ describe('setup-storage', () => {
       muted: true,
       verbosity: 'verbose',
       voiceName: 'Alex',
+      team1Name: 'Padel Wizards',
+      team2Name: 'Court Kings',
       audioAnnouncementsEnabled: false,
       servingIndicatorEnabled: false,
       countdownTimerEnabled: true,
@@ -228,6 +240,8 @@ describe('setup-storage', () => {
 
     expect(fakeIndexedDb.getRecord(setupPreferenceObjectStoreName, 'setup-preference')).toEqual({
       ...defaultSetupPreferences,
+      team1Name: 'Padel Wizards',
+      team2Name: 'Court Kings',
       audioAnnouncementsEnabled: false,
       servingIndicatorEnabled: false,
       countdownTimerEnabled: true,
@@ -285,6 +299,83 @@ describe('setup-storage', () => {
     vi.stubGlobal('indexedDB', fakeIndexedDb.factory);
 
     const storage = createSetupStorage({ databaseName: 'invalid-voice-db' });
+
+    await expect(storage.loadSetupPreferences()).resolves.toBeNull();
+  });
+
+  it('persists custom team names in the unified setup store', async () => {
+    const fakeIndexedDb = createFakeIndexedDb();
+    vi.stubGlobal('indexedDB', fakeIndexedDb.factory);
+
+    const storage = createSetupStorage({ databaseName: 'team-name-slice-db' });
+
+    await storage.saveSetupPreferenceSlice({
+      team1Name: 'Padel Wizards',
+      team2Name: 'Court Kings'
+    });
+
+    await expect(storage.loadSetupPreferences()).resolves.toEqual({
+      ...defaultSetupPreferences,
+      team1Name: 'Padel Wizards',
+      team2Name: 'Court Kings'
+    });
+  });
+
+  it('allows custom team names to be cleared by a slice save', async () => {
+    const fakeIndexedDb = createFakeIndexedDb();
+    vi.stubGlobal('indexedDB', fakeIndexedDb.factory);
+
+    const storage = createSetupStorage({ databaseName: 'clear-team-name-slice-db' });
+
+    await storage.saveSetupPreferenceSlice({
+      team1Name: 'Padel Wizards',
+      team2Name: 'Court Kings'
+    });
+    await storage.saveSetupPreferenceSlice({ team1Name: null, team2Name: null });
+
+    await expect(storage.loadSetupPreferences()).resolves.toEqual(defaultSetupPreferences);
+  });
+
+  it('returns null when stored team1Name is invalid', async () => {
+    const fakeIndexedDb = createFakeIndexedDb({
+      initialObjectStoreNames: [setupPreferenceObjectStoreName],
+      initialRecords: [
+        {
+          storeName: setupPreferenceObjectStoreName,
+          key: 'setup-preference',
+          value: {
+            ...defaultSetupPreferences,
+            team1Name: { value: 'Padel Wizards' },
+            updatedAt: '2024-01-01T00:00:00.000Z'
+          }
+        }
+      ]
+    });
+    vi.stubGlobal('indexedDB', fakeIndexedDb.factory);
+
+    const storage = createSetupStorage({ databaseName: 'invalid-team1-name-db' });
+
+    await expect(storage.loadSetupPreferences()).resolves.toBeNull();
+  });
+
+  it('returns null when stored team2Name is invalid', async () => {
+    const fakeIndexedDb = createFakeIndexedDb({
+      initialObjectStoreNames: [setupPreferenceObjectStoreName],
+      initialRecords: [
+        {
+          storeName: setupPreferenceObjectStoreName,
+          key: 'setup-preference',
+          value: {
+            ...defaultSetupPreferences,
+            team2Name: ['Court Kings'],
+            updatedAt: '2024-01-01T00:00:00.000Z'
+          }
+        }
+      ]
+    });
+    vi.stubGlobal('indexedDB', fakeIndexedDb.factory);
+
+    const storage = createSetupStorage({ databaseName: 'invalid-team2-name-db' });
 
     await expect(storage.loadSetupPreferences()).resolves.toBeNull();
   });

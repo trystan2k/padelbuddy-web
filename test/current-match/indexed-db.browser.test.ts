@@ -90,6 +90,8 @@ describe('current match IndexedDB persistence', () => {
       muted: false,
       verbosity: 'standard',
       voiceName: null,
+      team1Name: null,
+      team2Name: null,
       audioAnnouncementsEnabled: true,
       servingIndicatorEnabled: true,
       countdownTimerEnabled: false,
