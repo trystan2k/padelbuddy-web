@@ -82,6 +82,8 @@ describe('use-media-buttons-remote browser', () => {
   });
 
   afterEach(() => {
+    vi.useRealTimers();
+
     // Restore original mediaSession
     Object.defineProperty(navigator, 'mediaSession', {
       value: originalMediaSession,

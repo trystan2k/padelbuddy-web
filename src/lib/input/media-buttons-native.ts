@@ -81,6 +81,23 @@ export function listenToNativeMediaButtons(callback: MediaButtonsNativeCallback)
   let listenerHandle: MediaButtonsListenerHandle | null = null;
   let listenerHandlePromise: Promise<MediaButtonsListenerHandle> | null = null;
   let disposed = false;
+  let listenerRemoved = false;
+
+  const removeListenerOnce = (handle: MediaButtonsListenerHandle | null): void => {
+    if (!handle || listenerRemoved) {
+      return;
+    }
+
+    listenerRemoved = true;
+
+    try {
+      void Promise.resolve(handle.remove()).catch(() => {
+        // Ignore cleanup errors
+      });
+    } catch {
+      // Ignore cleanup errors
+    }
+  };
 
   try {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion, @typescript-eslint/no-explicit-any
@@ -99,10 +116,11 @@ export function listenToNativeMediaButtons(callback: MediaButtonsNativeCallback)
 
     void listenerHandlePromise
       .then((handle) => {
+        listenerHandlePromise = null;
+
         if (disposed) {
-          void Promise.resolve(handle.remove()).catch(() => {
-            // Ignore cleanup errors
-          });
+          removeListenerOnce(handle);
+          return;
         }
 
         listenerHandle = handle;
@@ -123,19 +141,14 @@ export function listenToNativeMediaButtons(callback: MediaButtonsNativeCallback)
   return () => {
     disposed = true;
 
-    try {
-      void listenerHandle?.remove();
-    } catch {
-      // Ignore cleanup errors
-    }
+    removeListenerOnce(listenerHandle);
 
-    void listenerHandlePromise?.then((handle) => {
-      void Promise.resolve(handle.remove()).catch(() => {
-        // Ignore cleanup errors
+    if (!listenerHandle) {
+      void listenerHandlePromise?.then((handle) => {
+        removeListenerOnce(handle);
+        return;
       });
-
-      return;
-    });
+    }
 
     void stopNativeMediaButtonsListening().catch(() => {
       // Ignore cleanup errors

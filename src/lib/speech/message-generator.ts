@@ -83,12 +83,7 @@ function getPointPressureMessage(data: SpeechEventData): string | null {
     (data.pointPressure === 'set-point' || data.pointPressure === 'match-point') &&
     data.pointPressureTeam
   ) {
-    const pointPressureTeamName =
-      data.pointPressureTeam === 'team-1' ? data.team1Name : data.team2Name;
-
-    if (!pointPressureTeamName) {
-      return null;
-    }
+    const pointPressureTeamName = getTeamName(data, data.pointPressureTeam);
 
     return data.pointPressure === 'match-point'
       ? t('score.announcements.matchPoint', { teamName: pointPressureTeamName })
@@ -96,19 +91,21 @@ function getPointPressureMessage(data: SpeechEventData): string | null {
   }
 
   if (data.pointPressure === 'break-point') {
-    const teamName = data.pointPressureTeam
+    const teamId = data.pointPressureTeam
       ? data.pointPressureTeam === 'team-1'
-        ? data.team2Name
-        : data.team1Name
+        ? 'team-2'
+        : 'team-1'
       : data.servingTeam
         ? data.servingTeam === 'team-1'
-          ? data.team2Name
-          : data.team1Name
+          ? 'team-2'
+          : 'team-1'
         : null;
 
-    if (!teamName) {
+    if (!teamId) {
       return null;
     }
+
+    const teamName = getTeamName(data, teamId);
 
     return t('score.announcements.breakPoint', { teamName });
   }
@@ -116,19 +113,21 @@ function getPointPressureMessage(data: SpeechEventData): string | null {
   if (data.pointPressure === 'game-point') {
     // Prefer pointPressureTeam when present (e.g. when serving indicator is disabled)
     // Fall back to servingTeam only when pointPressureTeam is not set
-    const teamName = data.pointPressureTeam
+    const teamId = data.pointPressureTeam
       ? data.pointPressureTeam === 'team-1'
-        ? data.team1Name
-        : data.team2Name
+        ? 'team-1'
+        : 'team-2'
       : data.servingTeam
         ? data.servingTeam === 'team-1'
-          ? data.team1Name
-          : data.team2Name
+          ? 'team-1'
+          : 'team-2'
         : null;
 
-    if (!teamName) {
+    if (!teamId) {
       return null;
     }
+
+    const teamName = getTeamName(data, teamId);
 
     return t('score.announcements.gamePoint', { teamName });
   }
