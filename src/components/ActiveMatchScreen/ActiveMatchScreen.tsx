@@ -60,8 +60,8 @@ export function ActiveMatchScreen({
   const [isCompactHeight, setIsCompactHeight] = useState(false);
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-    if (typeof window.matchMedia !== 'function') return;
+    if (typeof window === 'undefined') return undefined;
+    if (typeof window.matchMedia !== 'function') return undefined;
 
     const query = window.matchMedia('(max-height: 480px)');
     setIsCompactHeight(query.matches);

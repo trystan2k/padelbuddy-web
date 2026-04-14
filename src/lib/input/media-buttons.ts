@@ -104,6 +104,10 @@ export function actionToTeamId(action: MediaButtonAction): MatchTeamId {
     case 'add-team-2':
     case 'revert-team-2':
       return 'team-2';
+    default: {
+      const _exhaustive: never = action;
+      throw new Error(`Unknown action: ${String(_exhaustive)}`);
+    }
   }
 }
 

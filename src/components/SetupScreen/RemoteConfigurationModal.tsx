@@ -151,7 +151,7 @@ export function RemoteConfigurationModal({
   useEffect(() => {
     if (!isOpen) {
       setListeningAction(null);
-      return;
+      return undefined;
     }
 
     let isMounted = true;
@@ -188,7 +188,7 @@ export function RemoteConfigurationModal({
 
   useEffect(() => {
     if (!isOpen || !listeningAction) {
-      return;
+      return undefined;
     }
 
     const handleCapture = (event: KeyboardEvent) => {

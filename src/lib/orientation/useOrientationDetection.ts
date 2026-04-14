@@ -46,7 +46,7 @@ export function useOrientationDetection(): OrientationState {
 
   useEffect(() => {
     if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
-      return;
+      return undefined;
     }
 
     const query = window.matchMedia('(orientation: portrait)');

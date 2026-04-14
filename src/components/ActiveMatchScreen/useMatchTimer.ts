@@ -59,7 +59,7 @@ export function useMatchTimer(options: UseMatchTimerOptions): UseMatchTimerRetur
 
   useEffect(() => {
     if (!isLiveClockMode && (startedAt === null || isMatchCompleted || hasCountdownExpired)) {
-      return;
+      return undefined;
     }
 
     const intervalId = setInterval(() => {

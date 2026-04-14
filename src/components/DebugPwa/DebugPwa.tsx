@@ -64,6 +64,8 @@ export function DebugPwa() {
         clearInterval(id);
       };
     }
+
+    return undefined;
   }, [isVisible]);
 
   const handleUpdate = useCallback(async () => {

@@ -157,7 +157,7 @@ export function MatchEndScreen({
   // Close debug modal on Escape
   useEffect(() => {
     if (!debugShareOpen) {
-      return;
+      return undefined;
     }
     const handler = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {

@@ -126,7 +126,7 @@ export function useInactivityTimer(
     if (!enabled) {
       clearTimer();
       setIsActive(true);
-      return;
+      return undefined;
     }
 
     // Start the inactivity timer
