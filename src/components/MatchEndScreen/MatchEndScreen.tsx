@@ -9,6 +9,7 @@ import { TopBar } from '@/components/ui/TopBar/TopBar';
 import type { MatchAction, MatchFormat, MatchProjection, MatchSetup } from '@/core/match/types';
 import { clearCurrentMatch } from '@/lib/current-match/indexed-db';
 import { createCurrentMatchSession } from '@/lib/current-match/session';
+import { primeWebMediaSession } from '@/lib/input/web-media-session';
 import { defaultLocale, isSupportedLocale } from '@/lib/i18n/types';
 import { useSpeechService } from '@/lib/speech/speech-service';
 import { prepareCurrentMatchRouteNavigation } from '@/lib/router/current-match-route-flow';
@@ -254,6 +255,8 @@ export function MatchEndScreen({
     if (isContinuingMatch) {
       return;
     }
+
+    primeWebMediaSession();
 
     setIsContinuingMatch(true);
 
