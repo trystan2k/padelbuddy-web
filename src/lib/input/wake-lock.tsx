@@ -128,7 +128,7 @@ export function useWakeLock(options: UseWakeLockOptions = {}): UseWakeLockReturn
 
   useEffect(() => {
     if (!isSupportedValue || !enabled) {
-      return;
+      return undefined;
     }
 
     const handleVisibilityChange = async () => {

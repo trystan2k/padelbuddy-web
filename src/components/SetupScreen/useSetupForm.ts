@@ -135,7 +135,7 @@ export function useSetupForm() {
 
   useEffect(() => {
     if (!hasHydratedPersistedPreferences.current) {
-      return;
+      return undefined;
     }
 
     const nextPersistedSetupSlice: SetupPreferenceSlice = {
@@ -149,7 +149,7 @@ export function useSetupForm() {
     };
 
     if (areSetupPreferenceSlicesEqual(lastPersistedSetupSlice.current, nextPersistedSetupSlice)) {
-      return;
+      return undefined;
     }
 
     let isCancelled = false;

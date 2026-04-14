@@ -29,7 +29,7 @@ export function LicenseGate({ children }: LicenseGateProps) {
   useEffect(() => {
     const platform = Capacitor.getPlatform();
     if (platform !== 'android') {
-      return;
+      return undefined;
     }
 
     let cancelled = false;

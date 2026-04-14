@@ -38,8 +38,8 @@ function formatChairUmpireScore(
 
   // Compare raw score values (not translated words) to detect deuce/golden point
   // This works correctly across all locales
-  const rawTeam1 = typeof team1Score === 'number' ? team1Score : parseInt(String(team1Score), 10);
-  const rawTeam2 = typeof team2Score === 'number' ? team2Score : parseInt(String(team2Score), 10);
+  const rawTeam1 = typeof team1Score === 'number' ? team1Score : parseInt(team1Score, 10);
+  const rawTeam2 = typeof team2Score === 'number' ? team2Score : parseInt(team2Score, 10);
 
   if (rawTeam1 === 40 && rawTeam2 === 40) {
     return gameMode === 'golden-point'

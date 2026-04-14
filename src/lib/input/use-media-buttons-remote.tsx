@@ -172,23 +172,23 @@ export function useMediaButtonsRemote(
   // Note: volumeup/volumedown are NOT valid MediaSessionAction values, they only come through DOM keydown
   useEffect(() => {
     if (typeof window === 'undefined') {
-      return;
+      return undefined;
     }
 
     if (typeof navigator === 'undefined') {
-      return;
+      return undefined;
     }
 
     // Skip registration when disabled to avoid claiming media key events
     // that the OS may still want to handle
     if (!enabled) {
-      return;
+      return undefined;
     }
 
     const mediaSession = navigator.mediaSession;
 
     if (!mediaSession) {
-      return;
+      return undefined;
     }
 
     activateWebMediaSession();
@@ -243,16 +243,16 @@ export function useMediaButtonsRemote(
   // Native platform media button listener (Android/iOS via Capacitor plugin)
   useEffect(() => {
     if (typeof window === 'undefined') {
-      return;
+      return undefined;
     }
 
     if (!Capacitor.isNativePlatform()) {
-      return;
+      return undefined;
     }
 
     // Skip registration when disabled to avoid capturing events we shouldn't handle
     if (!enabled) {
-      return;
+      return undefined;
     }
 
     const cleanup = listenToNativeMediaButtons(onMediaButtonPress);
@@ -263,7 +263,7 @@ export function useMediaButtonsRemote(
   // DOM keydown fallback for media keys supported by getMediaButtonIdFromKeyboardInput
   useEffect(() => {
     if (typeof window === 'undefined') {
-      return;
+      return undefined;
     }
 
     const handleKeyDown = (event: KeyboardEvent) => {

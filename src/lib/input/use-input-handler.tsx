@@ -226,7 +226,7 @@ export function useInputHandler(
     // cancelAllPendingAdds() is the important cleanup here.
     if (!enabled) {
       cancelAllPendingAdds();
-      return;
+      return undefined;
     }
 
     window.addEventListener('keydown', onKeyDown);

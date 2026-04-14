@@ -48,7 +48,7 @@ export function useMatchEndShare({
   // Handle capture when ShareScreen is ready
   useEffect(() => {
     if (!shareScreenReady || isCapturingRef.current) {
-      return;
+      return undefined;
     }
 
     const captureNode = captureRef.current;
@@ -56,7 +56,7 @@ export function useMatchEndShare({
     if (!captureNode) {
       setErrorMessage(labels.errorMessage);
       onCaptureComplete();
-      return;
+      return undefined;
     }
 
     isCapturingRef.current = true;
