@@ -34,7 +34,6 @@ updates:
     groups:
       all-actions:
         patterns: ['*']
-    versioning-strategy: 'increase'
     assignees:
       - 'trystan2k'
     labels:
