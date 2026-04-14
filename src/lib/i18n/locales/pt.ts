@@ -222,24 +222,24 @@ export default {
       trigger: 'Config. controle remoto',
       title: 'Controle Remoto',
       description:
-        'Você pode usar seu teclado ou os botões de mídia (Aumentar/Diminuir Volume, Próxima/Anterior) para controlar a partida. Clique em um botão do teclado para capturar sua tecla preferida.',
+        'Você pode usar seu teclado ou os botões de faixa (Anterior/Próxima) para controlar a partida. Clique em um botão do teclado para capturar sua tecla preferida.',
       listening: 'Escutando...',
       listeningAnnouncement: 'Pressione um botão no seu controle para atribuí-lo a {{action}}.',
       notSet: 'Não configurado',
       mediaButtons: {
-        volumeUp: 'Aumentar volume',
-        volumeUpShort: '+ Aumentar',
-        volumeDown: 'Diminuir volume',
-        volumeDownShort: '- Diminuir',
-        nextTrack: 'Próxima faixa',
-        nextTrackShort: '>> Próxima',
-        previousTrack: 'Faixa anterior',
-        previousTrackShort: '<< Anterior',
-        notConfigurable: 'Não configurável'
+        nextTrack: 'Proxima um click',
+        nextTrackDouble: 'Proxima duplo clicks',
+        nextTrackShort: '>> Proxima um click',
+        nextTrackShortDouble: '>> Proxima duplo clicks',
+        previousTrack: 'Anterior um click',
+        previousTrackDouble: 'Anterior duplo clicks',
+        previousTrackShort: '<< Anterior um click',
+        previousTrackShortDouble: '<< Anterior duplo clicks',
+        notConfigurable: 'Not configurable'
       },
       rows: {
-        singlePressHint: 'Um toque para adicionar um ponto',
-        guardedUndoHint: 'Remove a última ação de pontuação daquele time',
+        addPointHint: 'Pressione para adicionar um ponto a esse time',
+        revertPointHint: 'Pressione para reverter o ponto desse time',
         mediaBadgeTooltip: 'Atribuição fixa do botão de mídia'
       },
       actions: {

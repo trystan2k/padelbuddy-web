@@ -5,19 +5,16 @@ import { useCallback, useEffect, useRef } from 'react';
 
 import type { MatchAction, MatchTeamId } from '@/core/match/types';
 
-import {
-  actionToTeamId,
-  isAddAction,
-  mediaButtonMapping,
-  type MediaButtonAction
-} from './media-buttons';
+import { getMediaButtonIdFromKeyboardInput } from './media-buttons';
 import { listenToNativeMediaButtons } from './media-buttons-native';
 import { type UseWakeLockReturn, useWakeLock } from './wake-lock';
+import { activateWebMediaSession, clearWebMediaSession } from './web-media-session';
 
 interface UseMediaButtonsRemoteOptions {
   actions: MatchAction[];
   enabled?: boolean;
   useWakeLock?: boolean;
+  bufferedAddWindowMs?: number;
 }
 
 interface UseMediaButtonsRemoteCallbacks {
@@ -33,6 +30,17 @@ interface UseMediaButtonsRemoteReturn {
   wakeLockState: Pick<UseWakeLockReturn, 'isSupported' | 'isActive' | 'error'>;
 }
 
+function getTeamIdFromTrackButton(buttonId: string): MatchTeamId | null {
+  switch (buttonId) {
+    case 'media-track-previous':
+      return 'team-1';
+    case 'media-track-next':
+      return 'team-2';
+    default:
+      return null;
+  }
+}
+
 /**
  * Web Media Session + DOM key fallback hook for media button remote controls.
  * This hook owns:
@@ -44,11 +52,20 @@ export function useMediaButtonsRemote(
   options: UseMediaButtonsRemoteOptions,
   callbacks: UseMediaButtonsRemoteCallbacks
 ): UseMediaButtonsRemoteReturn {
-  const { actions, enabled = true, useWakeLock: useWakeLockEnabled = false } = options;
+  const {
+    actions,
+    enabled = true,
+    useWakeLock: useWakeLockEnabled = false,
+    bufferedAddWindowMs = 600
+  } = options;
 
   const callbacksRef = useRef(callbacks);
   const actionsRef = useRef(actions);
   const enabledRef = useRef(enabled);
+  const pendingAddTimersRef = useRef<Record<MatchTeamId, ReturnType<typeof setTimeout> | null>>({
+    'team-1': null,
+    'team-2': null
+  });
 
   callbacksRef.current = callbacks;
   actionsRef.current = actions;
@@ -81,41 +98,74 @@ export function useMediaButtonsRemote(
     []
   );
 
-  const handleMediaButtonAction = useCallback(
-    (action: MediaButtonAction) => {
-      if (!enabledRef.current) {
+  const undoForTeamIfPossible = useCallback(
+    (teamId: MatchTeamId) => {
+      const hasScoringAction = actionsRef.current.some(
+        (action) => action.type === 'score-point' && action.teamId === teamId
+      );
+
+      if (!hasScoringAction) {
         return;
       }
 
-      const teamId = actionToTeamId(action);
-
-      if (isAddAction(action)) {
-        invokeCallbackSafely(callbacksRef.current.onAdd, teamId);
-      } else {
-        // MatchAction is currently ScorePointAction only; guard is future-proof if new action types are added
-        const hasScoringAction = actionsRef.current.some(
-          (a) => a.type === 'score-point' && a.teamId === teamId
-        );
-
-        if (!hasScoringAction) {
-          return;
-        }
-
-        invokeCallbackSafely(callbacksRef.current.onUndoForTeam, teamId);
-      }
+      invokeCallbackSafely(callbacksRef.current.onUndoForTeam, teamId);
     },
     [invokeCallbackSafely]
   );
 
+  const cancelPendingAdd = useCallback((teamId: MatchTeamId): boolean => {
+    const timer = pendingAddTimersRef.current[teamId];
+
+    if (timer === null) {
+      return false;
+    }
+
+    clearTimeout(timer);
+    pendingAddTimersRef.current[teamId] = null;
+    return true;
+  }, []);
+
+  const cancelAllPendingAdds = useCallback(() => {
+    cancelPendingAdd('team-1');
+    cancelPendingAdd('team-2');
+  }, [cancelPendingAdd]);
+
+  const queueBufferedAdd = useCallback(
+    (teamId: MatchTeamId) => {
+      if (pendingAddTimersRef.current[teamId]) {
+        cancelPendingAdd(teamId);
+        undoForTeamIfPossible(teamId);
+        return;
+      }
+
+      pendingAddTimersRef.current[teamId] = setTimeout(() => {
+        pendingAddTimersRef.current[teamId] = null;
+
+        if (!enabledRef.current) {
+          return;
+        }
+
+        invokeCallbackSafely(callbacksRef.current.onAdd, teamId);
+      }, bufferedAddWindowMs);
+    },
+    [bufferedAddWindowMs, cancelPendingAdd, invokeCallbackSafely, undoForTeamIfPossible]
+  );
+
   const onMediaButtonPress = useCallback(
     (buttonId: string) => {
-      const action = mediaButtonMapping[buttonId];
-
-      if (action) {
-        handleMediaButtonAction(action);
+      if (!enabledRef.current) {
+        return;
       }
+
+      const teamId = getTeamIdFromTrackButton(buttonId);
+
+      if (!teamId) {
+        return;
+      }
+
+      queueBufferedAdd(teamId);
     },
-    [handleMediaButtonAction]
+    [queueBufferedAdd]
   );
 
   // Set up MediaSession handlers for nexttrack/previoustrack on the Web platform
@@ -140,6 +190,8 @@ export function useMediaButtonsRemote(
     if (!mediaSession) {
       return;
     }
+
+    activateWebMediaSession();
 
     // Only 'nexttrack' and 'previoustrack' are valid MediaSessionAction values
     const supportedActions: Array<'nexttrack' | 'previoustrack'> = ['nexttrack', 'previoustrack'];
@@ -183,6 +235,8 @@ export function useMediaButtonsRemote(
           // Ignore cleanup errors
         }
       }
+
+      clearWebMediaSession();
     };
   }, [enabled, onMediaButtonPress]);
 
@@ -201,14 +255,10 @@ export function useMediaButtonsRemote(
       return;
     }
 
-    const handleNativeButtonAction = (action: MediaButtonAction) => {
-      handleMediaButtonAction(action);
-    };
-
-    const cleanup = listenToNativeMediaButtons(handleNativeButtonAction);
+    const cleanup = listenToNativeMediaButtons(onMediaButtonPress);
 
     return cleanup;
-  }, [enabled, handleMediaButtonAction]);
+  }, [enabled, onMediaButtonPress]);
 
   // DOM keydown fallback for media keys (including volumeup/volumedown which aren't MediaSession actions)
   useEffect(() => {
@@ -229,23 +279,9 @@ export function useMediaButtonsRemote(
         return;
       }
 
-      // Map DOM key values to button IDs
-      let buttonId: string | undefined;
-
-      switch (event.code) {
-        case 'VolumeUp':
-          buttonId = 'media-volume-up';
-          break;
-        case 'VolumeDown':
-          buttonId = 'media-volume-down';
-          break;
-        case 'MediaTrackNext':
-          buttonId = 'media-track-next';
-          break;
-        case 'MediaTrackPrevious':
-          buttonId = 'media-track-previous';
-          break;
-      }
+      const buttonId =
+        getMediaButtonIdFromKeyboardInput(event.code) ??
+        getMediaButtonIdFromKeyboardInput(event.key);
 
       if (buttonId) {
         event.preventDefault();
@@ -254,13 +290,27 @@ export function useMediaButtonsRemote(
     };
 
     if (enabled) {
-      window.addEventListener('keydown', handleKeyDown);
+      window.addEventListener('keydown', handleKeyDown, true);
     }
 
     return () => {
-      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keydown', handleKeyDown, true);
     };
   }, [enabled, onMediaButtonPress]);
+
+  useEffect(() => {
+    if (enabled) {
+      return;
+    }
+
+    cancelAllPendingAdds();
+  }, [cancelAllPendingAdds, enabled]);
+
+  useEffect(() => {
+    return () => {
+      cancelAllPendingAdds();
+    };
+  }, [cancelAllPendingAdds]);
 
   return {
     handlers: {

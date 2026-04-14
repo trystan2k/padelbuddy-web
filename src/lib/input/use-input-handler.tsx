@@ -7,7 +7,7 @@ import type { MatchAction, MatchTeamId } from '@/core/match/types';
 import { getActionFromKey, type RemoteControllerBindings } from './keyboard-aliases';
 import { type UseWakeLockReturn, useWakeLock } from './wake-lock';
 
-const defaultBufferedAddWindowMs = 380;
+const defaultBufferedAddWindowMs = 600;
 
 interface UseInputHandlerOptions {
   actions: MatchAction[];

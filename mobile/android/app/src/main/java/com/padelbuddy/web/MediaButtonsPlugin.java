@@ -1,5 +1,7 @@
 package com.padelbuddy.web;
 
+import android.view.KeyEvent;
+
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
@@ -8,17 +10,38 @@ import com.getcapacitor.annotation.CapacitorPlugin;
 
 @CapacitorPlugin(name = "MediaButtons")
 public class MediaButtonsPlugin extends Plugin {
+    private static volatile MediaButtonsPlugin activeInstance;
+
     /**
-     * Note: This plugin only supports manual button dispatch via dispatchButton().
-     * It does NOT hook into actual Android hardware media/volume button events.
-     * Hardware button interception requires more complex implementation.
-     *
      * Supported button IDs that can be dispatched from native.
      */
-    private static final String BUTTON_VOLUME_UP = "media-volume-up";
-    private static final String BUTTON_VOLUME_DOWN = "media-volume-down";
     private static final String BUTTON_TRACK_NEXT = "media-track-next";
     private static final String BUTTON_TRACK_PREVIOUS = "media-track-previous";
+
+    @Override
+    public void load() {
+        super.load();
+        activeInstance = this;
+    }
+
+    @Override
+    protected void handleOnDestroy() {
+        if (activeInstance == this) {
+            activeInstance = null;
+        }
+
+        super.handleOnDestroy();
+    }
+
+    @PluginMethod
+    public void startListening(PluginCall call) {
+        call.resolve();
+    }
+
+    @PluginMethod
+    public void stopListening(PluginCall call) {
+        call.resolve();
+    }
 
     @PluginMethod
     public void dispatchButton(PluginCall call) {
@@ -35,19 +58,47 @@ public class MediaButtonsPlugin extends Plugin {
             return;
         }
 
-        // Emit the event to JavaScript
-        JSObject eventData = new JSObject();
-        eventData.put("buttonId", buttonId);
-
-        notifyListeners("mediaButton", eventData);
+        emitButton(buttonId);
 
         call.resolve();
     }
 
+    public static boolean handleHardwareKey(int keyCode) {
+        MediaButtonsPlugin plugin = activeInstance;
+
+        if (plugin == null) {
+            return false;
+        }
+
+        String buttonId = plugin.buttonIdFromKeyCode(keyCode);
+
+        if (buttonId == null) {
+            return false;
+        }
+
+        plugin.emitButton(buttonId);
+        return true;
+    }
+
+    private void emitButton(String buttonId) {
+        JSObject eventData = new JSObject();
+        eventData.put("buttonId", buttonId);
+        notifyListeners("mediaButton", eventData);
+    }
+
+    private String buttonIdFromKeyCode(int keyCode) {
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_MEDIA_NEXT:
+                return BUTTON_TRACK_NEXT;
+            case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
+                return BUTTON_TRACK_PREVIOUS;
+            default:
+                return null;
+        }
+    }
+
     private boolean isValidButtonId(String buttonId) {
-        return BUTTON_VOLUME_UP.equals(buttonId)
-            || BUTTON_VOLUME_DOWN.equals(buttonId)
-            || BUTTON_TRACK_NEXT.equals(buttonId)
+        return BUTTON_TRACK_NEXT.equals(buttonId)
             || BUTTON_TRACK_PREVIOUS.equals(buttonId);
     }
 }

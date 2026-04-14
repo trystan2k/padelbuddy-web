@@ -5,7 +5,7 @@ import {
 
 /**
  * Remote controller mode types.
- * - 'media-buttons': Uses fixed media button mappings (Volume Up/Down, Next/Previous Track)
+ * - 'media-buttons': Uses fixed media button mappings (Previous/Next Track with single/double press)
  * - 'keyboard-mapping': Uses customizable keyboard bindings
  */
 export type RemoteControllerMode = 'media-buttons' | 'keyboard-mapping';

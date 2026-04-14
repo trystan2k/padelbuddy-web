@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/ui/Button/Button';
 import { useToast } from '@/components/ui/Toast/useToast';
-import { Volume2Icon, Volume1Icon, SkipForwardIcon, SkipBackIcon } from '@/components/ui/Icons';
+import { SkipBackIcon, SkipForwardIcon } from '@/components/ui/Icons';
 import {
   assignRemoteControllerBinding,
   createEmptyRemoteControllerBindings,
@@ -38,12 +38,11 @@ interface UnifiedRowProps {
   mediaBadgeLabel: string;
   mediaIconName: MediaButtonIconName;
   mediaButtonLabel: string;
+  mediaIsDoublePress: boolean;
   disabled: boolean;
 }
 
 const iconMap: Record<MediaButtonIconName, React.FC<{ size?: number; className?: string }>> = {
-  'volume-up': Volume2Icon,
-  'volume-down': Volume1Icon,
   'skip-forward': SkipForwardIcon,
   'skip-back': SkipBackIcon
 };
@@ -58,6 +57,7 @@ const UnifiedRow = ({
   mediaBadgeLabel,
   mediaIconName,
   mediaButtonLabel,
+  mediaIsDoublePress,
   disabled
 }: UnifiedRowProps) => {
   const { t } = useTranslation();
@@ -109,7 +109,15 @@ const UnifiedRow = ({
           role="img"
           title={`${mediaButtonLabel} - ${t('setup.remoteConfig.mediaButtons.notConfigurable')}`}
         >
-          <MediaIcon size={22} />
+          {mediaIsDoublePress ? (
+            <span className={styles.mediaBadgeIconGroup}>
+              <MediaIcon size={22} />
+              <span className={styles.mediaBadgePlus}>+</span>
+              <MediaIcon size={22} />
+            </span>
+          ) : (
+            <MediaIcon size={22} />
+          )}
         </span>
       </div>
     </div>
@@ -333,28 +341,29 @@ export function RemoteConfigurationModal({
       mediaBadgeLabel: string;
       mediaIconName: MediaButtonIconName;
       mediaButtonLabel: string;
+      mediaIsDoublePress: boolean;
     }> = [];
 
     const rowConfigs: Array<{ action: ConfigurableKeyboardAction; label: string; hint: string }> = [
       {
         action: 'add-team-1',
         label: t('setup.remoteConfig.actions.addTeam1'),
-        hint: t('setup.remoteConfig.rows.singlePressHint')
+        hint: t('setup.remoteConfig.rows.addPointHint')
       },
       {
         action: 'revert-team-1',
         label: t('setup.remoteConfig.actions.revertTeam1'),
-        hint: t('setup.remoteConfig.rows.guardedUndoHint')
+        hint: t('setup.remoteConfig.rows.revertPointHint')
       },
       {
         action: 'add-team-2',
         label: t('setup.remoteConfig.actions.addTeam2'),
-        hint: t('setup.remoteConfig.rows.singlePressHint')
+        hint: t('setup.remoteConfig.rows.addPointHint')
       },
       {
         action: 'revert-team-2',
         label: t('setup.remoteConfig.actions.revertTeam2'),
-        hint: t('setup.remoteConfig.rows.guardedUndoHint')
+        hint: t('setup.remoteConfig.rows.revertPointHint')
       }
     ];
 
@@ -363,8 +372,10 @@ export function RemoteConfigurationModal({
       bindingLabels.push({
         ...rowConfig,
         mediaBadgeLabel: mediaRow?.shortLabel ?? '',
-        mediaIconName: mediaRow?.iconName ?? 'volume-up',
-        mediaButtonLabel: mediaRow?.buttonLabel ?? ''
+        mediaIconName: mediaRow?.iconName ?? 'skip-back',
+        mediaButtonLabel: mediaRow?.buttonLabel ?? '',
+        mediaIsDoublePress:
+          rowConfig.action === 'revert-team-1' || rowConfig.action === 'revert-team-2'
       });
     }
 
@@ -407,6 +418,7 @@ export function RemoteConfigurationModal({
               mediaBadgeLabel={row.mediaBadgeLabel}
               mediaIconName={row.mediaIconName}
               mediaButtonLabel={row.mediaButtonLabel}
+              mediaIsDoublePress={row.mediaIsDoublePress}
               disabled={!draftConfig}
             />
           ))}

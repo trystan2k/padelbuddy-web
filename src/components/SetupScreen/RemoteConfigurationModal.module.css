@@ -104,6 +104,20 @@
   letter-spacing: var(--semantic-typography-letter-spacing-display);
 }
 
+.mediaBadgeIconGroup {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--base-space-8);
+}
+
+.mediaBadgePlus {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--base-font-size-16);
+  line-height: 1;
+}
+
 .mediaBadgeSeparator {
   margin: 0 var(--base-space-8);
   color: var(--semantic-color-content-tertiary);

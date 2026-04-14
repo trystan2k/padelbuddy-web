@@ -222,24 +222,24 @@ export default {
       trigger: 'Config. del control remoto',
       title: 'Control Remoto',
       description:
-        'Puedes usar tu teclado o los botones de medios (Subir/Bajar Volumen, Siguiente/Anterior) para controlar el partido. Haz clic en un botón del teclado para capturar tu tecla preferida.',
+        'Puedes usar tu teclado o los botones de pista (Anterior/Siguiente) para controlar el partido. Haz clic en un botón del teclado para capturar tu tecla preferida.',
       listening: 'Escuchando...',
       listeningAnnouncement: 'Presiona un botón en tu control para asignarlo a {{action}}.',
       notSet: 'Sin asignar',
       mediaButtons: {
-        volumeUp: 'Subir volumen',
-        volumeUpShort: '+ Subir',
-        volumeDown: 'Bajar volumen',
-        volumeDownShort: '- Bajar',
-        nextTrack: 'Siguiente pista',
-        nextTrackShort: '>> Siguiente',
-        previousTrack: 'Pista anterior',
-        previousTrackShort: '<< Anterior',
-        notConfigurable: 'No configurable'
+        nextTrack: 'Siguiente un click',
+        nextTrackDouble: 'Siguiente doble click',
+        nextTrackShort: '>> Siguiente un click',
+        nextTrackShortDouble: '>> Anterior doble click',
+        previousTrack: 'Anterior un click',
+        previousTrackDouble: 'Anterior doble click',
+        previousTrackShort: '<< Anterior un click',
+        previousTrackShortDouble: '<< Anterior doble click',
+        notConfigurable: 'Not configurable'
       },
       rows: {
-        singlePressHint: 'Una pulsación para sumar un punto',
-        guardedUndoHint: 'Elimina la última acción de puntuación de ese equipo',
+        addPointHint: 'Presiona para sumar un punto a ese equipo',
+        revertPointHint: 'Presiona para revertir el punto de ese equipo',
         mediaBadgeTooltip: 'Asignación fija de botón de medios'
       },
       actions: {

@@ -22,6 +22,7 @@ import {
 } from '@/lib/input/remote-controller-storage';
 import { prepareCurrentMatchRouteNavigation } from '@/lib/router/current-match-route-flow';
 import { cn } from '@/lib/utils/cn';
+import { primeWebMediaSession } from '@/lib/input/web-media-session';
 import { getViewTransitionNavigationOptions } from '@/lib/utils/view-transitions';
 
 import { Layout } from '@/components/Layout/Layout';
@@ -46,42 +47,6 @@ function generateMatchId(): string {
   const bytes = new Uint8Array(6);
   crypto.getRandomValues(bytes);
   return Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('');
-}
-
-/**
- * Primes the Web Media Session API so the app can receive media button events.
- * Must be called from within a user gesture context to work reliably.
- * Note: Only 'nexttrack' and 'previoustrack' are valid MediaSessionAction values.
- * Volume buttons are handled via DOM keydown events only.
- */
-function primeMediaSession(): void {
-  if (typeof navigator === 'undefined') {
-    return;
-  }
-
-  const mediaSession = navigator.mediaSession;
-
-  if (!mediaSession) {
-    return;
-  }
-
-  try {
-    // Set up minimal action handlers to prime the session for receiving events.
-    // Only 'nexttrack' and 'previoustrack' are valid MediaSessionAction values.
-    const supportedActions: Array<'nexttrack' | 'previoustrack'> = ['nexttrack', 'previoustrack'];
-
-    for (const action of supportedActions) {
-      try {
-        mediaSession.setActionHandler(action, () => {
-          // No-op handler to prime the session
-        });
-      } catch {
-        // Some actions may not be supported; ignore
-      }
-    }
-  } catch {
-    // Media Session API not supported; ignore
-  }
 }
 
 // Format key mapping for translations
@@ -172,7 +137,7 @@ export function SetupScreen() {
 
     // Prime media session synchronously inside the user gesture when media buttons are enabled.
     if (remoteConfig.mode === 'media-buttons') {
-      primeMediaSession();
+      primeWebMediaSession();
     }
 
     setIsStarting(true);

@@ -36,20 +36,12 @@ describe('media-buttons-native', () => {
   });
 
   describe('buttonIdToTeamId', () => {
-    test('maps media-volume-up to team-1', () => {
-      expect(buttonIdToTeamId('media-volume-up')).toBe('team-1');
-    });
-
-    test('maps media-volume-down to team-1', () => {
-      expect(buttonIdToTeamId('media-volume-down')).toBe('team-1');
+    test('maps media-track-previous to team-1', () => {
+      expect(buttonIdToTeamId('media-track-previous')).toBe('team-1');
     });
 
     test('maps media-track-next to team-2', () => {
       expect(buttonIdToTeamId('media-track-next')).toBe('team-2');
-    });
-
-    test('maps media-track-previous to team-2', () => {
-      expect(buttonIdToTeamId('media-track-previous')).toBe('team-2');
     });
 
     test('returns null for unknown button ID', () => {
@@ -95,7 +87,7 @@ describe('media-buttons-native', () => {
       const mockRemove = vi.fn<() => void>();
       mockAddListener.mockResolvedValue({ remove: mockRemove });
 
-      const callback = vi.fn<() => void>();
+      const callback = vi.fn<(buttonId: string) => void>();
       const cleanup = listenToNativeMediaButtons(callback);
 
       // Wait for async addListener
@@ -103,13 +95,13 @@ describe('media-buttons-native', () => {
         expect(mockAddListener).toHaveBeenCalledWith('mediaButton', expect.any(Function));
       });
 
-      // Simulate a native event for volume up
+      // Simulate a native event for track-previous
       const listenerCallback = mockAddListener.mock.calls[0]![1] as (event: {
         buttonId: string;
       }) => void;
-      listenerCallback({ buttonId: 'media-volume-up' });
+      listenerCallback({ buttonId: 'media-track-previous' });
 
-      expect(callback).toHaveBeenCalledWith('add-team-1');
+      expect(callback).toHaveBeenCalledWith('media-track-previous');
 
       // Cleanup removes the subscription
       cleanup();
@@ -144,7 +136,7 @@ describe('media-buttons-native', () => {
     test('does nothing when not on a native platform', async () => {
       mockIsNativePlatform.mockReturnValue(false);
 
-      await dispatchNativeMediaButton('media-volume-up');
+      await dispatchNativeMediaButton('media-track-previous');
 
       // Should not throw and should not call any native method
     });

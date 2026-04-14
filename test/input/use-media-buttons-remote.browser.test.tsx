@@ -56,18 +56,11 @@ function MediaButtonsRemoteHarness({
       <span data-testid="action-count">{actions.length}</span>
       <span data-testid="latest-team">{actions.at(-1)?.teamId ?? 'none'}</span>
       <button
-        data-testid="press-volume-up"
+        data-testid="press-track-prev"
         type="button"
-        onClick={() => state.handlers.onMediaButtonPress('media-volume-up')}
+        onClick={() => state.handlers.onMediaButtonPress('media-track-previous')}
       >
-        Volume Up
-      </button>
-      <button
-        data-testid="press-volume-down"
-        type="button"
-        onClick={() => state.handlers.onMediaButtonPress('media-volume-down')}
-      >
-        Volume Down
+        Track Prev
       </button>
       <button
         data-testid="press-track-next"
@@ -75,13 +68,6 @@ function MediaButtonsRemoteHarness({
         onClick={() => state.handlers.onMediaButtonPress('media-track-next')}
       >
         Track Next
-      </button>
-      <button
-        data-testid="press-track-prev"
-        type="button"
-        onClick={() => state.handlers.onMediaButtonPress('media-track-previous')}
-      >
-        Track Prev
       </button>
     </div>
   );
@@ -106,11 +92,13 @@ describe('use-media-buttons-remote browser', () => {
   });
 
   describe('onMediaButtonPress callback', () => {
-    test('calls onAdd with team-1 for volume-up button', async () => {
+    test('calls onAdd with team-1 for track-previous button', async () => {
+      vi.useFakeTimers();
       const onAdd = vi.fn<(teamId: MatchTeamId) => Promise<void> | void>();
       const screen = await render(<MediaButtonsRemoteHarness onAdd={onAdd} />);
 
-      await screen.getByTestId('press-volume-up').click();
+      await screen.getByTestId('press-track-prev').click();
+      await vi.advanceTimersByTimeAsync(650);
 
       expect(onAdd).toHaveBeenCalledWith('team-1');
       await expect.element(screen.getByTestId('action-count')).toHaveTextContent('1');
@@ -118,70 +106,16 @@ describe('use-media-buttons-remote browser', () => {
     });
 
     test('calls onAdd with team-2 for track-next button', async () => {
+      vi.useFakeTimers();
       const onAdd = vi.fn<(teamId: MatchTeamId) => Promise<void> | void>();
       const screen = await render(<MediaButtonsRemoteHarness onAdd={onAdd} />);
 
       await screen.getByTestId('press-track-next').click();
+      await vi.advanceTimersByTimeAsync(650);
 
       expect(onAdd).toHaveBeenCalledWith('team-2');
       await expect.element(screen.getByTestId('action-count')).toHaveTextContent('1');
       await expect.element(screen.getByTestId('latest-team')).toHaveTextContent('team-2');
-    });
-
-    test('calls onUndoForTeam with team-1 for volume-down when scoring action exists', async () => {
-      const onUndoForTeam = vi.fn<(teamId: MatchTeamId) => Promise<void> | void>();
-      const initialActions: MatchAction[] = [{ type: 'score-point', teamId: 'team-1' }];
-
-      const screen = await render(
-        <MediaButtonsRemoteHarness initialActions={initialActions} onUndoForTeam={onUndoForTeam} />
-      );
-
-      await screen.getByTestId('press-volume-down').click();
-
-      expect(onUndoForTeam).toHaveBeenCalledWith('team-1');
-      await expect.element(screen.getByTestId('action-count')).toHaveTextContent('0');
-    });
-
-    test('calls onUndoForTeam with team-2 for track-previous when scoring action exists', async () => {
-      const onUndoForTeam = vi.fn<(teamId: MatchTeamId) => Promise<void> | void>();
-      const initialActions: MatchAction[] = [{ type: 'score-point', teamId: 'team-2' }];
-
-      const screen = await render(
-        <MediaButtonsRemoteHarness initialActions={initialActions} onUndoForTeam={onUndoForTeam} />
-      );
-
-      await screen.getByTestId('press-track-prev').click();
-
-      expect(onUndoForTeam).toHaveBeenCalledWith('team-2');
-      await expect.element(screen.getByTestId('action-count')).toHaveTextContent('0');
-    });
-
-    test('does not call onUndoForTeam for volume-down when team-1 has no scoring action', async () => {
-      const onUndoForTeam = vi.fn<(teamId: MatchTeamId) => Promise<void> | void>();
-      const initialActions: MatchAction[] = [{ type: 'score-point', teamId: 'team-2' }];
-
-      const screen = await render(
-        <MediaButtonsRemoteHarness initialActions={initialActions} onUndoForTeam={onUndoForTeam} />
-      );
-
-      await screen.getByTestId('press-volume-down').click();
-
-      expect(onUndoForTeam).not.toHaveBeenCalled();
-      await expect.element(screen.getByTestId('action-count')).toHaveTextContent('1');
-    });
-
-    test('does not call onUndoForTeam for track-previous when team-2 has no scoring action', async () => {
-      const onUndoForTeam = vi.fn<(teamId: MatchTeamId) => Promise<void> | void>();
-      const initialActions: MatchAction[] = [{ type: 'score-point', teamId: 'team-1' }];
-
-      const screen = await render(
-        <MediaButtonsRemoteHarness initialActions={initialActions} onUndoForTeam={onUndoForTeam} />
-      );
-
-      await screen.getByTestId('press-track-prev').click();
-
-      expect(onUndoForTeam).not.toHaveBeenCalled();
-      await expect.element(screen.getByTestId('action-count')).toHaveTextContent('1');
     });
 
     test('does nothing for an unknown button ID', async () => {
@@ -212,16 +146,16 @@ describe('use-media-buttons-remote browser', () => {
       const onAdd = vi.fn<(teamId: MatchTeamId) => Promise<void> | void>();
       const screen = await render(<MediaButtonsRemoteHarness enabled={false} onAdd={onAdd} />);
 
-      await screen.getByTestId('press-volume-up').click();
+      await screen.getByTestId('press-track-prev').click();
 
       expect(onAdd).not.toHaveBeenCalled();
     });
 
-    test('does not process revert when disabled even with existing actions', async () => {
+    test('does not process button presses when disabled even with existing actions', async () => {
+      vi.useFakeTimers();
       const onUndoForTeam = vi.fn<(teamId: MatchTeamId) => Promise<void> | void>();
       const initialActions: MatchAction[] = [{ type: 'score-point', teamId: 'team-1' }];
-
-      await render(
+      const screen = await render(
         <MediaButtonsRemoteHarness
           enabled={false}
           initialActions={initialActions}
@@ -229,63 +163,41 @@ describe('use-media-buttons-remote browser', () => {
         />
       );
 
-      // Volume down would normally trigger revert-team-1, but disabled prevents it
-      window.dispatchEvent(new KeyboardEvent('keydown', { code: 'VolumeDown' }));
+      await screen.getByTestId('press-track-next').click();
+      await vi.advanceTimersByTimeAsync(650);
 
       expect(onUndoForTeam).not.toHaveBeenCalled();
     });
   });
 
   describe('DOM keydown fallback', () => {
-    test('handles VolumeUp keydown event', async () => {
-      const onAdd = vi.fn<(teamId: MatchTeamId) => Promise<void> | void>();
-      await render(<MediaButtonsRemoteHarness onAdd={onAdd} />);
-
-      window.dispatchEvent(new KeyboardEvent('keydown', { code: 'VolumeUp' }));
-
-      expect(onAdd).toHaveBeenCalledWith('team-1');
-    });
-
-    test('handles VolumeDown keydown event (maps to revert-team-1)', async () => {
-      const onUndoForTeam = vi.fn<(teamId: MatchTeamId) => Promise<void> | void>();
-      const initialActions: MatchAction[] = [{ type: 'score-point', teamId: 'team-1' }];
-
-      await render(
-        <MediaButtonsRemoteHarness initialActions={initialActions} onUndoForTeam={onUndoForTeam} />
-      );
-
-      window.dispatchEvent(new KeyboardEvent('keydown', { code: 'VolumeDown' }));
-
-      expect(onUndoForTeam).toHaveBeenCalledWith('team-1');
-    });
-
     test('handles MediaTrackNext keydown event', async () => {
+      vi.useFakeTimers();
       const onAdd = vi.fn<(teamId: MatchTeamId) => Promise<void> | void>();
       await render(<MediaButtonsRemoteHarness onAdd={onAdd} />);
 
       window.dispatchEvent(new KeyboardEvent('keydown', { code: 'MediaTrackNext' }));
+      await vi.advanceTimersByTimeAsync(650);
 
       expect(onAdd).toHaveBeenCalledWith('team-2');
     });
 
-    test('handles MediaTrackPrevious keydown event (maps to revert-team-2)', async () => {
-      const onUndoForTeam = vi.fn<(teamId: MatchTeamId) => Promise<void> | void>();
-      const initialActions: MatchAction[] = [{ type: 'score-point', teamId: 'team-2' }];
-
-      await render(
-        <MediaButtonsRemoteHarness initialActions={initialActions} onUndoForTeam={onUndoForTeam} />
-      );
+    test('handles MediaTrackPrevious keydown event', async () => {
+      vi.useFakeTimers();
+      const onAdd = vi.fn<(teamId: MatchTeamId) => Promise<void> | void>();
+      await render(<MediaButtonsRemoteHarness onAdd={onAdd} />);
 
       window.dispatchEvent(new KeyboardEvent('keydown', { code: 'MediaTrackPrevious' }));
+      await vi.advanceTimersByTimeAsync(650);
 
-      expect(onUndoForTeam).toHaveBeenCalledWith('team-2');
+      expect(onAdd).toHaveBeenCalledWith('team-1');
     });
 
     test('ignores media keys with Ctrl modifier', async () => {
       const onAdd = vi.fn<(teamId: MatchTeamId) => Promise<void> | void>();
       await render(<MediaButtonsRemoteHarness onAdd={onAdd} />);
 
-      window.dispatchEvent(new KeyboardEvent('keydown', { code: 'VolumeUp', ctrlKey: true }));
+      window.dispatchEvent(new KeyboardEvent('keydown', { code: 'MediaTrackNext', ctrlKey: true }));
 
       expect(onAdd).not.toHaveBeenCalled();
     });
@@ -294,7 +206,7 @@ describe('use-media-buttons-remote browser', () => {
       const onAdd = vi.fn<(teamId: MatchTeamId) => Promise<void> | void>();
       await render(<MediaButtonsRemoteHarness onAdd={onAdd} />);
 
-      window.dispatchEvent(new KeyboardEvent('keydown', { code: 'VolumeUp', metaKey: true }));
+      window.dispatchEvent(new KeyboardEvent('keydown', { code: 'MediaTrackNext', metaKey: true }));
 
       expect(onAdd).not.toHaveBeenCalled();
     });
@@ -303,7 +215,7 @@ describe('use-media-buttons-remote browser', () => {
       const onAdd = vi.fn<(teamId: MatchTeamId) => Promise<void> | void>();
       await render(<MediaButtonsRemoteHarness onAdd={onAdd} />);
 
-      window.dispatchEvent(new KeyboardEvent('keydown', { code: 'VolumeUp', altKey: true }));
+      window.dispatchEvent(new KeyboardEvent('keydown', { code: 'MediaTrackNext', altKey: true }));
 
       expect(onAdd).not.toHaveBeenCalled();
     });
@@ -314,7 +226,7 @@ describe('use-media-buttons-remote browser', () => {
 
       const input = document.createElement('input');
       document.body.appendChild(input);
-      input.dispatchEvent(new KeyboardEvent('keydown', { code: 'VolumeUp', bubbles: true }));
+      input.dispatchEvent(new KeyboardEvent('keydown', { code: 'MediaTrackNext', bubbles: true }));
 
       expect(onAdd).not.toHaveBeenCalled();
     });
@@ -325,7 +237,9 @@ describe('use-media-buttons-remote browser', () => {
 
       const textarea = document.createElement('textarea');
       document.body.appendChild(textarea);
-      textarea.dispatchEvent(new KeyboardEvent('keydown', { code: 'VolumeUp', bubbles: true }));
+      textarea.dispatchEvent(
+        new KeyboardEvent('keydown', { code: 'MediaTrackNext', bubbles: true })
+      );
 
       expect(onAdd).not.toHaveBeenCalled();
     });
@@ -337,7 +251,9 @@ describe('use-media-buttons-remote browser', () => {
       const editable = document.createElement('div');
       editable.contentEditable = 'true';
       document.body.appendChild(editable);
-      editable.dispatchEvent(new KeyboardEvent('keydown', { code: 'VolumeUp', bubbles: true }));
+      editable.dispatchEvent(
+        new KeyboardEvent('keydown', { code: 'MediaTrackNext', bubbles: true })
+      );
 
       expect(onAdd).not.toHaveBeenCalled();
     });
@@ -357,7 +273,7 @@ describe('use-media-buttons-remote browser', () => {
       const onAdd = vi.fn<(teamId: MatchTeamId) => Promise<void> | void>();
       await render(<MediaButtonsRemoteHarness onAdd={onAdd} />);
 
-      const event = new KeyboardEvent('keydown', { code: 'VolumeUp', cancelable: true });
+      const event = new KeyboardEvent('keydown', { code: 'MediaTrackNext', cancelable: true });
       const spy = vi.spyOn(event, 'preventDefault');
 
       window.dispatchEvent(event);
@@ -421,6 +337,7 @@ describe('use-media-buttons-remote browser', () => {
     });
 
     test('nexttrack handler triggers add-team-2', async () => {
+      vi.useFakeTimers();
       const onAdd = vi.fn<(teamId: MatchTeamId) => Promise<void> | void>();
       const mockMediaSession = createMockMediaSession();
 
@@ -436,12 +353,14 @@ describe('use-media-buttons-remote browser', () => {
       expect(nexttrackHandler).toBeDefined();
 
       nexttrackHandler!({ action: 'nexttrack' } as MediaSessionActionDetails);
+      await vi.advanceTimersByTimeAsync(650);
 
       expect(onAdd).toHaveBeenCalledWith('team-2');
     });
 
-    test('previoustrack handler triggers revert-team-2 when scoring action exists', async () => {
-      const onUndoForTeam = vi.fn<(teamId: MatchTeamId) => Promise<void> | void>();
+    test('previoustrack handler triggers add-team-1', async () => {
+      vi.useFakeTimers();
+      const onAdd = vi.fn<(teamId: MatchTeamId) => Promise<void> | void>();
       const mockMediaSession = createMockMediaSession();
 
       Object.defineProperty(navigator, 'mediaSession', {
@@ -450,18 +369,15 @@ describe('use-media-buttons-remote browser', () => {
         configurable: true
       });
 
-      const initialActions: MatchAction[] = [{ type: 'score-point', teamId: 'team-2' }];
-
-      await render(
-        <MediaButtonsRemoteHarness initialActions={initialActions} onUndoForTeam={onUndoForTeam} />
-      );
+      await render(<MediaButtonsRemoteHarness onAdd={onAdd} />);
 
       const previoustrackHandler = mockMediaSession.handlers['previoustrack'];
       expect(previoustrackHandler).toBeDefined();
 
       previoustrackHandler!({ action: 'previoustrack' } as MediaSessionActionDetails);
+      await vi.advanceTimersByTimeAsync(650);
 
-      expect(onUndoForTeam).toHaveBeenCalledWith('team-2');
+      expect(onAdd).toHaveBeenCalledWith('team-1');
     });
 
     test('cleans up MediaSession handlers on unmount', async () => {

@@ -13,20 +13,12 @@ const t = (key: string) => key;
 
 describe('media-buttons', () => {
   describe('mediaButtonMapping', () => {
-    test('maps volume-up to add-team-1', () => {
-      expect(mediaButtonMapping['media-volume-up']).toBe('add-team-1');
-    });
-
-    test('maps volume-down to revert-team-1', () => {
-      expect(mediaButtonMapping['media-volume-down']).toBe('revert-team-1');
+    test('maps track-previous to add-team-1', () => {
+      expect(mediaButtonMapping['media-track-previous']).toBe('add-team-1');
     });
 
     test('maps track-next to add-team-2', () => {
       expect(mediaButtonMapping['media-track-next']).toBe('add-team-2');
-    });
-
-    test('maps track-previous to revert-team-2', () => {
-      expect(mediaButtonMapping['media-track-previous']).toBe('revert-team-2');
     });
   });
 
@@ -90,52 +82,54 @@ describe('media-buttons', () => {
       expect(rows).toHaveLength(4);
     });
 
-    test('returns volume-up row with correct button ID, action, and short label', () => {
+    test('returns track-previous row (add) with correct button ID, action, and short label', () => {
       const rows = getMediaButtonDisplayInfo(t);
-      const volumeUp = rows[0]!;
+      const addPrev = rows[0]!;
 
-      expect(volumeUp.buttonId).toBe('media-volume-up');
-      expect(volumeUp.action).toBe('add-team-1');
-      expect(volumeUp.buttonLabel).toBe('setup.remoteConfig.mediaButtons.volumeUp');
-      expect(volumeUp.actionLabel).toBe('setup.remoteConfig.actions.addTeam1');
-      expect(volumeUp.hint).toBe('setup.remoteConfig.rows.singlePressHint');
-      expect(volumeUp.shortLabel).toBe('setup.remoteConfig.mediaButtons.volumeUpShort');
+      expect(addPrev.buttonId).toBe('media-track-previous');
+      expect(addPrev.action).toBe('add-team-1');
+      expect(addPrev.buttonLabel).toBe('setup.remoteConfig.mediaButtons.previousTrack');
+      expect(addPrev.actionLabel).toBe('setup.remoteConfig.actions.addTeam1');
+      expect(addPrev.hint).toBe('setup.remoteConfig.rows.addPointHint');
+      expect(addPrev.shortLabel).toBe('setup.remoteConfig.mediaButtons.previousTrackShort');
     });
 
-    test('returns volume-down row with correct button ID, action, and short label', () => {
+    test('returns track-previous row (revert) with correct button ID, action, and short label', () => {
       const rows = getMediaButtonDisplayInfo(t);
-      const volumeDown = rows[1]!;
+      const revertPrev = rows[1]!;
 
-      expect(volumeDown.buttonId).toBe('media-volume-down');
-      expect(volumeDown.action).toBe('revert-team-1');
-      expect(volumeDown.buttonLabel).toBe('setup.remoteConfig.mediaButtons.volumeDown');
-      expect(volumeDown.actionLabel).toBe('setup.remoteConfig.actions.revertTeam1');
-      expect(volumeDown.hint).toBe('setup.remoteConfig.rows.guardedUndoHint');
-      expect(volumeDown.shortLabel).toBe('setup.remoteConfig.mediaButtons.volumeDownShort');
+      expect(revertPrev.buttonId).toBe('media-track-previous-double');
+      expect(revertPrev.action).toBe('revert-team-1');
+      expect(revertPrev.buttonLabel).toBe('setup.remoteConfig.mediaButtons.previousTrackDouble');
+      expect(revertPrev.actionLabel).toBe('setup.remoteConfig.actions.revertTeam1');
+      expect(revertPrev.hint).toBe('setup.remoteConfig.rows.revertPointHint');
+      expect(revertPrev.shortLabel).toBe(
+        'setup.remoteConfig.mediaButtons.previousTrackShortDouble'
+      );
     });
 
-    test('returns track-next row with correct button ID, action, and short label', () => {
+    test('returns track-next row (add) with correct button ID, action, and short label', () => {
       const rows = getMediaButtonDisplayInfo(t);
-      const trackNext = rows[2]!;
+      const addNext = rows[2]!;
 
-      expect(trackNext.buttonId).toBe('media-track-next');
-      expect(trackNext.action).toBe('add-team-2');
-      expect(trackNext.buttonLabel).toBe('setup.remoteConfig.mediaButtons.nextTrack');
-      expect(trackNext.actionLabel).toBe('setup.remoteConfig.actions.addTeam2');
-      expect(trackNext.hint).toBe('setup.remoteConfig.rows.singlePressHint');
-      expect(trackNext.shortLabel).toBe('setup.remoteConfig.mediaButtons.nextTrackShort');
+      expect(addNext.buttonId).toBe('media-track-next');
+      expect(addNext.action).toBe('add-team-2');
+      expect(addNext.buttonLabel).toBe('setup.remoteConfig.mediaButtons.nextTrack');
+      expect(addNext.actionLabel).toBe('setup.remoteConfig.actions.addTeam2');
+      expect(addNext.hint).toBe('setup.remoteConfig.rows.addPointHint');
+      expect(addNext.shortLabel).toBe('setup.remoteConfig.mediaButtons.nextTrackShort');
     });
 
-    test('returns track-previous row with correct button ID, action, and short label', () => {
+    test('returns track-next row (revert) with correct button ID, action, and short label', () => {
       const rows = getMediaButtonDisplayInfo(t);
-      const trackPrev = rows[3]!;
+      const revertNext = rows[3]!;
 
-      expect(trackPrev.buttonId).toBe('media-track-previous');
-      expect(trackPrev.action).toBe('revert-team-2');
-      expect(trackPrev.buttonLabel).toBe('setup.remoteConfig.mediaButtons.previousTrack');
-      expect(trackPrev.actionLabel).toBe('setup.remoteConfig.actions.revertTeam2');
-      expect(trackPrev.hint).toBe('setup.remoteConfig.rows.guardedUndoHint');
-      expect(trackPrev.shortLabel).toBe('setup.remoteConfig.mediaButtons.previousTrackShort');
+      expect(revertNext.buttonId).toBe('media-track-next-double');
+      expect(revertNext.action).toBe('revert-team-2');
+      expect(revertNext.buttonLabel).toBe('setup.remoteConfig.mediaButtons.nextTrackDouble');
+      expect(revertNext.actionLabel).toBe('setup.remoteConfig.actions.revertTeam2');
+      expect(revertNext.hint).toBe('setup.remoteConfig.rows.revertPointHint');
+      expect(revertNext.shortLabel).toBe('setup.remoteConfig.mediaButtons.nextTrackShortDouble');
     });
 
     test('passes the translation function through for each label', () => {
@@ -148,10 +142,8 @@ describe('media-buttons', () => {
 
       getMediaButtonDisplayInfo(trackingT);
 
-      expect(calls).toContain('setup.remoteConfig.mediaButtons.volumeUp');
-      expect(calls).toContain('setup.remoteConfig.mediaButtons.volumeDown');
-      expect(calls).toContain('setup.remoteConfig.mediaButtons.nextTrack');
       expect(calls).toContain('setup.remoteConfig.mediaButtons.previousTrack');
+      expect(calls).toContain('setup.remoteConfig.mediaButtons.nextTrack');
     });
   });
 });

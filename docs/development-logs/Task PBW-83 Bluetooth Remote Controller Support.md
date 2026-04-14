@@ -22,7 +22,7 @@ permalink: development-logs/task-pbw-83-bluetooth-remote-controller-support
 
 - IndexedDB Persistence: added `remote-controller-preference` object store with DB version bumped to 5. Storage module mirrors existing locale/speech patterns for consistency.
 - Layered Keyboard Resolver: refactored keyboard aliases into action model (add-team-1, revert-team-1, add-team-2, revert-team-2, undo, unknown). Custom bindings take precedence with legacy defaults as fallback when bindings are null.
-- Reimplemented useInputHandler: new callback API (onAdd, onUndo), team-specific buffered add window (~380ms) to distinguish single vs double press (double = revert), guarded undo behavior (only reverts if latest scoring action belongs to that team), and preventDefault() on mapped keys. Modifier and editable-target guards added.
+- Reimplemented useInputHandler: new callback API (onAdd, onUndo), team-specific buffered add window (~600ms) to distinguish single vs double press (double = revert), guarded undo behavior (only reverts if latest scoring action belongs to that team), and preventDefault() on mapped keys. Modifier and editable-target guards added.
 - Remote Configuration Modal: SetupScreen modal using Base UI Dialog for managing bindings. Supports key capture, duplicate detection (case-insensitive), replacement, clear/reset/save, closes on save, and ARIA announcements (aria-pressed, aria-live) for accessibility.
 - ActiveMatchScreen Integration: loads persisted bindings on mount and wires keyboard handler. Touch scoring remains immediate (no buffer). Legacy shortcuts preserved when bindings are null.
 - i18n: English, Spanish, Portuguese translations added for all new UI text.
@@ -50,7 +50,7 @@ permalink: development-logs/task-pbw-83-bluetooth-remote-controller-support
 ## Key Decisions
 
 - Remote revert implemented as a guarded undo: a revert command only undoes the last scoring action if that action belongs to the same team as the revert command.
-- Buffered add approach: single press triggers an add after a ~380ms debounce window; a second press within that window is interpreted as a revert (double-press) and cancels the add.
+- Buffered add approach: single press triggers an add after a ~600ms debounce window; a second press within that window is interpreted as a revert (double-press) and cancels the add.
 - Touch UX left unchanged: on-screen scoring buttons are immediate and do not use the buffer, preserving expected responsiveness.
 - No changes to the scoring engine: input handling and UI layer implement all behavior; backend scoring logic untouched.
 - Bindings default to null so legacy keyboard shortcuts (backspace/delete) continue to work out-of-the-box; custom bindings only take effect after the user saves them.
@@ -65,6 +65,6 @@ permalink: development-logs/task-pbw-83-bluetooth-remote-controller-support
 
 ## Risks and Follow-ups
 
-- Potential timing edge cases with the 380ms buffer on very slow devices; consider making buffer window configurable if user reports false positives/negatives.
+- Potential timing edge cases with the 600ms buffer on very slow devices; consider making buffer window configurable if user reports false positives/negatives.
 - Future: expose per-team binding presets and import/export of bindings.
 - Monitor for any cross-browser IndexedDB migration issues on older Safari versions.

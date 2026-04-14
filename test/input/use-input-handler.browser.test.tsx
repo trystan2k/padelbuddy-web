@@ -20,7 +20,7 @@ function InputHandlerHarness({
   enabled = true,
   bindings = null,
   initialActions = [],
-  bufferedAddWindowMs = 380,
+  bufferedAddWindowMs = 600,
   onAdd = vi.fn<(teamId: MatchTeamId) => void>(),
   onUndo = vi.fn<() => void>(),
   onUndoForTeam = vi.fn<(teamId: MatchTeamId) => void>(),
@@ -103,7 +103,7 @@ describe('use-input-handler browser', () => {
 
     expect(onAdd).not.toHaveBeenCalled();
 
-    await vi.advanceTimersByTimeAsync(380);
+    await vi.advanceTimersByTimeAsync(600);
 
     expect(onAdd).toHaveBeenCalledWith('team-1');
   });
@@ -125,7 +125,7 @@ describe('use-input-handler browser', () => {
     );
 
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'w' }));
-    await vi.advanceTimersByTimeAsync(380);
+    await vi.advanceTimersByTimeAsync(600);
 
     expect(onAdd).toHaveBeenCalledWith('team-2');
   });
@@ -148,7 +148,7 @@ describe('use-input-handler browser', () => {
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft' }));
     await vi.advanceTimersByTimeAsync(150);
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft' }));
-    await vi.advanceTimersByTimeAsync(400);
+    await vi.advanceTimersByTimeAsync(650);
 
     expect(onAdd).not.toHaveBeenCalled();
     expect(onUndoForTeam).toHaveBeenCalledWith('team-1');
@@ -358,7 +358,7 @@ describe('use-input-handler browser', () => {
       target: textNode
     } as unknown as KeyboardEvent);
 
-    await vi.advanceTimersByTimeAsync(380);
+    await vi.advanceTimersByTimeAsync(600);
 
     expect(onAdd).toHaveBeenCalledWith('team-1');
   });
@@ -451,7 +451,7 @@ describe('use-input-handler browser', () => {
 
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft' }));
     await screen.getByTestId('disable-handler').click();
-    await vi.advanceTimersByTimeAsync(400);
+    await vi.advanceTimersByTimeAsync(650);
 
     expect(onAdd).not.toHaveBeenCalled();
   });
@@ -489,7 +489,7 @@ describe('use-input-handler browser', () => {
 
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft' }));
     await screen.getByTestId('disable-handler').click();
-    await vi.advanceTimersByTimeAsync(400);
+    await vi.advanceTimersByTimeAsync(650);
 
     expect(clearTimeoutSpy).toHaveBeenCalled();
     expect(onAdd).not.toHaveBeenCalled();
@@ -510,7 +510,7 @@ describe('use-input-handler browser', () => {
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft' }));
     await vi.advanceTimersByTimeAsync(100);
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft' }));
-    await vi.advanceTimersByTimeAsync(400);
+    await vi.advanceTimersByTimeAsync(650);
 
     expect(onAdd).not.toHaveBeenCalled();
     expect(onUndoForTeam).not.toHaveBeenCalled();
@@ -523,7 +523,7 @@ describe('use-input-handler browser', () => {
     await render(<InputHandlerHarness enabled={false} onAdd={onAdd} />);
 
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft' }));
-    await vi.advanceTimersByTimeAsync(400);
+    await vi.advanceTimersByTimeAsync(650);
 
     expect(onAdd).not.toHaveBeenCalled();
   });
@@ -578,7 +578,7 @@ describe('use-input-handler browser', () => {
 
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft' }));
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
-    await vi.advanceTimersByTimeAsync(400);
+    await vi.advanceTimersByTimeAsync(650);
 
     expect(onAdd).not.toHaveBeenCalled();
     expect(onUndo).not.toHaveBeenCalled();

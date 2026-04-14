@@ -5,7 +5,6 @@
   "ignoreDependencies": [
     "@capacitor/android",
     "@capacitor/ios",
-    "@capacitor/core",
     "@fontsource/inter",
     "@fontsource/outfit"
   ],
