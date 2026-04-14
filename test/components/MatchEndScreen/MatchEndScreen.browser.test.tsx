@@ -503,6 +503,11 @@ describe('MatchEndScreen', () => {
         finishedAt
       });
       expect(mockContinuePlaying).toHaveBeenCalledTimes(1);
+      expect(mockInvalidate).toHaveBeenCalledTimes(1);
+      expect(mockPreloadRoute).toHaveBeenCalledWith({
+        to: '/match/$id',
+        params: { id: 'test-match' }
+      });
       expect(mockNavigate).toHaveBeenCalledWith({
         to: '/match/$id',
         params: { id: 'test-match' },
