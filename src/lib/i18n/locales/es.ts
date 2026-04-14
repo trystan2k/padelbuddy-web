@@ -228,14 +228,14 @@ export default {
       listeningAnnouncement: 'Presiona un botón en tu control para asignarlo a {{action}}.',
       notSet: 'Sin asignar',
       mediaButtons: {
-        nextTrack: 'Siguiente un click',
-        nextTrackDouble: 'Siguiente doble click',
-        nextTrackShort: '>> Siguiente un click',
-        nextTrackShortDouble: '>> Siguiente doble click',
-        previousTrack: 'Anterior un click',
-        previousTrackDouble: 'Anterior doble click',
-        previousTrackShort: '<< Anterior un click',
-        previousTrackShortDouble: '<< Anterior doble click',
+        nextTrack: 'Siguiente un clic',
+        nextTrackDouble: 'Siguiente doble clic',
+        nextTrackShort: '>> Siguiente un clic',
+        nextTrackShortDouble: '>> Siguiente doble clic',
+        previousTrack: 'Anterior un clic',
+        previousTrackDouble: 'Anterior doble clic',
+        previousTrackShort: '<< Anterior un clic',
+        previousTrackShortDouble: '<< Anterior doble clic',
         notConfigurable: 'No configurable'
       },
       rows: {
