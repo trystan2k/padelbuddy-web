@@ -260,7 +260,7 @@ export function useMediaButtonsRemote(
     return cleanup;
   }, [enabled, onMediaButtonPress]);
 
-  // DOM keydown fallback for media keys (including volumeup/volumedown which aren't MediaSession actions)
+  // DOM keydown fallback for media keys supported by getMediaButtonIdFromKeyboardInput
   useEffect(() => {
     if (typeof window === 'undefined') {
       return;

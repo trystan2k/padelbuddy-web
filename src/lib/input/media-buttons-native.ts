@@ -79,6 +79,8 @@ export function listenToNativeMediaButtons(callback: MediaButtonsNativeCallback)
   const storedCallback = callback;
 
   let listenerHandle: MediaButtonsListenerHandle | null = null;
+  let listenerHandlePromise: Promise<MediaButtonsListenerHandle> | null = null;
+  let disposed = false;
 
   try {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion, @typescript-eslint/no-explicit-any
@@ -93,18 +95,22 @@ export function listenToNativeMediaButtons(callback: MediaButtonsNativeCallback)
       }
     ) as MediaButtonsListenerHandle | Promise<MediaButtonsListenerHandle>;
 
-    if (listenerResult instanceof Promise) {
-      void listenerResult
-        .then((handle) => {
-          listenerHandle = handle;
-          return;
-        })
-        .catch((error: unknown) => {
-          console.warn('[MediaButtons] Failed to register native media button listener:', error);
-        });
-    } else {
-      listenerHandle = listenerResult;
-    }
+    listenerHandlePromise = Promise.resolve(listenerResult);
+
+    void listenerHandlePromise
+      .then((handle) => {
+        if (disposed) {
+          void Promise.resolve(handle.remove()).catch(() => {
+            // Ignore cleanup errors
+          });
+        }
+
+        listenerHandle = handle;
+        return;
+      })
+      .catch((error: unknown) => {
+        console.warn('[MediaButtons] Failed to register native media button listener:', error);
+      });
   } catch (error) {
     console.warn('[MediaButtons] Failed to register native media button listener:', error);
   }
@@ -115,11 +121,21 @@ export function listenToNativeMediaButtons(callback: MediaButtonsNativeCallback)
 
   // Return cleanup function
   return () => {
+    disposed = true;
+
     try {
       void listenerHandle?.remove();
     } catch {
       // Ignore cleanup errors
     }
+
+    void listenerHandlePromise?.then((handle) => {
+      void Promise.resolve(handle.remove()).catch(() => {
+        // Ignore cleanup errors
+      });
+
+      return;
+    });
 
     void stopNativeMediaButtonsListening().catch(() => {
       // Ignore cleanup errors

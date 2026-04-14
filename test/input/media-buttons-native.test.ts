@@ -110,6 +110,30 @@ describe('media-buttons-native', () => {
       });
     });
 
+    test('removes listener when cleanup runs before async handle resolves', async () => {
+      mockIsNativePlatform.mockReturnValue(true);
+
+      const mockRemove = vi.fn<() => void>();
+      let resolveHandle!: (value: { remove: () => void }) => void;
+
+      const delayedHandlePromise = new Promise<{ remove: () => void }>((resolve) => {
+        resolveHandle = resolve;
+      });
+
+      mockAddListener.mockImplementation(() => delayedHandlePromise);
+
+      const callback = vi.fn<(buttonId: string) => void>();
+      const cleanup = listenToNativeMediaButtons(callback);
+
+      cleanup();
+
+      resolveHandle({ remove: mockRemove });
+
+      await vi.waitFor(() => {
+        expect(mockRemove).toHaveBeenCalled();
+      });
+    });
+
     test('ignores unknown button IDs from native events', async () => {
       mockIsNativePlatform.mockReturnValue(true);
 
