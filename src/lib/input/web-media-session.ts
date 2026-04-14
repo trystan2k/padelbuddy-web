@@ -168,6 +168,16 @@ export function clearWebMediaSession(): void {
 
   stopBackgroundPlayback();
 
+  if (backgroundAudioElement) {
+    backgroundAudioElement.src = '';
+    backgroundAudioElement = null;
+  }
+
+  if (silentAudioUrl) {
+    URL.revokeObjectURL(silentAudioUrl);
+    silentAudioUrl = null;
+  }
+
   if (!mediaSession) {
     return;
   }

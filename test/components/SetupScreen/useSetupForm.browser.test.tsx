@@ -816,18 +816,15 @@ describe('useSetupForm interactions', () => {
       />
     );
 
-    // Make form invalid
     await screen.getByTestId('clear-team1').click();
     await screen.getByTestId('validate').click();
     await screen.getByTestId('get-state').click();
 
     expect(formState!.errors.team1Name).toBeDefined();
 
-    // Fix the field
     await screen.getByTestId('update-team1').click();
     await screen.getByTestId('get-state').click();
 
-    // Error should be cleared
     expect(formState!.errors.team1Name).toBeUndefined();
   });
 

@@ -11,6 +11,7 @@ import com.getcapacitor.annotation.CapacitorPlugin;
 @CapacitorPlugin(name = "MediaButtons")
 public class MediaButtonsPlugin extends Plugin {
     private static volatile MediaButtonsPlugin activeInstance;
+    private volatile boolean isListening = false;
 
     /**
      * Supported button IDs that can be dispatched from native.
@@ -26,6 +27,8 @@ public class MediaButtonsPlugin extends Plugin {
 
     @Override
     protected void handleOnDestroy() {
+        isListening = false;
+
         if (activeInstance == this) {
             activeInstance = null;
         }
@@ -35,11 +38,13 @@ public class MediaButtonsPlugin extends Plugin {
 
     @PluginMethod
     public void startListening(PluginCall call) {
+        isListening = true;
         call.resolve();
     }
 
     @PluginMethod
     public void stopListening(PluginCall call) {
+        isListening = false;
         call.resolve();
     }
 
@@ -67,6 +72,10 @@ public class MediaButtonsPlugin extends Plugin {
         MediaButtonsPlugin plugin = activeInstance;
 
         if (plugin == null) {
+            return false;
+        }
+
+        if (!plugin.isListening) {
             return false;
         }
 

@@ -150,7 +150,7 @@ export default {
       goldenPoint: 'Ponto de Ouro',
       correction: 'Correção.',
       gamePoint: 'Game point {{teamName}}',
-      breakPoint: 'Break point',
+      breakPoint: 'Break point {{teamName}}',
       setPoint: 'Set point {{teamName}}',
       matchPoint: 'Match point {{teamName}}'
     }
@@ -235,7 +235,7 @@ export default {
         previousTrackDouble: 'Anterior duplo clicks',
         previousTrackShort: '<< Anterior um click',
         previousTrackShortDouble: '<< Anterior duplo clicks',
-        notConfigurable: 'Not configurable'
+        notConfigurable: 'Não configurável'
       },
       rows: {
         addPointHint: 'Pressione para adicionar um ponto a esse time',

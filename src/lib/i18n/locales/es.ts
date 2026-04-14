@@ -134,7 +134,7 @@ export default {
   },
   score: {
     points: {
-      '0': 'Cero',
+      '0': 'Nada',
       '15': 'Quince',
       '30': 'Treinta',
       '40': 'Cuarenta',
@@ -146,11 +146,11 @@ export default {
       match: 'Partido',
       serving: 'Sacando',
       all: 'Iguales',
-      deuce: 'Deuce',
+      deuce: 'Cuarenta Iguales',
       goldenPoint: 'Punto de Oro',
       correction: 'Corrección.',
       gamePoint: 'Game Point {{teamName}}',
-      breakPoint: 'Break point',
+      breakPoint: 'Break point {{teamName}}',
       setPoint: 'Set Point {{teamName}}',
       matchPoint: 'Match point {{teamName}}'
     }
@@ -230,12 +230,12 @@ export default {
         nextTrack: 'Siguiente un click',
         nextTrackDouble: 'Siguiente doble click',
         nextTrackShort: '>> Siguiente un click',
-        nextTrackShortDouble: '>> Anterior doble click',
+        nextTrackShortDouble: '>> Siguiente doble click',
         previousTrack: 'Anterior un click',
         previousTrackDouble: 'Anterior doble click',
         previousTrackShort: '<< Anterior un click',
         previousTrackShortDouble: '<< Anterior doble click',
-        notConfigurable: 'Not configurable'
+        notConfigurable: 'No configurable'
       },
       rows: {
         addPointHint: 'Presiona para sumar un punto a ese equipo',

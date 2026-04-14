@@ -202,7 +202,6 @@ export function useSetupForm() {
       const normalizedTeamName = name.trim();
       const persistedName = normalizedTeamName.length > 0 ? normalizedTeamName : null;
 
-      // Mark as touched when user modifies the name
       if (teamId === 'team-1') {
         team1Touched.current = true;
         updateField('team1Name', name);

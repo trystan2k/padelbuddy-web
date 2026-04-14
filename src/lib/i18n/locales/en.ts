@@ -149,7 +149,7 @@ export default {
       goldenPoint: 'Golden Point',
       correction: 'Correction.',
       gamePoint: 'Game point {{teamName}}',
-      breakPoint: 'Break point',
+      breakPoint: 'Break point {{teamName}}',
       setPoint: 'Set point {{teamName}}',
       matchPoint: 'Match point {{teamName}}'
     }

@@ -19,3 +19,6 @@ playwright-report/
 test-results/
 playwright/.cache/
 **/__screenshots__/
+
+# Android Studio local state
+mobile/android/.idea/deploymentTargetSelector.xml

@@ -74,7 +74,21 @@ function getPointPressureMessage(data: SpeechEventData): string | null {
   }
 
   if (data.pointPressure === 'break-point') {
-    return t('score.announcements.breakPoint');
+    const teamName = data.pointPressureTeam
+      ? data.pointPressureTeam === 'team-1'
+        ? data.team2Name
+        : data.team1Name
+      : data.servingTeam
+        ? data.servingTeam === 'team-1'
+          ? data.team2Name
+          : data.team1Name
+        : null;
+
+    if (!teamName) {
+      return null;
+    }
+
+    return t('score.announcements.breakPoint', { teamName });
   }
 
   if (data.pointPressure === 'game-point') {
