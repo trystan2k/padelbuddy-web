@@ -131,11 +131,15 @@ export function HistoryScreen({ initialRecords }: HistoryScreenProps) {
       year: '2-digit'
     }).format(new Date(record.finishedAt));
 
-    const setRows = projection.state.sets.map((set) => ({
-      setNumber: set.index,
-      team1Games: set.games['team-1'],
-      team2Games: set.games['team-2']
-    }));
+    const setRows = projection.state.sets.map((set) => {
+      const setScore = getSetScoreForHistory(set);
+
+      return {
+        setNumber: set.index,
+        team1Games: setScore['team-1'],
+        team2Games: setScore['team-2']
+      };
+    });
 
     return {
       winnerName: winnerNameValue,
@@ -522,8 +526,26 @@ function toSetsScore(sets: MatchSetState[]): string {
   return `${teamOneSetsWon}-${teamTwoSetsWon}`;
 }
 
+function getSetScoreForHistory(set: MatchSetState): {
+  'team-1': number;
+  'team-2': number;
+} {
+  const superTiebreakPoints =
+    set.completed && set.mode === 'super-tiebreak' ? set.tiebreakPoints : null;
+
+  return {
+    'team-1': superTiebreakPoints?.['team-1'] ?? set.games['team-1'],
+    'team-2': superTiebreakPoints?.['team-2'] ?? set.games['team-2']
+  };
+}
+
 function toGamesScore(sets: MatchSetState[]): string {
-  return sets.map((set) => `${set.games['team-1']}-${set.games['team-2']}`).join(', ');
+  return sets
+    .map((set) => {
+      const setScore = getSetScoreForHistory(set);
+      return `${setScore['team-1']}-${setScore['team-2']}`;
+    })
+    .join(', ');
 }
 
 function formatHistoryDate(timestamp: number, locale: string): string {

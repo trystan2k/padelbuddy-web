@@ -147,7 +147,9 @@ function parseHistoryRecords(storedRecords: unknown[]): MatchHistoryRecord[] {
 }
 
 function sortMatchHistoryByNewest(records: MatchHistoryRecord[]): MatchHistoryRecord[] {
-  return [...records].toSorted((left, right) => right.finishedAt - left.finishedAt);
+  const copy = [...records];
+  copy.sort((left, right) => right.finishedAt - left.finishedAt);
+  return copy;
 }
 
 const matchHistoryPersistence = createMatchHistoryPersistence();
