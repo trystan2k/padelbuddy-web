@@ -410,7 +410,9 @@ export default {
       delete: 'Excluir',
       deleteAriaLabel: 'Excluir partida {{team1}} vs {{team2}}',
       deleteConfirm: 'Excluir esta partida do histórico?',
+      deleteError: 'Não foi possível excluir esta partida agora.',
       playAgain: 'Jogar novamente',
+      playAgainError: 'Não foi possível preparar esta revanche agora.',
       playAgainAriaLabel: 'Jogar novamente',
       back: 'Voltar'
     },

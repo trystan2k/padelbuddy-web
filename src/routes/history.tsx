@@ -9,8 +9,10 @@ export const Route = createFileRoute('/history')({
   loader: async () => {
     try {
       return await listMatchHistory();
-    } catch {
-      throw new Error('Unable to load match history right now. Please try again.');
+    } catch (error) {
+      throw new Error('Unable to load match history right now. Please try again.', {
+        cause: error
+      });
     }
   },
   errorComponent: RouteErrorState,

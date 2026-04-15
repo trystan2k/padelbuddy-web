@@ -411,7 +411,9 @@ export default {
       delete: 'Eliminar',
       deleteAriaLabel: 'Eliminar partido {{team1}} vs {{team2}}',
       deleteConfirm: '¿Eliminar este partido del historial?',
+      deleteError: 'No se puede eliminar este partido ahora mismo.',
       playAgain: 'Jugar de nuevo',
+      playAgainError: 'No se puede preparar esta revancha ahora mismo.',
       playAgainAriaLabel: 'Jugar de nuevo',
       back: 'Volver'
     },

@@ -49,12 +49,31 @@ function createMatchHistoryPersistence(
 
       objectStore.put(record, record.matchId);
 
-      const storedRecords = await waitForIndexedDbRequest(objectStore.getAll());
-      const parsedRecords = parseHistoryRecords(storedRecords);
-      const overflowRecords = sortMatchHistoryByNewest(parsedRecords).slice(maxMatchHistoryRecords);
+      const allKeys = await waitForIndexedDbRequest(objectStore.getAllKeys());
+      const overflowCount = allKeys.length - maxMatchHistoryRecords;
 
-      for (const overflowRecord of overflowRecords) {
-        objectStore.delete(overflowRecord.matchId);
+      if (overflowCount > 0) {
+        const storedRecords = await waitForIndexedDbRequest(objectStore.getAll());
+        const parsedRecords = parseHistoryRecords(storedRecords);
+        const parsedMatchIds = new Set(parsedRecords.map((parsedRecord) => parsedRecord.matchId));
+        const malformedStringKeys = allKeys.filter(
+          (key): key is string => typeof key === 'string' && !parsedMatchIds.has(key)
+        );
+        const malformedNonStringKeys = allKeys.filter(
+          (key): key is IDBValidKey => typeof key !== 'string'
+        );
+        const overflowParsedMatchIds = sortMatchHistoryByNewest(parsedRecords)
+          .slice(maxMatchHistoryRecords)
+          .map((parsedRecord) => parsedRecord.matchId);
+        const keysToDelete = [
+          ...malformedNonStringKeys,
+          ...malformedStringKeys,
+          ...overflowParsedMatchIds
+        ].slice(0, overflowCount);
+
+        for (const keyToDelete of keysToDelete) {
+          objectStore.delete(keyToDelete);
+        }
       }
 
       await waitForIndexedDbTransaction(transaction);

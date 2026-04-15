@@ -101,7 +101,7 @@ export function HistoryScreen({ initialRecords }: HistoryScreenProps) {
     const { record } = sharingRecord;
     const projection = projectMatch(record.setup, record.actions);
     const winner = determineWinnerFromCompletedSets(projection.state.sets);
-    const isFinishedEarly = !winner;
+    const isFinishedEarly = sharingRecord.setsScoreUnfinished;
 
     const winnerNameValue = isFinishedEarly
       ? t('match.end.winner.finishedEarlyName')
@@ -238,10 +238,14 @@ export function HistoryScreen({ initialRecords }: HistoryScreenProps) {
 
   const handlePlayAgainClick = useCallback(
     async (team1Name: string, team2Name: string) => {
-      await saveSetupPreferenceSlice({ team1Name, team2Name });
-      void navigate({ to: '/' });
+      try {
+        await saveSetupPreferenceSlice({ team1Name, team2Name });
+        void navigate({ to: '/' });
+      } catch {
+        addErrorToast(t('history.actions.playAgainError'));
+      }
     },
-    [navigate]
+    [addErrorToast, navigate, t]
   );
 
   const handlePlayAgainButtonClick = useCallback(
@@ -267,11 +271,15 @@ export function HistoryScreen({ initialRecords }: HistoryScreenProps) {
         return;
       }
 
-      await deleteMatchHistory(matchId);
-      setRecords((prev) => prev.filter((record) => record.matchId !== matchId));
-      addSuccessToast(t('history.deleteSuccess'));
+      try {
+        await deleteMatchHistory(matchId);
+        setRecords((prev) => prev.filter((record) => record.matchId !== matchId));
+        addSuccessToast(t('history.deleteSuccess'));
+      } catch {
+        addErrorToast(t('history.actions.deleteError'));
+      }
     },
-    [addSuccessToast, t]
+    [addErrorToast, addSuccessToast, t]
   );
 
   const handleShareButtonClick = useCallback(

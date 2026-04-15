@@ -68,10 +68,6 @@
   cursor: not-allowed;
 }
 
-.switchDisabled {
-  opacity: 0.6;
-}
-
 .thumb {
   position: absolute;
   top: var(--component-toggle-thumb-offset);

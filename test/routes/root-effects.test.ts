@@ -1,19 +1,21 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 
-const { i18nMock, registerSWMock, getOrCreateUserIdMock, mixpanelMock } = vi.hoisted(() => ({
-  i18nMock: {
-    resolvedLanguage: 'en' as string | undefined,
-    language: 'en' as string | undefined,
-    on: vi.fn<(event: string, fn: (lng: string) => void) => void>(),
-    off: vi.fn<(event: string, fn: (lng: string) => void) => void>()
-  },
-  registerSWMock: vi.fn<() => Promise<void>>(() => Promise.resolve()),
-  getOrCreateUserIdMock: vi.fn<() => string>(() => 'test-user-id'),
-  mixpanelMock: {
-    init: vi.fn<() => void>(),
-    identify: vi.fn<() => void>()
-  }
-}));
+const { i18nMock, registerSWMock, getOrCreateUserIdMock, mixpanelMock, effectCleanups } =
+  vi.hoisted(() => ({
+    i18nMock: {
+      resolvedLanguage: 'en' as string | undefined,
+      language: 'en' as string | undefined,
+      on: vi.fn<(event: string, fn: (lng: string) => void) => void>(),
+      off: vi.fn<(event: string, fn: (lng: string) => void) => void>()
+    },
+    registerSWMock: vi.fn<() => Promise<void>>(() => Promise.resolve()),
+    getOrCreateUserIdMock: vi.fn<() => string>(() => 'test-user-id'),
+    mixpanelMock: {
+      init: vi.fn<() => void>(),
+      identify: vi.fn<() => void>()
+    },
+    effectCleanups: [] as Array<() => void>
+  }));
 
 vi.mock('react', async (importOriginal) => {
   const actual = await importOriginal<typeof import('react')>();
@@ -28,7 +30,13 @@ vi.mock('react', async (importOriginal) => {
       ];
     },
     useEffect: (effect: () => void | (() => void)) => {
-      return effect();
+      const cleanup = effect();
+
+      if (typeof cleanup === 'function') {
+        effectCleanups.push(cleanup);
+      }
+
+      return cleanup;
     }
   };
 });
@@ -57,6 +65,7 @@ describe('root-effects', () => {
     vi.stubGlobal('navigator', { serviceWorker: {} });
     i18nMock.resolvedLanguage = 'en';
     i18nMock.language = 'en';
+    effectCleanups.length = 0;
     vi.stubEnv('PROD', false);
   });
 
@@ -77,14 +86,19 @@ describe('root-effects', () => {
     });
 
     test('cleanup unsubscribes from languageChanged', async () => {
+      const React = await import('react');
       const { useRootDocumentLanguage } = await import('@/routes/-root-effects');
 
-      const cleanup = useRootDocumentLanguage() as unknown as (() => void) | void;
+      React.useEffect(() => {
+        useRootDocumentLanguage();
+      }, [useRootDocumentLanguage]);
 
-      if (typeof cleanup === 'function') {
+      for (const cleanup of effectCleanups.splice(0)) {
         cleanup();
-        expect(i18nMock.off).toHaveBeenCalledWith('languageChanged', expect.any(Function));
       }
+
+      const handler = i18nMock.on.mock.calls[0]?.[1];
+      expect(i18nMock.off).toHaveBeenCalledWith('languageChanged', handler);
     });
 
     test('uses actual language value when provided', async () => {

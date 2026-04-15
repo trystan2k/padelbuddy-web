@@ -409,7 +409,9 @@ export default {
       delete: 'Delete',
       deleteAriaLabel: 'Delete match {{team1}} vs {{team2}}',
       deleteConfirm: 'Delete this match from history?',
+      deleteError: 'Unable to delete this match right now.',
       playAgain: 'Play Again',
+      playAgainError: 'Unable to prepare this rematch right now.',
       playAgainAriaLabel: 'Play again',
       back: 'Back'
     },

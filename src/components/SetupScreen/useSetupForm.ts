@@ -219,51 +219,6 @@ export function useSetupForm() {
     [updateField]
   );
 
-  const applyEphemeralTeamPrefill = useCallback((team1Name?: string, team2Name?: string) => {
-    const normalizedTeam1Name = team1Name?.trim();
-    const normalizedTeam2Name = team2Name?.trim();
-    const hasTeam1Prefill =
-      typeof normalizedTeam1Name === 'string' && normalizedTeam1Name.length > 0;
-    const hasTeam2Prefill =
-      typeof normalizedTeam2Name === 'string' && normalizedTeam2Name.length > 0;
-
-    if (!hasTeam1Prefill && !hasTeam2Prefill) {
-      return;
-    }
-
-    if (hasTeam1Prefill) {
-      team1Touched.current = true;
-    }
-
-    if (hasTeam2Prefill) {
-      team2Touched.current = true;
-    }
-
-    setFormData((prev) => ({
-      ...prev,
-      ...(hasTeam1Prefill ? { team1Name: normalizedTeam1Name } : {}),
-      ...(hasTeam2Prefill ? { team2Name: normalizedTeam2Name } : {})
-    }));
-
-    setErrors((prev) => {
-      if (!prev.team1Name && !prev.team2Name) {
-        return prev;
-      }
-
-      const nextErrors: FieldErrors = { ...prev };
-
-      if (hasTeam1Prefill) {
-        delete nextErrors.team1Name;
-      }
-
-      if (hasTeam2Prefill) {
-        delete nextErrors.team2Name;
-      }
-
-      return nextErrors;
-    });
-  }, []);
-
   const updateFormat = useCallback(
     (format: MatchFormat) => {
       updateField('format', format);
@@ -361,7 +316,6 @@ export function useSetupForm() {
     updateServingIndicatorEnabled,
     updateCountdownTimerEnabled,
     updateCountdownTimerDuration,
-    applyEphemeralTeamPrefill,
     isGoldenPointEnabled,
     showSuperTiebreakOption
   };
