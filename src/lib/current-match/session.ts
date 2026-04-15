@@ -1,5 +1,6 @@
 import { continueMatch, projectMatch, undoLastScoringAction } from '@/core/match/replay';
 import type { MatchAction, MatchProjection, MatchSetup, MatchTeamId } from '@/core/match/types';
+import { saveMatchHistory } from '@/lib/match-history/indexed-db';
 
 import { currentMatchPersistence, type CurrentMatchPersistence } from './indexed-db';
 import { undoLastScoringActionForTeam } from './helpers';
@@ -31,6 +32,7 @@ interface CurrentMatchSession {
 interface CreateCurrentMatchSessionOptions extends CurrentMatchSessionInput {
   matchId?: string;
   persistence?: CurrentMatchPersistence;
+  onHistorySaveFailure?: (err: unknown) => void;
 }
 
 export function createCurrentMatchSession(
@@ -44,6 +46,7 @@ export function createCurrentMatchSession(
     ...(typeof options.finishedAt === 'number' ? { finishedAt: options.finishedAt } : {})
   });
   const persistence = options.persistence ?? currentMatchPersistence;
+  const onHistorySaveFailure = options.onHistorySaveFailure;
   let pendingMutation = Promise.resolve();
 
   return {
@@ -167,6 +170,21 @@ export function createCurrentMatchSession(
         ? { finishedAt: nextSnapshot.finishedAt }
         : {})
     });
+
+    if (
+      matchId &&
+      typeof nextSnapshot.finishedAt === 'number' &&
+      typeof indexedDB !== 'undefined'
+    ) {
+      saveMatchHistory({
+        ...nextSnapshot,
+        matchId,
+        finishedAt: nextSnapshot.finishedAt
+      }).catch((err) => {
+        console.warn('[match-history] Failed to save history entry:', err);
+        onHistorySaveFailure?.(err);
+      });
+    }
 
     snapshot = nextSnapshot;
 

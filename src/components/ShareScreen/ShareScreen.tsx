@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 
+import type { MatchTeamId } from '@/core/match/types';
 import { TrophyIcon } from '@/components/ui/Icon/TrophyIcon';
 import { TopBar } from '@/components/ui/TopBar/TopBar';
 
@@ -9,6 +10,7 @@ import { cn } from '@/lib/utils/cn';
 interface ShareScreenProps {
   ref?: import('react').Ref<HTMLDivElement>;
   winnerName: string;
+  winnerTeamId?: MatchTeamId;
   team1Name: string;
   team2Name: string;
   formatLabel: string;
@@ -24,6 +26,7 @@ interface ShareScreenProps {
 export function ShareScreen({
   ref,
   winnerName,
+  winnerTeamId,
   team1Name,
   team2Name,
   formatLabel,
@@ -34,6 +37,15 @@ export function ShareScreen({
   const { t } = useTranslation();
 
   const matchCompleteBadge = t('share.topbar.badge');
+
+  // Determine winner name color based on which team won
+  // Team A (purple), Team B (orange), or neutral (black) for ties
+  const winnerNameClass =
+    winnerTeamId === 'team-1'
+      ? styles.winnerNameTeamA
+      : winnerTeamId === 'team-2'
+        ? styles.winnerNameTeamB
+        : styles.winnerNameNeutral;
 
   return (
     <div
@@ -57,7 +69,7 @@ export function ShareScreen({
             <TrophyIcon size={44} className={styles.trophyIcon} />
           </div>
           <span className={styles.winnersLabel}>{t('share.result.winners')}</span>
-          <span className={styles.winnerName}>{winnerName}</span>
+          <span className={winnerNameClass}>{winnerName}</span>
         </div>
 
         {/* Score Card */}

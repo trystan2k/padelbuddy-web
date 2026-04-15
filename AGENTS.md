@@ -20,6 +20,8 @@ Padel match score tracker web application.
 - Prefer simple solutions over complex ones.
 - Don't change any code without explaining the reasoning.
 - **Always follow Pencil designs strictly** when implementing app screens. Use the design and design tokens from `docs/design/padelbuddyweb.pen` as the single source of truth for colors, typography, spacing, and visual styling. All design tokens are defined in `design-tokens/` directory.
+- **NEVER** Change vitest coverage thresholds without approval
+- **ALWAYS** Follow the same code standard for all files. Like CSS tokens usage.
 
 ## Tasks
 

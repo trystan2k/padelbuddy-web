@@ -12,20 +12,24 @@ interface WinnerCardProps {
   winnerLabel: string;
   winnerName: string;
   winnerTeamId?: MatchTeamId;
+  source?: 'current' | 'history';
   isStartingNewMatch: boolean;
   isContinuingMatch: boolean;
   onNewMatch: () => void;
   onContinue: () => void;
+  onBack?: () => void;
 }
 
 export function WinnerCard({
   winnerLabel,
   winnerName,
   winnerTeamId,
+  source = 'current',
   isStartingNewMatch,
   isContinuingMatch,
   onNewMatch,
-  onContinue
+  onContinue,
+  onBack
 }: WinnerCardProps) {
   const { t } = useTranslation();
 
@@ -51,28 +55,42 @@ export function WinnerCard({
           </h2>
         </div>
 
-        <div className={styles.actionGroup}>
-          <Button
-            className={cn(styles.actionButton, styles.newMatchButton)}
-            accent="success"
-            disabled={isStartingNewMatch}
-            onClick={onNewMatch}
-            size="sm"
-            data-testid="new-match-button"
-          >
-            {t('match.end.actions.newMatch')}
-          </Button>
-          <Button
-            className={cn(styles.actionButton, styles.continueButton)}
-            disabled={isContinuingMatch}
-            onClick={onContinue}
-            size="sm"
-            data-testid="continue-match-button"
-            variant="outline"
-          >
-            {t('match.end.actions.continue')}
-          </Button>
-        </div>
+        {source === 'history' ? (
+          <div className={styles.actionGroupSingle}>
+            <Button
+              className={cn(styles.actionButton, styles.continueButton)}
+              onClick={onBack}
+              size="sm"
+              data-testid="history-back-button"
+              variant="outline"
+            >
+              {t('match.end.actions.back')}
+            </Button>
+          </div>
+        ) : (
+          <div className={styles.actionGroup}>
+            <Button
+              className={cn(styles.actionButton, styles.newMatchButton)}
+              accent="success"
+              disabled={isStartingNewMatch}
+              onClick={onNewMatch}
+              size="sm"
+              data-testid="new-match-button"
+            >
+              {t('match.end.actions.newMatch')}
+            </Button>
+            <Button
+              className={cn(styles.actionButton, styles.continueButton)}
+              disabled={isContinuingMatch}
+              onClick={onContinue}
+              size="sm"
+              data-testid="continue-match-button"
+              variant="outline"
+            >
+              {t('match.end.actions.continue')}
+            </Button>
+          </div>
+        )}
       </div>
     </Card>
   );

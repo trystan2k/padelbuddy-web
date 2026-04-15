@@ -1,49 +1,27 @@
-import { useCallback, useEffect, useRef, useState, type RefObject } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
-import type { MatchEndScreenSummary } from './view-model';
-
-const statusMessageTimeoutMs = 4000;
-
-interface MatchEndShareLabels {
-  shareText: string;
-  finishedEarlyShareText: string;
-  errorMessage: string;
-  downloadMessage: string;
-}
-
-interface UseMatchEndShareOptions {
-  captureRef: RefObject<HTMLDivElement | null>;
-  finishedAt: number;
-  summary: MatchEndScreenSummary;
-  labels: MatchEndShareLabels;
-  shareScreenReady: boolean;
-  onCaptureComplete: () => void;
-}
-
-interface UseMatchEndShareResult {
-  downloadMessage: string | null;
-  errorMessage: string | null;
-  handleShareClick: () => void;
-  isSharing: boolean;
-}
+import type { UseMatchShareOptions, UseMatchShareResult } from '@/lib/share/match-share';
 
 type ShareNavigator = Navigator & {
   canShare?: (data?: ShareData) => boolean;
   share?: (data?: ShareData) => Promise<void>;
 };
 
-export function useMatchEndShare({
+const statusMessageTimeoutMs = 4000;
+
+export function useMatchShare({
   captureRef,
   finishedAt,
   summary,
   labels,
   shareScreenReady,
   onCaptureComplete
-}: UseMatchEndShareOptions): UseMatchEndShareResult {
+}: UseMatchShareOptions): UseMatchShareResult {
   const [isSharing, setIsSharing] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [downloadMessage, setDownloadMessage] = useState<string | null>(null);
   const isCapturingRef = useRef(false);
+  const shareLabels = labels;
 
   // Handle capture when ShareScreen is ready
   useEffect(() => {
@@ -54,7 +32,7 @@ export function useMatchEndShare({
     const captureNode = captureRef.current;
 
     if (!captureNode) {
-      setErrorMessage(labels.errorMessage);
+      setErrorMessage(shareLabels.errorMessage);
       onCaptureComplete();
       return undefined;
     }
@@ -87,8 +65,8 @@ export function useMatchEndShare({
           type: imageBlob.type || 'image/png'
         });
         const shareText = summary.isFinishedEarly
-          ? labels.finishedEarlyShareText
-          : labels.shareText;
+          ? shareLabels.finishedEarlyShareText
+          : shareLabels.shareText;
 
         if (cancelled) {
           return;
@@ -99,7 +77,7 @@ export function useMatchEndShare({
         }
 
         downloadImage(imageBlob, filename);
-        setDownloadMessage(labels.downloadMessage);
+        setDownloadMessage(shareLabels.downloadMessage);
       } catch (error) {
         if (cancelled) {
           return;
@@ -110,7 +88,7 @@ export function useMatchEndShare({
         }
 
         console.error('Failed to share the match end screen.', error);
-        setErrorMessage(labels.errorMessage);
+        setErrorMessage(shareLabels.errorMessage);
       } finally {
         if (!cancelled) {
           isCapturingRef.current = false;
@@ -126,7 +104,7 @@ export function useMatchEndShare({
     };
   }, [
     captureRef,
-    labels,
+    shareLabels,
     finishedAt,
     onCaptureComplete,
     shareScreenReady,
@@ -186,6 +164,10 @@ export function useMatchEndShare({
     isSharing
   };
 }
+
+// ============================================================================
+// Private helpers
+// ============================================================================
 
 function createShareFilename(finishedAt: number): string {
   const d = new Date(finishedAt);

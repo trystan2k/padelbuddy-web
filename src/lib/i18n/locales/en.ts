@@ -201,6 +201,9 @@ export default {
     rules: {
       audioAnnouncements: 'Audio Announcements',
       audioAnnouncementsHint: 'Speak chair umpire scoring updates aloud',
+      remoteController: 'Remote Controller',
+      remoteControllerHint: 'Keyboard and media button support',
+      remoteControllerLink: 'Setup remote',
       goldenPoint: 'Golden Point',
       goldenPointHint: 'No advantage on deuce',
       superTiebreak: 'Super Tiebreak',
@@ -268,6 +271,7 @@ export default {
       cancel: 'Cancel',
       accept: 'Accept'
     },
+    historyButton: 'History',
     startButton: 'Start Match',
     validation: {
       teamNamesRequired: 'Both team names are required',
@@ -337,7 +341,8 @@ export default {
         share: 'Share',
         sharing: 'Sharing...',
         newMatch: 'New Match',
-        continue: 'Continue'
+        continue: 'Continue',
+        back: 'Back'
       },
       share: {
         text: '{{winnerName}} won a {{formatLabel}} Padel Buddy match in {{durationValue}} across {{totalGames}} games. {{teamOneName}} vs {{teamTwoName}}.',
@@ -371,6 +376,43 @@ export default {
       description: 'Players should switch sides now.',
       confirm: 'Switched'
     }
+  },
+  history: {
+    header: {
+      title: 'Match History',
+      subtitle: 'Match History'
+    },
+    matchCount_one: '{{count}} match',
+    matchCount_other: '{{count}} matches',
+    emptyState: 'No finished matches yet.',
+    saveError: 'Could not save this match in history.',
+    saveRetry: 'Retry',
+    deleteSuccess: 'Match removed from history',
+    setsScore: {
+      unfinishedTooltip: 'Match not finished'
+    },
+    table: {
+      ariaLabel: 'Match history table',
+      columns: {
+        teams: 'Teams',
+        date: 'Date',
+        sets: 'Sets',
+        games: 'Games',
+        actions: 'Actions'
+      }
+    },
+    actions: {
+      share: 'Share',
+      shareAriaLabel: 'Share match {{team1}} vs {{team2}}',
+      shareCopied: 'Match summary copied to clipboard.',
+      shareError: 'Unable to share this match right now.',
+      delete: 'Delete',
+      deleteAriaLabel: 'Delete match {{team1}} vs {{team2}}',
+      deleteConfirm: 'Delete this match from history?',
+      playAgain: 'Play Again',
+      back: 'Back'
+    },
+    shareMessage: '{{date}} · {{team1}} vs {{team2}} · Sets {{sets}} · Games {{games}}'
   },
   help: {
     triggerLabel: 'Open help',

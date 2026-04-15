@@ -202,6 +202,9 @@ export default {
     rules: {
       audioAnnouncements: 'Anuncios de audio',
       audioAnnouncementsHint: 'Lee la puntuación como un juez de silla',
+      remoteController: 'Mando a distancia',
+      remoteControllerHint: 'Teclado y botones de medios',
+      remoteControllerLink: 'Configurar',
       goldenPoint: 'Punto de Oro',
       goldenPointHint: 'Sin ventaja en deuce',
       superTiebreak: 'Super Tiebreak',
@@ -220,12 +223,13 @@ export default {
       }
     },
     remoteConfig: {
-      trigger: 'Config. del control remoto',
-      title: 'Control Remoto',
+      trigger: 'Config. del mando a distancia',
+      title: 'Mando a distancia',
       description:
-        'Puedes usar tu teclado o los botones de pista (Anterior/Siguiente) para controlar el partido. Haz clic en un botón del teclado para capturar tu tecla preferida.',
+        'Puedes usar tu teclado o los botones de medios (Anterior/Siguiente) para controlar el partido. Haz clic en un botón del teclado para capturar tu tecla preferida.',
       listening: 'Escuchando...',
-      listeningAnnouncement: 'Presiona un botón en tu control para asignarlo a {{action}}.',
+      listeningAnnouncement:
+        'Presiona un botón en tu mando a distancia para asignarlo a {{action}}.',
       notSet: 'Sin asignar',
       mediaButtons: {
         nextTrack: 'Siguiente un clic',
@@ -269,6 +273,7 @@ export default {
       cancel: 'Cancelar',
       accept: 'Aceptar'
     },
+    historyButton: 'Historial',
     startButton: 'Iniciar Partido',
     validation: {
       teamNamesRequired: 'Ambos nombres de equipo son obligatorios',
@@ -338,7 +343,8 @@ export default {
         share: 'Compartir',
         sharing: 'Compartiendo...',
         newMatch: 'Nuevo partido',
-        continue: 'Continuar'
+        continue: 'Continuar',
+        back: 'Volver'
       },
       share: {
         text: '{{winnerName}} ganó un partido {{formatLabel}} de Padel Buddy en {{durationValue}} y {{totalGames}} juegos. {{teamOneName}} vs {{teamTwoName}}.',
@@ -372,6 +378,43 @@ export default {
       description: 'Los jugadores deben cambiar de lado ahora.',
       confirm: 'Cambiado'
     }
+  },
+  history: {
+    header: {
+      title: 'Historial de partidos',
+      subtitle: 'Historial de partidos'
+    },
+    matchCount_one: '{{count}} partido',
+    matchCount_other: '{{count}} partidos',
+    emptyState: 'Todavía no hay partidos terminados.',
+    saveError: 'No se pudo guardar este partido en el historial.',
+    saveRetry: 'Reintentar',
+    deleteSuccess: 'Partido eliminado del historial',
+    setsScore: {
+      unfinishedTooltip: 'Partido no terminado'
+    },
+    table: {
+      ariaLabel: 'Tabla del historial de partidos',
+      columns: {
+        teams: 'Equipos',
+        date: 'Fecha',
+        sets: 'Sets',
+        games: 'Games',
+        actions: 'Acciones'
+      }
+    },
+    actions: {
+      share: 'Compartir',
+      shareAriaLabel: 'Compartir partido {{team1}} vs {{team2}}',
+      shareCopied: 'Resumen del partido copiado al portapapeles.',
+      shareError: 'No se puede compartir este partido ahora mismo.',
+      delete: 'Eliminar',
+      deleteAriaLabel: 'Eliminar partido {{team1}} vs {{team2}}',
+      deleteConfirm: '¿Eliminar este partido del historial?',
+      playAgain: 'Jugar de nuevo',
+      back: 'Volver'
+    },
+    shareMessage: '{{date}} · {{team1}} vs {{team2}} · Sets {{sets}} · Games {{games}}'
   },
   help: {
     triggerLabel: 'Abrir ayuda',

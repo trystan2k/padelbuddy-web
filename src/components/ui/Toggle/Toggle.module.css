@@ -12,6 +12,11 @@
 
 .rowDisabled {
   cursor: default;
+
+  .switch {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
 }
 
 .labelGroup {
@@ -61,6 +66,9 @@
 
 .switch:disabled {
   cursor: not-allowed;
+}
+
+.switchDisabled {
   opacity: 0.6;
 }
 

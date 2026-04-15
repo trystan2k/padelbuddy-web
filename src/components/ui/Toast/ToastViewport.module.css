@@ -80,8 +80,8 @@
 }
 
 .toast[data-type='success'] {
-  border-color: var(--semantic-color-border-accent-primary);
-  background-color: var(--semantic-color-background-accent-primary-subtle);
+  border-color: var(--semantic-color-border-accent-success);
+  background-color: var(--semantic-color-background-success-subtle);
 }
 
 .toast[data-type='info'] {
@@ -94,6 +94,13 @@
   flex: 1;
   flex-direction: row;
   justify-content: space-between;
+  gap: var(--base-space-4);
+  min-width: 0;
+}
+
+.message {
+  display: flex;
+  flex-direction: column;
   gap: var(--base-space-4);
   min-width: 0;
 }
@@ -111,6 +118,25 @@
   font-size: var(--base-font-size-13);
   color: var(--semantic-color-content-secondary);
   line-height: 1.4;
+}
+
+.action {
+  align-self: flex-start;
+  border: none;
+  padding: 0;
+  background: transparent;
+  color: var(--semantic-color-action-accent-primary);
+  font-family: var(--semantic-typography-family-body);
+  font-size: var(--base-font-size-13);
+  font-weight: var(--base-font-weight-semibold);
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.action:focus-visible {
+  outline: 2px solid var(--semantic-color-action-accent-primary);
+  outline-offset: var(--base-space-2);
+  border-radius: var(--base-radius-4);
 }
 
 .close {

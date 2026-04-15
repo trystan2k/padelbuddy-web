@@ -1,4 +1,5 @@
 import { describe, expect, test, vi } from 'vitest';
+
 import { Route } from '@/routes/index';
 
 const { mockLoadHomeStartup } = vi.hoisted(() => ({
@@ -64,5 +65,18 @@ describe('index route', () => {
     expect(validateSearch({ error: 'no-match' })).toEqual({ error: 'no-match' });
     expect(validateSearch({ error: 'other' })).toEqual({});
     expect(validateSearch({})).toEqual({});
+  });
+
+  test('ignores rematch team names in search params', () => {
+    const validateSearch = Route.options.validateSearch;
+
+    if (typeof validateSearch !== 'function') {
+      throw new Error('Expected the home route to expose validateSearch.');
+    }
+
+    expect(validateSearch({ team1: ' Team A ', team2: 'Team B' })).toEqual({});
+    expect(validateSearch({ error: 'corrupt', team1: 'Team A', team2: 'Team B' })).toEqual({
+      error: 'corrupt'
+    });
   });
 });

@@ -10,11 +10,11 @@ const startedAt = currentTime.getTime() - 20 * 60 * 1000;
 const finishedAt = startedAt + 5 * 60 * 1000;
 
 // Mock useToast to track toast calls without rendering portal
-const mockAddInfoToast = vi.fn<(message: string, options?: object) => void>();
+const mockAddSuccessToast = vi.fn<(message: string, options?: object) => void>();
 const mockAddErrorToast = vi.fn<(message: string, options?: object) => void>();
 vi.mock('@/components/ui/Toast/useToast', () => ({
   useToast: () => ({
-    addInfoToast: mockAddInfoToast,
+    addSuccessToast: mockAddSuccessToast,
     addErrorToast: mockAddErrorToast
   }),
   ToastProvider: ({ children }: { children: React.ReactNode }) => children,
@@ -380,7 +380,10 @@ describe('MatchEndScreen', () => {
     });
     // Toast is triggered via useToast - verify mock was called
     await vi.waitFor(() => {
-      expect(mockAddInfoToast).toHaveBeenCalledWith('Match image downloaded.', expect.any(Object));
+      expect(mockAddSuccessToast).toHaveBeenCalledWith(
+        'Match image downloaded.',
+        expect.any(Object)
+      );
     });
   });
 

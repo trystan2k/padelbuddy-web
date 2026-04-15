@@ -31,6 +31,9 @@ const {
   mockNavigate,
   mockPreloadRoute,
   mockLoadRemoteControllerConfig,
+  mockLoadCurrentMatch,
+  mockAddErrorToast,
+  mockSaveMatchHistory,
   mockSpeechAnnounce,
   mockSpeechDestroy,
   mockUseOrientationDetection
@@ -40,6 +43,10 @@ const {
   mockPreloadRoute: vi.fn<() => Promise<void>>(async () => undefined),
   mockLoadRemoteControllerConfig:
     vi.fn<() => Promise<ReturnType<typeof createDefaultRemoteControllerConfig>>>(),
+  mockLoadCurrentMatch:
+    vi.fn<() => Promise<{ status: string; record?: Record<string, unknown> }>>(),
+  mockAddErrorToast: vi.fn<(title: string, options?: unknown) => void>(),
+  mockSaveMatchHistory: vi.fn<(input: unknown) => Promise<unknown>>(),
   mockSpeechAnnounce: vi.fn<(args: unknown) => void>(),
   mockSpeechDestroy: vi.fn<() => void>(),
   mockUseOrientationDetection: vi.fn<() => { isPortrait: boolean; isLandscape: boolean }>(() => ({
@@ -100,6 +107,39 @@ vi.mock('@/lib/speech/speech-service', async (importOriginal) => {
   };
 });
 
+vi.mock('@/components/ui/Toast/useToast', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/components/ui/Toast/useToast')>();
+
+  return {
+    ...actual,
+    useToast: () => ({
+      addToast: vi.fn<(title: string, options?: unknown) => void>(),
+      addErrorToast: mockAddErrorToast,
+      addSuccessToast: vi.fn<(title: string, options?: unknown) => void>(),
+      addInfoToast: vi.fn<(title: string, options?: unknown) => void>(),
+      toastManager: { add: vi.fn<(toast: unknown) => void>() }
+    })
+  };
+});
+
+vi.mock('@/lib/match-history/indexed-db', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/lib/match-history/indexed-db')>();
+
+  return {
+    ...actual,
+    saveMatchHistory: mockSaveMatchHistory
+  };
+});
+
+vi.mock('@/lib/current-match/indexed-db', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/lib/current-match/indexed-db')>();
+
+  return {
+    ...actual,
+    loadCurrentMatch: mockLoadCurrentMatch
+  };
+});
+
 vi.mock('@/lib/orientation/useOrientationDetection', () => ({
   useOrientationDetection: mockUseOrientationDetection
 }));
@@ -112,6 +152,9 @@ describe('ActiveMatchScreen', () => {
     mockInvalidate.mockResolvedValue(undefined);
     mockPreloadRoute.mockResolvedValue(undefined);
     mockLoadRemoteControllerConfig.mockResolvedValue(createDefaultRemoteControllerConfig());
+    mockLoadCurrentMatch.mockResolvedValue({ status: 'empty' });
+    mockAddErrorToast.mockReset();
+    mockSaveMatchHistory.mockResolvedValue({});
     mockSpeechAnnounce.mockReset();
     mockSpeechDestroy.mockReset();
     mockUseOrientationDetection.mockReturnValue({
@@ -337,6 +380,56 @@ describe('ActiveMatchScreen', () => {
     );
 
     await expect.element(screen.getByTestId('finish-button')).toBeEnabled();
+  });
+
+  test('shows a history save error toast and retries saving on demand', async () => {
+    const setup = createTestSetup();
+
+    mockSaveMatchHistory
+      .mockRejectedValueOnce(new Error('history save failed'))
+      .mockResolvedValueOnce({});
+    mockLoadCurrentMatch.mockResolvedValue({
+      status: 'ok',
+      record: {
+        setup,
+        actions: [],
+        startedAt: defaultStartedAt,
+        finishedAt: Date.now()
+      }
+    });
+
+    const screen = await render(
+      <ActiveMatchScreen
+        matchId="test-match"
+        initialSetup={setup}
+        initialActions={[]}
+        startedAt={defaultStartedAt}
+      />
+    );
+
+    await screen.getByTestId('finish-button').click();
+
+    await vi.waitFor(() => {
+      expect(mockAddErrorToast).toHaveBeenCalledWith(
+        'Could not save this match in history.',
+        expect.objectContaining({
+          action: expect.objectContaining({
+            label: 'Retry',
+            onClick: expect.any(Function)
+          })
+        })
+      );
+    });
+
+    const retryAction = mockAddErrorToast.mock.calls.at(-1)?.[1] as
+      | { action?: { onClick?: () => void | Promise<void> } }
+      | undefined;
+
+    await retryAction?.action?.onClick?.();
+
+    await vi.waitFor(() => {
+      expect(mockSaveMatchHistory).toHaveBeenCalledTimes(2);
+    });
   });
 
   test('touch scoring updates the team score immediately', async () => {
