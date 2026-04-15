@@ -88,7 +88,7 @@ export function ActiveMatchScreen({
         action: {
           label: t('history.saveRetry'),
           onClick: () => {
-            void retryHistorySave();
+            return retryHistorySave();
           }
         }
       });
