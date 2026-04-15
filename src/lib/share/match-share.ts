@@ -56,16 +56,31 @@ export interface UseMatchShareResult {
 export function determineWinnerFromCompletedSets(
   sets: MatchSetState[]
 ): { teamId: MatchTeamId } | null {
-  const completedSets = sets.filter((set) => set.completed);
-
-  if (completedSets.length === 0) {
-    return null;
-  }
-
   let team1Wins = 0;
   let team2Wins = 0;
 
-  for (const set of completedSets) {
+  for (const set of sets) {
+    if (set.mode === 'super-tiebreak') {
+      if (!set.completed || set.tiebreakPoints === null) {
+        continue;
+      }
+
+      if (set.tiebreakPoints['team-1'] > set.tiebreakPoints['team-2']) {
+        team1Wins += 1;
+        continue;
+      }
+
+      if (set.tiebreakPoints['team-2'] > set.tiebreakPoints['team-1']) {
+        team2Wins += 1;
+      }
+
+      continue;
+    }
+
+    if (!set.completed) {
+      continue;
+    }
+
     if (set.games['team-1'] > set.games['team-2']) {
       team1Wins += 1;
       continue;
@@ -74,6 +89,10 @@ export function determineWinnerFromCompletedSets(
     if (set.games['team-2'] > set.games['team-1']) {
       team2Wins += 1;
     }
+  }
+
+  if (team1Wins === 0 && team2Wins === 0) {
+    return null;
   }
 
   if (team1Wins > team2Wins) {
