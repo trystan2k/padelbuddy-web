@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.12.0](https://github.com/trystan2k/padelbuddy-web/compare/v2.11.0...v2.12.0) (2026-04-15)
+
+
+### Features
+
+* implement Game History feature ([#96](https://github.com/trystan2k/padelbuddy-web/issues/96)) ([823ec98](https://github.com/trystan2k/padelbuddy-web/commit/823ec98c00b0473151ffd4946eed35b65db9a140))
+
+
+### Bug Fixes
+
+* add explicit return undefined in useEffect cleanup functions ([75204f2](https://github.com/trystan2k/padelbuddy-web/commit/75204f2a5eff288c76edaf258f6f62ddd1499fee))
+
 ## [2.11.0](https://github.com/trystan2k/padelbuddy-web/compare/v2.10.0...v2.11.0) (2026-04-13)
 
 
