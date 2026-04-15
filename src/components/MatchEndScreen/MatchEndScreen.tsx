@@ -31,7 +31,6 @@ interface MatchEndScreenProps {
   projection: MatchProjection;
   startedAt: number;
   finishedAt?: number;
-  source?: 'current' | 'history';
 }
 
 const formatTranslationKeys: Record<MatchFormat, 'bestOf1' | 'bestOf3' | 'bestOf5'> = {
@@ -46,8 +45,7 @@ export function MatchEndScreen({
   actions,
   projection,
   startedAt,
-  finishedAt,
-  source = 'current'
+  finishedAt
 }: MatchEndScreenProps) {
   const navigate = useNavigate();
   const router = useRouter();
@@ -299,10 +297,6 @@ export function MatchEndScreen({
     setShareScreenReady(true);
   }, [handleShareClick]);
 
-  const handleHistoryBack = useCallback(() => {
-    void navigate({ to: '/history', ...getViewTransitionNavigationOptions() });
-  }, [navigate]);
-
   const headerContent = useMemo(
     () => (
       <TopBar
@@ -350,12 +344,10 @@ export function MatchEndScreen({
                 winnerLabel={winnerLabel}
                 winnerName={winnerName}
                 {...(summary.winnerTeamId ? { winnerTeamId: summary.winnerTeamId } : {})}
-                source={source}
                 isStartingNewMatch={isStartingNewMatch}
                 isContinuingMatch={isContinuingMatch}
                 onNewMatch={handleNewMatch}
                 onContinue={handleContinue}
-                onBack={handleHistoryBack}
               />
 
               <MatchSummaryCard

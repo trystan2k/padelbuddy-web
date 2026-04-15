@@ -8,7 +8,6 @@ import {
 } from '@/components/AppStatus/AppStatusPage';
 import { Button } from '@/components/ui/Button/Button';
 import { loadCurrentMatch } from '@/lib/current-match/indexed-db';
-import { loadMatchHistoryById } from '@/lib/match-history/indexed-db';
 
 import {
   resolveMatchRouteState,
@@ -76,10 +75,9 @@ type ReadyMatchRouteState = Extract<MatchRouteState, { status: 'ready' }>;
 export async function loadMappedReadyMatchRouteState<T>(
   matchId: string,
   mode: MatchRouteMode,
-  mapReadyState: (routeState: ReadyMatchRouteState) => T,
-  source: 'current' | 'history' = 'current'
+  mapReadyState: (routeState: ReadyMatchRouteState) => T
 ): Promise<T> {
-  const routeState = await loadReadyMatchRouteState(matchId, mode, source);
+  const routeState = await loadReadyMatchRouteState(matchId, mode);
 
   return mapReadyState(routeState);
 }
@@ -92,15 +90,8 @@ export function getOptionalFinishedAt(
   return typeof finishedAt === 'number' ? { finishedAt } : {};
 }
 
-async function loadReadyMatchRouteState(
-  matchId: string,
-  mode: MatchRouteMode,
-  source: 'current' | 'history'
-) {
-  const routeState =
-    source === 'history'
-      ? await loadHistoryReadyMatchRouteState(matchId, mode)
-      : resolveMatchRouteState(matchId, await loadCurrentMatch(), mode);
+async function loadReadyMatchRouteState(matchId: string, mode: MatchRouteMode) {
+  const routeState = resolveMatchRouteState(matchId, await loadCurrentMatch(), mode);
 
   switch (routeState.status) {
     case 'redirect-home':
@@ -130,24 +121,4 @@ async function loadReadyMatchRouteState(
     default:
       throw new Error(`Expected ${mode} match route state to be ready after redirect guards.`);
   }
-}
-
-async function loadHistoryReadyMatchRouteState(matchId: string, mode: MatchRouteMode) {
-  const record = await loadMatchHistoryById(matchId);
-
-  if (!record) {
-    return {
-      status: 'redirect-home' as const,
-      error: 'no-match' as const
-    };
-  }
-
-  return resolveMatchRouteState(
-    matchId,
-    {
-      status: 'ok',
-      record
-    },
-    mode
-  );
 }
