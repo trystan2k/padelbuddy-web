@@ -219,7 +219,7 @@
   color: var(--semantic-color-content-secondary);
 }
 
-.remoteConfigurationButton,
+.historyButton,
 .startButton {
   width: 100%;
 }

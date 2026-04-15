@@ -20,7 +20,7 @@ import { createMatchEndScreenSummary, getMatchDurationParts } from './view-model
 import { MatchStatsCard } from './MatchStatsCard';
 import { MatchSummaryCard } from './MatchSummaryCard';
 import { WinnerCard } from './WinnerCard';
-import { useMatchEndShare } from './useMatchEndShare';
+import { useMatchShare } from '@/hooks/useMatchShare';
 
 import styles from './MatchEndScreen.module.css';
 
@@ -109,6 +109,7 @@ export function MatchEndScreen({
 
     return {
       winnerName: winnerNameValue,
+      ...(summary.winnerTeamId ? { winnerTeamId: summary.winnerTeamId } : {}),
       team1Name: summary.teamNames['team-1'],
       team2Name: summary.teamNames['team-2'],
       formatLabel,
@@ -128,6 +129,7 @@ export function MatchEndScreen({
     summary.setRows,
     summary.teamNames,
     summary.winnerName,
+    summary.winnerTeamId,
     t
   ]);
 
@@ -185,7 +187,7 @@ export function MatchEndScreen({
     }),
     [finishedEarlyShareText, shareText, t]
   );
-  const { downloadMessage, errorMessage, handleShareClick, isSharing } = useMatchEndShare({
+  const { downloadMessage, errorMessage, handleShareClick, isSharing } = useMatchShare({
     captureRef,
     finishedAt: finishedAt ?? Date.now(),
     summary,
@@ -194,7 +196,7 @@ export function MatchEndScreen({
     onCaptureComplete: handleCaptureComplete
   });
 
-  const { addErrorToast, addInfoToast } = useToast();
+  const { addErrorToast, addSuccessToast } = useToast();
 
   useEffect(() => {
     if (hasAnnouncedResultRef.current || !setup.audioAnnouncementsEnabled) {
@@ -230,9 +232,9 @@ export function MatchEndScreen({
 
   useEffect(() => {
     if (downloadMessage) {
-      addInfoToast(downloadMessage, { timeout: 4000 });
+      addSuccessToast(downloadMessage, { timeout: 5000 });
     }
-  }, [addInfoToast, downloadMessage]);
+  }, [addSuccessToast, downloadMessage]);
 
   const handleNewMatch = useCallback(async () => {
     if (isStartingNewMatch) {

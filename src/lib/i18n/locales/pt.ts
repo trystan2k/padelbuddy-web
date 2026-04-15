@@ -202,6 +202,9 @@ export default {
     rules: {
       audioAnnouncements: 'Anúncios de áudio',
       audioAnnouncementsHint: 'Narra a pontuação como árbitro de cadeira',
+      remoteController: 'Controle Remoto',
+      remoteControllerHint: 'Teclado e botões de mídia',
+      remoteControllerLink: 'Configurar',
       goldenPoint: 'Ponto de Ouro',
       goldenPointHint: 'Sem vantagem no deuce',
       superTiebreak: 'Super Tiebreak',
@@ -269,6 +272,7 @@ export default {
       cancel: 'Cancelar',
       accept: 'Aceitar'
     },
+    historyButton: 'Histórico',
     startButton: 'Iniciar Partida',
     validation: {
       teamNamesRequired: 'Ambos os nomes dos times são obrigatórios',
@@ -338,7 +342,8 @@ export default {
         share: 'Compartilhar',
         sharing: 'Compartilhando...',
         newMatch: 'Nova partida',
-        continue: 'Continuar'
+        continue: 'Continuar',
+        back: 'Voltar'
       },
       share: {
         text: '{{winnerName}} venceu uma partida {{formatLabel}} do Padel Buddy em {{durationValue}} e {{totalGames}} games. {{teamOneName}} vs {{teamTwoName}}.',
@@ -372,6 +377,46 @@ export default {
       description: 'Os jogadores devem trocar de lado agora.',
       confirm: 'Trocado'
     }
+  },
+  history: {
+    header: {
+      title: 'Histórico de partidas',
+      subtitle: 'Histórico de partidas'
+    },
+    matchCount_one: '{{count}} partida',
+    matchCount_other: '{{count}} partidas',
+    emptyState: 'Ainda não há partidas finalizadas.',
+    saveError: 'Não foi possível salvar esta partida no histórico.',
+    saveRetry: 'Tentar novamente',
+    deleteSuccess: 'Partida removida do histórico',
+    setsScore: {
+      unfinishedTooltip: 'Partida não terminada'
+    },
+    table: {
+      ariaLabel: 'Tabela do histórico de partidas',
+      columns: {
+        teams: 'Times',
+        date: 'Data',
+        sets: 'Sets',
+        games: 'Games',
+        actions: 'Ações'
+      }
+    },
+    actions: {
+      share: 'Compartilhar',
+      shareAriaLabel: 'Compartilhar partida {{team1}} vs {{team2}}',
+      shareCopied: 'Resumo da partida copiado para a área de transferência.',
+      shareError: 'Não foi possível compartilhar esta partida agora.',
+      delete: 'Excluir',
+      deleteAriaLabel: 'Excluir partida {{team1}} vs {{team2}}',
+      deleteConfirm: 'Excluir esta partida do histórico?',
+      deleteError: 'Não foi possível excluir esta partida agora.',
+      playAgain: 'Jogar novamente',
+      playAgainError: 'Não foi possível preparar esta revanche agora.',
+      playAgainAriaLabel: 'Jogar novamente',
+      back: 'Voltar'
+    },
+    shareMessage: '{{date}} · {{team1}} vs {{team2}} · Sets {{sets}} · Games {{games}}'
   },
   help: {
     triggerLabel: 'Abrir ajuda',

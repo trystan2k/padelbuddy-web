@@ -228,23 +228,25 @@ describe('SetupScreen', () => {
     await expect.element(team1ServerButton).toHaveAttribute('aria-pressed', 'false');
   });
 
-  test('places the remote configuration button below the first server controls in the left column', async () => {
+  test('places History in the left column and Setup remote link in the right column', async () => {
     const screen = await render(<SetupScreen />);
 
-    const button = screen.getByRole('button', { name: /remote configuration/i });
+    const historyButton = screen.getByRole('button', { name: /^history$/i });
+    const remoteButton = screen.getByRole('button', { name: /setup remote/i });
     const firstServerSection = screen.getByTestId('first-server-section');
+    const rulesCard = screen.getByTestId('rules-card');
 
-    expect(firstServerSection.element().parentElement).toBe(button.element().parentElement);
-    expect(
-      firstServerSection.element().compareDocumentPosition(button.element()) &
-        Node.DOCUMENT_POSITION_FOLLOWING
-    ).toBeTruthy();
+    expect(firstServerSection.element().parentElement).toBe(historyButton.element().parentElement);
+    expect(firstServerSection.element().parentElement).not.toBe(
+      remoteButton.element().parentElement
+    );
+    expect(rulesCard.element().contains(remoteButton.element())).toBe(true);
   });
 
   test('opens the remote configuration modal and shows unified rows by default', async () => {
     const screen = await render(<SetupScreen />);
 
-    await screen.getByRole('button', { name: /remote configuration/i }).click();
+    await screen.getByRole('button', { name: /setup remote/i }).click();
 
     await expect.element(screen.getByTestId('remote-configuration-modal')).toBeVisible();
     expect(mockLoadRemoteControllerConfig).toHaveBeenCalled();
@@ -273,7 +275,7 @@ describe('SetupScreen', () => {
     );
     const screen = await render(<SetupScreen />);
 
-    await screen.getByRole('button', { name: /remote configuration/i }).click();
+    await screen.getByRole('button', { name: /setup remote/i }).click();
 
     await expect.element(screen.getByTestId('remote-configuration-modal')).toBeVisible();
     expect(mockLoadRemoteControllerConfig).toHaveBeenCalled();

@@ -24,22 +24,23 @@ interface PluginMethod {
   (...args: unknown[]): Promise<unknown>;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function callPluginMethod<T>(
   pluginName: string,
   methodName: string,
   ...args: unknown[]
 ): Promise<T> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // oxlint-disable-next-line typescript/no-unsafe-type-assertion
   const cap = Capacitor as any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   const plugins: Record<string, unknown> = cap.Plugins ?? {};
   const plugin = plugins[pluginName];
   if (!plugin) return Promise.reject(new Error(`Plugin ${pluginName} not found`));
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
+  // oxlint-disable-next-line typescript/no-unsafe-type-assertion
   const method = (plugin as any)[methodName] as PluginMethod | undefined;
   if (!method) return Promise.reject(new Error(`Method ${methodName} not found on ${pluginName}`));
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
+  // oxlint-disable-next-line typescript/no-unsafe-type-assertion
   return method(...args) as any;
 }
 

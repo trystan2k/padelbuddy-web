@@ -3,8 +3,10 @@ import { useNavigate, useRouter } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 
 import { Layout } from '@/components/Layout/Layout';
+import { useToast } from '@/components/ui/Toast/useToast';
 import { RotateDeviceBlocker } from '@/components/ui/RotateDeviceBlocker/RotateDeviceBlocker';
 import { TopBar } from '@/components/ui/TopBar/TopBar';
+import { Button } from '@/components/ui/Button/Button';
 import { getActionFromKey } from '@/lib/input/keyboard-aliases';
 import {
   createDefaultRemoteControllerConfig,
@@ -15,6 +17,8 @@ import { useInputHandler } from '@/lib/input/use-input-handler';
 import { useMediaButtonsRemote } from '@/lib/input/use-media-buttons-remote';
 import { prepareCurrentMatchRouteNavigation } from '@/lib/router/current-match-route-flow';
 import { useOrientationDetection } from '@/lib/orientation/useOrientationDetection';
+import { loadCurrentMatch } from '@/lib/current-match/indexed-db';
+import { saveMatchHistory } from '@/lib/match-history/indexed-db';
 import { cn } from '@/lib/utils/cn';
 import { getViewTransitionNavigationOptions } from '@/lib/utils/view-transitions';
 
@@ -53,11 +57,44 @@ export function ActiveMatchScreen({
   const navigate = useNavigate();
   const router = useRouter();
   const { t } = useTranslation();
+  const { addErrorToast } = useToast();
   const { isPortrait } = useOrientationDetection();
   const [sideSwitchDismissed, setSideSwitchDismissed] = useState(false);
   const [isNavigatingToFinish, setIsNavigatingToFinish] = useState(false);
   const [remoteConfig, setRemoteConfig] = useState<RemoteControllerConfig | null>(null);
   const [isCompactHeight, setIsCompactHeight] = useState(false);
+
+  const retryHistorySave = useCallback(async () => {
+    const currentMatch = await loadCurrentMatch();
+
+    if (currentMatch.status !== 'ok' || typeof currentMatch.record.finishedAt !== 'number') {
+      return;
+    }
+
+    const currentSnapshot = currentMatch.record;
+
+    await saveMatchHistory({
+      matchId: currentSnapshot.matchId,
+      setup: currentSnapshot.setup,
+      actions: currentSnapshot.actions,
+      startedAt: currentSnapshot.startedAt,
+      finishedAt: currentSnapshot.finishedAt!
+    });
+  }, []);
+
+  const handleHistorySaveFailure = useCallback(
+    (_err: unknown) => {
+      addErrorToast(t('history.saveError'), {
+        action: {
+          label: t('history.saveRetry'),
+          onClick: () => {
+            return retryHistorySave();
+          }
+        }
+      });
+    },
+    [addErrorToast, retryHistorySave, t]
+  );
 
   useEffect(() => {
     if (typeof window === 'undefined') return undefined;
@@ -87,6 +124,7 @@ export function ActiveMatchScreen({
       setup: initialSetup,
       initialActions,
       startedAt,
+      onHistorySaveFailure: handleHistorySaveFailure,
       ...(typeof finishedAt === 'number' ? { initialFinishedAt: finishedAt } : {})
     });
 
@@ -386,15 +424,17 @@ export function ActiveMatchScreen({
 
   const footerContent = useMemo(
     () => (
-      <button
+      <Button
         type="button"
         className={styles.finishButton}
         onClick={handleFinish}
         disabled={isLoading || isMatchCompleted}
         data-testid="finish-button"
+        accent="primary"
+        variant="soft"
       >
         {t('match.actions.finishMatch')}
-      </button>
+      </Button>
     ),
     [handleFinish, isLoading, isMatchCompleted, t]
   );

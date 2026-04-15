@@ -91,8 +91,7 @@ export function getOptionalFinishedAt(
 }
 
 async function loadReadyMatchRouteState(matchId: string, mode: MatchRouteMode) {
-  const matchData = await loadCurrentMatch();
-  const routeState = resolveMatchRouteState(matchId, matchData, mode);
+  const routeState = resolveMatchRouteState(matchId, await loadCurrentMatch(), mode);
 
   switch (routeState.status) {
     case 'redirect-home':

@@ -1,11 +1,6 @@
 import { getMatchTeamName } from '@/core/match/team-name';
-import type {
-  MatchFormat,
-  MatchProjection,
-  MatchSetState,
-  MatchTeamId,
-  TeamScore
-} from '@/core/match/types';
+import type { MatchFormat, MatchProjection, MatchTeamId, TeamScore } from '@/core/match/types';
+import { determineWinnerFromCompletedSets, getMatchDurationParts } from '@/lib/share/match-share';
 
 export interface MatchEndScreenSetRow {
   setNumber: number;
@@ -13,7 +8,7 @@ export interface MatchEndScreenSetRow {
   isSuperTiebreak: boolean;
 }
 
-export interface MatchEndScreenSummary {
+interface MatchEndScreenSummary {
   winnerTeamId?: MatchTeamId;
   winnerName?: string;
   isFinishedEarly: boolean;
@@ -31,10 +26,8 @@ interface CreateMatchEndScreenSummaryOptions {
   now?: number;
 }
 
-interface MatchDurationParts {
-  hours: number;
-  minutes: number;
-}
+// Re-export for convenience (view-model consumers may need these)
+export { getMatchDurationParts };
 
 export function createMatchEndScreenSummary(
   options: CreateMatchEndScreenSummaryOptions
@@ -79,47 +72,6 @@ export function createMatchEndScreenSummary(
       0,
       Math.floor(((typeof finishedAt === 'number' ? finishedAt : now) - startedAt) / 1000)
     )
-  };
-}
-
-function determineWinnerFromCompletedSets(sets: MatchSetState[]): { teamId: MatchTeamId } | null {
-  const completedSets = sets.filter((set) => set.completed);
-
-  if (completedSets.length === 0) {
-    return null;
-  }
-
-  let team1Wins = 0;
-  let team2Wins = 0;
-
-  for (const set of completedSets) {
-    if (set.games['team-1'] > set.games['team-2']) {
-      team1Wins += 1;
-      continue;
-    }
-
-    if (set.games['team-2'] > set.games['team-1']) {
-      team2Wins += 1;
-    }
-  }
-
-  if (team1Wins > team2Wins) {
-    return { teamId: 'team-1' };
-  }
-
-  if (team2Wins > team1Wins) {
-    return { teamId: 'team-2' };
-  }
-
-  return null;
-}
-
-export function getMatchDurationParts(elapsedSeconds: number): MatchDurationParts {
-  const totalMinutes = Math.max(0, Math.floor(elapsedSeconds / 60));
-
-  return {
-    hours: Math.floor(totalMinutes / 60),
-    minutes: totalMinutes % 60
   };
 }
 

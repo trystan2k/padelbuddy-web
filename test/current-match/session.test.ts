@@ -1,4 +1,4 @@
-import { describe, expect, test, vi } from 'vitest';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 
 import { continueMatch, projectMatch, undoLastScoringAction } from '@/core/match/replay';
 import {
@@ -23,10 +23,27 @@ import {
   winQuickSet
 } from '../core/match/test-helpers';
 
+const { mockSaveMatchHistory } = vi.hoisted(() => ({
+  mockSaveMatchHistory: vi.fn<(input: unknown) => Promise<unknown>>()
+}));
+
+vi.mock('@/lib/match-history/indexed-db', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/lib/match-history/indexed-db')>();
+
+  return {
+    ...actual,
+    saveMatchHistory: mockSaveMatchHistory
+  };
+});
+
 describe('current match session', () => {
   const testMatchId = 'test-match';
   const testStartedAt = Date.now();
   const testFinishedAt = testStartedAt + 5 * 60 * 1000;
+
+  beforeEach(() => {
+    mockSaveMatchHistory.mockResolvedValue({});
+  });
 
   test('derives the initial projection from canonical setup and actions', () => {
     const setup = createTestSetup();
@@ -246,6 +263,44 @@ describe('current match session', () => {
       expect(snapshot.finishedAt).toBe(finishedNow);
     } finally {
       dateNowSpy.mockRestore();
+    }
+  });
+
+  test('invokes onHistorySaveFailure when match history persistence fails', async () => {
+    const setup = createTestSetup();
+    const historyError = new Error('history save failed');
+    const onHistorySaveFailure = vi.fn<(err: unknown) => void>();
+    const indexedDbDescriptor = Object.getOwnPropertyDescriptor(globalThis, 'indexedDB');
+
+    mockSaveMatchHistory.mockRejectedValueOnce(historyError);
+    Object.defineProperty(globalThis, 'indexedDB', {
+      configurable: true,
+      writable: true,
+      value: {}
+    });
+
+    try {
+      const { persistence } = createPersistenceStub();
+      const session = createCurrentMatchSession({
+        matchId: testMatchId,
+        setup,
+        actions: [],
+        startedAt: testStartedAt,
+        persistence,
+        onHistorySaveFailure
+      });
+
+      await session.finishMatch();
+
+      await vi.waitFor(() => {
+        expect(onHistorySaveFailure).toHaveBeenCalledWith(historyError);
+      });
+    } finally {
+      if (indexedDbDescriptor) {
+        Object.defineProperty(globalThis, 'indexedDB', indexedDbDescriptor);
+      } else {
+        delete (globalThis as { indexedDB?: unknown }).indexedDB;
+      }
     }
   });
 

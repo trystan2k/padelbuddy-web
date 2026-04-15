@@ -51,6 +51,7 @@
         "accent-primary": { "value": "{base.color.brand.primary}", "type": "color" },
         "accent-secondary": { "value": "{base.color.brand.secondary}", "type": "color" },
         "accent-danger": { "value": "{base.color.brand.danger}", "type": "color" },
+        "accent-success": { "value": "{base.color.brand.success}", "type": "color" },
         "critical-subtle": { "value": "{base.color.border.critical-subtle}", "type": "color" },
         "critical-subtle-alt": {
           "value": "{base.color.border.critical-subtle-alt}",

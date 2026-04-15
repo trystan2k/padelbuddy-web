@@ -14,6 +14,7 @@ interface UseMatchSessionOptions {
   startedAt: number;
   initialFinishedAt?: number;
   persistence?: CurrentMatchPersistence;
+  onHistorySaveFailure?: (err: unknown) => void;
 }
 
 interface UseMatchSessionReturn {
@@ -30,7 +31,15 @@ interface UseMatchSessionReturn {
  * Provides reactive snapshot updates and async operation handling.
  */
 export function useMatchSession(options: UseMatchSessionOptions): UseMatchSessionReturn {
-  const { matchId, setup, initialActions, startedAt, initialFinishedAt, persistence } = options;
+  const {
+    matchId,
+    setup,
+    initialActions,
+    startedAt,
+    initialFinishedAt,
+    persistence,
+    onHistorySaveFailure
+  } = options;
 
   const [session] = useState(() => {
     const sessionOptions = {
@@ -38,6 +47,7 @@ export function useMatchSession(options: UseMatchSessionOptions): UseMatchSessio
       setup,
       actions: initialActions,
       startedAt,
+      ...(onHistorySaveFailure ? { onHistorySaveFailure } : {}),
       ...(typeof initialFinishedAt === 'number' ? { finishedAt: initialFinishedAt } : {})
     } as const;
 

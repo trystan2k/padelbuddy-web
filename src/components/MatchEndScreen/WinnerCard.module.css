@@ -76,6 +76,12 @@
   gap: var(--base-space-14);
 }
 
+.actionGroupSingle {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--base-space-14);
+}
+
 .actionButton {
   display: grid;
   gap: var(--base-space-8);

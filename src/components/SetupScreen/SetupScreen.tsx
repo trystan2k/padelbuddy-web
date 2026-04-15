@@ -42,6 +42,8 @@ import { VoiceSelectionModal } from './VoiceSelectionModal';
 import { useSetupForm } from './useSetupForm';
 import styles from './SetupScreen.module.css';
 
+const NOOP = () => {};
+
 // Generate a URL-safe match ID
 function generateMatchId(): string {
   const bytes = new Uint8Array(6);
@@ -91,7 +93,6 @@ export function SetupScreen() {
     isGoldenPointEnabled,
     showSuperTiebreakOption
   } = useSetupForm();
-
   useEffect(() => {
     setSelectedVoiceName(formData.voiceName);
   }, [formData.voiceName]);
@@ -240,6 +241,10 @@ export function SetupScreen() {
   const handleOpenRemoteConfiguration = useCallback(() => {
     setIsRemoteConfigurationOpen(true);
   }, []);
+
+  const handleHistoryNavigation = useCallback(() => {
+    void navigate({ to: '/history' });
+  }, [navigate]);
 
   const handleCloseRemoteConfiguration = useCallback(() => {
     setIsRemoteConfigurationOpen(false);
@@ -440,13 +445,13 @@ export function SetupScreen() {
           </div>
 
           <Button
-            className={styles.remoteConfigurationButton}
+            className={styles.historyButton}
             variant="outline"
             size="lg"
             accent="secondary"
-            onClick={handleOpenRemoteConfiguration}
+            onClick={handleHistoryNavigation}
           >
-            {t('setup.remoteConfig.trigger')}
+            {t('setup.historyButton')}
           </Button>
           {import.meta.env.VITE_IS_NATIVE !== 'true' && (
             <div className={styles.storeBadgesContainer}>
@@ -501,6 +506,25 @@ export function SetupScreen() {
 
             <Divider />
 
+            {/* Remote Controller */}
+            <Toggle
+              checked={true}
+              disabled={true}
+              onChange={NOOP}
+              label={t('setup.rules.remoteController')}
+              hint={t('setup.rules.remoteControllerHint')}
+            />
+
+            <button
+              type="button"
+              className={styles.voicePreviewButton}
+              onClick={handleOpenRemoteConfiguration}
+            >
+              {t('setup.rules.remoteControllerLink')}
+            </button>
+
+            <Divider />
+
             {/* Golden Point */}
             <Toggle
               checked={isGoldenPointEnabled}
@@ -511,21 +535,21 @@ export function SetupScreen() {
 
             <Divider />
 
+            <Toggle
+              checked={formData.servingIndicatorEnabled}
+              onChange={updateServingIndicatorEnabled}
+              label={t('setup.rules.servingIndicator')}
+              hint={t('setup.rules.servingIndicatorHint')}
+            />
+
+            <Divider />
+
             {/* Side Switch Prompts */}
             <Toggle
               checked={formData.sideSwitchPrompts}
               onChange={updateSideSwitchPrompts}
               label={t('setup.rules.sideSwitch')}
               hint={t('setup.rules.sideSwitchHint')}
-            />
-
-            <Divider />
-
-            <Toggle
-              checked={formData.servingIndicatorEnabled}
-              onChange={updateServingIndicatorEnabled}
-              label={t('setup.rules.servingIndicator')}
-              hint={t('setup.rules.servingIndicatorHint')}
             />
 
             <Divider />

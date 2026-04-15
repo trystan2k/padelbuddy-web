@@ -15,12 +15,13 @@ export const Route = createFileRoute('/match/finish/$id')({
   ...currentMatchPersistenceRouteLoaderOptions,
   component: MatchFinishRoute,
   errorComponent: RouteErrorState,
-  loader: ({ params }) =>
-    loadMappedReadyMatchRouteState(params.id, 'finish', (routeState) => ({
+  loader: ({ params }) => {
+    return loadMappedReadyMatchRouteState(params.id, 'finish', (routeState) => ({
       matchId: params.id,
       record: routeState.record,
       projection: routeState.projection
-    }))
+    }));
+  }
 });
 
 function MatchFinishRoute() {

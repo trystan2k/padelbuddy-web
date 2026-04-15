@@ -282,6 +282,26 @@ describe('app flow integration', () => {
     });
     expect(activeLoaderData.record.finishedAt).toBeUndefined();
   });
+
+  test('renders setup screen on home route', async () => {
+    const startupState = await hydrateCurrentMatchStartup();
+    const homeScreen = await render(<HomeScreen startupState={startupState} />);
+
+    await expect.element(homeScreen.getByRole('button', { name: 'Start Match' })).toBeVisible();
+  });
+
+  test('home route wrapper forwards validated error search to HomeScreen', async () => {
+    mockRouteSearch.current = { error: 'corrupt' };
+
+    const HomeRouteComponent = getRouteComponent(HomeIndexRoute, 'home index');
+    const homeRouteScreen = await render(
+      <ToastProvider>
+        <HomeRouteComponent />
+      </ToastProvider>
+    );
+
+    await expect.element(homeRouteScreen.getByTestId('layout-body')).toBeInTheDocument();
+  });
 });
 
 async function setHomeStartupState(startupState: CurrentMatchStartupResult): Promise<void> {

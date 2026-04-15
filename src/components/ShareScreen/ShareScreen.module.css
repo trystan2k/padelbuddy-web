@@ -61,8 +61,28 @@
   text-transform: uppercase;
 }
 
-.winnerName {
+.winnerNameTeamA {
   color: var(--semantic-color-items-primary-content);
+  font-family: var(--semantic-typography-family-display);
+  font-size: var(--base-font-size-46);
+  font-weight: var(--semantic-typography-weight-heading);
+  letter-spacing: var(--semantic-typography-letter-spacing-display);
+  line-height: 1;
+  text-align: center;
+}
+
+.winnerNameTeamB {
+  color: var(--semantic-color-items-secondary-content);
+  font-family: var(--semantic-typography-family-display);
+  font-size: var(--base-font-size-46);
+  font-weight: var(--semantic-typography-weight-heading);
+  letter-spacing: var(--semantic-typography-letter-spacing-display);
+  line-height: 1;
+  text-align: center;
+}
+
+.winnerNameNeutral {
+  color: var(--semantic-color-content-primary);
   font-family: var(--semantic-typography-family-display);
   font-size: var(--base-font-size-46);
   font-weight: var(--semantic-typography-weight-heading);
