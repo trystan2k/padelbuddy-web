@@ -7,7 +7,7 @@ import { TopBar } from '@/components/ui/TopBar/TopBar';
 import styles from './ShareScreen.module.css';
 import { cn } from '@/lib/utils/cn';
 
-interface ShareScreenProps {
+export interface ShareScreenProps {
   ref?: import('react').Ref<HTMLDivElement>;
   winnerName: string;
   winnerTeamId?: MatchTeamId;

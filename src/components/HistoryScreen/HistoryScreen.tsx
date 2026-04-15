@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type MouseEvent } fr
 import { useNavigate } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 
-import { ShareScreen } from '@/components/ShareScreen/ShareScreen';
+import { ShareScreen, type ShareScreenProps } from '@/components/ShareScreen/ShareScreen';
 import { getMatchTeamName } from '@/core/match/team-name';
 import { projectMatch } from '@/core/match/replay';
 import type { MatchFormat, MatchSetState, MatchTeamId } from '@/core/match/types';
@@ -34,20 +34,6 @@ interface HistoryRow {
   winnerTeamId: MatchTeamId | null;
   finishedAt: number;
   record: MatchHistoryRecord;
-}
-
-interface ShareScreenProps {
-  winnerName: string;
-  team1Name: string;
-  team2Name: string;
-  formatLabel: string;
-  setRows: Array<{
-    setNumber: number;
-    team1Games: number;
-    team2Games: number;
-  }>;
-  durationValue: string;
-  dateValue: string;
 }
 
 const requiredSetsToWinByFormat: Record<MatchFormat, number> = {

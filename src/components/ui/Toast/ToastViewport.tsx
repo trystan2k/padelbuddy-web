@@ -37,7 +37,9 @@ function isToastData(data: unknown): data is ToastData {
 
 function ToastActionButton({ action }: { action: ToastAction }) {
   const handleClick = useCallback(() => {
-    void action.onClick();
+    void Promise.resolve(action.onClick()).catch((error: unknown) => {
+      console.error(error);
+    });
   }, [action]);
 
   return (

@@ -12,11 +12,11 @@
 
 .rowDisabled {
   cursor: default;
+}
 
-  .switch {
-    cursor: not-allowed;
-    opacity: 0.6;
-  }
+.rowDisabled .switch {
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 .labelGroup {

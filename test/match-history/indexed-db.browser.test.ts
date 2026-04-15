@@ -7,6 +7,7 @@ import {
   saveMatchHistory
 } from '@/lib/match-history/indexed-db';
 import { currentMatchSchemaVersion } from '@/lib/current-match/persistence';
+import { persistenceDatabaseVersion } from '@/lib/persistence/indexed-db';
 
 import { createTestSetup, winQuickSet } from '../core/match/test-helpers';
 
@@ -137,7 +138,7 @@ async function writeRawHistoryRecord(input: {
 
 function openDatabase(databaseName: string, objectStoreName: string): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open(databaseName, 7);
+    const request = indexedDB.open(databaseName, persistenceDatabaseVersion);
 
     request.addEventListener('upgradeneeded', () => {
       const database = request.result;

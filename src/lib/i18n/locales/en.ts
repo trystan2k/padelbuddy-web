@@ -410,6 +410,7 @@ export default {
       deleteAriaLabel: 'Delete match {{team1}} vs {{team2}}',
       deleteConfirm: 'Delete this match from history?',
       playAgain: 'Play Again',
+      playAgainAriaLabel: 'Play again',
       back: 'Back'
     },
     shareMessage: '{{date}} · {{team1}} vs {{team2}} · Sets {{sets}} · Games {{games}}'

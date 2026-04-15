@@ -412,6 +412,7 @@ export default {
       deleteAriaLabel: 'Eliminar partido {{team1}} vs {{team2}}',
       deleteConfirm: '¿Eliminar este partido del historial?',
       playAgain: 'Jugar de nuevo',
+      playAgainAriaLabel: 'Jugar de nuevo',
       back: 'Volver'
     },
     shareMessage: '{{date}} · {{team1}} vs {{team2}} · Sets {{sets}} · Games {{games}}'

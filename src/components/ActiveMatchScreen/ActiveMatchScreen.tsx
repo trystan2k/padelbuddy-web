@@ -74,13 +74,13 @@ export function ActiveMatchScreen({
     const currentSnapshot = currentMatch.record;
 
     await saveMatchHistory({
-      matchId,
+      matchId: currentSnapshot.matchId,
       setup: currentSnapshot.setup,
       actions: currentSnapshot.actions,
       startedAt: currentSnapshot.startedAt,
       finishedAt: currentSnapshot.finishedAt!
     });
-  }, [matchId]);
+  }, []);
 
   const handleHistorySaveFailure = useCallback(
     (_err: unknown) => {
