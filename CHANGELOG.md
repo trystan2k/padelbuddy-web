@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.12.1](https://github.com/trystan2k/padelbuddy-web/compare/v2.12.0...v2.12.1) (2026-04-15)
+
+
+### Bug Fixes
+
+* increase playwright workers from 1 to 3 ([f8f0748](https://github.com/trystan2k/padelbuddy-web/commit/f8f074815e984bf22e4750f65b9559b77b62f272))
+
 ## [2.12.0](https://github.com/trystan2k/padelbuddy-web/compare/v2.11.0...v2.12.0) (2026-04-15)
 
 
