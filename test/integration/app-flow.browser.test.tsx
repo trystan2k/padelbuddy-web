@@ -9,6 +9,7 @@ import {
   loadCurrentMatch,
   saveCurrentMatch
 } from '@/lib/current-match/indexed-db';
+import { helpSpotlightSeenStorageKey } from '@/lib/user/help_spotlight_storage';
 import {
   hydrateCurrentMatchStartup,
   type CurrentMatchStartupResult
@@ -56,6 +57,7 @@ describe('app flow integration', () => {
     mockInvalidate.mockResolvedValue(undefined);
     mockPreloadRoute.mockResolvedValue(undefined);
     mockRouteSearch.current = {};
+    localStorage.setItem(helpSpotlightSeenStorageKey, 'true');
     await clearCurrentMatch();
     await setHomeStartupState({ status: 'no-match', notice: null });
   });
