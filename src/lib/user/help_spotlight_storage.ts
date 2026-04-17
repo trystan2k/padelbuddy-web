@@ -3,7 +3,8 @@ export const helpSpotlightSeenStorageKey = 'padelbuddy_help_spotlight_seen';
 /** Returns true when the first-visit help spotlight has already been seen. */
 export function hasHelpSpotlightBeenSeen(): boolean {
   try {
-    return localStorage.getItem(helpSpotlightSeenStorageKey) === 'true';
+    const storedValue = localStorage.getItem(helpSpotlightSeenStorageKey);
+    return storedValue === 'true' || storedValue === '1';
   } catch {
     // When localStorage is unavailable (e.g. SSR, strict private browsing),
     // treat as already seen so the spotlight is suppressed rather than shown on every visit.

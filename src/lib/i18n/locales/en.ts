@@ -468,7 +468,7 @@ export default {
         smallDetails: 'Small but important details'
       },
       common: {
-        backToSetup: 'Back to home',
+        backToHome: 'Back to home',
         startMatch: 'Start a match',
         publicOnlyNote: 'This page includes only public user-facing content.',
         placeholderLabel: 'Screenshot placeholder',
