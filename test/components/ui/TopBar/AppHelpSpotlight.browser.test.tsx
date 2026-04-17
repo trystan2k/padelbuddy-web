@@ -6,10 +6,6 @@ import { AppHelpSpotlight } from '@/components/ui/TopBar/AppHelpSpotlight';
 
 const SPOTLIGHT_KEY = 'padelbuddy_help_spotlight_seen';
 
-function sleep(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
 describe('AppHelpSpotlight', () => {
   let rendered: RenderResult | null = null;
 
@@ -18,14 +14,14 @@ describe('AppHelpSpotlight', () => {
   });
 
   afterEach(async () => {
-    // Unmount React tree first so portal nodes are cleaned up properly
-    // before shared.ts afterEach clears document.body.innerHTML
     if (rendered) {
       void rendered.unmount();
       rendered = null;
-      // Give React time to finish portal cleanup
-      await sleep(50);
+      await vi.waitFor(() => {
+        expect(document.querySelector('[data-testid="spotlight-overlay"]')).toBeNull();
+      });
     }
+
     localStorage.removeItem(SPOTLIGHT_KEY);
   });
 
@@ -58,11 +54,9 @@ describe('AppHelpSpotlight', () => {
       </>
     );
 
-    // Even after waiting, spotlight should not appear for returning users
-    await sleep(600);
-
-    const overlay = rendered.container.querySelector('[data-testid="spotlight-overlay"]');
-    expect(overlay).toBeNull();
+    await vi.waitFor(() => {
+      expect(rendered?.container.querySelector('[data-testid="spotlight-overlay"]')).toBeNull();
+    });
   });
 
   test('shows spotlight after delay for first-time users', async () => {
@@ -77,11 +71,9 @@ describe('AppHelpSpotlight', () => {
       </>
     );
 
-    // Wait for the 500ms internal delay
-    await sleep(600);
-
-    const overlay = rendered.container.querySelector('[data-testid="spotlight-overlay"]');
-    expect(overlay).not.toBeNull();
+    await vi.waitFor(() => {
+      expect(rendered?.container.querySelector('[data-testid="spotlight-overlay"]')).not.toBeNull();
+    });
   });
 
   test('dismisses spotlight via Escape key and calls onDismiss', async () => {
@@ -97,20 +89,18 @@ describe('AppHelpSpotlight', () => {
       </>
     );
 
-    await sleep(600);
+    await vi.waitFor(() => {
+      expect(rendered?.container.querySelector('[data-testid="spotlight-overlay"]')).not.toBeNull();
+    });
 
-    // Verify spotlight is visible
-    expect(rendered.container.querySelector('[data-testid="spotlight-overlay"]')).not.toBeNull();
-
-    // Press Escape to dismiss
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
 
     expect(localStorage.getItem(SPOTLIGHT_KEY)).toBe('true');
     expect(onDismiss).toHaveBeenCalled();
 
-    // Wait for re-render
-    await sleep(50);
-    expect(rendered.container.querySelector('[data-testid="spotlight-overlay"]')).toBeNull();
+    await vi.waitFor(() => {
+      expect(rendered?.container.querySelector('[data-testid="spotlight-overlay"]')).toBeNull();
+    });
   });
 
   test('dismisses spotlight when trigger element is clicked', async () => {
@@ -126,9 +116,10 @@ describe('AppHelpSpotlight', () => {
       </>
     );
 
-    await sleep(600);
+    await vi.waitFor(() => {
+      expect(rendered?.container.querySelector('[data-testid="spotlight-overlay"]')).not.toBeNull();
+    });
 
-    // Click the trigger button to dismiss
     triggerRef.current!.click();
 
     expect(localStorage.getItem(SPOTLIGHT_KEY)).toBe('true');
@@ -147,9 +138,10 @@ describe('AppHelpSpotlight', () => {
       </>
     );
 
-    await sleep(600);
+    await vi.waitFor(() => {
+      expect(rendered?.container.querySelector('[data-testid="spotlight-overlay"]')).not.toBeNull();
+    });
 
-    // Trigger a resize event to cover the resize handler branch
     window.dispatchEvent(new Event('resize'));
   });
 
@@ -165,9 +157,10 @@ describe('AppHelpSpotlight', () => {
       </>
     );
 
-    await sleep(600);
+    await vi.waitFor(() => {
+      expect(rendered?.container.querySelector('[data-testid="spotlight-overlay"]')).not.toBeNull();
+    });
 
-    // Trigger a scroll event to cover the scroll handler branch
     window.dispatchEvent(new Event('scroll', { bubbles: true }));
   });
 });

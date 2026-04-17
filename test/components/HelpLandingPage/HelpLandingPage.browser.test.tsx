@@ -43,14 +43,15 @@ describe('HelpLandingPage', () => {
     await expect.element(footerCta).toBeInTheDocument();
   });
 
-  test('TOC navigation is present', async () => {
+  test('TOC navigation is present and labelled by the heading', async () => {
     const screen = await render(<HelpLandingPage />);
 
-    // Find the TOC nav element by its aria-labelledby attribute
     const tocNav = screen.container.querySelector(
-      '[aria-labelledby="toc-heading"]'
+      'nav[aria-labelledby="toc-heading"]'
     ) as HTMLElement | null;
+
     await expect.element(tocNav).toBeInTheDocument();
+    expect(tocNav?.getAttribute('aria-labelledby')).toBe('toc-heading');
   });
 
   test('article page element exists with page class', async () => {
@@ -59,16 +60,6 @@ describe('HelpLandingPage', () => {
     // Find the article element (main content container)
     const article = screen.container.querySelector('article[class*="page"]') as HTMLElement | null;
     await expect.element(article).toBeInTheDocument();
-  });
-
-  test('TOC nav has aria-labelledby pointing to toc-heading', async () => {
-    const screen = await render(<HelpLandingPage />);
-
-    // Find the TOC nav element
-    const tocNav = screen.container.querySelector(
-      '[aria-labelledby="toc-heading"]'
-    ) as HTMLElement | null;
-    await expect.element(tocNav).toBeInTheDocument();
   });
 
   test('TOC heading has correct id', async () => {
@@ -87,9 +78,7 @@ describe('HelpLandingPage', () => {
     const article = screen.container.querySelector('article');
     await expect.element(article).toBeInTheDocument();
 
-    // Verify aria-labelledby is not present on the article
-    const labelledby = article?.getAttribute('aria-labelledby');
-    expect(labelledby).toBeNull();
+    expect(article?.getAttribute('aria-labelledby')).toBeNull();
   });
 
   test('section items use ul instead of ol', async () => {

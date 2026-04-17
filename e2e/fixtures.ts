@@ -11,14 +11,25 @@ export { expect };
 const defaultDatabaseName = persistenceDatabaseName;
 
 async function clearBrowserState(page: Page, baseURL: string) {
-  // Use addInitScript to set localStorage BEFORE any navigation
-  // This avoids SecurityError when trying to access localStorage on about:blank
-  await page.context().addInitScript(
-    async ({ spotlightSeenKey }) => {
-      localStorage.setItem(spotlightSeenKey, 'true');
-    },
-    { spotlightSeenKey: helpSpotlightSeenStorageKey }
-  );
+  type SpotlightInitContext = Awaited<ReturnType<Page['context']>> & {
+    __helpSpotlightInitScriptRegistered?: boolean;
+  };
+
+  const context = page.context() as SpotlightInitContext;
+
+  // Register the init script only once per browser context.
+  // This keeps the first-visit spotlight storage stable without stacking duplicates
+  // when clearBrowserState() runs before and after each test.
+  if (!context.__helpSpotlightInitScriptRegistered) {
+    await context.addInitScript(
+      async ({ spotlightSeenKey }) => {
+        localStorage.setItem(spotlightSeenKey, 'true');
+      },
+      { spotlightSeenKey: helpSpotlightSeenStorageKey }
+    );
+
+    context.__helpSpotlightInitScriptRegistered = true;
+  }
 
   await page.goto(baseURL);
 

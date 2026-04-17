@@ -35,19 +35,31 @@ export function useActiveSection({
       return () => {};
     }
 
+    const entryById = new Map<string, IntersectionObserverEntry>();
+
     const observer = new IntersectionObserver(
       (entries) => {
-        // Find the entry with the largest intersection ratio
-        const visibleEntries = entries.filter((entry) => entry.isIntersecting);
+        entries.forEach((entry) => {
+          entryById.set(entry.target.id, entry);
+        });
 
-        if (visibleEntries.length > 0) {
-          // Sort by top position to get the topmost visible section
-          const topmost = visibleEntries.toSorted((a, b) => {
-            return a.boundingClientRect.top - b.boundingClientRect.top;
-          })[0];
+        const visibleEntries = sectionIds
+          .map((id) => entryById.get(id))
+          .filter(
+            (entry): entry is IntersectionObserverEntry =>
+              entry !== undefined && entry.isIntersecting
+          );
 
-          setActiveId(topmost?.target.id ?? null);
+        if (visibleEntries.length === 0) {
+          setActiveId(null);
+          return;
         }
+
+        const topmost = visibleEntries.slice().toSorted((a, b) => {
+          return a.boundingClientRect.top - b.boundingClientRect.top;
+        })[0];
+
+        setActiveId(topmost?.target.id ?? null);
       },
       { rootMargin, threshold }
     );
