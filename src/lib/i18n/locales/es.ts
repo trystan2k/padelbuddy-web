@@ -747,19 +747,19 @@ export default {
         }
       },
       helpSystem: {
-        title: 'Sistema de ayuda dentro de la app',
-        body: 'Padel Buddy incluye puntos de ayuda integrados para resolver dudas sin salir de la aplicación. El contenido está pensado para preguntas prácticas de uso en pista y decisiones rápidas. Así se reduce la fricción de aprendizaje para usuarios nuevos y ocasionales.',
+        title: 'Página de ayuda dentro de la app',
+        body: 'Padel Buddy ofrece una página de ayuda accesible desde la propia aplicación para resolver dudas frecuentes sin salir de la experiencia principal. El contenido está pensado para preguntas prácticas de uso en pista y decisiones rápidas. Así se reduce la fricción de aprendizaje para usuarios nuevos y ocasionales.',
         topBarHelp: {
           title: 'Botón de ayuda en la barra superior',
-          body: 'La barra superior ofrece acceso rápido a ayuda en pantallas clave como configuración y partido. No necesitas navegar menús profundos para encontrar documentación. Esto mantiene el soporte siempre visible durante uso real.'
+          body: 'La barra superior ofrece acceso rápido a la página de ayuda en pantallas clave como configuración y partido. No necesitas navegar menús profundos para encontrar documentación. Esto mantiene el soporte siempre visible durante uso real.'
         },
         spotlight: {
           title: 'Foco de primera visita',
           body: 'En la primera visita, un foco visual muestra dónde está la ayuda y cómo abrirla. Una vez descartado, se recuerda para no interrumpir repetidamente a usuarios habituales. Así se equilibra onboarding inicial con fluidez a largo plazo.'
         },
         builtInDialog: {
-          title: 'Diálogo de ayuda integrado',
-          body: 'El diálogo integrado resume el flujo principal, opciones clave de configuración y posibilidades de instalación web/PWA/nativa. Funciona como referencia rápida antes de iniciar o durante el partido. Esto reduce dependencia de documentación externa.'
+          title: 'Página de ayuda',
+          body: 'La página de ayuda resume el flujo principal, opciones clave de configuración y posibilidades de instalación web/PWA/nativa. Funciona como referencia rápida antes de iniciar o durante el partido. Esto reduce dependencia de documentación externa.'
         }
       },
       accessibility: {

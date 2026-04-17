@@ -3,14 +3,13 @@ import { render, type RenderResult } from 'vitest-browser-react';
 import { createRef } from 'react';
 
 import { AppHelpSpotlight } from '@/components/ui/TopBar/AppHelpSpotlight';
-
-const SPOTLIGHT_KEY = 'padelbuddy_help_spotlight_seen';
+import { helpSpotlightSeenStorageKey } from '@/lib/user/help_spotlight_storage';
 
 describe('AppHelpSpotlight', () => {
   let rendered: RenderResult | null = null;
 
   beforeEach(() => {
-    localStorage.removeItem(SPOTLIGHT_KEY);
+    localStorage.removeItem(helpSpotlightSeenStorageKey);
   });
 
   afterEach(async () => {
@@ -22,7 +21,7 @@ describe('AppHelpSpotlight', () => {
       });
     }
 
-    localStorage.removeItem(SPOTLIGHT_KEY);
+    localStorage.removeItem(helpSpotlightSeenStorageKey);
   });
 
   test('returns null when showOnFirstVisit is false', async () => {
@@ -42,7 +41,7 @@ describe('AppHelpSpotlight', () => {
   });
 
   test('returns null when spotlight has already been seen', async () => {
-    localStorage.setItem(SPOTLIGHT_KEY, 'true');
+    localStorage.setItem(helpSpotlightSeenStorageKey, 'true');
     const triggerRef = createRef<HTMLButtonElement>();
 
     rendered = await render(
@@ -95,7 +94,7 @@ describe('AppHelpSpotlight', () => {
 
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
 
-    expect(localStorage.getItem(SPOTLIGHT_KEY)).toBe('true');
+    expect(localStorage.getItem(helpSpotlightSeenStorageKey)).toBe('true');
     expect(onDismiss).toHaveBeenCalled();
 
     await vi.waitFor(() => {
@@ -122,7 +121,7 @@ describe('AppHelpSpotlight', () => {
 
     triggerRef.current!.click();
 
-    expect(localStorage.getItem(SPOTLIGHT_KEY)).toBe('true');
+    expect(localStorage.getItem(helpSpotlightSeenStorageKey)).toBe('true');
     expect(onDismiss).toHaveBeenCalled();
   });
 

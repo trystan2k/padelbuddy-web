@@ -756,8 +756,8 @@ export default {
           body: 'On first visits, a spotlight introduces where help is located and how to open it. Once dismissed, it is remembered so it does not repeatedly interrupt experienced users. This balances onboarding guidance with long-term usability.'
         },
         builtInDialog: {
-          title: 'Built-in help dialog',
-          body: 'The built-in help dialog summarizes core app flow, setup essentials, and installation options for web/PWA/native. It acts as a quick reference when users need immediate clarification before starting a match. This reduces dependency on external documentation.'
+          title: 'In-app help page',
+          body: 'The in-app help page summarizes core app flow, setup essentials, and installation options for web, PWA, and native experiences. It serves as a quick reference when users need clarification before starting a match. This reduces dependency on external documentation.'
         }
       },
       accessibility: {

@@ -7,6 +7,7 @@ import {
   createDefaultRemoteControllerConfig,
   createKeyboardMappingConfig
 } from '@/lib/input/remote-controller-config';
+import { helpSpotlightSeenStorageKey } from '@/lib/user/help_spotlight_storage';
 
 const {
   mockClearSpeechPreferences,
@@ -95,7 +96,7 @@ describe('SetupScreen', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     // Mark spotlight as seen so unrelated first-visit spotlight UI does not appear in these tests
-    localStorage.setItem('padelbuddy_help_spotlight_seen', 'true');
+    localStorage.setItem(helpSpotlightSeenStorageKey, 'true');
     mockLoadRemoteControllerConfig.mockResolvedValue(createDefaultRemoteControllerConfig());
     mockLoadSetupPreferences.mockResolvedValue(null);
     mockLoadSpeechPreferences.mockResolvedValue(null);
