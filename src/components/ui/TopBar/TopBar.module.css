@@ -41,6 +41,39 @@
   min-width: 0;
 }
 
+.helpTrigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--base-space-28);
+  height: var(--base-space-28);
+  padding: 0;
+  border: none;
+  border-radius: var(--base-radius-full);
+  background-color: transparent;
+  color: var(--semantic-color-content-accent-primary);
+  cursor: pointer;
+  transition:
+    background-color var(--base-motion-duration-fast) var(--base-motion-easing-default),
+    color var(--base-motion-duration-fast) var(--base-motion-easing-default);
+  flex-shrink: 0;
+}
+
+.helpTrigger:hover {
+  background-color: var(--semantic-color-interactive-subtle-hover);
+  color: var(--semantic-color-content-primary);
+}
+
+.helpTrigger:focus-visible {
+  outline: var(--base-focus-ring-width) var(--base-focus-ring-style) var(--base-focus-ring-color);
+  outline-offset: var(--base-focus-ring-offset);
+}
+
+.helpTriggerIcon {
+  width: var(--base-space-18);
+  height: var(--base-space-18);
+}
+
 .appName {
   margin: 0;
   font-family: var(--semantic-typography-family-display);

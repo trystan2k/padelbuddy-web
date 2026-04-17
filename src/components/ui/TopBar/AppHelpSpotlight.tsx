@@ -9,23 +9,32 @@ import {
 } from 'react';
 import { Popover } from '@base-ui/react/popover';
 import { useTranslation } from 'react-i18next';
-
-import { markHelpSpotlightSeen } from '@/lib/user/help_spotlight_storage';
+import { hasHelpSpotlightBeenSeen, markHelpSpotlightSeen } from '@/lib/user/help_spotlight_storage';
 
 import styles from './AppHelpSpotlight.module.css';
-
-interface AppHelpSpotlightProps {
-  /** The help trigger button element to spotlight. */
-  triggerRef: RefObject<HTMLButtonElement | null>;
-  /** Callback fired when the spotlight is dismissed. */
-  onDismiss: () => void;
-}
 
 /** Spotlight margin around the trigger button. */
 const SPOTLIGHT_MARGIN = 8;
 
-export function AppHelpSpotlight({ triggerRef, onDismiss }: AppHelpSpotlightProps) {
+interface AppHelpSpotlightProps {
+  /** The help trigger button element to spotlight. */
+  triggerRef: RefObject<HTMLButtonElement | null>;
+  /** Whether to show spotlight for first-time users. */
+  showOnFirstVisit?: boolean;
+  /** Callback fired when the spotlight is dismissed. */
+  onDismiss?: () => void;
+}
+
+/**
+ * A first-visit spotlight that highlights the help trigger button.
+ */
+export function AppHelpSpotlight({
+  triggerRef,
+  showOnFirstVisit = false,
+  onDismiss
+}: AppHelpSpotlightProps) {
   const { t } = useTranslation();
+  const [isVisible, setIsVisible] = useState(false);
   const [triggerRect, setTriggerRect] = useState<DOMRect | null>(null);
   const liveRegionRef = useRef<HTMLDivElement>(null);
 
@@ -35,13 +44,50 @@ export function AppHelpSpotlight({ triggerRef, onDismiss }: AppHelpSpotlightProp
     }
   }, [triggerRef]);
 
-  // Measure the trigger on mount and keep it aligned during resize, scroll, and layout shifts
   useEffect(() => {
+    if (!showOnFirstVisit) {
+      return undefined;
+    }
+
+    if (hasHelpSpotlightBeenSeen()) {
+      return undefined;
+    }
+
+    const timer = setTimeout(() => {
+      setIsVisible(true);
+      measureTriggerRect();
+    }, 500);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [measureTriggerRect, showOnFirstVisit]);
+
+  useEffect(() => {
+    if (!isVisible) {
+      return undefined;
+    }
+
     measureTriggerRect();
 
+    let frame = 0;
     const handleViewportChange = () => {
       measureTriggerRect();
     };
+
+    // Ref assignment can lag behind initial visibility in some render paths.
+    // Retry measurement until the trigger node becomes available.
+    const retryMeasureUntilReady = () => {
+      measureTriggerRect();
+
+      if (!triggerRef.current) {
+        frame = window.requestAnimationFrame(retryMeasureUntilReady);
+      }
+    };
+
+    if (!triggerRef.current) {
+      frame = window.requestAnimationFrame(retryMeasureUntilReady);
+    }
 
     window.addEventListener('resize', handleViewportChange, { passive: true });
     window.addEventListener('scroll', handleViewportChange, {
@@ -61,26 +107,59 @@ export function AppHelpSpotlight({ triggerRef, onDismiss }: AppHelpSpotlightProp
     }
 
     return () => {
+      if (frame) {
+        window.cancelAnimationFrame(frame);
+      }
       window.removeEventListener('resize', handleViewportChange);
       window.removeEventListener('scroll', handleViewportChange, true);
       resizeObserver?.disconnect();
     };
-  }, [measureTriggerRect, triggerRef]);
+  }, [isVisible, measureTriggerRect, triggerRef]);
 
   const handleDismiss = useCallback(() => {
     markHelpSpotlightSeen();
-    onDismiss();
+    setIsVisible(false);
+    onDismiss?.();
   }, [onDismiss]);
+
+  useEffect(() => {
+    // Attach listener as soon as spotlight is eligible (not just after it becomes visible),
+    // so clicks during the 500ms delay still mark the spotlight as seen.
+    if (!showOnFirstVisit || hasHelpSpotlightBeenSeen()) {
+      return undefined;
+    }
+
+    const handleTriggerActivation = () => {
+      handleDismiss();
+    };
+
+    const triggerElement = triggerRef.current;
+    triggerElement?.addEventListener('click', handleTriggerActivation);
+
+    return () => {
+      triggerElement?.removeEventListener('click', handleTriggerActivation);
+    };
+  }, [handleDismiss, showOnFirstVisit, triggerRef]);
 
   // Populate live region after mount so screen readers announce the spotlight message
   useEffect(() => {
+    if (!isVisible) {
+      return undefined;
+    }
+
     if (liveRegionRef.current) {
       liveRegionRef.current.textContent = t('help.spotlight.message');
     }
-  }, [t]);
+
+    return undefined;
+  }, [isVisible, t]);
 
   // Escape key handler at document level
   useEffect(() => {
+    if (!isVisible) {
+      return undefined;
+    }
+
     const handleKeyDown = (event: globalThis.KeyboardEvent) => {
       if (event.key === 'Escape') {
         event.preventDefault();
@@ -89,16 +168,18 @@ export function AppHelpSpotlight({ triggerRef, onDismiss }: AppHelpSpotlightProp
     };
 
     document.addEventListener('keydown', handleKeyDown);
+
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [handleDismiss]);
+  }, [handleDismiss, isVisible]);
 
   // Memoize spotlight style
   const spotlightStyle = useMemo((): CSSProperties | null => {
     if (!triggerRect) {
       return null;
     }
+
     return {
       top: triggerRect.top - SPOTLIGHT_MARGIN,
       left: triggerRect.left - SPOTLIGHT_MARGIN,
@@ -107,34 +188,20 @@ export function AppHelpSpotlight({ triggerRef, onDismiss }: AppHelpSpotlightProp
     };
   }, [triggerRect]);
 
-  // Don't render until we have trigger position
-  if (!spotlightStyle) {
+  if (!showOnFirstVisit || !isVisible || !spotlightStyle) {
     return null;
   }
 
   return (
     <>
-      {/* Screen reader live region - rendered empty first, then populated via useEffect for reliable announcement */}
+      {/* Screen reader live region - rendered empty first, then populated for reliable announcement */}
       <div ref={liveRegionRef} aria-live="polite" aria-atomic="true" className={styles.srOnly} />
 
-      {/* Note: No click-outside dismissal here.
-          Adding a backdrop click handler would intercept clicks before they reach the help trigger,
-          breaking the single-click behavior where clicking the help icon both dismisses the spotlight
-          AND opens the dialog in the same interaction.
-          Users dismiss the spotlight via Escape key or the dismiss button inside the popover. */}
-
-      {/* Wrapper for the spotlight cutout (pointer-events: none) and popover */}
+      {/* Wrapper for spotlight cutout and popover */}
       <div className={styles.wrapper} data-testid="spotlight-overlay">
-        {/* Spotlight cutout around the trigger - pointer-events: none so clicks pass through */}
         <div className={styles.spotlight} style={spotlightStyle} aria-hidden="true" />
 
-        {/* Base UI Popover anchored to the trigger ref - NOT Tooltip because it has an interactive dismiss */}
-        <Popover.Root
-          open={true}
-          // Controlled open state - always true while spotlight is visible.
-          // No onOpenChange handler needed since dismissal is handled via Escape key
-          // or the dismiss button which calls handleDismiss directly.
-        >
+        <Popover.Root open={true}>
           <Popover.Portal>
             <Popover.Positioner
               anchor={triggerRef}
@@ -149,17 +216,14 @@ export function AppHelpSpotlight({ triggerRef, onDismiss }: AppHelpSpotlightProp
                 data-testid="spotlight-popover"
                 initialFocus={false}
               >
-                {/* Docs-style arrow that visually merges with the popover edge. */}
                 <Popover.Arrow className={styles.arrow} />
 
-                {/* Use Popover.Title for accessible heading */}
                 <Popover.Title className={styles.popoverTitle}>
                   {t('help.spotlight.title')}
                 </Popover.Title>
 
                 <p className={styles.popoverBody}>{t('help.spotlight.message')}</p>
 
-                {/* Interactive dismiss button - uses Popover.Close so Base UI handles the close path */}
                 <Popover.Close
                   className={styles.dismissButton}
                   aria-label={t('help.spotlight.dismiss')}

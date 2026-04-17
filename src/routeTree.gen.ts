@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as HistoryRouteImport } from './routes/history'
+import { Route as HelpRouteImport } from './routes/help'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as MatchIdRouteImport } from './routes/match.$id'
 import { Route as MatchFinishIdRouteImport } from './routes/match.finish.$id'
@@ -17,6 +18,11 @@ import { Route as MatchFinishIdRouteImport } from './routes/match.finish.$id'
 const HistoryRoute = HistoryRouteImport.update({
   id: '/history',
   path: '/history',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HelpRoute = HelpRouteImport.update({
+  id: '/help',
+  path: '/help',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -37,12 +43,14 @@ const MatchFinishIdRoute = MatchFinishIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/help': typeof HelpRoute
   '/history': typeof HistoryRoute
   '/match/$id': typeof MatchIdRoute
   '/match/finish/$id': typeof MatchFinishIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/help': typeof HelpRoute
   '/history': typeof HistoryRoute
   '/match/$id': typeof MatchIdRoute
   '/match/finish/$id': typeof MatchFinishIdRoute
@@ -50,20 +58,28 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/help': typeof HelpRoute
   '/history': typeof HistoryRoute
   '/match/$id': typeof MatchIdRoute
   '/match/finish/$id': typeof MatchFinishIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/history' | '/match/$id' | '/match/finish/$id'
+  fullPaths: '/' | '/help' | '/history' | '/match/$id' | '/match/finish/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/history' | '/match/$id' | '/match/finish/$id'
-  id: '__root__' | '/' | '/history' | '/match/$id' | '/match/finish/$id'
+  to: '/' | '/help' | '/history' | '/match/$id' | '/match/finish/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/help'
+    | '/history'
+    | '/match/$id'
+    | '/match/finish/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  HelpRoute: typeof HelpRoute
   HistoryRoute: typeof HistoryRoute
   MatchIdRoute: typeof MatchIdRoute
   MatchFinishIdRoute: typeof MatchFinishIdRoute
@@ -76,6 +92,13 @@ declare module '@tanstack/react-router' {
       path: '/history'
       fullPath: '/history'
       preLoaderRoute: typeof HistoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/help': {
+      id: '/help'
+      path: '/help'
+      fullPath: '/help'
+      preLoaderRoute: typeof HelpRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -104,6 +127,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  HelpRoute: HelpRoute,
   HistoryRoute: HistoryRoute,
   MatchIdRoute: MatchIdRoute,
   MatchFinishIdRoute: MatchFinishIdRoute,
