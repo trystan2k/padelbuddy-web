@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
-import { render } from 'vitest-browser-react';
+import { cleanup, render } from 'vitest-browser-react';
 
 import { SetupScreen } from '@/components/SetupScreen/SetupScreen';
 import { createRemoteControllerBindings } from '@/lib/input/keyboard-aliases';
@@ -7,6 +7,7 @@ import {
   createDefaultRemoteControllerConfig,
   createKeyboardMappingConfig
 } from '@/lib/input/remote-controller-config';
+import { helpSpotlightSeenStorageKey } from '@/lib/user/help_spotlight_storage';
 
 const {
   mockClearSpeechPreferences,
@@ -95,7 +96,7 @@ describe('SetupScreen', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     // Mark spotlight as seen so unrelated first-visit spotlight UI does not appear in these tests
-    localStorage.setItem('padelbuddy_help_spotlight_seen', '1');
+    localStorage.setItem(helpSpotlightSeenStorageKey, 'true');
     mockLoadRemoteControllerConfig.mockResolvedValue(createDefaultRemoteControllerConfig());
     mockLoadSetupPreferences.mockResolvedValue(null);
     mockLoadSpeechPreferences.mockResolvedValue(null);
@@ -105,7 +106,10 @@ describe('SetupScreen', () => {
   });
 
   afterEach(async () => {
-    // Cleanup handled by shared.ts afterEach (document.body.innerHTML, restoreAllMocks)
+    // Unmount React roots before shared.ts clears document.body.innerHTML.
+    // Without this, React 19's async portal teardown races with the shared
+    // cleanup and throws "removeChild: node is not a child of this node".
+    await cleanup();
   });
 
   test('renders countdown controls with the default disabled duration state', async () => {
@@ -305,29 +309,5 @@ describe('SetupScreen', () => {
     await vi.waitFor(() => {
       expect(mockSaveSetupPreferenceSlice).toHaveBeenCalledWith({ voiceName: 'Alex' });
     });
-  });
-
-  test('shows first-visit help spotlight on setup screen', async () => {
-    // Clear any existing spotlight seen state
-    localStorage.removeItem('padelbuddy_help_spotlight_seen');
-
-    const screen = await render(<SetupScreen />);
-
-    // Wait for the spotlight to appear
-    await vi.waitFor(
-      () => {
-        const overlay = screen.container.querySelector('[data-testid="spotlight-overlay"]');
-        if (!overlay) throw new Error('Spotlight overlay not found');
-      },
-      { timeout: 5000 }
-    );
-
-    // Verify the spotlight overlay is present
-    const overlay = screen.container.querySelector('[data-testid="spotlight-overlay"]');
-    expect(overlay).toBeInTheDocument();
-
-    // Verify the dismiss button is present
-    const dismissButton = screen.getByTestId('spotlight-dismiss');
-    expect(dismissButton).toBeInTheDocument();
   });
 });

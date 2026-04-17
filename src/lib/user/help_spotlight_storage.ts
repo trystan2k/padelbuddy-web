@@ -1,33 +1,22 @@
-const HELP_SPOTLIGHT_SEEN_KEY = 'padelbuddy_help_spotlight_seen';
+export const helpSpotlightSeenStorageKey = 'padelbuddy_help_spotlight_seen';
 
-/**
- * Returns true if the help spotlight has already been seen in this browser.
- * SSR-safe: returns true (fail-closed) when localStorage is unavailable.
- */
-export function isHelpSpotlightSeen(): boolean {
-  if (typeof localStorage === 'undefined') {
-    return true; // fail closed during SSR
-  }
-
+/** Returns true when the first-visit help spotlight has already been seen. */
+export function hasHelpSpotlightBeenSeen(): boolean {
   try {
-    return localStorage.getItem(HELP_SPOTLIGHT_SEEN_KEY) === '1';
+    const storedValue = localStorage.getItem(helpSpotlightSeenStorageKey);
+    return storedValue === 'true' || storedValue === '1';
   } catch {
-    return true; // fail closed on storage errors
+    // When localStorage is unavailable (e.g. SSR, strict private browsing),
+    // treat as already seen so the spotlight is suppressed rather than shown on every visit.
+    return true;
   }
 }
 
-/**
- * Marks the help spotlight as seen. After this call, the spotlight
- * will not appear again on subsequent visits in this browser.
- */
+/** Marks the first-visit help spotlight as seen. */
 export function markHelpSpotlightSeen(): void {
-  if (typeof localStorage === 'undefined') {
-    return;
-  }
-
   try {
-    localStorage.setItem(HELP_SPOTLIGHT_SEEN_KEY, '1');
+    localStorage.setItem(helpSpotlightSeenStorageKey, 'true');
   } catch {
-    // Silently ignore storage errors — the worst case is a repeated spotlight
+    // localStorage can be unavailable in constrained contexts.
   }
 }

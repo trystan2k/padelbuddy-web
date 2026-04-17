@@ -42,4 +42,30 @@ describe('ShareScreen', () => {
     await expect.element(screen.getByText('1h 22m')).toBeInTheDocument();
     await expect.element(screen.getByText('22/03/26')).toBeInTheDocument();
   });
+
+  it('applies team A color class when winnerTeamId is team-1', async () => {
+    const screen = await render(<ShareScreen {...defaultProps} winnerTeamId="team-1" />);
+
+    const winnerSpan = screen.getByText('Alvaro y Enrique').first();
+    const className = winnerSpan.element().className;
+    expect(className).toContain('winnerNameTeamA');
+  });
+
+  it('applies team B color class when winnerTeamId is team-2', async () => {
+    const screen = await render(
+      <ShareScreen {...defaultProps} winnerTeamId="team-2" winnerName="Pablo y Thiago" />
+    );
+
+    const winnerSpan = screen.getByText('Pablo y Thiago').first();
+    const className = winnerSpan.element().className;
+    expect(className).toContain('winnerNameTeamB');
+  });
+
+  it('applies neutral color class when winnerTeamId is undefined', async () => {
+    const screen = await render(<ShareScreen {...defaultProps} />);
+
+    const winnerSpan = screen.getByText('Alvaro y Enrique').first();
+    const className = winnerSpan.element().className;
+    expect(className).toContain('winnerNameNeutral');
+  });
 });

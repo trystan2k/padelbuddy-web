@@ -78,7 +78,7 @@
 
 .finishButton {
   width: 100%;
-  padding: var(--base-space-20) var(--base-space-24);
+  padding: var(--base-space-16);
   border-radius: var(--base-radius-28);
   background-color: var(--semantic-color-background-canvas);
   border-color: var(--semantic-color-border-subtle);

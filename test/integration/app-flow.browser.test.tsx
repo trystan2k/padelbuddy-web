@@ -9,6 +9,7 @@ import {
   loadCurrentMatch,
   saveCurrentMatch
 } from '@/lib/current-match/indexed-db';
+import { helpSpotlightSeenStorageKey } from '@/lib/user/help_spotlight_storage';
 import {
   hydrateCurrentMatchStartup,
   type CurrentMatchStartupResult
@@ -50,19 +51,13 @@ vi.mock('@tanstack/react-router', async (importOriginal) => {
   };
 });
 
-// Mock spotlight storage to keep first-visit UI out of general integration test flows.
-// This keeps setup/navigation scenarios focused on their primary behavior.
-vi.mock('@/lib/user/help_spotlight_storage', () => ({
-  isHelpSpotlightSeen: () => true,
-  markHelpSpotlightSeen: () => {}
-}));
-
 describe('app flow integration', () => {
   beforeEach(async () => {
     vi.clearAllMocks();
     mockInvalidate.mockResolvedValue(undefined);
     mockPreloadRoute.mockResolvedValue(undefined);
     mockRouteSearch.current = {};
+    localStorage.setItem(helpSpotlightSeenStorageKey, 'true');
     await clearCurrentMatch();
     await setHomeStartupState({ status: 'no-match', notice: null });
   });

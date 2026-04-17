@@ -22,6 +22,30 @@ function makeSet(index: number, team1Games: number, team2Games: number, complete
   };
 }
 
+function makeSuperTiebreakSet(
+  index: number,
+  team1Points: number,
+  team2Points: number,
+  completed = true
+) {
+  const winner =
+    team1Points > team2Points
+      ? ('team-1' as const)
+      : team2Points > team1Points
+        ? ('team-2' as const)
+        : null;
+
+  return {
+    index,
+    completed,
+    mode: 'super-tiebreak' as const,
+    games: { 'team-1': 0, 'team-2': 0 },
+    tiebreakPoints: { 'team-1': team1Points, 'team-2': team2Points },
+    winner,
+    firstServer: 'team-1' as const
+  };
+}
+
 describe('match-share', () => {
   describe('determineWinnerFromCompletedSets', () => {
     test('returns team-1 when team-1 wins more completed sets', () => {
@@ -57,6 +81,54 @@ describe('match-share', () => {
 
       expect(determineWinnerFromCompletedSets(sets as MatchSetState[])).toEqual({
         teamId: 'team-1'
+      });
+    });
+
+    describe('super-tiebreak sets', () => {
+      test('returns team-1 when team-1 wins completed super-tiebreak', () => {
+        const sets = [makeSuperTiebreakSet(0, 10, 7)];
+
+        expect(determineWinnerFromCompletedSets(sets as MatchSetState[])).toEqual({
+          teamId: 'team-1'
+        });
+      });
+
+      test('returns team-2 when team-2 wins completed super-tiebreak', () => {
+        const sets = [makeSuperTiebreakSet(0, 6, 10)];
+
+        expect(determineWinnerFromCompletedSets(sets as MatchSetState[])).toEqual({
+          teamId: 'team-2'
+        });
+      });
+
+      test('ignores in-progress super-tiebreak (completed=false)', () => {
+        const sets = [makeSuperTiebreakSet(0, 5, 3, false)];
+
+        expect(determineWinnerFromCompletedSets(sets as MatchSetState[])).toBeNull();
+      });
+
+      test('ignores super-tiebreak with null tiebreakPoints', () => {
+        const sets = [
+          {
+            index: 0,
+            completed: true,
+            mode: 'super-tiebreak' as const,
+            games: { 'team-1': 0, 'team-2': 0 },
+            tiebreakPoints: null,
+            winner: null,
+            firstServer: 'team-1' as const
+          }
+        ];
+
+        expect(determineWinnerFromCompletedSets(sets as unknown as MatchSetState[])).toBeNull();
+      });
+
+      test('counts both standard and super-tiebreak completed sets', () => {
+        const sets = [makeSet(0, 6, 4), makeSuperTiebreakSet(1, 10, 8)];
+
+        expect(determineWinnerFromCompletedSets(sets as MatchSetState[])).toEqual({
+          teamId: 'team-1'
+        });
       });
     });
   });

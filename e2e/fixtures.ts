@@ -4,29 +4,59 @@ import path from 'node:path';
 import { test as base, expect, type Page } from '@playwright/test';
 
 import { persistenceDatabaseName } from '../src/lib/persistence/indexed-db';
+import { helpSpotlightSeenStorageKey } from '../src/lib/user/help_spotlight_storage';
 
 export { expect };
 
 const defaultDatabaseName = persistenceDatabaseName;
 
 async function clearBrowserState(page: Page, baseURL: string) {
+  type SpotlightInitContext = Awaited<ReturnType<Page['context']>> & {
+    __helpSpotlightInitScriptRegistered?: boolean;
+  };
+
+  const context = page.context() as SpotlightInitContext;
+
+  // Register the init script only once per browser context.
+  // This keeps the first-visit spotlight storage stable without stacking duplicates
+  // when clearBrowserState() runs before and after each test.
+  if (!context.__helpSpotlightInitScriptRegistered) {
+    await context.addInitScript(
+      async ({ spotlightSeenKey }) => {
+        localStorage.setItem(spotlightSeenKey, 'true');
+      },
+      { spotlightSeenKey: helpSpotlightSeenStorageKey }
+    );
+
+    context.__helpSpotlightInitScriptRegistered = true;
+  }
+
   await page.goto(baseURL);
-  await page.evaluate(async (databaseName) => {
-    localStorage.clear();
-    sessionStorage.clear();
 
-    // Mark the help spotlight as seen so first-visit UI stays out of general E2E flows.
-    // This keeps setup/navigation scenarios focused on their primary behavior.
-    localStorage.setItem('padelbuddy_help_spotlight_seen', '1');
+  // Clear remaining state after navigation
+  await page.evaluate(
+    async ({ databaseName, spotlightSeenKey }) => {
+      // Save spotlight key before clearing
+      const spotlightValue = localStorage.getItem(spotlightSeenKey);
 
-    await new Promise<void>((resolve) => {
-      const request = indexedDB.deleteDatabase(databaseName);
+      localStorage.clear();
+      sessionStorage.clear();
 
-      request.addEventListener('success', () => resolve());
-      request.addEventListener('error', () => resolve());
-      request.addEventListener('blocked', () => resolve());
-    });
-  }, defaultDatabaseName);
+      // Restore spotlight key
+      if (spotlightValue !== null) {
+        localStorage.setItem(spotlightSeenKey, spotlightValue);
+      }
+
+      await new Promise<void>((resolve) => {
+        const request = indexedDB.deleteDatabase(databaseName);
+
+        request.addEventListener('success', () => resolve());
+        request.addEventListener('error', () => resolve());
+        request.addEventListener('blocked', () => resolve());
+      });
+    },
+    { databaseName: defaultDatabaseName, spotlightSeenKey: helpSpotlightSeenStorageKey }
+  );
 }
 
 function sanitizePathSegment(value: string): string {

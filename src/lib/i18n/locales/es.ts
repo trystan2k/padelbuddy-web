@@ -441,7 +441,538 @@ export default {
     spotlight: {
       title: 'Bienvenido a Padel Buddy',
       message: 'Empieza aquí si tienes alguna pregunta',
-      dismiss: 'Entendido'
+      dismiss: 'Entendido',
+      announcement: 'Diálogo de bienvenida abierto. Presiona Escape o haz clic fuera para cerrar.'
+    },
+    page: {
+      meta: {
+        title: 'Ayuda y guía de Padel Buddy',
+        description:
+          'Aprende cómo funciona Padel Buddy desde la configuración hasta el marcador en vivo, fin de partido, historial, recuperación y juego sin conexión.'
+      },
+      hero: {
+        eyebrow: 'Guía de ayuda',
+        title: 'Todo lo que necesitas para usar Padel Buddy en la pista',
+        body: 'Esta página explica el flujo completo del producto en lenguaje simple para que cualquier jugador configure un partido rápidamente y marque con confianza.'
+      },
+      toc: {
+        title: 'En esta página',
+        whatIs: '¿Qué es Padel Buddy?',
+        mainFlow: 'Flujo principal',
+        setup: 'Configurar un partido',
+        liveMatch: 'Pantalla de partido en vivo',
+        matchEnd: 'Pantalla de fin de partido',
+        history: 'Historial de partidos',
+        recovery: 'Recuperación y confiabilidad',
+        helpSystem: 'Sistema de ayuda integrado',
+        accessibility: 'Idiomas y accesibilidad',
+        platforms: 'Web, PWA y apps nativas',
+        smallDetails: 'Detalles pequeños pero importantes'
+      },
+      common: {
+        backToHome: 'Volver a inicio',
+        startMatch: 'Iniciar partido',
+        publicOnlyNote: 'Esta página incluye solo contenido público orientado al usuario.',
+        placeholderLabel: 'Marcador de posición de captura',
+        captureHintLabel: 'Cómo capturar',
+        captionLabel: 'Descripción',
+        storeAvailabilityLabel: 'También disponible en tiendas móviles'
+      },
+      whatIs: {
+        title: '¿Qué es Padel Buddy?',
+        body: 'Padel Buddy es un asistente de partido diseñado específicamente para llevar el marcador de pádel en pista real. Combina lógica oficial de puntuación, rotación de saque, avisos de cambio de lado, resumen final e historial en un solo flujo, sin depender de papel ni de varias apps. En la práctica, puedes configurar equipos antes del calentamiento, registrar cada punto durante el juego y terminar con una tarjeta de resultado lista para compartir en pocos segundos.'
+      },
+      mainFlow: {
+        title: 'El flujo principal de la app',
+        body: 'Padel Buddy sigue un recorrido claro de tres pasos: configurar el partido, puntuar en vivo y revisar el resultado final. Cada paso está pensado para uso rápido en pista, pero con suficiente control para distintos formatos de competencia. Este flujo permite dedicar menos tiempo a la app y más tiempo al juego.',
+        setup: {
+          title: '1) Configuración',
+          body: 'Antes del primer punto, define nombres de equipos, formato del partido, orden de saque y reglas opcionales como Punto de Oro o Súper tie-break. También puedes activar anuncios hablados, configurar un mando y elegir duración de cuenta regresiva. Completar esta etapa correctamente asegura que el motor de puntuación funcione bien desde el inicio.'
+        },
+        liveMatch: {
+          title: '2) Partido en vivo',
+          body: 'Durante el juego, usa controles grandes o tu mando para sumar y revertir puntos con mínima fricción. La app aplica automáticamente deuce, tie-break, súper tie-break, orden de saque y cambios de lado según tu configuración. Así evitas cálculos manuales en momentos de presión.'
+        },
+        matchEndHistory: {
+          title: '3) Fin de partido e historial',
+          body: 'Al finalizar, revisa ganador, resultado por sets y estadísticas clave, y comparte una imagen generada del partido si lo deseas. Los partidos terminados se guardan en historial para revisarlos después, eliminarlos o iniciar una revancha con nombres precompletados. Esto mantiene organizados tanto el cierre inmediato como el registro a largo plazo.'
+        },
+        recovery: {
+          title: 'Recuperación automática',
+          body: 'Si se cierra la pestaña, se bloquea el móvil o la app se interrumpe, Padel Buddy puede restaurar el partido en curso desde almacenamiento local. Al volver a abrir, puedes continuar exactamente donde estabas o descartar el estado guardado. Esto protege la continuidad del marcador ante interrupciones reales.'
+        }
+      },
+      setup: {
+        title: 'Configurar un partido',
+        body: 'La pantalla de configuración es el centro de control donde defines cómo se comportará todo el partido. Cada opción impacta directamente el marcador en vivo, los anuncios, el tiempo y el resumen final. Invertir un minuto en configurarla bien evita confusiones durante el juego.',
+        teamNames: {
+          title: 'Nombres de equipos',
+          body: 'Ingresa nombres claros para Equipo 1 y Equipo 2, por ejemplo parejas de jugadores o nombre del club. Esos nombres se usan en el marcador en vivo, anuncios de voz, resumen final, historial y tarjetas para compartir. Si juegas con frecuencia, recordarlos acelera las revanchas y reduce errores de escritura.'
+        },
+        matchFormat: {
+          title: 'Formato de partido',
+          body: 'Elige Mejor de 1, Mejor de 3 o Mejor de 5 para definir cuántos sets hacen falta para ganar. Esta opción controla cuándo puede terminar el partido y cuántas oportunidades de remontada tiene cada equipo. Por ejemplo, Mejor de 3 suele ser ideal para competencia y Mejor de 1 para turnos cortos de pista.'
+        },
+        goldenPoint: {
+          title: 'Punto de oro o ventaja',
+          body: 'Selecciona entre puntuación tradicional con ventaja o Punto de Oro en deuce. En modo ventaja, desde 40-40 hay que ganar dos puntos consecutivos; en Punto de Oro, el siguiente punto define el juego. El Punto de Oro suele acortar juegos y aumentar la tensión en puntos clave.'
+        },
+        superTiebreak: {
+          title: 'Súper tie-break en set decisivo',
+          body: 'Activa esta opción para reemplazar el set decisivo por un súper tie-break a 10 puntos, con diferencia de 2. Es un formato común cuando se busca reducir la duración total manteniendo un cierre competitivo. Si está desactivado, el set decisivo se juega con formato normal por juegos.'
+        },
+        firstServer: {
+          title: 'Primer sacador',
+          body: 'Define qué equipo saca primero antes de iniciar. Esto establece correctamente la rotación de saque para todos los juegos y escenarios de tie-break. Configurarlo bien evita correcciones posteriores del orden de servicio.'
+        },
+        servingIndicator: {
+          title: 'Indicador de saque',
+          body: 'Al activarlo, el equipo que está sacando queda resaltado visualmente en la pantalla de partido en vivo. Este contexto rápido ayuda a jugadores y espectadores, sobre todo en intercambios de ritmo alto. Es especialmente útil cuando quien anota no está dentro de la pista.'
+        },
+        sideSwitch: {
+          title: 'Avisos de cambio de lado',
+          body: 'Activa recordatorios automáticos para los momentos correctos de cambio de lado. La app muestra un aviso claro para confirmar y seguir sin perder foco del marcador. Así se reducen olvidos en partidos largos o intensos.'
+        },
+        countdown: {
+          title: 'Temporizador de cuenta regresiva',
+          body: 'Convierte el tiempo superior en una cuenta regresiva para reservas de pista con duración fija, como 1:00, 1:30 o 2:00. Si está desactivada, la misma zona funciona como referencia de reloj/tiempo. Esto ayuda a gestionar el turno y decidir cuándo cerrar o acelerar el partido.'
+        },
+        audio: {
+          title: 'Anuncios de audio',
+          body: 'Activa anuncios hablados para que la app cante el marcador y estados importantes del partido. Es útil cuando los jugadores no pueden mirar la pantalla entre puntos o cuando quien anota está a un costado. El audio mejora la seguridad de que todos escucharon el mismo resultado.'
+        },
+        voiceSelection: {
+          title: 'Selección de voz',
+          body: 'Abre la selección de voz para previsualizar y elegir la voz más clara en tu dispositivo. Las opciones disponibles dependen del sistema operativo y de los paquetes de voz instalados. Probarla antes de comenzar evita malentendidos durante los anuncios.'
+        },
+        remoteController: {
+          title: 'Configuración de control remoto',
+          body: 'Usa la configuración remota para mapear botones externos o teclas a acciones de puntuar y deshacer para cada equipo. Puedes guardar asignaciones personalizadas, limpiar vínculos individuales o restaurar valores por defecto. Es ideal cuando una persona controla el marcador con clicker Bluetooth o teclado desde fuera de la pista.'
+        },
+        languageSelector: {
+          title: 'Selector de idioma',
+          body: 'Cambia el idioma de la interfaz entre inglés, español y portugués directamente en configuración. El cambio actualiza al instante etiquetas, ayuda y la mayor parte del texto visible al usuario. Así, grupos multilingües pueden usar el mismo dispositivo con más comodidad.'
+        },
+        historyShortcut: {
+          title: 'Acceso directo al historial',
+          body: 'Usa este acceso para abrir el historial sin iniciar un partido nuevo. Desde ahí puedes revisar resultados anteriores, compartirlos más tarde, borrar registros o comenzar una revancha con nombres precompletados. Es una entrada rápida al registro reciente desde el flujo inicial.'
+        },
+        storeButtons: {
+          title: 'Botones de tiendas en web/PWA',
+          body: 'En web y PWA se muestran insignias de tiendas con enlaces directos a las versiones móviles nativas. Esto facilita pasar al canal de instalación preferido cuando se quiere distribución por tienda. También aclara la disponibilidad por plataforma en un solo lugar.'
+        }
+      },
+      liveMatch: {
+        title: 'Pantalla de partido en vivo',
+        body: 'La pantalla de partido en vivo está optimizada para registrar puntos de forma rápida y confiable durante juego real. Prioriza controles grandes, contexto claro y aplicación automática de reglas para reducir errores bajo presión. Las decisiones complejas de puntuación las toma el motor, no el usuario manualmente.',
+        largeScorePanels: {
+          title: 'Paneles de puntuación grandes',
+          body: 'Toca el panel de un equipo para sumar un punto al instante, incluso en pausas muy cortas entre rallies. El diseño usa áreas táctiles amplias y alto contraste, optimizadas para orientación horizontal. Esto reduce toques accidentales y mejora la velocidad al anotar.'
+        },
+        servingIndicator: {
+          title: 'Indicador de saque',
+          body: 'Cuando está activado, el equipo sacador se resalta claramente para tener contexto de servicio de un vistazo. Esta señal visual se mantiene alineada con el estado del marcador y puede influir en los anuncios hablados. Reduce confusiones en cambios de lado y transiciones a tie-break.'
+        },
+        undo: {
+          title: 'Botones de deshacer por equipo',
+          body: 'Cada equipo tiene su propia acción de deshacer para revertir el último punto asignado a ese lado. Deshacer rebobina el estado real, incluyendo juego, set, tie-break y progresión de saque cuando corresponde. Es clave para corregir toques erróneos sin reconstruir el marcador a mano.'
+        },
+        automaticScoring: {
+          title: 'Reglas de puntuación automáticas',
+          body: 'El motor de puntuación aplica automáticamente las reglas de pádel según la configuración elegida. Gestiona progresión de puntos, cierre de juegos, cierre de sets, deuce y transiciones de tie-break sin intervención manual. Esto garantiza coherencia incluso en finales de set complejos.'
+        },
+        deuceAdvantage: {
+          title: 'Deuce y ventaja',
+          body: 'En modo ventaja, al llegar a 40-40, un equipo debe ganar dos puntos consecutivos para cerrar el juego. La app controla automáticamente el estado de ventaja y anuncia los cambios de forma clara. Así se replica la puntuación tradicional usada en muchos partidos oficiales.'
+        },
+        goldenPoint: {
+          title: 'Lógica de punto de oro',
+          body: 'En modo Punto de Oro, el deuce se resuelve con un único punto decisivo en 40-40. El siguiente punto cierra inmediatamente el juego para el equipo ganador. Esta opción acelera el ritmo del partido y simplifica momentos de máxima presión.'
+        },
+        standardTiebreak: {
+          title: 'Tie-break estándar en 6-6',
+          body: 'Cuando un set llega a 6-6, la app entra automáticamente en tie-break estándar a 7 puntos, con diferencia de 2. Al ganarlo, el set queda registrado como 7-6 en el resumen final. No necesitas activar ningún modo manualmente.'
+        },
+        superTiebreak: {
+          title: 'Súper tie-break en set decisivo',
+          body: 'Si activaste Súper tie-break en configuración, el set decisivo se reemplaza por una carrera a 10 puntos, con diferencia de 2. La app aplica este formato solo en el último set decisivo y registra ese resultado correctamente. Es útil para torneos que buscan cerrar en menos tiempo.'
+        },
+        sideSwitch: {
+          title: 'Avisos de cambio de lado',
+          body: 'Si está activo, los avisos de cambio de lado aparecen en los momentos reglamentarios para recordarlo a los jugadores. El aviso se oculta automáticamente tras unos segundos para no bloquear el marcador. De esta forma se combina visibilidad del recordatorio con fluidez de juego.'
+        },
+        timer: {
+          title: 'Temporizador / reloj del partido',
+          body: 'La zona superior muestra contexto de tiempo en formato claro HH:MM:SS, ya sea reloj o cuenta regresiva según configuración. Esto permite leer rápidamente el estado temporal en descansos o cambios de lado. Ayuda a gestionar ritmo, reserva de pista y cierre del partido.'
+        },
+        finishAction: {
+          title: 'Acción Finalizar juego',
+          body: 'Usa Finalizar juego para cerrar el partido manualmente cuando las condiciones reales obligan a terminar antes. Ejemplos habituales: fin del turno de pista, lesión o acuerdo entre jugadores. La app conserva el progreso registrado y pasa a un resumen consistente.'
+        },
+        autoFinishRoute: {
+          title: 'Ruta automática a fin de partido',
+          body: 'Cuando se cumple la condición oficial de victoria, la app navega automáticamente a la pantalla de fin de partido. Esto evita confirmar manualmente el cierre y reduce riesgo de sumar puntos extra por error. El resultado final queda alineado con el formato elegido.'
+        },
+        rotateBlocker: {
+          title: 'Bloqueador de rotación en retrato',
+          body: 'En teléfonos en vertical, el marcador en vivo solicita girar a horizontal. Esta decisión prioriza controles más grandes y mejor legibilidad de puntuación a distancia. También reduce interacciones apretadas durante juego activo.'
+        },
+        compactHeight: {
+          title: 'Comportamiento en altura compacta',
+          body: 'En pantallas con poca altura, algunos controles secundarios pueden ocultarse tras inactividad para dar más espacio al marcador. Cuando los necesitas, puedes recuperarlos rápidamente. Este comportamiento adaptativo mantiene legible la parte más importante en dispositivos pequeños.'
+        },
+        wakeLock: {
+          title: 'Soporte de wake lock',
+          body: 'Cuando el dispositivo y el navegador lo permiten, la app solicita wake lock para evitar que la pantalla se apague durante el partido. Esto reduce interrupciones causadas por bloqueo automático mientras se está puntuando. Si no está disponible, la app sigue funcionando con normalidad.'
+        },
+        keyboardRemote: {
+          title: 'Controles de teclado / remoto / multimedia',
+          body: 'Además del toque en pantalla, puedes controlar el marcador con teclado, mandos Bluetooth y botones multimedia compatibles. Esta flexibilidad permite puntuar a distancia sin acercarte al dispositivo. Es muy útil con soporte en trípode o cuando quien anota está en el banco.'
+        },
+        mediaDoublePress: {
+          title: 'Deshacer multimedia con doble pulsación',
+          body: 'Con controles multimedia compatibles, una pulsación simple puede puntuar y una doble pulsación puede deshacer para ese lado dentro de una ventana breve. Este diseño permite corregir rápido sin abrir menús adicionales. Es especialmente práctico en mandos compactos con pocos botones.'
+        },
+        speech: {
+          title: 'Voz durante el marcador en vivo',
+          body: 'Los anuncios de voz pueden informar el puntaje y también momentos clave como deuce, punto de juego, punto de set y punto de partido. Esto mantiene alineados a todos cuando la atención visual está en el punto en juego. Además mejora la accesibilidad para quienes dependen del contexto hablado.'
+        },
+        speechVerbosity: {
+          title: 'Mínimo / Estándar / Verboso',
+          body: 'Puedes elegir salida de voz Mínima, Estándar o Verbosa según el nivel de detalle que prefieras escuchar. Mínima prioriza lo esencial y Verbosa agrega más contexto de partido. Así cada grupo ajusta el comportamiento del audio a su ritmo de juego.'
+        }
+      },
+      matchEnd: {
+        title: 'Pantalla de fin de partido',
+        body: 'La pantalla de fin de partido consolida el resultado final y muestra las acciones siguientes más importantes. Está diseñada para cerrar la sesión de forma clara, conservando los datos para compartir e historial. Desde aquí puedes empezar de nuevo o continuar juego informal si lo necesitas.',
+        winnerCard: {
+          title: 'Tarjeta del ganador',
+          body: 'La tarjeta del ganador muestra el equipo vencedor según reglas de sets completados. Si el partido terminó antes de tiempo o sin condición clara de victoria, el estado se informa explícitamente. Esto evita ambigüedades al revisar el resultado después.'
+        },
+        setSummary: {
+          title: 'Resumen de sets',
+          body: 'El resumen de sets presenta cada set completado en orden, incluyendo puntaje de súper tie-break decisivo cuando aplica. Ofrece un registro compacto pero completo de cómo se desarrolló el partido. Es ideal para verificar antes de compartir.'
+        },
+        statistics: {
+          title: 'Estadísticas del partido',
+          body: 'Las estadísticas clave incluyen duración total y cantidad de juegos disputados. Estos datos agregan contexto más allá del resultado final y ayudan a comparar partidos en el tiempo. También se reflejan en contenido compartible cuando corresponde.'
+        },
+        spokenResult: {
+          title: 'Anuncio hablado del resultado',
+          body: 'Si el audio está habilitado, al entrar en esta pantalla se puede anunciar verbalmente el resultado final. Esto confirma el cierre sin obligar a leer inmediatamente la pantalla. Resulta útil en pistas ruidosas o cuando los jugadores ya están recogiendo.'
+        },
+        share: {
+          title: 'Acción Compartir',
+          body: 'Compartir genera una tarjeta de resultado con datos clave como ganador, formato, marcador por sets, duración y fecha. Puedes enviarla por tus apps favoritas como resumen claro de postpartido. Así reportar resultados a grupos, clubes o redes es rápido y consistente.'
+        },
+        newMatch: {
+          title: 'Nuevo partido',
+          body: 'Nuevo partido cierra la sesión actual y vuelve a configuración con estado limpio. Úsalo cuando quieres comenzar otro partido oficial de inmediato. Evita arrastrar datos por error desde la sesión anterior.'
+        },
+        continue: {
+          title: 'Continuar',
+          body: 'Continuar permite seguir jugando después del cierre oficial sin perder el contexto actual. Es útil para juegos extra informales o para alargar la sesión fuera del resultado oficial. La app conserva la continuidad temporal y de puntuación de esa extensión.'
+        }
+      },
+      history: {
+        title: 'Historial de partidos',
+        body: 'El historial guarda localmente los partidos finalizados para que sus resultados sigan disponibles después del cierre. Funciona como un archivo ligero para revisar, compartir y lanzar revanchas rápidamente. Es útil para seguir evolución frente a rivales frecuentes sin herramientas externas.',
+        autoStorage: {
+          title: 'Almacenamiento local automático',
+          body: 'Los partidos completados se guardan automáticamente en el almacenamiento local del dispositivo o navegador, sin pasos extra. Así el resultado queda disponible incluso si cierras la app al terminar. También favorece un uso orientado a offline.'
+        },
+        limit: {
+          title: 'Límite de 100 partidos',
+          body: 'El historial conserva hasta 100 partidos finalizados recientes para mantener rendimiento y tamaño de almacenamiento bajo control. Al superar ese límite, se eliminan primero los más antiguos. De esta forma la lista se mantiene ágil en móvil.'
+        },
+        tableInfo: {
+          title: 'Detalles de la tabla de historial',
+          body: 'Cada fila resume equipos, fecha, marcador por sets, total de juegos y acciones disponibles. La tabla está pensada para escaneo rápido sin abrir cada registro. Funciona como una bitácora compacta de partidos.'
+        },
+        winnerHighlight: {
+          title: 'Resaltado del ganador',
+          body: 'Los equipos ganadores se resaltan visualmente para identificar resultados de un vistazo. Esto reduce errores de lectura cuando revisas muchos partidos seguidos. Es especialmente útil en contextos de liga o torneo.'
+        },
+        finishedEarly: {
+          title: 'Indicador de finalización temprana',
+          body: 'Marcadores especiales indican partidos finalizados antes de tiempo o sin ganador estándar por sets completos. Así se entiende que el registro es válido pero con cierre excepcional. Aporta transparencia al comparar resultados históricos.'
+        },
+        share: {
+          title: 'Compartir desde el historial',
+          body: 'Puedes generar y compartir tarjetas desde historial en cualquier momento, no solo al finalizar. Esto es práctico cuando alguien pide el resultado horas o días después del partido. La capacidad de compartir queda disponible aunque no se use al instante.'
+        },
+        delete: {
+          title: 'Eliminar del historial',
+          body: 'Los registros pueden eliminarse con confirmación para evitar borrados accidentales. Esto ayuda a mantener un historial limpio y relevante con el tiempo. La eliminación afecta solo al almacenamiento local de ese dispositivo.'
+        },
+        playAgain: {
+          title: 'Jugar de nuevo',
+          body: 'Jugar de nuevo inicia una revancha usando nombres de equipos del registro seleccionado. Esto reduce tiempo de configuración en enfrentamientos repetidos. Aun así, puedes ajustar formato y reglas antes de comenzar.'
+        },
+        backHome: {
+          title: 'Volver al inicio',
+          body: 'Una acción dedicada te devuelve del historial a configuración de forma directa. Mantiene una navegación predecible y evita perderse en flujos profundos. Es útil cuando pasas de revisar datos a iniciar un nuevo partido.'
+        },
+        emptyState: {
+          title: 'Estado vacío',
+          body: 'Si todavía no hay partidos guardados, se muestra un estado vacío claro y amigable. Esto confirma que la pantalla funciona correctamente y no que falló la carga. También orienta al usuario a crear su primer registro.'
+        }
+      },
+      recovery: {
+        title: 'Recuperación, seguridad y confiabilidad',
+        body: 'Las funciones de recuperación están diseñadas para proteger el progreso del partido ante cierres de pestaña, reinicios de app o fallos del dispositivo. El objetivo es conservar estado válido sin arriesgar puntuaciones corruptas. Estas medidas mejoran la confianza para uso competitivo en pista.',
+        autoPersistence: {
+          title: 'Persistencia automática del partido en curso',
+          body: 'Mientras un partido está activo, el estado se guarda continuamente en segundo plano para minimizar pérdida de puntos recientes. Este guardado es automático y no requiere acción manual. Es la base de la recuperación al reiniciar.'
+        },
+        resumePrompt: {
+          title: 'Aviso para reanudar partido guardado',
+          body: 'Al iniciar la app, si existe un partido guardado en curso, se pregunta si deseas retomarlo o descartarlo. Retomar recupera contexto completo; descartar vuelve a configuración limpia. Esta decisión explícita evita continuar por error un partido antiguo.'
+        },
+        corruptRecovery: {
+          title: 'Recuperación de datos corruptos',
+          body: 'Si los datos guardados son inválidos o no se pueden leer, la app ofrece un reinicio seguro guiado en lugar de fallar. Esto permite volver rápido a un estado utilizable. Se prioriza estabilidad por encima de restauraciones parciales riesgosas.'
+        },
+        schemaReset: {
+          title: 'Aviso de reinicio por incompatibilidad de esquema',
+          body: 'Cuando una actualización cambia el esquema de datos y un guardado antiguo deja de ser compatible, la app puede reiniciarlo automáticamente con un aviso único. Así se mantiene estabilidad entre versiones y se informa claramente lo ocurrido. Se evitan errores silenciosos o recuperaciones rotas.'
+        },
+        friendlyErrors: {
+          title: 'Manejo amigable de errores',
+          body: 'En rutas inválidas o registros inexistentes, la interfaz muestra mensajes claros orientados a recuperación, no errores técnicos crudos. El usuario recibe pasos prácticos para continuar, como volver a configuración. Esto hace el sistema entendible para perfiles no técnicos.'
+        },
+        loadingFeedback: {
+          title: 'Feedback de carga de rutas',
+          body: 'Durante cargas y transiciones, la app muestra estado pendiente visible para indicar que sigue trabajando. Esto reduce incertidumbre y toques repetidos en momentos de lentitud del dispositivo. Un buen feedback de carga mejora la percepción de confiabilidad.'
+        }
+      },
+      helpSystem: {
+        title: 'Página de ayuda dentro de la app',
+        body: 'Padel Buddy ofrece una página de ayuda accesible desde la propia aplicación para resolver dudas frecuentes sin salir de la experiencia principal. El contenido está pensado para preguntas prácticas de uso en pista y decisiones rápidas. Así se reduce la fricción de aprendizaje para usuarios nuevos y ocasionales.',
+        topBarHelp: {
+          title: 'Botón de ayuda en la barra superior',
+          body: 'La barra superior ofrece acceso rápido a la página de ayuda en pantallas clave como configuración y partido. No necesitas navegar menús profundos para encontrar documentación. Esto mantiene el soporte siempre visible durante uso real.'
+        },
+        spotlight: {
+          title: 'Foco de primera visita',
+          body: 'En la primera visita, un foco visual muestra dónde está la ayuda y cómo abrirla. Una vez descartado, se recuerda para no interrumpir repetidamente a usuarios habituales. Así se equilibra onboarding inicial con fluidez a largo plazo.'
+        },
+        builtInDialog: {
+          title: 'Página de ayuda',
+          body: 'La página de ayuda resume el flujo principal, opciones clave de configuración y posibilidades de instalación web/PWA/nativa. Funciona como referencia rápida antes de iniciar o durante el partido. Esto reduce dependencia de documentación externa.'
+        }
+      },
+      accessibility: {
+        title: 'Idiomas y accesibilidad',
+        body: 'Padel Buddy soporta inglés, español y portugués con etiquetas y ayuda localizadas para que grupos multilingües compartan el mismo dispositivo. En accesibilidad, incluye estructura semántica, navegación por teclado, foco visible, contraste legible y actualizaciones habladas del marcador. En conjunto, estas medidas facilitan el uso para perfiles con distintas necesidades de idioma, visión e interacción.'
+      },
+      platforms: {
+        title: 'PWA, uso sin conexión, web y apps nativas',
+        body: 'Padel Buddy puede usarse en distintos formatos según preferencia: web en navegador, PWA instalada o app móvil nativa. El flujo de marcador es el mismo, pero cambian detalles de instalación y distribución por plataforma. Entender estas diferencias ayuda a elegir la opción más conveniente para uso frecuente en pista.',
+        web: {
+          title: 'Versión web',
+          body: 'La versión web abre al instante en un navegador compatible, sin instalación previa. Es ideal para probar rápido, uso ocasional o dispositivos compartidos. Puedes empezar a puntuar en segundos desde una URL.'
+        },
+        pwa: {
+          title: 'Experiencia PWA',
+          body: 'Como PWA, Padel Buddy puede instalarse en pantalla de inicio y abrirse en modo más parecido a app independiente. Esto reduce distracciones del navegador y acelera el acceso antes del partido. También fortalece el comportamiento sin conexión en canchas con red inestable.'
+        },
+        install: {
+          title: 'Cómo instalar la PWA',
+          body: 'En iOS Safari, abre el menú Compartir y elige Añadir a pantalla de inicio. En Android Chrome u otros navegadores compatibles, usa Instalar aplicación o Añadir a pantalla de inicio. Después, abre Padel Buddy desde el icono como cualquier app.'
+        },
+        offline: {
+          title: 'Uso sin conexión',
+          body: 'Las sesiones de PWA instalada pueden seguir funcionando durante el partido aunque no haya internet. Esto es muy útil en pistas con señal móvil inestable o Wi-Fi limitado. La capacidad offline ayuda a mantener el marcador sin interrupciones.'
+        },
+        nativeApps: {
+          title: 'Apps móviles nativas',
+          body: 'También existen versiones nativas en Google Play y App Store para quienes prefieren el flujo clásico de instalación y actualizaciones desde tienda. Estas versiones están orientadas a una experiencia dedicada de uso móvil. Actualmente se posicionan como libres de anuncios.'
+        },
+        androidProtection: {
+          title: 'Protección de licencia/origen de tienda en Android',
+          body: 'Algunas distribuciones nativas de Android incluyen validación de licencia u origen que exige instalación desde Google Play. Esto ayuda a asegurar que la app proviene de una fuente autorizada. Si falla la validación, la solución recomendada es reinstalar desde Google Play.'
+        },
+        adsDifference: {
+          title: 'Diferencias de anuncios por plataforma',
+          body: 'El comportamiento de anuncios puede variar por plataforma: en web/PWA puede haber publicidad, mientras que en versiones nativas de tienda se posiciona experiencia sin anuncios. Esta diferencia ayuda a elegir el canal que mejor encaja con tus preferencias. Si priorizas experiencia sin anuncios, la opción recomendada es app de tienda.'
+        }
+      },
+      smallDetails: {
+        title: 'Detalles pequeños pero importantes',
+        body: 'Estos comportamientos pequeños suelen tener gran impacto práctico durante partidos reales. Reducen fricción, evitan errores frecuentes y mejoran la confianza al puntuar bajo presión. Conocerlos de antemano permite aprovechar mejor la app desde el primer uso.',
+        servingCard: {
+          title: 'Resaltado de tarjeta de saque',
+          body: 'La tarjeta del equipo sacador cambia visualmente para que el contexto de servicio sea evidente de inmediato. Esto ayuda a evitar discusiones sobre quién debe sacar. Es especialmente valioso en transiciones rápidas entre juegos.'
+        },
+        sideSwitchTimeout: {
+          title: 'Tiempo límite para cambio de lado',
+          body: 'Los avisos de cambio de lado se ocultan automáticamente después de unos 10 segundos para no bloquear el juego más de lo necesario. El recordatorio se ve con claridad, pero la interfaz vuelve rápido al marcador. Así se mantiene fluidez en la partida.'
+        },
+        landscapeOnly: {
+          title: 'Marcador en vivo orientado a horizontal',
+          body: 'El marcador en vivo prioriza horizontal y bloquea vertical en móviles de forma intencional. En horizontal hay controles más grandes y mejor legibilidad a distancia. Esta decisión mejora precisión táctil y lectura en pista.'
+        },
+        resumeMatch: {
+          title: 'Reanudar partidos interrumpidos',
+          body: 'Las sesiones interrumpidas pueden recuperarse desde estado guardado en lugar de empezar de cero. Esto protege la integridad del partido cuando ocurre un corte inesperado. Es una de las funciones de confiabilidad más útiles en uso real.'
+        },
+        finishEarly: {
+          title: 'Finalizar manualmente cuando sea necesario',
+          body: 'Puedes finalizar manualmente antes del cierre oficial cuando sea necesario, por ejemplo por límite de tiempo de pista o lesión. La app conserva el estado alcanzado y estadísticas disponibles. Esto refleja mejor las condiciones reales de juego.'
+        },
+        continueAfterFinish: {
+          title: 'Continuar después de finalizar',
+          body: 'Tras el cierre oficial, puedes seguir puntuando para juegos extra informales sin reiniciar. Esto sirve para tiempo adicional casual manteniendo el contexto de sesión. Se separa el resultado oficial de la extensión opcional.'
+        },
+        deviceVoices: {
+          title: 'Las voces provienen del dispositivo',
+          body: 'Las voces de anuncios dependen del sistema operativo y del navegador, no de una lista fija de la app. Por eso nombres y calidad pueden variar entre dispositivos. Revisarlas antes de empezar ayuda a elegir una voz más clara.'
+        },
+        advancedSpeech: {
+          title: 'Estados hablados avanzados',
+          body: 'La voz puede anunciar estados avanzados como deuce, Punto de Oro, ventaja, punto de set y punto de partido. Estas señales aportan más contexto que solo decir números de puntos. Ayudan a entender momentos de presión sin mirar la pantalla.'
+        },
+        undoRestoresState: {
+          title: 'Deshacer restaura el estado real',
+          body: 'Deshacer rebobina la línea temporal real del partido, incluyendo estados dependientes como progresión de juegos y orden de saque. No es una resta visual superficial del número mostrado. Así las correcciones mantienen validez reglamentaria.'
+        },
+        historyLimit: {
+          title: 'Límite de retención del historial',
+          body: 'El historial mantiene solo los 100 partidos finalizados más recientes para cuidar rendimiento y almacenamiento. Los más antiguos salen automáticamente cuando ingresan nuevos registros. Esto mantiene el archivo liviano en móviles.'
+        },
+        shareLater: {
+          title: 'Compartir ahora o después',
+          body: 'Las tarjetas de resultado pueden compartirse al terminar el partido o generarse más tarde desde historial. Es útil cuando hay prisa al salir de la pista. No se pierde la opción de compartir por no hacerlo en el momento.'
+        },
+        offlineUse: {
+          title: 'Sesiones listas para uso offline',
+          body: 'La PWA instalada está pensada para mantener el marcador usable sin conexión estable durante la sesión. Esto es clave en canchas con cobertura irregular. El modo offline reduce riesgo de interrupciones al puntuar.'
+        },
+        rememberedPreferences: {
+          title: 'Preferencias de configuración recordadas',
+          body: 'Padel Buddy puede recordar nombres de equipos y opciones importantes de configuración para acelerar futuros inicios. Esto evita repetir la misma preparación en cada partido. Comenzar más rápido significa más tiempo efectivo de juego.'
+        },
+        spotlightDiscovery: {
+          title: 'Foco de descubrimiento de ayuda',
+          body: 'Un foco de primera visita señala dónde está la ayuda para facilitar su descubrimiento temprano. Después de verlo una vez, deja de mostrarse para no molestar a usuarios recurrentes. Así mejora onboarding sin añadir ruido constante.'
+        }
+      },
+      media: {
+        hero: {
+          title: 'Imagen principal de uso en pista',
+          description:
+            'Teléfono cerca del banco de la pista con marcador en vivo visible y control remoto opcional cercano.',
+          captureHint:
+            'Toma una foto real en pista con la pantalla de partido en vivo abierta en horizontal.',
+          caption: 'Lleva el marcador sin salir del juego.'
+        },
+        mainFlow: {
+          title: 'Visual del flujo principal de la app',
+          description:
+            'Secuencia simple de 3 pasos: Configuración → Partido en vivo → Fin de partido / Historial.',
+          captureHint: 'Usa una ilustración limpia o un collage de pantallas reales.',
+          caption: 'De la configuración al resumen en un flujo simple.'
+        },
+        setupOverview: {
+          title: 'Vista general de la pantalla de configuración',
+          description:
+            'Vista completa de configuración destacando reglas, equipos, historial y acción de inicio.',
+          captureHint:
+            'Captura la configuración con audio activado para que se vean los controles de voz.',
+          caption: 'Todo lo que necesitas antes del primer punto.'
+        },
+        remoteConfig: {
+          title: 'Modal de configuración remota',
+          description:
+            'Muestra campos de mapeo de teclas y controles de limpiar/restablecer/guardar.',
+          captureHint:
+            'Abre el modal remoto desde configuración y captura con asignaciones completas.',
+          caption: 'Configura los controles de puntuación para tu dispositivo remoto.'
+        },
+        voiceSelection: {
+          title: 'Modal de selección de voz',
+          description: 'Lista de voces agrupada por idioma con acciones de vista previa/aceptar.',
+          captureHint: 'Abre la selección de voz mientras los anuncios de audio están habilitados.',
+          caption: 'Elige la voz que mejor se adapte a tu partido.'
+        },
+        liveMatch: {
+          title: 'Pantalla de partido en vivo en horizontal',
+          description:
+            'Tarjetas de puntuación, temporizador, resaltado de saque, deshacer y acción de finalizar visibles.',
+          captureHint: 'Usa un estado de partido realista (por ejemplo 40–30).',
+          caption: 'Controles grandes, marcador claro y contexto en vivo de un vistazo.'
+        },
+        sideSwitch: {
+          title: 'Modal de aviso de cambio de lado',
+          description:
+            'Modal que recuerda a los jugadores cambiar de lado con acción de confirmación.',
+          captureHint: 'Activa los avisos de cambio de lado y captura antes del auto-ocultado.',
+          caption: 'La app recuerda a los jugadores cuándo es momento de cambiar de lado.'
+        },
+        rotateBlocker: {
+          title: 'Bloqueador por rotación en retrato',
+          description: 'Bloqueador en retrato que solicita girar a horizontal.',
+          captureHint: 'Abre un partido en vivo en un viewport de teléfono en retrato.',
+          caption: 'La pantalla de marcador en vivo está optimizada para uso horizontal.'
+        },
+        matchEnd: {
+          title: 'Pantalla de resumen de fin de partido',
+          description: 'Tarjeta del ganador, resumen de sets, estadísticas y botones de acción.',
+          captureHint: 'Finaliza un partido y captura el estado completo del resumen.',
+          caption: 'Revisa el resultado, compártelo o sigue jugando.'
+        },
+        shareImage: {
+          title: 'Imagen de compartir generada',
+          description: 'Tarjeta de partido exportable con ganador, marcadores, fecha y duración.',
+          captureHint: 'Usa la acción de compartir y captura el artefacto generado.',
+          caption: 'Una imagen de resultado lista para compartir.'
+        },
+        historyList: {
+          title: 'Lista de historial con registros',
+          description: 'Múltiples entradas con resaltado del ganador y acciones.',
+          captureHint: 'Genera varios partidos y abre la lista de historial.',
+          caption: 'Los partidos recientes siguen siendo fáciles de revisar, compartir y repetir.'
+        },
+        historyEmpty: {
+          title: 'Estado vacío del historial',
+          description: 'Mensaje amigable cuando no hay partidos finalizados.',
+          captureHint: 'Borra los registros del historial y captura la vista vacía.',
+          caption: 'Aún no hay partidos finalizados.'
+        },
+        resumeDialog: {
+          title: 'Diálogo para reanudar partido guardado',
+          description: 'Aviso al inicio que ofrece reanudar o descartar.',
+          captureHint:
+            'Interrumpe un partido en vivo y vuelve a abrir la app para activar el aviso.',
+          caption: 'Puedes continuar con seguridad donde lo dejaste.'
+        },
+        corruptRecovery: {
+          title: 'Estado de recuperación de datos corruptos',
+          description:
+            'Mensaje guiado de recuperación cuando los datos guardados del partido no son válidos.',
+          captureHint:
+            'Carga datos inválidos preconfigurados del partido actual y captura la vista de recuperación.',
+          caption:
+            'Si los datos guardados son inválidos, la app te guía de forma segura para continuar.'
+        },
+        helpSpotlight: {
+          title: 'Foco de ayuda en la barra superior',
+          description:
+            'Foco de primera visita que orienta a los usuarios hacia la acción de ayuda.',
+          captureHint:
+            'Usa un perfil nuevo donde el foco de ayuda aún no se haya marcado como visto.',
+          caption: 'Los usuarios nuevos son guiados hacia el área de ayuda.'
+        },
+        platformComparison: {
+          title: 'Comparación Web vs PWA vs Nativa',
+          description:
+            'Tarjeta comparativa de instalación, soporte offline, tiendas y diferencias de anuncios.',
+          captureHint:
+            'Crea un visual comparativo diseñado y alineado con el comportamiento actual del producto.',
+          caption: 'Usa Padel Buddy en el formato que mejor se adapte a ti.'
+        }
+      }
     }
   }
 } as const;
