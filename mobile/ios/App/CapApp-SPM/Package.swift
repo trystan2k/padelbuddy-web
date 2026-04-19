@@ -11,8 +11,8 @@ let package = Package(
             targets: ["CapApp-SPM"])
     ],
     dependencies: [
-        .package(url: "https://github.com/ionic-team/capacitor-swift-pm.git", exact: "8.3.0"),
-        .package(name: "CapacitorCommunityTextToSpeech", path: "../../../../node_modules/.pnpm/@capacitor-community+text-to-speech@8.0.0_@capacitor+core@8.3.0/node_modules/@capacitor-community/text-to-speech")
+        .package(url: "https://github.com/ionic-team/capacitor-swift-pm.git", exact: "8.3.1"),
+        .package(name: "CapacitorCommunityTextToSpeech", path: "../../../../node_modules/.pnpm/@capacitor-community+text-to-speech@8.0.0_@capacitor+core@8.3.1/node_modules/@capacitor-community/text-to-speech")
     ],
     targets: [
         .target(
