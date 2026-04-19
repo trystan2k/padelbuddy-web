@@ -65,7 +65,7 @@
       - `help.page.meta.{title,description}`
       - `help.page.hero.{eyebrow,title,body}`
       - `help.page.toc.{title,whatIs,mainFlow,setup,liveMatch,matchEnd,history,recovery,helpSystem,accessibility,platforms,smallDetails}`
-      - `help.page.common.{backToHome,startMatch,publicOnlyNote,placeholderLabel,captureHintLabel,captionLabel,storeAvailabilityLabel}`
+      - `help.page.common.{back,startMatch,publicOnlyNote,placeholderLabel,captureHintLabel,captionLabel,storeAvailabilityLabel}`
     - `What is Padel Buddy?`:
       - `help.page.whatIs.{title,body}`
     - `The Main Flow of the App`:

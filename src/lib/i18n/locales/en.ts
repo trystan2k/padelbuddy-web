@@ -468,7 +468,7 @@ export default {
         smallDetails: 'Small but important details'
       },
       common: {
-        backToHome: 'Back to home',
+        back: 'Back',
         startMatch: 'Start a match',
         publicOnlyNote: 'This page includes only public user-facing content.',
         placeholderLabel: 'Screenshot placeholder',
@@ -861,7 +861,8 @@ export default {
           title: 'Hero on-court usage shot',
           description: 'Phone near court bench with live score visible and optional remote nearby.',
           captureHint: 'Take a real on-court photo with the live match screen open in landscape.',
-          caption: 'Keep the score without leaving the game.'
+          caption:
+            'Players can follow the score easily without the mental load of tracking it manually.'
         },
         mainFlow: {
           title: 'Main app flow visual',
@@ -934,12 +935,6 @@ export default {
           description: 'Startup prompt offering resume or discard actions.',
           captureHint: 'Interrupt a live match and relaunch to trigger the prompt.',
           caption: 'You can safely continue where you left off.'
-        },
-        corruptRecovery: {
-          title: 'Corrupt-data recovery state',
-          description: 'Guided recovery message when saved match data is invalid.',
-          captureHint: 'Load seeded invalid current-match data and capture recovery view.',
-          caption: 'If stored data is invalid, the app guides you back safely.'
         },
         helpSpotlight: {
           title: 'Help spotlight in top bar',

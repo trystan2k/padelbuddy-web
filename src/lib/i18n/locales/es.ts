@@ -285,7 +285,7 @@ export default {
   match: {
     header: {
       appName: 'Padel Buddy',
-      subtitle: 'Partido en vivo'
+      subtitle: 'Partido en directo'
     },
     score: {
       games: 'Juegos'
@@ -425,7 +425,7 @@ export default {
       'Padel Buddy es un rastreador de puntuación en vivo para partidos de pádel. Registra puntos, juegos y sets en tiempo real.',
     howToUse: {
       title: 'Cómo usar',
-      body: 'La aplicación te guía a través de tres pantallas principales:\n\nPantalla de configuración — Ingresa los nombres de los equipos, elige un formato de partido (Mejor de 1, 3 o 5 sets) y configura reglas opcionales como Punto de Oro, Super Tiebreak, Avisos de Cambio de Lado, Indicador de Servicio y Temporizador. También puedes configurar un control remoto Bluetooth y seleccionar una voz para los anuncios de puntuación.\n\nPantalla de partido en vivo — Toca el panel de puntuación de un equipo para sumar un punto, o usa tu control remoto configurado. Toca el botón de deshacer para revertir la última acción de puntuación de ese equipo. Cuando el Indicador de Servicio está activado, la tarjeta del equipo que saca aparece resaltada. Cuando los anuncios de audio están activados, una voz anuncia cada punto. Un aviso de cambio de lado aparece entre juegos cuando esa opción está activa.\n\nPantalla de fin de partido — Muestra el resultado final y las estadísticas del partido. El ganador se determina solo por los sets completados. Si ambos equipos han ganado la misma cantidad de sets, el resultado es un empate incluso si un tercer set está en progreso. Usa el botón Compartir para distribuir la imagen del resultado, o el botón Continuar para seguir jugando sin terminar el partido.\n\nSi la aplicación o la pestaña del navegador se cierra durante un partido activo, el estado del partido se guarda automáticamente. Cuando vuelvas a abrir la aplicación, puedes retomar el partido desde donde lo dejaste o descartarlo y comenzar de nuevo.'
+      body: 'La aplicación te guía a través de tres pantallas principales:\n\nPantalla de configuración — Ingresa los nombres de los equipos, elige un formato de partido (Mejor de 1, 3 o 5 sets) y configura reglas opcionales como Punto de Oro, Super Tiebreak, Avisos de Cambio de Lado, Indicador de Servicio y Temporizador. También puedes configurar un control remoto Bluetooth y seleccionar una voz para los anuncios de puntuación.\n\nPantalla de partido en directo — Toca el panel de puntuación de un equipo para sumar un punto, o usa tu control remoto configurado. Toca el botón de deshacer para revertir la última acción de puntuación de ese equipo. Cuando el Indicador de Servicio está activado, la tarjeta del equipo que saca aparece resaltada. Cuando los anuncios de audio están activados, una voz anuncia cada punto. Un aviso de cambio de lado aparece entre juegos cuando esa opción está activa.\n\nPantalla de fin de partido — Muestra el resultado final y las estadísticas del partido. El ganador se determina solo por los sets completados. Si ambos equipos han ganado la misma cantidad de sets, el resultado es un empate incluso si un tercer set está en progreso. Usa el botón Compartir para distribuir la imagen del resultado, o el botón Continuar para seguir jugando sin terminar el partido.\n\nSi la aplicación o la pestaña del navegador se cierra durante un partido activo, el estado del partido se guarda automáticamente. Cuando vuelvas a abrir la aplicación, puedes retomar el partido desde donde lo dejaste o descartarlo y comenzar de nuevo.'
     },
     advertising: {
       title: 'Obtener la app',
@@ -460,7 +460,7 @@ export default {
         whatIs: '¿Qué es Padel Buddy?',
         mainFlow: 'Flujo principal',
         setup: 'Configurar un partido',
-        liveMatch: 'Pantalla de partido en vivo',
+        liveMatch: 'Pantalla de partido en directo',
         matchEnd: 'Pantalla de fin de partido',
         history: 'Historial de partidos',
         recovery: 'Recuperación y confiabilidad',
@@ -470,7 +470,7 @@ export default {
         smallDetails: 'Detalles pequeños pero importantes'
       },
       common: {
-        backToHome: 'Volver a inicio',
+        back: 'Volver',
         startMatch: 'Iniciar partido',
         publicOnlyNote: 'Esta página incluye solo contenido público orientado al usuario.',
         placeholderLabel: 'Marcador de posición de captura',
@@ -490,7 +490,7 @@ export default {
           body: 'Antes del primer punto, define nombres de equipos, formato del partido, orden de saque y reglas opcionales como Punto de Oro o Súper tie-break. También puedes activar anuncios hablados, configurar un mando y elegir duración de cuenta regresiva. Completar esta etapa correctamente asegura que el motor de puntuación funcione bien desde el inicio.'
         },
         liveMatch: {
-          title: '2) Partido en vivo',
+          title: '2) Partido en directo',
           body: 'Durante el juego, usa controles grandes o tu mando para sumar y revertir puntos con mínima fricción. La app aplica automáticamente deuce, tie-break, súper tie-break, orden de saque y cambios de lado según tu configuración. Así evitas cálculos manuales en momentos de presión.'
         },
         matchEndHistory: {
@@ -527,7 +527,7 @@ export default {
         },
         servingIndicator: {
           title: 'Indicador de saque',
-          body: 'Al activarlo, el equipo que está sacando queda resaltado visualmente en la pantalla de partido en vivo. Este contexto rápido ayuda a jugadores y espectadores, sobre todo en intercambios de ritmo alto. Es especialmente útil cuando quien anota no está dentro de la pista.'
+          body: 'Al activarlo, el equipo que está sacando queda resaltado visualmente en la pantalla de partido en directo. Este contexto rápido ayuda a jugadores y espectadores, sobre todo en intercambios de ritmo alto. Es especialmente útil cuando quien anota no está dentro de la pista.'
         },
         sideSwitch: {
           title: 'Avisos de cambio de lado',
@@ -563,8 +563,8 @@ export default {
         }
       },
       liveMatch: {
-        title: 'Pantalla de partido en vivo',
-        body: 'La pantalla de partido en vivo está optimizada para registrar puntos de forma rápida y confiable durante juego real. Prioriza controles grandes, contexto claro y aplicación automática de reglas para reducir errores bajo presión. Las decisiones complejas de puntuación las toma el motor, no el usuario manualmente.',
+        title: 'Pantalla de partido en directo',
+        body: 'La pantalla de partido en directo está optimizada para registrar puntos de forma rápida y confiable durante juego real. Prioriza controles grandes, contexto claro y aplicación automática de reglas para reducir errores bajo presión. Las decisiones complejas de puntuación las toma el motor, no el usuario manualmente.',
         largeScorePanels: {
           title: 'Paneles de puntuación grandes',
           body: 'Toca el panel de un equipo para sumar un punto al instante, incluso en pausas muy cortas entre rallies. El diseño usa áreas táctiles amplias y alto contraste, optimizadas para orientación horizontal. Esto reduce toques accidentales y mejora la velocidad al anotar.'
@@ -864,13 +864,13 @@ export default {
           description:
             'Teléfono cerca del banco de la pista con marcador en vivo visible y control remoto opcional cercano.',
           captureHint:
-            'Toma una foto real en pista con la pantalla de partido en vivo abierta en horizontal.',
+            'Toma una foto real en pista con la pantalla de partido en directo abierta en horizontal.',
           caption: 'Lleva el marcador sin salir del juego.'
         },
         mainFlow: {
           title: 'Visual del flujo principal de la app',
           description:
-            'Secuencia simple de 3 pasos: Configuración → Partido en vivo → Fin de partido / Historial.',
+            'Secuencia simple de 3 pasos: Configuración → Partido en directo → Fin de partido / Historial.',
           captureHint: 'Usa una ilustración limpia o un collage de pantallas reales.',
           caption: 'De la configuración al resumen en un flujo simple.'
         },
@@ -897,7 +897,7 @@ export default {
           caption: 'Elige la voz que mejor se adapte a tu partido.'
         },
         liveMatch: {
-          title: 'Pantalla de partido en vivo en horizontal',
+          title: 'Pantalla de partido en directo en horizontal',
           description:
             'Tarjetas de puntuación, temporizador, resaltado de saque, deshacer y acción de finalizar visibles.',
           captureHint: 'Usa un estado de partido realista (por ejemplo 40–30).',
@@ -913,7 +913,7 @@ export default {
         rotateBlocker: {
           title: 'Bloqueador por rotación en retrato',
           description: 'Bloqueador en retrato que solicita girar a horizontal.',
-          captureHint: 'Abre un partido en vivo en un viewport de teléfono en retrato.',
+          captureHint: 'Abre un partido en directo en un viewport de teléfono en retrato.',
           caption: 'La pantalla de marcador en vivo está optimizada para uso horizontal.'
         },
         matchEnd: {
@@ -944,17 +944,8 @@ export default {
           title: 'Diálogo para reanudar partido guardado',
           description: 'Aviso al inicio que ofrece reanudar o descartar.',
           captureHint:
-            'Interrumpe un partido en vivo y vuelve a abrir la app para activar el aviso.',
+            'Interrumpe un partido en directo y vuelve a abrir la app para activar el aviso.',
           caption: 'Puedes continuar con seguridad donde lo dejaste.'
-        },
-        corruptRecovery: {
-          title: 'Estado de recuperación de datos corruptos',
-          description:
-            'Mensaje guiado de recuperación cuando los datos guardados del partido no son válidos.',
-          captureHint:
-            'Carga datos inválidos preconfigurados del partido actual y captura la vista de recuperación.',
-          caption:
-            'Si los datos guardados son inválidos, la app te guía de forma segura para continuar.'
         },
         helpSpotlight: {
           title: 'Foco de ayuda en la barra superior',

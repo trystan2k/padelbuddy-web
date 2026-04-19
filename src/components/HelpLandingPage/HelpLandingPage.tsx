@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react';
-import { useNavigate } from '@tanstack/react-router';
+import { useRouter } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/ui/Button/Button';
@@ -19,13 +19,13 @@ const helpSectionIds = HELP_PAGE_SECTIONS.map((section) => section.id);
 
 export function HelpLandingPage() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const router = useRouter();
   const showStoreButtons = import.meta.env.VITE_IS_NATIVE !== 'true';
   const activeId = useActiveSection({ sectionIds: helpSectionIds });
 
   const handleBack = useCallback(() => {
-    void navigate({ to: '/' });
-  }, [navigate]);
+    router.history.back();
+  }, [router.history]);
 
   const header = useMemo(
     () => (
@@ -51,7 +51,7 @@ export function HelpLandingPage() {
         accent="primary"
         variant="soft"
       >
-        {t('help.page.common.backToHome')}
+        {t('help.page.common.back')}
       </Button>
     ),
     [handleBack, t]

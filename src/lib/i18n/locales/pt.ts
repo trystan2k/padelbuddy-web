@@ -469,7 +469,7 @@ export default {
         smallDetails: 'Pequenos detalhes importantes'
       },
       common: {
-        backToHome: 'Voltar para início',
+        back: 'Voltar',
         startMatch: 'Iniciar partida',
         publicOnlyNote: 'Esta página inclui apenas conteúdo público voltado ao usuário.',
         placeholderLabel: 'Espaço reservado para captura',
@@ -942,14 +942,6 @@ export default {
           description: 'Prompt de inicialização oferecendo retomar ou descartar.',
           captureHint: 'Interrompa uma partida ao vivo e reabra o app para acionar o prompt.',
           caption: 'Você pode continuar com segurança de onde parou.'
-        },
-        corruptRecovery: {
-          title: 'Estado de recuperação de dados corrompidos',
-          description:
-            'Mensagem guiada de recuperação quando os dados salvos da partida são inválidos.',
-          captureHint:
-            'Carregue dados inválidos semeados da partida atual e capture a tela de recuperação.',
-          caption: 'Se os dados salvos estiverem inválidos, o app guia você de volta com segurança.'
         },
         helpSpotlight: {
           title: 'Destaque de ajuda na barra superior',

@@ -6,13 +6,11 @@ export type HelpPageMediaId =
   | 'voiceSelection'
   | 'liveMatch'
   | 'sideSwitch'
-  | 'rotateBlocker'
   | 'matchEnd'
   | 'shareImage'
   | 'historyList'
   | 'historyEmpty'
   | 'resumeDialog'
-  | 'corruptRecovery'
   | 'helpSpotlight'
   | 'platformComparison';
 
@@ -163,10 +161,6 @@ export const HELP_PAGE_SECTIONS: HelpSectionContent[] = [
         bodyKey: 'help.page.liveMatch.autoFinishRoute.body'
       },
       {
-        titleKey: 'help.page.liveMatch.rotateBlocker.title',
-        bodyKey: 'help.page.liveMatch.rotateBlocker.body'
-      },
-      {
         titleKey: 'help.page.liveMatch.compactHeight.title',
         bodyKey: 'help.page.liveMatch.compactHeight.body'
       },
@@ -188,7 +182,7 @@ export const HELP_PAGE_SECTIONS: HelpSectionContent[] = [
         bodyKey: 'help.page.liveMatch.speechVerbosity.body'
       }
     ],
-    media: ['liveMatch', 'sideSwitch', 'rotateBlocker']
+    media: ['liveMatch', 'sideSwitch']
   },
   {
     id: 'match-end',
@@ -273,10 +267,6 @@ export const HELP_PAGE_SECTIONS: HelpSectionContent[] = [
         bodyKey: 'help.page.recovery.resumePrompt.body'
       },
       {
-        titleKey: 'help.page.recovery.corruptRecovery.title',
-        bodyKey: 'help.page.recovery.corruptRecovery.body'
-      },
-      {
         titleKey: 'help.page.recovery.schemaReset.title',
         bodyKey: 'help.page.recovery.schemaReset.body'
       },
@@ -289,7 +279,7 @@ export const HELP_PAGE_SECTIONS: HelpSectionContent[] = [
         bodyKey: 'help.page.recovery.loadingFeedback.body'
       }
     ],
-    media: ['resumeDialog', 'corruptRecovery']
+    media: ['resumeDialog']
   },
   {
     id: 'help-system',
