@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.15.0](https://github.com/trystan2k/padelbuddy-web/compare/v2.14.0...v2.15.0) (2026-04-19)
+
+
+### Features
+
+* add agent-ci skill for local GitHub Actions CI validation ([26646dc](https://github.com/trystan2k/padelbuddy-web/commit/26646dcb48b07554262f61df9008a8f71684116f))
+* **test:** simplify fake IndexedDB test classes by removing generics ([34afcac](https://github.com/trystan2k/padelbuddy-web/commit/34afcacb0f25ed8bea67312d62b0e42bdc0b1a20))
+
 ## [2.14.0](https://github.com/trystan2k/padelbuddy-web/compare/v2.13.0...v2.14.0) (2026-04-19)
 
 
