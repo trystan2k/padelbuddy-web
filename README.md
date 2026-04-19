@@ -34,23 +34,26 @@ The app runs at `http://localhost:3000`.
 
 ## Scripts
 
-| Command                 | Description                                                       |
-| ----------------------- | ----------------------------------------------------------------- |
-| `pnpm dev`              | Start dev server with hot reload                                  |
-| `pnpm build`            | Build for production (outputs to `dist/client`)                   |
-| `pnpm cap:sync`         | Sync the built web app into both Capacitor native projects        |
-| `pnpm cap:sync:android` | Sync the built web app into the Android project                   |
-| `pnpm cap:sync:ios`     | Sync the built web app into the iOS project                       |
-| `pnpm cap:open:android` | Open the Android project in Android Studio                        |
-| `pnpm cap:open:ios`     | Open the iOS project in Xcode                                     |
-| `pnpm test`             | Run unit tests with coverage                                      |
-| `pnpm test:e2e`         | Run E2E tests (requires Chromium)                                 |
-| `pnpm test:e2e:ui`      | Open Playwright UI for debugging                                  |
-| `pnpm lint`             | Lint with Oxlint + Stylelint                                      |
-| `pnpm lint:fix`         | Auto-fix lint issues                                              |
-| `pnpm format`           | Format with Oxfmt                                                 |
-| `pnpm typecheck`        | TypeScript type check                                             |
-| `pnpm complete-check`   | Full verification: typecheck → lint → format → test → e2e → build |
+| Command                     | Description                                                              |
+| --------------------------- | ------------------------------------------------------------------------ |
+| `pnpm dev`                  | Start dev server with hot reload                                         |
+| `pnpm build`                | Build for production (outputs to `dist/client`)                          |
+| `pnpm mobile:sync`          | Sync web build to Android + iOS, rebuild, both Capacitor native projects |
+| `pnpm mobile:open:android`  | Sync + open Android project in Android Studio                            |
+| `pnpm mobile:open:ios`      | Sync + open iOS project in Xcode                                         |
+| `pnpm mobile:build:android` | Build Android APK/AAB release (requires env vars)                        |
+| `pnpm mobile:build:ios`     | Build iOS App Store release (requires env vars)                          |
+| `pnpm test`                 | Run unit tests with coverage                                             |
+| `pnpm test:e2e`             | Run E2E tests (requires Chromium)                                        |
+| `pnpm test:e2e:ui`          | Open Playwright UI for debugging                                         |
+| `pnpm test:e2e:headed`      | Watch E2E tests run in browser                                           |
+| `pnpm lint`                 | Lint with Oxlint + Stylelint                                             |
+| `pnpm lint:fix`             | Auto-fix lint issues                                                     |
+| `pnpm format`               | Format with Oxfmt                                                        |
+| `pnpm typecheck`            | TypeScript type check                                                    |
+| `pnpm knip`                 | Check for unused files/dependencies                                      |
+| `pnpm knip:fix`             | Auto-fix unused files/dependencies                                       |
+| `pnpm complete-check`       | Full verification: knip → typecheck → lint → format → test → e2e → build |
 
 ## App Structure
 
@@ -74,22 +77,24 @@ The native wrappers load the production web build from `dist/client`.
 Typical native update flow:
 
 ```bash
-pnpm build
-pnpm cap:sync
+pnpm mobile:sync
 ```
 
 Platform-specific flow:
 
 ```bash
-pnpm build
-pnpm cap:sync:android
-pnpm cap:open:android
+pnpm mobile:open:android
 ```
 
 ```bash
-pnpm build
-pnpm cap:sync:ios
-pnpm cap:open:ios
+pnpm mobile:open:ios
+```
+
+Release builds:
+
+```bash
+pnpm mobile:build:android
+pnpm mobile:build:ios
 ```
 
 ### Native Branding
@@ -116,6 +121,8 @@ This avoids Android 12+ splash API limitations, where the system splash screen c
 - `/` — Home/Setup screen (new match configuration)
 - `/match/:id` — Active match scoring
 - `/match/finish/:id` — Match end summary and stats
+- `/history` — Match history
+- `/help` — Help and about
 
 ### Key Features
 
@@ -138,9 +145,9 @@ pnpm exec playwright install chromium
 Run tests:
 
 ```bash
-pnpm test          # Unit tests
-pnpm test:e2e     # E2E tests
-pnpm test:e2e:headed  # Watch tests run in browser
+pnpm test            # Unit tests
+pnpm test:e2e       # E2E tests
+pnpm test:e2e:headed # Watch tests run in browser
 ```
 
 ## Production Deployment

@@ -65,7 +65,11 @@ Automated testing is centered on **Vitest** with two explicit projects:
 │   │       └── validation.ts       # Match setup validation and normalization
 │   ├── routes/
 │   │   ├── __root.tsx             # Document shell and global stylesheet link
-│   │   └── index.tsx              # Home route using the foundation shell
+│   │   ├── index.tsx              # Home route using the foundation shell
+│   │   ├── history.tsx           # Match history route
+│   │   ├── help.tsx              # Help and about route
+│   │   ├── match.$id.tsx        # Active match scoring route
+│   │   └── match.finish.$id.tsx   # Match finish route
 │   ├── routeTree.gen.ts           # Generated TanStack route tree
 │   ├── router.tsx                 # Router factory and registration
 │   └── styles.css                 # Global app styles
