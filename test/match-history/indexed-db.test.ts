@@ -84,8 +84,8 @@ function createFakeIndexedDb(
   };
 
   const factory = {
-    open: vi.fn<(_databaseName: string, _version?: number) => FakeOpenRequest<FakeDatabase>>(() => {
-      const request = new FakeOpenRequest<FakeDatabase>();
+    open: vi.fn<() => FakeOpenRequest>(() => {
+      const request = new FakeOpenRequest();
       const database = new FakeDatabase(storage, config, createdObjectStores);
 
       queueMicrotask(() => {
@@ -117,14 +117,14 @@ function createFakeIndexedDb(
   };
 }
 
-class FakeOpenRequest<TResult> extends EventTarget {
+class FakeOpenRequest extends EventTarget {
   error: Error | null = null;
-  result!: TResult;
+  result!: unknown;
 }
 
-class FakeRequest<TResult> extends EventTarget {
+class FakeRequest extends EventTarget {
   error: Error | null = null;
-  result!: TResult;
+  result!: unknown;
 }
 
 class FakeDatabase {
@@ -196,8 +196,8 @@ class FakeTransaction extends EventTarget {
     };
   }
 
-  private createReadRequest<TResult>(resolveValue: () => TResult): FakeRequest<TResult> {
-    const request = new FakeRequest<TResult>();
+  private createReadRequest(resolveValue: () => unknown): FakeRequest {
+    const request = new FakeRequest();
 
     queueMicrotask(() => {
       if (this.options.getOutcome === 'error') {
