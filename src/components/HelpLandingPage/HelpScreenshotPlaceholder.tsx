@@ -9,10 +9,10 @@ interface HelpScreenshotPlaceholderProps {
 
 /** Media IDs that have static (non-localised) images. */
 const staticMediaSrcById: Partial<Record<HelpPageMediaId, string>> = {
-  hero: '/help/herocreenshot.png'
+  hero: '/help/herocreenshot.webp'
 };
 
-/** Media IDs that have per-language screenshots named `{id}_{lang}.png`. */
+/** Media IDs that have per-language screenshots named `{id}_{lang}.webp`. */
 const localisedMediaIds = new Set<HelpPageMediaId>([
   'mainFlow',
   'setupOverview',
@@ -41,7 +41,7 @@ export function HelpScreenshotPlaceholder({ mediaId }: HelpScreenshotPlaceholder
   let mediaSrc: string | undefined;
   if (localisedMediaIds.has(mediaId)) {
     const lang = i18n.language ?? 'en';
-    mediaSrc = `/help/${toFileStem(mediaId)}_${lang}.png`;
+    mediaSrc = `/help/${toFileStem(mediaId)}_${lang}.webp`;
   } else {
     mediaSrc = staticMediaSrcById[mediaId];
   }
