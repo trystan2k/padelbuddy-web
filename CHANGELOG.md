@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.14.0](https://github.com/trystan2k/padelbuddy-web/compare/v2.13.0...v2.14.0) (2026-04-19)
+
+
+### Features
+
+* **help:** add localized help screenshots and update landing page ([87236aa](https://github.com/trystan2k/padelbuddy-web/commit/87236aaa8c2196cc3032c43aa8c091fe5fd3587a))
+
 ## [2.13.0](https://github.com/trystan2k/padelbuddy-web/compare/v2.12.1...v2.13.0) (2026-04-17)
 
 
