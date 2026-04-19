@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.15.1](https://github.com/trystan2k/padelbuddy-web/compare/v2.15.0...v2.15.1) (2026-04-19)
+
+
+### Performance Improvements
+
+* **assets:** replace PNG help screenshots with WebP format ([83b2a5d](https://github.com/trystan2k/padelbuddy-web/commit/83b2a5dee95ce07507447cf55e49265c0352680d))
+
 ## [2.15.0](https://github.com/trystan2k/padelbuddy-web/compare/v2.14.0...v2.15.0) (2026-04-19)
 
 
