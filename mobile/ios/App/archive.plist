@@ -5,13 +5,7 @@
 <key>method</key>
 <string>app-store-connect</string>
 <key>signingStyle</key>
-<string>manual</string>
-<key>provisioningProfiles</key>
-<dict>
-<key>com.padelbuddy.web</key>
-<string>Your Provisioning Profile Name</string>
-</dict>
-<key>signingCertificate</key>
-<string>Apple Distribution: Your Name (TEAM_ID)</string>
+<string>automatic</string>
+
 </dict>
 </plist>

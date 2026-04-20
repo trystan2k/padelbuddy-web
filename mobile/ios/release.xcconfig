@@ -1,6 +1,8 @@
 // iOS Release Signing Configuration
 // These values are loaded from environment variables in CI
 
-CODE_SIGN_IDENTITY = $(SIGNING identity)
+DEVELOPMENT_TEAM = BF8CB8G8PZ
+CODE_SIGN_IDENTITY = Apple Distribution
+CODE_SIGN_STYLE = Automatic
+CODE_SIGNING_ALLOWED = YES
 CODE_SIGNING_REQUIRED = YES
-CODE_SIGNING_ALLOWED = NO
