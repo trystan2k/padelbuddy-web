@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.17.0](https://github.com/trystan2k/padelbuddy-web/compare/v2.16.0...v2.17.0) (2026-04-20)
+
+
+### Features
+
+* **privacy:** add privacy policy page and link from help ([eed7765](https://github.com/trystan2k/padelbuddy-web/commit/eed7765f688558aaa9250de3f99ad21292099a03))
+
 ## [2.16.0](https://github.com/trystan2k/padelbuddy-web/compare/v2.15.1...v2.16.0) (2026-04-20)
 
 
