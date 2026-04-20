@@ -1,0 +1,22 @@
+.socialBadges {
+  display: flex;
+  gap: var(--base-space-12);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.socialBadgeLink {
+  display: inline-block;
+  line-height: 0;
+}
+
+.socialBadge {
+  height: var(--base-space-60);
+  width: auto;
+  border-radius: var(--base-radius-8);
+}
+
+.socialBadgeLink:focus-visible {
+  outline: var(--base-focus-ring-width) var(--base-focus-ring-style) var(--base-focus-ring-color);
+  outline-offset: var(--base-focus-ring-offset);
+}

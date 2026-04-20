@@ -1,0 +1,29 @@
+<svg width="420" height="96" viewBox="0 0 420 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="instagram-badge-gradient" x1="34" y1="88" x2="386" y2="8" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FEDA75"/>
+      <stop offset="0.24" stop-color="#FA7E1E"/>
+      <stop offset="0.52" stop-color="#D62976"/>
+      <stop offset="0.78" stop-color="#962FBF"/>
+      <stop offset="1" stop-color="#4F5BD5"/>
+    </linearGradient>
+    <filter id="instagram-badge-shadow" x="0" y="0" width="420" height="96" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+      <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+      <feOffset dy="3"/>
+      <feGaussianBlur stdDeviation="5"/>
+      <feComposite in2="hardAlpha" operator="out"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0.231373 0 0 0 0 0.0745098 0 0 0 0 0.333333 0 0 0 0.22 0"/>
+      <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_1_1"/>
+      <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_1_1" result="shape"/>
+    </filter>
+  </defs>
+  <g filter="url(#instagram-badge-shadow)">
+    <rect x="10" y="7" width="400" height="72" rx="24" fill="white"/>
+    <rect x="14" y="11" width="392" height="64" rx="20" fill="url(#instagram-badge-gradient)"/>
+    <rect x="35" y="24" width="38" height="38" rx="12" stroke="white" stroke-width="4.5"/>
+    <circle cx="54" cy="43" r="9.5" stroke="white" stroke-width="4.5"/>
+    <circle cx="66.5" cy="30.5" r="3.5" fill="white"/>
+    <text x="92" y="53" fill="white" font-family="Inter, Arial, sans-serif" font-size="34" font-weight="800" letter-spacing="0">@padelbuddyweb</text>
+  </g>
+</svg>

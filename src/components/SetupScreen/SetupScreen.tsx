@@ -36,6 +36,7 @@ import { Toggle } from '@/components/ui/Toggle/Toggle';
 import { TopBar } from '@/components/ui/TopBar/TopBar';
 import { LocaleSelector } from '@/components/ui/LocaleSelector/LocaleSelector';
 import { StoreButtons } from '@/components/StoreButtons/StoreButtons';
+import { SocialButtons } from '@/components/SocialButtons/SocialButtons';
 
 import { RemoteConfigurationModal } from './RemoteConfigurationModal';
 import { VoiceSelectionModal } from './VoiceSelectionModal';
@@ -458,6 +459,9 @@ export function SetupScreen() {
               <StoreButtons />
             </div>
           )}
+          <div className={styles.socialButtonsContainer}>
+            <SocialButtons />
+          </div>
         </div>
 
         {/* Right column - Options */}
