@@ -1,6 +1,6 @@
 {
   "name": "padelbuddy-web",
-  "version": "2.15.1",
+  "version": "2.16.0",
   "private": true,
   "description": "A mobile-first, client-only Padel score tracker optimized for courtside use with Bluetooth remote and touch controls.",
   "keywords": [
