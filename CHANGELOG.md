@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.18.0](https://github.com/trystan2k/padelbuddy-web/compare/v2.17.0...v2.18.0) (2026-04-20)
+
+
+### Features
+
+* **help:** add tested remote controller recommendation with link ([f606884](https://github.com/trystan2k/padelbuddy-web/commit/f6068841b5f59e21ac8dddf9a865ecb966299890))
+
+
+### Bug Fixes
+
+* **ios:** switch to automatic code signing for release builds ([979578a](https://github.com/trystan2k/padelbuddy-web/commit/979578ab31233120d0449462efb2c24c6418447b))
+
 ## [2.17.0](https://github.com/trystan2k/padelbuddy-web/compare/v2.16.0...v2.17.0) (2026-04-20)
 
 
