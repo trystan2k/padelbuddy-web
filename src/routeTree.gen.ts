@@ -9,12 +9,18 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as HistoryRouteImport } from './routes/history'
 import { Route as HelpRouteImport } from './routes/help'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as MatchIdRouteImport } from './routes/match.$id'
 import { Route as MatchFinishIdRouteImport } from './routes/match.finish.$id'
 
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const HistoryRoute = HistoryRouteImport.update({
   id: '/history',
   path: '/history',
@@ -45,6 +51,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/help': typeof HelpRoute
   '/history': typeof HistoryRoute
+  '/privacy': typeof PrivacyRoute
   '/match/$id': typeof MatchIdRoute
   '/match/finish/$id': typeof MatchFinishIdRoute
 }
@@ -52,6 +59,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/help': typeof HelpRoute
   '/history': typeof HistoryRoute
+  '/privacy': typeof PrivacyRoute
   '/match/$id': typeof MatchIdRoute
   '/match/finish/$id': typeof MatchFinishIdRoute
 }
@@ -60,19 +68,33 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/help': typeof HelpRoute
   '/history': typeof HistoryRoute
+  '/privacy': typeof PrivacyRoute
   '/match/$id': typeof MatchIdRoute
   '/match/finish/$id': typeof MatchFinishIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/help' | '/history' | '/match/$id' | '/match/finish/$id'
+  fullPaths:
+    | '/'
+    | '/help'
+    | '/history'
+    | '/privacy'
+    | '/match/$id'
+    | '/match/finish/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/help' | '/history' | '/match/$id' | '/match/finish/$id'
+  to:
+    | '/'
+    | '/help'
+    | '/history'
+    | '/privacy'
+    | '/match/$id'
+    | '/match/finish/$id'
   id:
     | '__root__'
     | '/'
     | '/help'
     | '/history'
+    | '/privacy'
     | '/match/$id'
     | '/match/finish/$id'
   fileRoutesById: FileRoutesById
@@ -81,12 +103,20 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   HelpRoute: typeof HelpRoute
   HistoryRoute: typeof HistoryRoute
+  PrivacyRoute: typeof PrivacyRoute
   MatchIdRoute: typeof MatchIdRoute
   MatchFinishIdRoute: typeof MatchFinishIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/history': {
       id: '/history'
       path: '/history'
@@ -129,6 +159,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   HelpRoute: HelpRoute,
   HistoryRoute: HistoryRoute,
+  PrivacyRoute: PrivacyRoute,
   MatchIdRoute: MatchIdRoute,
   MatchFinishIdRoute: MatchFinishIdRoute,
 }

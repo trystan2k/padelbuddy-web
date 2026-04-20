@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react';
-import { useRouter } from '@tanstack/react-router';
+import { Link, useRouter } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/components/ui/Button/Button';
@@ -9,6 +9,7 @@ import { LocaleSelector } from '@/components/ui/LocaleSelector/LocaleSelector';
 import { TopBar } from '@/components/ui/TopBar/TopBar';
 import { useActiveSection } from '@/hooks/useActiveSection';
 import { cn } from '@/lib/utils/cn';
+import { supportsViewTransitions } from '@/lib/utils/view-transitions';
 import { APP_VERSION } from '@/version';
 
 import { HelpSection } from './HelpSection';
@@ -70,6 +71,12 @@ export function HelpLandingPage() {
           </a>
         </li>
       ))}
+
+      <li>
+        <Link className={styles.tocLink} to="/privacy" viewTransition={supportsViewTransitions()}>
+          {t('help.page.toc.privacy')}
+        </Link>
+      </li>
 
       {showStoreButtons && (
         <li className={styles.tocStoreItem}>

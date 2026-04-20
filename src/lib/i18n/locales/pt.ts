@@ -466,7 +466,8 @@ export default {
         helpSystem: 'Sistema de ajuda integrado',
         accessibility: 'Idiomas e acessibilidade',
         platforms: 'Web, PWA e apps nativos',
-        smallDetails: 'Pequenos detalhes importantes'
+        smallDetails: 'Pequenos detalhes importantes',
+        privacy: 'Privacidade'
       },
       common: {
         back: 'Voltar',
@@ -476,6 +477,13 @@ export default {
         captureHintLabel: 'Como capturar',
         captionLabel: 'Legenda',
         storeAvailabilityLabel: 'Também disponível nas lojas móveis'
+      },
+      related: {
+        privacy: {
+          title: 'Informações de privacidade',
+          body: 'Veja como o Padel Buddy armazena dados da partida localmente no seu dispositivo e quais serviços de apoio podem processar dados técnicos limitados do app.',
+          cta: 'Abrir página de privacidade'
+        }
       },
       whatIs: {
         title: 'O que é o Padel Buddy?',
@@ -957,6 +965,36 @@ export default {
           captureHint: 'Crie um visual comparativo alinhado ao comportamento atual do produto.',
           caption: 'Use o Padel Buddy no formato que melhor se adapta a você.'
         }
+      }
+    }
+  },
+  privacy: {
+    page: {
+      meta: {
+        title: 'Privacidade do Padel Buddy',
+        description:
+          'Entenda de forma simples como o Padel Buddy guarda dados da partida no seu dispositivo e quais dados técnicos limitados podem ser usados por serviços de apoio.'
+      },
+      hero: {
+        eyebrow: 'Privacidade',
+        title: 'Os dados da sua partida ficam perto de você',
+        body: 'O Padel Buddy foi criado para manter sua marcação simples e privada. Itens como nomes dos times, placar ao vivo, histórico de partidas finalizadas e várias configurações ficam salvos no seu dispositivo ou navegador para que o app continue funcionando bem, inclusive offline.'
+      },
+      localStorage: {
+        title: 'O que fica no seu dispositivo',
+        body: 'O app salva informações da partida localmente para que você possa retomar uma partida interrompida, revisar o histórico e deixar sua configuração preferida pronta para a próxima vez. Isso inclui nomes dos times, andamento do placar, resumos de partidas finalizadas e ajustes feitos no seu dispositivo. No uso normal, esses dados da partida não são enviados para um servidor dedicado de partidas do Padel Buddy.'
+      },
+      noAccount: {
+        title: 'Não é necessário ter conta',
+        body: 'Você não precisa criar uma conta para usar o Padel Buddy. É só abrir o app e começar a marcar, sem login, sem perfil de jogador e sem registro de partidas em nuvem. Para a maioria das pessoas, isso significa que a experiência principal de pontuação continua no próprio dispositivo em uso.'
+      },
+      limitedServices: {
+        title: 'Serviços de apoio limitados',
+        body: 'Alguns dados técnicos limitados ainda podem ser usados por serviços de apoio, dependendo da plataforma e da build do app. Por exemplo, as builds de produção usam ferramentas de analytics, e algumas versões do app podem fazer verificações de licença ou de instalação. Esses serviços são separados do seu histórico local de partidas e não servem para publicar nem compartilhar automaticamente seus placares com outros jogadores.'
+      },
+      control: {
+        title: 'Seu controle sobre os dados locais',
+        body: 'Como os dados principais da partida ficam salvos localmente, eles normalmente permanecem sob controle de quem usa o dispositivo. Limpar o armazenamento do navegador ou do app, desinstalar o app ou usar ajustes de privacidade do aparelho pode remover essas informações. Se o dispositivo for compartilhado, lembre-se de que o histórico e as preferências salvas podem continuar visíveis nele até serem apagados.'
       }
     }
   }

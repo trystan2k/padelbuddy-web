@@ -465,7 +465,8 @@ export default {
         helpSystem: 'Built-in help system',
         accessibility: 'Languages and accessibility',
         platforms: 'Web, PWA, and native apps',
-        smallDetails: 'Small but important details'
+        smallDetails: 'Small but important details',
+        privacy: 'Privacy'
       },
       common: {
         back: 'Back',
@@ -475,6 +476,13 @@ export default {
         captureHintLabel: 'How to capture',
         captionLabel: 'Caption',
         storeAvailabilityLabel: 'Also available in mobile stores'
+      },
+      related: {
+        privacy: {
+          title: 'Privacy information',
+          body: 'Read how Padel Buddy stores match data locally on your device and which limited supporting services may process technical app data.',
+          cta: 'Open privacy page'
+        }
       },
       whatIs: {
         title: 'What is Padel Buddy?',
@@ -948,6 +956,36 @@ export default {
           captureHint: 'Create a designed comparison visual aligned with current product behavior.',
           caption: 'Use Padel Buddy in the format that fits you best.'
         }
+      }
+    }
+  },
+  privacy: {
+    page: {
+      meta: {
+        title: 'Padel Buddy Privacy',
+        description:
+          'Learn in simple terms how Padel Buddy stores match data on your device and what limited technical data may be used by supporting services.'
+      },
+      hero: {
+        eyebrow: 'Privacy',
+        title: 'Your match data stays close to you',
+        body: 'Padel Buddy is built to keep your scoring simple and private. Things like team names, the live score, finished match history, and many settings are stored on your device or in your browser, so the app keeps working during real matches, even offline.'
+      },
+      localStorage: {
+        title: 'What stays on your device',
+        body: 'The app saves match information locally so you can resume an interrupted match, check your history, and keep your preferred setup ready for next time. This includes things like team names, score progress, finished match summaries, and settings chosen on your device. In normal use, this match data is not sent to a dedicated Padel Buddy match server.'
+      },
+      noAccount: {
+        title: 'No account is required',
+        body: 'You do not need to create an account to use Padel Buddy. You can open the app and start scoring without signing in, building player profiles, or creating cloud match records. For most people, that means the main scoring experience stays on the device they are using.'
+      },
+      limitedServices: {
+        title: 'Limited supporting services',
+        body: 'Some limited technical data may still be used by supporting services, depending on the platform and app build. For example, production builds currently use analytics tools, and some app versions may run licensing or installation checks. These services are separate from your local match history and are not used to automatically publish or share your match-by-match scores with other players.'
+      },
+      control: {
+        title: 'Your control over local data',
+        body: 'Because the main match data is stored locally, it usually stays under the control of the person using the device. Clearing browser or app storage, uninstalling the app, or using device privacy settings can remove that saved information. If you share a device, remember that saved match history and preferences may still be visible there until they are cleared.'
       }
     }
   }
