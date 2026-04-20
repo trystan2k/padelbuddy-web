@@ -554,7 +554,7 @@ export default {
         },
         remoteController: {
           title: 'Configuração de controle remoto',
-          body: 'Use a configuração remota para mapear botões externos ou teclas às ações de pontuar e desfazer de cada equipe. Você pode salvar mapeamentos personalizados, limpar vínculos individuais ou restaurar padrões. É ideal quando alguém controla o placar por clicker Bluetooth ou teclado fora da quadra.'
+          body: 'Use a configuração remota para mapear botões externos ou teclas às ações de pontuar e desfazer de cada equipe. Você pode salvar mapeamentos personalizados, limpar vínculos individuais ou restaurar padrões. É ideal quando alguém controla o placar por clicker Bluetooth ou teclado fora da quadra.\n\nTestamos o seguinte controle remoto Bluetooth, que funciona com este app: <remoteLink>Bluetooth Media Buttons Remote Control</remoteLink> (ou procure opções similares: Bluetooth Media Buttons Remote Control). Ele usa os botões de volume, que o app suporta nativamente.'
         },
         languageSelector: {
           title: 'Seletor de idioma',

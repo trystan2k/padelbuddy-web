@@ -553,7 +553,7 @@ export default {
         },
         remoteController: {
           title: 'Remote controller setup',
-          body: 'Use remote configuration to map external buttons or keys to score and revert actions for each team. You can save custom bindings, clear individual mappings, or restore defaults at any time. This is ideal when one player controls scoring with a Bluetooth clicker or keyboard from outside the court.'
+          body: 'Use remote configuration to map external buttons or keys to score and revert actions for each team. You can save custom bindings, clear individual mappings, or restore defaults at any time. This is ideal when one player controls scoring with a Bluetooth clicker or keyboard from outside the court.\n\nWe have tested the following Bluetooth media remote, which works with this app: <remoteLink>Bluetooth Media Buttons Remote Control</remoteLink> (or search for similar options: bluetooth media controller). It uses volume buttons which app supports natively.'
         },
         languageSelector: {
           title: 'Language selector',

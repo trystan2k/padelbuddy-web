@@ -17,6 +17,7 @@ export type HelpPageMediaId =
 export interface HelpSectionItem {
   titleKey: string;
   bodyKey: string;
+  bodyComponents?: 'remoteLink';
 }
 
 export interface HelpSectionContent {
@@ -95,7 +96,8 @@ export const HELP_PAGE_SECTIONS: HelpSectionContent[] = [
       },
       {
         titleKey: 'help.page.setup.remoteController.title',
-        bodyKey: 'help.page.setup.remoteController.body'
+        bodyKey: 'help.page.setup.remoteController.body',
+        bodyComponents: 'remoteLink'
       },
       {
         titleKey: 'help.page.setup.languageSelector.title',

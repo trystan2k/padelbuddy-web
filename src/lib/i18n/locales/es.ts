@@ -555,7 +555,7 @@ export default {
         },
         remoteController: {
           title: 'Configuración de control remoto',
-          body: 'Usa la configuración remota para mapear botones externos o teclas a acciones de puntuar y deshacer para cada equipo. Puedes guardar asignaciones personalizadas, limpiar vínculos individuales o restaurar valores por defecto. Es ideal cuando una persona controla el marcador con clicker Bluetooth o teclado desde fuera de la pista.'
+          body: 'Usa la configuración remota para mapear botones externos o teclas a acciones de puntuar y deshacer para cada equipo. Puedes guardar asignaciones personalizadas, limpiar vínculos individuales o restaurar valores por defecto. Es ideal cuando una persona controla el marcador con clicker Bluetooth o teclado desde fuera de la pista.\n\nHemos probado el siguiente mando a distancia Bluetooth, que funciona con esta app: <remoteLink>Bluetooth Media Buttons Remote Control</remoteLink> (o busca opciones similares en AliExpress: Bluetooth Media Buttons Remote Control). Usa los botones de volumen, que la app soporta nativamente.'
         },
         languageSelector: {
           title: 'Selector de idioma',

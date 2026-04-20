@@ -1,8 +1,20 @@
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
 import type { HelpSectionContent } from './help-page-content';
 import { HelpScreenshotPlaceholder } from './HelpScreenshotPlaceholder';
 import styles from './HelpLandingPage.module.css';
+
+const helpSectionTransComponents = {
+  remoteLink: (
+    <a
+      href="https://es.aliexpress.com/item/1005001412532110.html"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      Bluetooth Media Buttons Remote Control
+    </a>
+  )
+};
 
 interface HelpSectionProps {
   section: HelpSectionContent;
@@ -26,7 +38,13 @@ export function HelpSection({ section }: HelpSectionProps) {
             <li key={item.titleKey} className={styles.itemListEntry}>
               <div className={styles.itemCard}>
                 <h3 className={styles.itemTitle}>{t(item.titleKey)}</h3>
-                <p className={styles.itemBody}>{t(item.bodyKey)}</p>
+                {item.bodyComponents === 'remoteLink' ? (
+                  <p className={styles.itemBody}>
+                    <Trans i18nKey={item.bodyKey} components={helpSectionTransComponents} />
+                  </p>
+                ) : (
+                  <p className={styles.itemBody}>{t(item.bodyKey)}</p>
+                )}
               </div>
             </li>
           ))}
