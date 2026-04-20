@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.16.0](https://github.com/trystan2k/padelbuddy-web/compare/v2.15.1...v2.16.0) (2026-04-20)
+
+
+### Features
+
+* **setup:** add social buttons component to setup screen ([a90b815](https://github.com/trystan2k/padelbuddy-web/commit/a90b815bcf16f1ff305c7b5b131e767efff43c2d))
+
 ## [2.15.1](https://github.com/trystan2k/padelbuddy-web/compare/v2.15.0...v2.15.1) (2026-04-19)
 
 
