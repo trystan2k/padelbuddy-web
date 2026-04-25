@@ -96,6 +96,11 @@
       "sourceType": "github",
       "computedHash": "6f61c0def76e122ef85bc4a40cb2cfc506dce7a37cfb23a8c92091042bbf4935"
     },
+    "skill-creator": {
+      "source": "anthropics/skills",
+      "sourceType": "github",
+      "computedHash": "5ea13a6d9f0d4bb694405d79acd00cadec0d21bb138c4dd10fcf3c500cb835c2"
+    },
     "tanstack-start": {
       "source": "trystan2k/skills",
       "sourceType": "github",

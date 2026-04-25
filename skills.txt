@@ -19,3 +19,9 @@ https://github.com/cap-go/capacitor-skills:capacitor-best-practices
 https://github.com/cap-go/capgo-skills:capacitor-splash-screen
 https://github.com/cap-go/capgo-skills:capacitor-performance
 https://github.com/redwoodjs/agent-ci:agent-ci
+https://github.com/JuliusBrussee/caveman:caveman
+https://github.com/JuliusBrussee/caveman:caveman-commit
+https://github.com/JuliusBrussee/caveman:caveman-compress
+https://github.com/JuliusBrussee/caveman:caveman-help
+https://github.com/JuliusBrussee/caveman:caveman-review
+https://github.com/anthropics/skills:skill-creator
