@@ -66,11 +66,9 @@ describe('RemoteConfigurationModal', () => {
     renderResult = await render(<ModalWrapper />);
     const modal = getModal();
 
-    if (modal) {
-      await vi.waitFor(() => {
-        expect(modal).toBeVisible();
-      });
-    }
+    await vi.waitFor(() => {
+      expect(modal).toBeVisible();
+    });
 
     return renderResult;
   }

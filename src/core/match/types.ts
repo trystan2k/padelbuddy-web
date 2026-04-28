@@ -2,7 +2,7 @@ export const matchFormats = ['best-of-1', 'best-of-3', 'best-of-5'] as const;
 export const gameModes = ['advantage', 'golden-point'] as const;
 export const matchTeamIds = ['team-1', 'team-2'] as const;
 export const bestOfOneDecidingBehaviors = ['full-set', 'super-tiebreak'] as const;
-export const setModes = ['standard', 'super-tiebreak'] as const;
+const setModes = ['standard', 'super-tiebreak'] as const;
 export const countdownTimerDurations = [60, 90, 120] as const;
 
 export type MatchFormat = (typeof matchFormats)[number];

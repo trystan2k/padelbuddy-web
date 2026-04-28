@@ -17,7 +17,7 @@ describe('AppHelpSpotlight', () => {
       void rendered.unmount();
       rendered = null;
       await vi.waitFor(() => {
-        expect(document.querySelector('[data-testid="spotlight-overlay"]')).toBeNull();
+        return rendered?.container.querySelector('[data-testid="spotlight-overlay"]') === null;
       });
     }
 

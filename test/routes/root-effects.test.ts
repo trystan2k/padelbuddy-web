@@ -194,7 +194,7 @@ describe('root-effects', () => {
       const { useRemoveHydrationSpinner } = await import('@/routes/-root-effects');
 
       // Should not throw
-      useRemoveHydrationSpinner(ref);
+      expect(() => useRemoveHydrationSpinner(ref)).not.toThrow();
     });
   });
 });
