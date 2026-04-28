@@ -163,6 +163,7 @@ describe('media-buttons-native', () => {
       await dispatchNativeMediaButton('media-track-previous');
 
       // Should not throw and should not call any native method
+      expect(mockAddListener).not.toHaveBeenCalled();
     });
   });
 });
