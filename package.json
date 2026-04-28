@@ -45,13 +45,13 @@
     "knip:fix": "pnpm knip --fix"
   },
   "dependencies": {
-    "@base-ui/react": "~1.4.0",
+    "@base-ui/react": "~1.4.1",
     "@capacitor-community/text-to-speech": "~8.0.0",
     "@fontsource/inter": "~5.2.8",
     "@fontsource/outfit": "~5.2.8",
-    "@tanstack/react-router": "~1.168.22",
-    "@tanstack/react-start": "~1.167.41",
-    "i18next": "~26.0.5",
+    "@tanstack/react-router": "~1.168.24",
+    "@tanstack/react-start": "~1.167.49",
+    "i18next": "~26.0.8",
     "mixpanel-browser": "~2.78.0",
     "modern-screenshot": "~4.7.0",
     "react": "~19.2.5",
