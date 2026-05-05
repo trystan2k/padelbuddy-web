@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 
 import wakeLockManager, { createWakeLockManager } from '@/lib/input/wake-lock-manager';
-import { type UseWakeLockReturn, useWakeLock, _resetWakeLockManager } from '@/lib/input/wake-lock';
+import { type UseWakeLockReturn, useWakeLock, resetWakeLockManager } from '@/lib/input/wake-lock';
 
 // Test component to render the hook output
 function WakeLockTestComponent({
@@ -74,7 +74,7 @@ describe('wake-lock browser', () => {
       }
     }
     vi.restoreAllMocks();
-    _resetWakeLockManager();
+    resetWakeLockManager();
   });
 
   test('manager reset clears singleton state', async () => {

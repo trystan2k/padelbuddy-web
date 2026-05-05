@@ -12,7 +12,7 @@ const defaultDatabaseName = persistenceDatabaseName;
 
 async function clearBrowserState(page: Page, baseURL: string) {
   type SpotlightInitContext = Awaited<ReturnType<Page['context']>> & {
-    __helpSpotlightInitScriptRegistered?: boolean;
+    helpSpotlightInitScriptRegistered?: boolean;
   };
 
   const context = page.context() as SpotlightInitContext;
@@ -20,7 +20,7 @@ async function clearBrowserState(page: Page, baseURL: string) {
   // Register the init script only once per browser context.
   // This keeps the first-visit spotlight storage stable without stacking duplicates
   // when clearBrowserState() runs before and after each test.
-  if (!context.__helpSpotlightInitScriptRegistered) {
+  if (!context.helpSpotlightInitScriptRegistered) {
     await context.addInitScript(
       async ({ spotlightSeenKey }) => {
         localStorage.setItem(spotlightSeenKey, 'true');
@@ -28,7 +28,7 @@ async function clearBrowserState(page: Page, baseURL: string) {
       { spotlightSeenKey: helpSpotlightSeenStorageKey }
     );
 
-    context.__helpSpotlightInitScriptRegistered = true;
+    context.helpSpotlightInitScriptRegistered = true;
   }
 
   await page.goto(baseURL);

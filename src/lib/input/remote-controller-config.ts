@@ -8,7 +8,7 @@ import {
  * - 'media-buttons': Uses fixed media button mappings (Previous/Next Track with single/double press)
  * - 'keyboard-mapping': Uses customizable keyboard bindings
  */
-export type RemoteControllerMode = 'media-buttons' | 'keyboard-mapping';
+type RemoteControllerMode = 'media-buttons' | 'keyboard-mapping';
 
 /**
  * Full remote controller configuration persisted in storage.

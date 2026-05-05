@@ -43,12 +43,7 @@ export interface SpeechOptions {
   lang?: string;
 }
 
-export type SpeechEventType =
-  | 'point-scored'
-  | 'game-won'
-  | 'set-won'
-  | 'match-won'
-  | 'server-change';
+type SpeechEventType = 'point-scored' | 'game-won' | 'set-won' | 'match-won' | 'server-change';
 
 export interface SpeechEventData {
   eventType: SpeechEventType;
