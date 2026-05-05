@@ -60,7 +60,7 @@ export type MatchSetupValidationResult =
   | { success: true; data: MatchSetup }
   | { success: false; issues: MatchSetupValidationIssue[] };
 
-export interface ScorePointAction {
+interface ScorePointAction {
   type: 'score-point';
   teamId: MatchTeamId;
 }
@@ -84,7 +84,7 @@ export interface TiebreakGameState {
 
 export type MatchGameState = StandardGameState | TiebreakGameState;
 
-export interface MatchSetBase {
+interface MatchSetBase {
   index: number;
   mode: MatchSetMode;
   firstServer: MatchTeamId;
@@ -120,17 +120,17 @@ export interface MatchSideSwitchState {
   reason: 'odd-games' | 'tiebreak-interval' | null;
 }
 
-export interface StandardMatchScoreDisplay {
+interface StandardMatchScoreDisplay {
   kind: 'standard';
   points: TeamScore<string>;
 }
 
-export interface TiebreakMatchScoreDisplay {
+interface TiebreakMatchScoreDisplay {
   kind: 'tiebreak';
   points: TeamScore<number>;
 }
 
-export interface EmptyMatchScoreDisplay {
+interface EmptyMatchScoreDisplay {
   kind: null;
   points: null;
 }

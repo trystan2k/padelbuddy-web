@@ -15,8 +15,6 @@ import {
   type NativeSpeechSynthesisVoice
 } from './native-tts';
 
-export type { NativeSpeechSynthesisVoice };
-
 export { getLanguageDisplayName, isNativePlatform };
 
 const isNativePlatform = (): boolean => {

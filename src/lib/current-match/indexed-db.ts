@@ -36,11 +36,11 @@ export interface CurrentMatchPersistence {
   clearCurrentMatch(): Promise<void>;
 }
 
-export interface CurrentMatchLoadEmptyResult {
+interface CurrentMatchLoadEmptyResult {
   status: 'empty';
 }
 
-export interface CurrentMatchLoadResetRequiredResult {
+interface CurrentMatchLoadResetRequiredResult {
   status: 'reset-required';
   reason: 'schema-version';
   storedSchemaVersion: number;

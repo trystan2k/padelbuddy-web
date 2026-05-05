@@ -458,6 +458,7 @@ describe('PWA registration module', () => {
       const messagePromise = sendSWMessage({ type: 'SLOW_OP' }, 1000);
 
       // Set up the rejection handler before advancing timers to avoid unhandled rejection
+      // oxlint-disable-next-line valid-expect
       const assertion = expect(messagePromise).rejects.toThrow(
         "SW message 'SLOW_OP' timed out after 1000ms"
       );
@@ -472,6 +473,7 @@ describe('PWA registration module', () => {
       const messagePromise = sendSWMessage({ type: 'DEFAULT_TIMEOUT' });
 
       // Set up the rejection handler before advancing timers to avoid unhandled rejection
+      // oxlint-disable-next-line valid-expect
       const assertion = expect(messagePromise).rejects.toThrow(
         "SW message 'DEFAULT_TIMEOUT' timed out after 5000ms"
       );

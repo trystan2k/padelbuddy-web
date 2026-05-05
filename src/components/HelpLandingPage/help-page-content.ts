@@ -14,7 +14,7 @@ export type HelpPageMediaId =
   | 'helpSpotlight'
   | 'platformComparison';
 
-export interface HelpSectionItem {
+interface HelpSectionItem {
   titleKey: string;
   bodyKey: string;
   bodyComponents?: 'remoteLink';

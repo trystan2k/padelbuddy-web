@@ -18,7 +18,7 @@ export async function requestScreenWakeLock(): Promise<WakeLockSentinel | null> 
   }
 }
 
-export function _resetWakeLockManager(): void {
+export function resetWakeLockManager(): void {
   wakeLockManager.reset();
 }
 

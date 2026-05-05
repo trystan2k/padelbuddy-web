@@ -9,14 +9,14 @@ interface MatchDurationParts {
   minutes: number;
 }
 
-export interface ShareLabels {
+interface ShareLabels {
   shareText: string;
   finishedEarlyShareText: string;
   errorMessage: string;
   downloadMessage: string;
 }
 
-export interface ShareSummary {
+interface ShareSummary {
   winnerTeamId?: MatchTeamId;
   isFinishedEarly: boolean;
   teamNames: { 'team-1': string; 'team-2': string };

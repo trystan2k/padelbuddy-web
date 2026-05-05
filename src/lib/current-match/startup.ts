@@ -7,29 +7,29 @@ export interface CurrentMatchStartupOptions {
   persistence?: CurrentMatchPersistence;
 }
 
-export interface CurrentMatchStartupMatch {
+interface CurrentMatchStartupMatch {
   matchId: string;
   snapshot: CurrentMatchSessionSnapshot;
 }
 
-export interface CurrentMatchStartupNoMatchResult {
+interface CurrentMatchStartupNoMatchResult {
   status: 'no-match';
   notice: CurrentMatchResetNotice | null;
 }
 
-export interface CurrentMatchStartupReadyResult {
+interface CurrentMatchStartupReadyResult {
   status: 'ready';
   notice: CurrentMatchResetNotice | null;
   match: CurrentMatchStartupMatch;
 }
 
-export interface CurrentMatchStartupResumeRequiredResult {
+interface CurrentMatchStartupResumeRequiredResult {
   status: 'resume-required';
   notice: CurrentMatchResetNotice | null;
   match: CurrentMatchStartupMatch;
 }
 
-export interface CurrentMatchStartupCorruptResult {
+interface CurrentMatchStartupCorruptResult {
   status: 'corrupt';
   notice: CurrentMatchResetNotice | null;
   message: string;
