@@ -268,8 +268,8 @@ export function HistoryScreen({ initialRecords }: HistoryScreenProps) {
 
   const handleDeleteClick = useCallback(
     async (matchId: string) => {
-      // oxlint-disable-next-line eslint(no-alert) -- native confirmation requested for delete action
-      const confirmed = window.confirm(t('history.actions.deleteConfirm'));
+      // oxlint-disable-line no-alert
+      const confirmed = window.confirm(t('history.actions.deleteConfirm')); // oxlint-disable-line no-alert
 
       if (!confirmed) {
         return;

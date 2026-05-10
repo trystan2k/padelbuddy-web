@@ -151,7 +151,7 @@ describe('useMatchSession', () => {
       expect(screen.getByTestId('actionCount').element().textContent).toBe('1');
     });
 
-    // oxlint-disable-next-line typescript-eslint(unbound-method): Mock function doesn't use 'this'
+    // oxlint-disable-next-line typescript/unbound-method
     expect(mockPersistence.saveCurrentMatch).toHaveBeenCalledTimes(1);
   });
 

@@ -579,6 +579,7 @@ export function SetupScreen() {
                 aria-label={t('setup.rules.countdownDuration.label')}
                 data-testid="countdown-duration-row"
                 onKeyDown={handleCountdownDurationKeyDown}
+                tabIndex={0}
               >
                 {countdownTimerDurations.map((duration) => {
                   const isSelected = formData.countdownTimerDuration === duration;
@@ -587,7 +588,7 @@ export function SetupScreen() {
                     <button
                       key={duration}
                       type="button"
-                      role="radio"
+                      role="radio" // oxlint-disable-line jsx-a11y/prefer-tag-over-role
                       aria-checked={isSelected}
                       className={styles.countdownDurationOption}
                       onClick={createCountdownDurationSelectHandler(duration)}
