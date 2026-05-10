@@ -152,6 +152,11 @@
   flex-wrap: wrap;
 }
 
+.countdownDurationRow:focus-visible {
+  outline: none;
+  border-radius: var(--base-radius-54);
+}
+
 .countdownDurationRowDisabled {
   opacity: 0.35;
 }

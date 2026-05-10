@@ -105,7 +105,7 @@ export function DebugPwa() {
   }
 
   return (
-    <div className={styles.container} role="region" aria-labelledby="debug-pwa-title">
+    <section className={styles.container} aria-labelledby="debug-pwa-title">
       <div className={styles.header}>
         <h3 id="debug-pwa-title" className={styles.title}>
           {t('debugPwa.title')}
@@ -160,6 +160,6 @@ export function DebugPwa() {
           {isClearing ? t('debugPwa.clearing') : t('debugPwa.clearCache')}
         </button>
       </div>
-    </div>
+    </section>
   );
 }
