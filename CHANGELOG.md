@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.18.1](https://github.com/trystan2k/padelbuddy-web/compare/v2.18.0...v2.18.1) (2026-05-17)
+
+
+### Bug Fixes
+
+* **a11y:** improve accessibility and fix linter directives ([dcc96db](https://github.com/trystan2k/padelbuddy-web/commit/dcc96dbbad3486931c8c8cf88d008d6c7dba23ce))
+* update dependabot commit message prefixes ([9fed437](https://github.com/trystan2k/padelbuddy-web/commit/9fed437b6d6980d6786d3739ec9c210451120706))
+
 ## [2.18.0](https://github.com/trystan2k/padelbuddy-web/compare/v2.17.0...v2.18.0) (2026-04-20)
 
 
