@@ -558,11 +558,7 @@ export function SetupScreen() {
 
             <Divider />
 
-            <div
-              className={styles.countdownSection}
-              role="group"
-              aria-label={t('setup.rules.countdownTimer')}
-            >
+            <div className={styles.countdownSection} aria-label={t('setup.rules.countdownTimer')}>
               <Toggle
                 checked={formData.countdownTimerEnabled}
                 onChange={updateCountdownTimerEnabled}

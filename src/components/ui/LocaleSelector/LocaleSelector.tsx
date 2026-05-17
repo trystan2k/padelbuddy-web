@@ -71,7 +71,6 @@ export function LocaleSelector({
         <div
           id="locale-menu"
           className={styles.localeMenu}
-          role="group"
           aria-label={t('setup.locale.selectLanguage')}
         >
           {supportedLocales.map((locale) => (

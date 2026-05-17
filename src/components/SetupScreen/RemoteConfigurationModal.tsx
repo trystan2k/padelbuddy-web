@@ -106,7 +106,6 @@ const UnifiedRow = ({
         <span
           className={styles.mediaBadge}
           aria-label={mediaBadgeLabel}
-          role="img"
           title={`${mediaButtonLabel} - ${t('setup.remoteConfig.mediaButtons.notConfigurable')}`}
         >
           {mediaIsDoublePress ? (
@@ -400,8 +399,7 @@ export function RemoteConfigurationModal({
           <Dialog.Title render={handleTitleRender} />
           <Dialog.Description render={handleDescriptionRender} />
         </div>
-
-        <span role="status" aria-live="polite" className={styles.srOnly}>
+        <span aria-live="polite" className={styles.srOnly}>
           {listeningAnnouncement}
         </span>
 
