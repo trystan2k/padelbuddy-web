@@ -51,12 +51,12 @@
     "@fontsource/outfit": "~5.2.8",
     "@tanstack/react-router": "~1.169.2",
     "@tanstack/react-start": "~1.167.65",
-    "i18next": "~26.0.10",
-    "mixpanel-browser": "~2.78.0",
+    "i18next": "~26.2.0",
+    "mixpanel-browser": "~2.79.0",
     "modern-screenshot": "~4.7.0",
     "react": "~19.2.6",
     "react-dom": "~19.2.6",
-    "react-i18next": "~17.0.7"
+    "react-i18next": "~17.0.8"
   },
   "devDependencies": {
     "@capacitor/android": "~8.3.2",
