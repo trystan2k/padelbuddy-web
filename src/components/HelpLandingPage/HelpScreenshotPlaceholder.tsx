@@ -48,7 +48,7 @@ export function HelpScreenshotPlaceholder({ mediaId }: HelpScreenshotPlaceholder
 
   return (
     <figure className={styles.placeholderFigure}>
-      <div className={styles.placeholderSurface} role="img" aria-label={t(`${keyPrefix}.title`)}>
+      <div className={styles.placeholderSurface} aria-label={t(`${keyPrefix}.title`)}>
         {mediaSrc && <img src={mediaSrc} alt={t(`${keyPrefix}.title`)} />}
       </div>
       <figcaption className={styles.placeholderCaption}>

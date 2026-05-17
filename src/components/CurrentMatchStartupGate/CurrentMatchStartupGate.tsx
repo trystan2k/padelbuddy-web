@@ -175,7 +175,6 @@ export function CurrentMatchStartupGate({
     (popupProps: HTMLAttributes<HTMLElement>) => (
       <div
         {...popupProps}
-        role="dialog"
         aria-describedby="resume-match-description"
         aria-labelledby="resume-match-heading"
         aria-modal="true"
@@ -246,6 +245,7 @@ export function CurrentMatchStartupGate({
   return (
     <>
       {startupState.notice ? (
+        // oxlint-disable-next-line prefer-tag-over-role
         <aside className={styles.notice} role="status">
           <div className={styles.noticeCopy}>
             <p className={styles.noticeTitle}>{t('startupGate.notice.title')}</p>

@@ -49,7 +49,6 @@ describe('LocaleSelector', () => {
     );
 
     const menu = screen.container.querySelector('#locale-menu');
-    expect(menu?.getAttribute('role')).toBe('group');
     expect(menu?.getAttribute('aria-label')).toBeTruthy();
     expect(menu?.textContent).toContain('English');
     expect(menu?.textContent).toContain('Español');

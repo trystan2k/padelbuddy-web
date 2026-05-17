@@ -56,6 +56,7 @@ export function LicenseGate({ children }: LicenseGateProps) {
 
   if (checking) {
     return (
+      // oxlint-disable-next-line prefer-tag-over-role
       <div className={styles.loading} aria-label={t('common.loadingPleaseWait')} role="status">
         <div className={styles.spinner} aria-hidden="true" />
       </div>

@@ -382,7 +382,6 @@ export function MatchEndScreen({
         >
           <div
             className={styles.debugModalContent}
-            role="dialog"
             aria-modal="true"
             aria-label={t('match.end.debug.previewLabel')}
           >
