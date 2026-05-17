@@ -15,7 +15,8 @@ updates:
     assignees:
       - 'trystan2k'
     commit-message:
-      prefix: 'chore'
+      prefix: 'feat(deps)'
+      prefix-development: 'chore(deps)'
     groups:
       prod-dependencies:
         dependency-type: 'production'
@@ -40,7 +41,7 @@ updates:
       - 'dependabot'
       - 'dependencies'
     commit-message:
-      prefix: 'chore'
+      prefix: 'chore(deps)'
     cooldown:
       default-days: 2
       include:
