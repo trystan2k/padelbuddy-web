@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.21.0](https://github.com/trystan2k/padelbuddy-web/compare/v2.20.0...v2.21.0) (2026-05-22)
+
+
+### Features
+
+* **pwa:** add pwa install prompt banner ([2e6ae9a](https://github.com/trystan2k/padelbuddy-web/commit/2e6ae9a0286f00b1f20438a1fd805beef8227a49))
+
 ## [2.20.0](https://github.com/trystan2k/padelbuddy-web/compare/v2.19.0...v2.20.0) (2026-05-22)
 
 
