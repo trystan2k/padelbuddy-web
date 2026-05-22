@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.20.0](https://github.com/trystan2k/padelbuddy-web/compare/v2.19.0...v2.20.0) (2026-05-22)
+
+
+### Features
+
+* add centralized feature flag system ([2e8cfd8](https://github.com/trystan2k/padelbuddy-web/commit/2e8cfd8fd6dd7debdce0ea789876b7d385745a6f))
+
 ## [2.19.0](https://github.com/trystan2k/padelbuddy-web/compare/v2.18.1...v2.19.0) (2026-05-22)
 
 
