@@ -320,6 +320,17 @@ describe('match setup validation', () => {
     );
   });
 
+  test('accepts best-of-1 super tiebreak when deciding behavior is explicitly set', () => {
+    const result = validateMatchSetup({
+      ...baseInput,
+      format: 'best-of-1',
+      decidingSetSuperTiebreak: true,
+      bestOfOneDecidingBehavior: 'super-tiebreak'
+    });
+
+    expect(result.success).toBe(true);
+  });
+
   test('rejects contradictory best-of-1 deciding behavior values', () => {
     const contradictoryBehavior = validateMatchSetup({
       ...baseInput,

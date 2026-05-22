@@ -661,6 +661,23 @@ describe('useSetupForm interactions', () => {
     expect(formState!.formData.decidingSetSuperTiebreak).toBe(false);
   });
 
+  test('switching to best-of-1 preserves an enabled super tiebreak', async () => {
+    const screen = await render(
+      <SetupFormController
+        onGetState={(s) => {
+          formState = s;
+        }}
+      />
+    );
+
+    await screen.getByTestId('update-super-tiebreak-true').click();
+    await screen.getByTestId('update-format-bo1').click();
+    await screen.getByTestId('get-state').click();
+
+    expect(formState!.formData.format).toBe('best-of-1');
+    expect(formState!.formData.decidingSetSuperTiebreak).toBe(true);
+  });
+
   test('updateSideSwitchPrompts updates value to false', async () => {
     const screen = await render(
       <SetupFormController
@@ -791,12 +808,12 @@ describe('useSetupForm interactions', () => {
     await expect.element(screen.getByTestId('is-golden')).toHaveTextContent('true');
   });
 
-  test('showSuperTiebreakOption returns false for best-of-1', async () => {
+  test('showSuperTiebreakOption returns true for best-of-1', async () => {
     const screen = await render(<SetupFormController />);
 
     await screen.getByTestId('update-format-bo1').click();
 
-    await expect.element(screen.getByTestId('show-super')).toHaveTextContent('false');
+    await expect.element(screen.getByTestId('show-super')).toHaveTextContent('true');
   });
 
   test('showSuperTiebreakOption returns true for best-of-5', async () => {

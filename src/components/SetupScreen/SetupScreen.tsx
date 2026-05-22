@@ -161,7 +161,10 @@ export function SetupScreen() {
         sides: [
           { id: 'team-1' as const, playerNames: [formData.team1Name] },
           { id: 'team-2' as const, playerNames: [formData.team2Name] }
-        ]
+        ],
+        ...(formData.format === 'best-of-1' && formData.decidingSetSuperTiebreak
+          ? { bestOfOneDecidingBehavior: 'super-tiebreak' as const }
+          : {})
       } satisfies Parameters<typeof createMatchSetup>[0];
 
       // Create validated match setup
@@ -193,12 +196,8 @@ export function SetupScreen() {
   const handleFormatChange = useCallback(
     (format: MatchFormat) => {
       updateFormat(format);
-      // Reset super tiebreak when switching to best-of-1
-      if (format === 'best-of-1') {
-        updateDecidingSetSuperTiebreak(false);
-      }
     },
-    [updateFormat, updateDecidingSetSuperTiebreak]
+    [updateFormat]
   );
 
   const handleGoldenPointChange = useCallback(
@@ -617,7 +616,7 @@ export function SetupScreen() {
               </div>
             </div>
 
-            {/* Super Tiebreak - only for best-of-3 and best-of-5 */}
+            {/* Super Tiebreak */}
             {showSuperTiebreakOption && (
               <>
                 <Divider />

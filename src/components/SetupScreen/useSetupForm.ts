@@ -298,8 +298,8 @@ export function useSetupForm() {
   // Computed: is Golden Point enabled
   const isGoldenPointEnabled = formData.gameMode === 'golden-point';
 
-  // Computed: should show Super Tiebreak option (only for best-of-3 and best-of-5)
-  const showSuperTiebreakOption = formData.format !== 'best-of-1';
+  // Computed: super tiebreak can be enabled for any match format.
+  const showSuperTiebreakOption = true;
 
   return {
     formData,
