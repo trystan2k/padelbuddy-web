@@ -16,6 +16,7 @@ import { DebugPwa } from '@/components/DebugPwa/DebugPwa';
 import { LicenseGate } from '@/components/LicenseGate/LicenseGate';
 import { NotFoundPage } from '@/components/NotFoundPage/NotFoundPage';
 import { PadelCourtSpinner } from '@/components/PadelCourtSpinner/PadelCourtSpinner';
+import { PwaInstallBanner } from '@/components/PwaInstallBanner/PwaInstallBanner';
 import { ToastProvider } from '@/components/ui/Toast/useToast';
 import { getFeatureFlags } from '@/config/feature-flags';
 import { i18n } from '@/lib/i18n/i18n';
@@ -144,6 +145,7 @@ function AppShell() {
             </div>
           </LicenseGate>
         </ToastProvider>
+        <PwaInstallBanner />
         <Scripts />
         {import.meta.env.DEV && <DebugPwa />}
       </body>

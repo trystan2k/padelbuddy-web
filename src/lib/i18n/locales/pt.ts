@@ -7,6 +7,18 @@ export default {
     retry: 'Tentar novamente',
     dismiss: 'Dispensar'
   },
+  pwaInstall: {
+    banner: {
+      label: 'Banner para instalar o app',
+      title: 'Instale o Padel Buddy',
+      body: 'Adicione o app a tela inicial para acesso mais rapido.',
+      manualTitle: 'Adicione o Padel Buddy a tela inicial',
+      manualBody:
+        'No iPhone ou iPad, abra o menu Compartilhar e toque em Adicionar a Tela de Inicio.',
+      install: 'Instalar app',
+      installing: 'Abrindo aviso...'
+    }
+  },
   error: {
     loadMatch: 'Erro ao carregar partida',
     unexpectedLabel: 'Recuperação de tela',

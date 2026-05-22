@@ -7,6 +7,17 @@ export default {
     retry: 'Try again',
     dismiss: 'Dismiss'
   },
+  pwaInstall: {
+    banner: {
+      label: 'Install app banner',
+      title: 'Install Padel Buddy',
+      body: 'Add app to your home screen for quicker access.',
+      manualTitle: 'Add Padel Buddy to your home screen',
+      manualBody: 'On iPhone or iPad, open the Share menu and tap Add to Home Screen.',
+      install: 'Install app',
+      installing: 'Opening prompt...'
+    }
+  },
   error: {
     loadMatch: 'Error loading match',
     unexpectedLabel: 'View recovery',
