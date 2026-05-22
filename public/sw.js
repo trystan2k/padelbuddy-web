@@ -1,5 +1,5 @@
 // Service Worker Version - update to force cache refresh
-const SW_VERSION = '2.18.1'; // x-release-please-version
+const SW_VERSION = '2.19.0'; // x-release-please-version
 const CACHE_NAME = `padel-buddy-${SW_VERSION}`;
 
 const PRECACHE_URLS = ['/index.html', '/icon.png', '/manifest.json', '/'];

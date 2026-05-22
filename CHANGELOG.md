@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.19.0](https://github.com/trystan2k/padelbuddy-web/compare/v2.18.1...v2.19.0) (2026-05-22)
+
+
+### Features
+
+* **setup-screen:** allow super tiebreak for best-of-1 matches ([3482e88](https://github.com/trystan2k/padelbuddy-web/commit/3482e88bcf58e7e348c5584a0d808f65fc222181))
+
 ## [2.18.1](https://github.com/trystan2k/padelbuddy-web/compare/v2.18.0...v2.18.1) (2026-05-17)
 
 
