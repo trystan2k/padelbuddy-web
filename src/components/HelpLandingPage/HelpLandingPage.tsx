@@ -7,6 +7,7 @@ import { Layout } from '@/components/Layout/Layout';
 import { StoreButtons } from '@/components/StoreButtons/StoreButtons';
 import { LocaleSelector } from '@/components/ui/LocaleSelector/LocaleSelector';
 import { TopBar } from '@/components/ui/TopBar/TopBar';
+import { getFeatureFlags } from '@/config/feature-flags';
 import { useActiveSection } from '@/hooks/useActiveSection';
 import { cn } from '@/lib/utils/cn';
 import { supportsViewTransitions } from '@/lib/utils/view-transitions';
@@ -21,7 +22,7 @@ const helpSectionIds = HELP_PAGE_SECTIONS.map((section) => section.id);
 export function HelpLandingPage() {
   const { t } = useTranslation();
   const router = useRouter();
-  const showStoreButtons = import.meta.env.VITE_IS_NATIVE !== 'true';
+  const showStoreButtons = getFeatureFlags().storeBadges;
   const activeId = useActiveSection({ sectionIds: helpSectionIds });
 
   const handleBack = useCallback(() => {

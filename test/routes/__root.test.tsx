@@ -3,6 +3,7 @@ import { describe, expect, test, vi, beforeAll } from 'vitest';
 import defaultTranslation from '@/lib/i18n/locales/en';
 import { i18n, initializeI18n, resetI18nInitialization } from '@/lib/i18n/i18n';
 
+import { getFeatureFlags } from '@/config/feature-flags';
 import { Route } from '@/routes/__root';
 import { renderToStaticMarkup } from 'react-dom/server';
 
@@ -55,6 +56,15 @@ describe('root route', () => {
       content: 'width=device-width, initial-scale=1, viewport-fit=cover'
     });
     expect(headResult.meta).toContainEqual({ title: 'Padel Buddy' });
+    expect(headResult.scripts).toEqual(
+      getFeatureFlags().ads
+        ? [
+            {
+              src: 'https://pl29090824.profitablecpmratenetwork.com/02/2b/8f/022b8faecb5dfe718fdb48e75a83b7cb.js'
+            }
+          ]
+        : []
+    );
     expect(markup).toContain('<html lang="en">');
     expect(markup).toContain('route outlet');
     expect(markup).toContain('scripts');

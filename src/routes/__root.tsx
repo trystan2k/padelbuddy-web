@@ -17,6 +17,7 @@ import { LicenseGate } from '@/components/LicenseGate/LicenseGate';
 import { NotFoundPage } from '@/components/NotFoundPage/NotFoundPage';
 import { PadelCourtSpinner } from '@/components/PadelCourtSpinner/PadelCourtSpinner';
 import { ToastProvider } from '@/components/ui/Toast/useToast';
+import { getFeatureFlags } from '@/config/feature-flags';
 import { i18n } from '@/lib/i18n/i18n';
 
 import {
@@ -29,68 +30,71 @@ import { RouteErrorCard } from './-route-utils';
 import styles from './RootDocument.module.css';
 
 export const Route = createRootRoute({
-  head: () => ({
-    meta: [
-      {
-        charSet: 'utf-8'
-      },
-      {
-        name: 'viewport',
-        content: 'width=device-width, initial-scale=1, viewport-fit=cover'
-      },
-      {
-        title: i18n.t('app.title')
-      },
-      {
-        name: 'description',
-        content: i18n.t('app.description')
-      },
-      {
-        name: 'theme-color',
-        content: '#F4F0E7'
-      },
-      {
-        name: 'mobile-web-app-capable',
-        content: 'yes'
-      },
-      {
-        name: 'apple-mobile-web-app-capable',
-        content: 'yes'
-      },
-      {
-        name: 'apple-mobile-web-app-status-bar-style',
-        content: 'default'
-      },
-      {
-        name: 'apple-mobile-web-app-title',
-        content: i18n.t('app.title')
-      }
-    ],
-    links: [
-      {
-        rel: 'manifest',
-        href: '/manifest.json'
-      },
-      {
-        rel: 'icon',
-        type: 'image/png',
-        href: '/icon.png'
-      },
-      {
-        rel: 'apple-touch-icon',
-        sizes: '180x180',
-        href: '/apple-touch-icon.png'
-      }
-    ],
-    scripts:
-      import.meta.env.VITE_IS_NATIVE === 'true' || import.meta.env.DEV
-        ? []
-        : [
+  head: () => {
+    const featureFlags = getFeatureFlags();
+
+    return {
+      meta: [
+        {
+          charSet: 'utf-8'
+        },
+        {
+          name: 'viewport',
+          content: 'width=device-width, initial-scale=1, viewport-fit=cover'
+        },
+        {
+          title: i18n.t('app.title')
+        },
+        {
+          name: 'description',
+          content: i18n.t('app.description')
+        },
+        {
+          name: 'theme-color',
+          content: '#F4F0E7'
+        },
+        {
+          name: 'mobile-web-app-capable',
+          content: 'yes'
+        },
+        {
+          name: 'apple-mobile-web-app-capable',
+          content: 'yes'
+        },
+        {
+          name: 'apple-mobile-web-app-status-bar-style',
+          content: 'default'
+        },
+        {
+          name: 'apple-mobile-web-app-title',
+          content: i18n.t('app.title')
+        }
+      ],
+      links: [
+        {
+          rel: 'manifest',
+          href: '/manifest.json'
+        },
+        {
+          rel: 'icon',
+          type: 'image/png',
+          href: '/icon.png'
+        },
+        {
+          rel: 'apple-touch-icon',
+          sizes: '180x180',
+          href: '/apple-touch-icon.png'
+        }
+      ],
+      scripts: featureFlags.ads
+        ? [
             {
               src: 'https://pl29090824.profitablecpmratenetwork.com/02/2b/8f/022b8faecb5dfe718fdb48e75a83b7cb.js'
             }
           ]
-  }),
+        : []
+    };
+  },
   component: RootDocument,
   errorComponent: RootErrorState,
   notFoundComponent: NotFoundPage

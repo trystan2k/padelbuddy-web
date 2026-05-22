@@ -10,6 +10,7 @@ import {
 import { helpSpotlightSeenStorageKey } from '@/lib/user/help_spotlight_storage';
 
 const {
+  featureFlagState,
   mockClearSpeechPreferences,
   mockInvalidate,
   mockLoadSetupPreferences,
@@ -20,6 +21,10 @@ const {
   mockSaveSetupPreferenceSlice,
   mockSaveSpeechPreferences
 } = vi.hoisted(() => ({
+  featureFlagState: {
+    ads: true,
+    storeBadges: false
+  },
   mockClearSpeechPreferences: vi.fn<() => Promise<void>>(),
   mockInvalidate: vi.fn<() => Promise<void>>(),
   mockLoadSetupPreferences: vi.fn<() => Promise<object | null>>(),
@@ -29,6 +34,13 @@ const {
   mockLoadRemoteControllerConfig: vi.fn<() => Promise<object>>(),
   mockSaveSetupPreferenceSlice: vi.fn<() => Promise<void>>(),
   mockSaveSpeechPreferences: vi.fn<() => Promise<void>>()
+}));
+
+vi.mock('@/config/feature-flags', () => ({
+  getFeatureFlags: () => ({
+    ads: featureFlagState.ads,
+    storeBadges: featureFlagState.storeBadges
+  })
 }));
 
 vi.mock('@tanstack/react-router', async (importOriginal) => {
@@ -95,6 +107,8 @@ vi.mock('@/components/SetupScreen/VoiceSelectionModal', () => ({
 describe('SetupScreen', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    featureFlagState.storeBadges = false;
+
     // Mark spotlight as seen so unrelated first-visit spotlight UI does not appear in these tests
     localStorage.setItem(helpSpotlightSeenStorageKey, 'true');
     mockLoadRemoteControllerConfig.mockResolvedValue(createDefaultRemoteControllerConfig());
@@ -106,6 +120,8 @@ describe('SetupScreen', () => {
   });
 
   afterEach(async () => {
+    featureFlagState.storeBadges = false;
+
     // Unmount React roots before shared.ts clears document.body.innerHTML.
     // Without this, React 19's async portal teardown races with the shared
     // cleanup and throws "removeChild: node is not a child of this node".
@@ -146,6 +162,15 @@ describe('SetupScreen', () => {
     const rulesCard = screen.getByTestId('rules-card');
 
     expect(getComputedStyle(rulesCard.element()).overflowY).toBe('auto');
+  });
+
+  test('renders store badges on web builds', async () => {
+    featureFlagState.storeBadges = true;
+
+    const screen = await render(<SetupScreen />);
+
+    await expect.element(screen.getByTestId('store-link-android')).toBeInTheDocument();
+    await expect.element(screen.getByTestId('store-link-ios')).toBeInTheDocument();
   });
 
   test('enables duration selection when countdown is turned on', async () => {

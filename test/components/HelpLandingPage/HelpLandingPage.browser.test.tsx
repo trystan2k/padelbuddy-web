@@ -7,6 +7,19 @@ import { HelpLandingPage } from '@/components/HelpLandingPage/HelpLandingPage';
 import * as i18nModule from '@/lib/i18n/i18n';
 
 const mockHistoryBack = vi.fn<() => void>();
+const { featureFlagState } = vi.hoisted(() => ({
+  featureFlagState: {
+    ads: true,
+    storeBadges: false
+  }
+}));
+
+vi.mock('@/config/feature-flags', () => ({
+  getFeatureFlags: () => ({
+    ads: featureFlagState.ads,
+    storeBadges: featureFlagState.storeBadges
+  })
+}));
 
 // Mock @tanstack/react-router to provide Link component
 vi.mock('@tanstack/react-router', () => ({
@@ -34,10 +47,12 @@ vi.mock('@/components/ui/TopBar/TopBar', () => ({
 describe('HelpLandingPage', () => {
   beforeEach(async () => {
     vi.clearAllMocks();
+    featureFlagState.storeBadges = false;
     await i18nModule.i18n.changeLanguage('en');
   });
 
   afterEach(async () => {
+    featureFlagState.storeBadges = false;
     await i18nModule.changeLocale('en');
   });
 
@@ -82,6 +97,18 @@ describe('HelpLandingPage', () => {
     const tocHeading = screen.container.querySelector('#toc-heading') as HTMLElement | null;
     await expect.element(tocHeading).toBeInTheDocument();
     await expect.element(tocHeading).toHaveTextContent('On this page');
+  });
+
+  test('renders store badges in the TOC on web builds', async () => {
+    featureFlagState.storeBadges = true;
+
+    const screen = await render(<HelpLandingPage />);
+
+    const tocStoreItem = screen.container.querySelector('li[class*="tocStoreItem"]');
+
+    expect(tocStoreItem).toBeTruthy();
+    expect(tocStoreItem?.querySelector('[data-testid="store-link-android"]')).toBeTruthy();
+    expect(tocStoreItem?.querySelector('[data-testid="store-link-ios"]')).toBeTruthy();
   });
 
   test('main article element exists without aria-labelledby', async () => {

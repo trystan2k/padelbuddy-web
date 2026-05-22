@@ -31,7 +31,8 @@ async function clearBrowserState(page: Page, baseURL: string) {
     context.helpSpotlightInitScriptRegistered = true;
   }
 
-  await page.goto(baseURL);
+  await page.context().clearCookies();
+  await page.goto(baseURL, { waitUntil: 'domcontentloaded' });
 
   // Clear remaining state after navigation
   await page.evaluate(
@@ -47,6 +48,16 @@ async function clearBrowserState(page: Page, baseURL: string) {
         localStorage.setItem(spotlightSeenKey, spotlightValue);
       }
 
+      if ('serviceWorker' in navigator) {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(registrations.map((registration) => registration.unregister()));
+      }
+
+      if ('caches' in window) {
+        const cacheKeys = await caches.keys();
+        await Promise.all(cacheKeys.map((cacheKey) => caches.delete(cacheKey)));
+      }
+
       await new Promise<void>((resolve) => {
         const request = indexedDB.deleteDatabase(databaseName);
 
@@ -57,6 +68,8 @@ async function clearBrowserState(page: Page, baseURL: string) {
     },
     { databaseName: defaultDatabaseName, spotlightSeenKey: helpSpotlightSeenStorageKey }
   );
+
+  await page.goto('about:blank');
 }
 
 function sanitizePathSegment(value: string): string {

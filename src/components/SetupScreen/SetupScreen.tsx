@@ -37,6 +37,7 @@ import { TopBar } from '@/components/ui/TopBar/TopBar';
 import { LocaleSelector } from '@/components/ui/LocaleSelector/LocaleSelector';
 import { StoreButtons } from '@/components/StoreButtons/StoreButtons';
 import { SocialButtons } from '@/components/SocialButtons/SocialButtons';
+import { getFeatureFlags } from '@/config/feature-flags';
 
 import { RemoteConfigurationModal } from './RemoteConfigurationModal';
 import { VoiceSelectionModal } from './VoiceSelectionModal';
@@ -66,6 +67,8 @@ const countdownDurationKeys: Record<CountdownTimerDuration, string> = {
 };
 
 export function SetupScreen() {
+  const featureFlags = getFeatureFlags();
+
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const router = useRouter();
@@ -453,7 +456,7 @@ export function SetupScreen() {
           >
             {t('setup.historyButton')}
           </Button>
-          {import.meta.env.VITE_IS_NATIVE !== 'true' && (
+          {featureFlags.storeBadges && (
             <div className={styles.storeBadgesContainer}>
               <StoreButtons />
             </div>

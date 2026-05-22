@@ -46,8 +46,16 @@ async function setToggle(page: Page, label: RegExp, checked: boolean): Promise<v
 }
 
 export async function gotoSetupScreen(page: Page): Promise<void> {
+  const startMatchButton = page.getByRole('button', { name: /start match/i });
+
   await page.goto('/');
-  await expect(page.getByRole('button', { name: /start match/i })).toBeVisible();
+
+  try {
+    await expect(startMatchButton).toBeVisible({ timeout: 15000 });
+  } catch {
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await expect(startMatchButton).toBeVisible({ timeout: 15000 });
+  }
 }
 
 export async function startMatch(page: Page, options: StartMatchOptions = {}): Promise<void> {

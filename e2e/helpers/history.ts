@@ -58,7 +58,17 @@ function createScoreActions(teamId: MatchTeamId, count: number): MatchAction[] {
   }));
 }
 
+async function ensureAppOrigin(page: Page): Promise<void> {
+  if (page.url().startsWith('http://localhost:4000/')) {
+    return;
+  }
+
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+}
+
 async function putHistoryRecord(page: Page, record: MatchHistoryRecord): Promise<void> {
+  await ensureAppOrigin(page);
+
   await page.evaluate(
     async ({ databaseName, databaseVersion, objectStoreName, objectStoreNames, key, value }) => {
       const database = await new Promise<IDBDatabase>((resolve, reject) => {
@@ -145,6 +155,8 @@ export async function seedHistoryRecord(
 }
 
 export async function clearHistoryRecords(page: Page): Promise<void> {
+  await ensureAppOrigin(page);
+
   await page.evaluate(
     async ({ databaseName, databaseVersion, objectStoreName, objectStoreNames }) => {
       const database = await new Promise<IDBDatabase>((resolve, reject) => {

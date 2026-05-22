@@ -3,6 +3,8 @@ import { expect, test } from './fixtures';
 import { assertNoHorizontalOverflow, gotoSetupScreen } from './helpers/match-flow';
 
 test.describe('@happy-path @help Help page', () => {
+  const localeTrigger = 'button[aria-haspopup="true"]';
+
   test.beforeEach(async ({ page }) => {
     await page.goto('/help');
     await expect(page).toHaveURL('/help');
@@ -80,21 +82,22 @@ test.describe('@happy-path @help Help page', () => {
   });
 
   test('language selector is visible and shows the current locale', async ({ page }) => {
-    const localeButton = page.getByRole('button', { name: /english/i });
+    const localeButton = page.locator(localeTrigger);
 
     await expect(localeButton).toBeVisible();
+    await expect(localeButton).toHaveText(/english/i);
     await expect(localeButton).toHaveAttribute('aria-haspopup', 'true');
   });
 
   test('switching language to Spanish updates page content', async ({ page }) => {
-    await page.getByRole('button', { name: /english/i }).click();
+    await page.locator(localeTrigger).click();
 
     const menu = page.locator('#locale-menu');
     await expect(menu).toBeVisible();
 
     await menu.getByRole('button', { name: /español/i }).click();
 
-    await expect(page.getByRole('button', { name: /español/i })).toBeVisible();
+    await expect(page.locator(localeTrigger)).toHaveText(/español/i);
     await expect(
       page.locator('nav[aria-labelledby="toc-heading"]').getByRole('link', {
         name: /¿qué es padel buddy\?/i
@@ -103,14 +106,14 @@ test.describe('@happy-path @help Help page', () => {
   });
 
   test('switching language to Portuguese updates page content', async ({ page }) => {
-    await page.getByRole('button', { name: /english/i }).click();
+    await page.locator(localeTrigger).click();
 
     const menu = page.locator('#locale-menu');
     await expect(menu).toBeVisible();
 
     await menu.getByRole('button', { name: /português/i }).click();
 
-    await expect(page.getByRole('button', { name: /português/i })).toBeVisible();
+    await expect(page.locator(localeTrigger)).toHaveText(/português/i);
     await expect(
       page.locator('nav[aria-labelledby="toc-heading"]').getByRole('link', {
         name: /o que é o padel buddy\?/i
