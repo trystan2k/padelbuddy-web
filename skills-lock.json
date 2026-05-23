@@ -66,6 +66,12 @@
       "sourceType": "github",
       "computedHash": "d896af12c9ee988a77fc55b6f3e05beafbec943ff6bdf39b1177780a34fa12ca"
     },
+    "grill-with-docs": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "skillPath": "skills/engineering/grill-with-docs/SKILL.md",
+      "computedHash": "a5c65e76275008b469962f7bee8b34866f1c9b0709f4886e71c8e731735640e4"
+    },
     "improve-codebase-architecture": {
       "source": "trystan2k/skills",
       "sourceType": "github",
