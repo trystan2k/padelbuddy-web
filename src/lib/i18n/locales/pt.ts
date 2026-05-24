@@ -329,7 +329,7 @@ export default {
       label: 'Set Atual',
       setLabel: 'Set {{number}}',
       currentShort: 'Atual',
-      currentSetScoreHeadline: 'Sets: {{team1}} - {{team2}}',
+      overallSetsScoreHeadline: 'Sets: {{team1}} - {{team2}}',
       openHistoryLabel: 'Abrir histórico de sets. Placar de sets: {{team1}} - {{team2}}',
       emptyHistory: 'Ainda não há sets concluídos.',
       superTiebreakBadge: 'S-TB'

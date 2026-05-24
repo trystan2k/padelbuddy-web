@@ -326,7 +326,7 @@ export default {
       label: 'Current Set',
       setLabel: 'Set {{number}}',
       currentShort: 'Current',
-      currentSetScoreHeadline: 'Sets: {{team1}} - {{team2}}',
+      overallSetsScoreHeadline: 'Sets: {{team1}} - {{team2}}',
       openHistoryLabel: 'Open sets history. Current set score: {{team1}} - {{team2}}',
       emptyHistory: 'No completed sets yet.',
       superTiebreakBadge: 'ST'

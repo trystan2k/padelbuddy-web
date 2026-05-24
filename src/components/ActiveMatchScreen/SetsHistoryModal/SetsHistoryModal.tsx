@@ -40,7 +40,7 @@ export function SetsHistoryModal({
   const { t } = useTranslation();
   const portalContainerRef = useRef<HTMLDivElement | null>(null);
   const setsWonScore = getSetsWonScore(sets);
-  const title = t('match.sets.currentSetScoreHeadline', {
+  const title = t('match.sets.overallSetsScoreHeadline', {
     team1: setsWonScore['team-1'],
     team2: setsWonScore['team-2']
   });

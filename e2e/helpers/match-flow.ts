@@ -24,6 +24,7 @@ interface StartMatchOptions {
   servingIndicatorEnabled?: boolean;
   countdownTimerEnabled?: boolean;
   countdownTimerDuration?: CountdownTimerDuration;
+  resetPersistence?: boolean;
 }
 
 interface GotoSetupScreenOptions {
@@ -182,10 +183,11 @@ export async function startMatch(page: Page, options: StartMatchOptions = {}): P
     sideSwitchPrompts = false,
     servingIndicatorEnabled = false,
     countdownTimerEnabled = false,
-    countdownTimerDuration = 90
+    countdownTimerDuration = 90,
+    resetPersistence = true
   } = options;
 
-  await gotoSetupScreen(page, { resetPersistence: true });
+  await gotoSetupScreen(page, { resetPersistence });
 
   await page.getByRole('textbox', { name: /team 1/i }).fill(team1Name);
   await page.getByRole('textbox', { name: /team 2/i }).fill(team2Name);

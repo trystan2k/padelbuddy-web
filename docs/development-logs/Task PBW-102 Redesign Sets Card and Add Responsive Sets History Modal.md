@@ -9,7 +9,7 @@ permalink: docs/development-logs/task-PBW-102-redesign-sets-card-and-add-respons
 ## Metadata
 
 - Task ID: PBW-102
-- Date (UTC): 2026-05-24T15:21:19Z
+- Date (UTC): 2026-05-24T15:51:42Z
 - Project: padelbuddy-web
 - Branch: feature/PBW-102-redesign-sets-card-and-add-responsive-sets-history-modal
 - Commit: d8d383c (staged changes awaiting commit)
@@ -26,15 +26,15 @@ permalink: docs/development-logs/task-PBW-102-redesign-sets-card-and-add-respons
 
 - **SetsCard redesign (PBW-111)**: Replaced the full set-grid card with a compact trigger showing only the current set score. Tapping the card opens the SetsHistoryModal. Removed scroll-based grid logic. Uses `getCurrentSet` / `getSetDisplayScore` helpers from `sets-history.ts`. Super-tiebreak display falls back to tiebreak points when individual game scores are not meaningful.
 
-- **SetsHistoryModal (PBW-110)**: New modal built on `@base-ui/react` dialog. Header displays overall sets-won score (e.g. "Sets 1 – 0") via `getSetsWonScore`. Body renders only completed sets — no in-progress set shown. Fixed focus management so dialog receives focus on open; fixed scroll containment so background does not scroll. 30-second auto-close timer with full state reset on close. Finish-navigation bypass suppresses auto-open when match-end transition is imminent. Super-tiebreak sets fall back to `tiebreakPoints` (with legacy `game.points` shape support).
+- **SetsHistoryModal (PBW-110)**: New modal built on `@base-ui/react` dialog. Header displays overall sets-won score (e.g. "Sets 1 – 0") via `getSetsWonScore`. i18n key renamed from `currentSetScoreHeadline` to `overallSetsScoreHeadline` to accurately reflect overall-sets-score semantics (not current-set score). Body renders only completed sets — no in-progress set shown. Fixed focus management so dialog receives focus on open; fixed scroll containment so background does not scroll. 30-second auto-close timer with full state reset on close. Finish-navigation bypass suppresses auto-open when match-end transition is imminent. Super-tiebreak sets fall back to `tiebreakPoints` (with legacy `game.points` shape support).
 
 - **Auto-open setup toggle**: New `autoOpenSetsHistoryModal` boolean added to `SetupFormData`, `MatchSetupInput`, `MatchSetup`, and `SetupPreferences`. Toggle exposed on SetupScreen UI. Value persists through `setup-storage.ts` (IndexedDB) with `true` as default for new installs. Parsing uses `typeof` guard for backward compatibility with stored records missing the field.
 
 - **Side-switch default change**: `sideSwitchPrompts` default changed from `true` to `false` in `defaultSetupPreferences`. Legacy matches (both in-progress and completed) without the field in their persisted record fall back to `true` via `shouldUseLegacySideSwitchPrompts` guard in `persistence.ts`, preserving existing behavior. Originally scoped to in-progress only (`shouldUseLegacyInProgressSideSwitchPrompts`); Copilot follow-up broadened the guard to cover completed records too — completed matches loaded for review/share also need the legacy fallback since they predate the field.
 
-- **E2E cold-start stabilization**: Refactored `match-flow.ts` helper — replaced single `setupReadyTimeoutMs` (15s) with per-attempt timeout (8s) + total budget (26s). Added `resetPersistence` option to clear IndexedDB before navigation. Added `autoOpenSetsHistoryModal` option to match-flow start-match API. Updated all 7 E2E specs to accommodate SetsCard UI changes and new setup fields.
+- **E2E cold-start stabilization**: Refactored `match-flow.ts` helper — replaced single `setupReadyTimeoutMs` (15s) with per-attempt timeout (8s) + total budget (26s). Added `resetPersistence` option to clear IndexedDB before navigation; `startMatch` now accepts optional `resetPersistence` override (defaults `true`) so callers can opt out of the reset when not needed. Added `autoOpenSetsHistoryModal` option to match-flow start-match API. Updated all 7 E2E specs to accommodate SetsCard UI changes and new setup fields.
 
-- **i18n**: Added translation keys for modal title, set history labels, and super-tiebreak badge across en, es, pt locales.
+- **i18n**: Added translation keys for modal title, set history labels, and super-tiebreak badge across en, es, pt locales. Headline key renamed to `overallSetsScoreHeadline` for semantic accuracy.
 
 ## Files Changed
 
@@ -42,7 +42,7 @@ permalink: docs/development-logs/task-PBW-102-redesign-sets-card-and-add-respons
 
 - `src/components/ActiveMatchScreen/SetsCard/SetsCard.tsx` — Compact current-score trigger with `onOpenHistory` callback
 - `src/components/ActiveMatchScreen/SetsCard/SetsCard.module.css` — Simplified styles for single-row card
-- `src/components/ActiveMatchScreen/SetsHistoryModal/SetsHistoryModal.tsx` — New modal: Base UI dialog, overall header score, completed-set history only, auto-close timer
+- `src/components/ActiveMatchScreen/SetsHistoryModal/SetsHistoryModal.tsx` — New modal: Base UI dialog, overall header score, completed-set history only, auto-close timer; i18n key renamed to `overallSetsScoreHeadline`
 - `src/components/ActiveMatchScreen/SetsHistoryModal/SetsHistoryModal.module.css` — Modal styles with responsive breakpoints
 - `src/components/ActiveMatchScreen/sets-history.ts` — Helpers: `getCurrentSet`, `getSetDisplayScore`, `getSetsWonScore`, `getSetsHistoryAutoOpenSignature`, super-tiebreak legacy score fallback
 - `src/components/ActiveMatchScreen/ActiveMatchScreen.tsx` — Integrated SetsHistoryModal, auto-open hook, `autoOpenSetsHistoryModal` from match setup
@@ -63,9 +63,9 @@ permalink: docs/development-logs/task-PBW-102-redesign-sets-card-and-add-respons
 
 ### Localization
 
-- `src/lib/i18n/locales/en.ts` — English keys for sets history modal
-- `src/lib/i18n/locales/es.ts` — Spanish keys for sets history modal
-- `src/lib/i18n/locales/pt.ts` — Portuguese keys for sets history modal
+- `src/lib/i18n/locales/en.ts` — English keys for sets history modal; headline key renamed to `overallSetsScoreHeadline`
+- `src/lib/i18n/locales/es.ts` — Spanish keys for sets history modal; headline key renamed to `overallSetsScoreHeadline`
+- `src/lib/i18n/locales/pt.ts` — Portuguese keys for sets history modal; headline key renamed to `overallSetsScoreHeadline`
 
 ### Tests
 
@@ -82,7 +82,7 @@ permalink: docs/development-logs/task-PBW-102-redesign-sets-card-and-add-respons
 
 ### E2E
 
-- `e2e/helpers/match-flow.ts` — Refactored cold-start: per-attempt timeout + total budget, `resetPersistence`, `autoOpenSetsHistoryModal` option
+- `e2e/helpers/match-flow.ts` — Refactored cold-start: per-attempt timeout + total budget; `resetPersistence` as optional override in `startMatch` (defaults `true`); `autoOpenSetsHistoryModal` option
 - `e2e/active-match.happy-path.spec.ts` — Updated for SetsCard UI
 - `e2e/match-end.happy-path.spec.ts` — Updated for SetsCard UI
 - `e2e/tiebreaks.edge-case.spec.ts` — Updated for super-tiebreak display
@@ -99,7 +99,7 @@ permalink: docs/development-logs/task-PBW-102-redesign-sets-card-and-add-respons
 ## Key Decisions
 
 - **Base UI Dialog**: Chose `@base-ui/react` dialog for built-in a11y, focus trap, render-props API. Consistent with PBW-39 migration.
-- **Header shows overall sets score**: `getSetsWonScore` counts completed-set winners — gives immediate context without scanning rows.
+- **Header shows overall sets score**: `getSetsWonScore` counts completed-set winners — gives immediate context without scanning rows. i18n key `overallSetsScoreHeadline` renamed from `currentSetScoreHeadline` to avoid confusion with current-set score displayed on the card.
 - **Completed-set history only**: In-progress set excluded from modal body to avoid confusion between live score (card) and historical score (modal).
 - **Auto-open only on set completion**: Auto-open fires when the set-completion signature changes (`getSetsHistoryAutoOpenSignature`), not on every render. Prevents spurious opens.
 - **Auto-open setup toggle with persistence**: New field defaults `true` for new installs. Stored in IndexedDB via `setup-storage`. Parsing uses `typeof` guard for backward compat with records missing the field.
@@ -108,10 +108,11 @@ permalink: docs/development-logs/task-PBW-102-redesign-sets-card-and-add-respons
 - **Finish-navigation bypass**: Auto-open suppressed when match-end transition is imminent — prevents modal flash before screen change.
 - **Super-tiebreak legacy fallback**: `getCompletedSuperTiebreakScore` tries `tiebreakPoints` first, then legacy `game.points` shape, then falls back to `set.games`. Handles matches persisted before the tiebreakPoints field was added.
 - **E2E cold-start fix**: Replaced single 15s timeout with 8s per-attempt + 26s total budget in `match-flow.ts`. Reduces flaky failures on slow CI.
+- **E2E `startMatch` resetPersistence override**: `startMatch` accepts optional `resetPersistence` (defaults `true`). Lets callers skip IndexedDB clear when reusing existing state, without changing default behavior for existing specs.
 
 ## Validation Performed
 
-- `pnpm complete-check` — **PASSES** (lint, format, unit, browser, e2e all green) — re-verified after Copilot follow-up fix
+- `pnpm complete-check` — **PASSES** (lint, format, unit, browser, e2e all green) — re-verified after each Copilot follow-up
 - Code review — **APPROVED** (final review)
 - Architecture review — **APPROVED** (final architecture review)
 
