@@ -1,2 +1,2 @@
 // This file is managed by release-please.
-export const APP_VERSION = '2.22.0'; // x-release-please-version
+export const APP_VERSION = '2.23.0'; // x-release-please-version

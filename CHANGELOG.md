@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.23.0](https://github.com/trystan2k/padelbuddy-web/compare/v2.22.0...v2.23.0) (2026-05-24)
+
+
+### Features
+
+* **deps:** bump the prod-dependencies group with 3 updates ([6efe110](https://github.com/trystan2k/padelbuddy-web/commit/6efe110eea9b3ff5c7f411ca4d5ee572fe303f91))
+* redesign SetsCard and add sets history modal ([aeaec53](https://github.com/trystan2k/padelbuddy-web/commit/aeaec53120f08ab310b3f6780c6c3b780ee13504))
+
 ## [2.22.0](https://github.com/trystan2k/padelbuddy-web/compare/v2.21.0...v2.22.0) (2026-05-24)
 
 
