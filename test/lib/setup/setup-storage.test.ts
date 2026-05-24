@@ -33,8 +33,10 @@ describe('setup-storage', () => {
       countdownTimerEnabled: true,
       countdownTimerDuration: 120,
       sideSwitchPrompts: false,
+      format: 'best-of-3',
       gameMode: 'golden-point',
-      decidingSetSuperTiebreak: true
+      decidingSetSuperTiebreak: true,
+      superTiebreakTargetPoints: 11
     };
 
     await storage.saveSetupPreferences(preferences);
@@ -66,8 +68,10 @@ describe('setup-storage', () => {
       countdownTimerEnabled: true,
       countdownTimerDuration: 60,
       sideSwitchPrompts: false,
+      format: 'best-of-3',
       gameMode: 'golden-point',
-      decidingSetSuperTiebreak: true
+      decidingSetSuperTiebreak: true,
+      superTiebreakTargetPoints: 11
     });
 
     await storage.saveSpeechPreferences({
@@ -88,8 +92,10 @@ describe('setup-storage', () => {
       countdownTimerEnabled: true,
       countdownTimerDuration: 60,
       sideSwitchPrompts: false,
+      format: 'best-of-3',
       gameMode: 'golden-point',
-      decidingSetSuperTiebreak: true
+      decidingSetSuperTiebreak: true,
+      superTiebreakTargetPoints: 11
     });
     expect(fakeIndexedDb.getRecord(setupPreferenceObjectStoreName, 'setup-preference')).toEqual({
       muted: true,
@@ -102,8 +108,10 @@ describe('setup-storage', () => {
       countdownTimerEnabled: true,
       countdownTimerDuration: 60,
       sideSwitchPrompts: false,
+      format: 'best-of-3',
       gameMode: 'golden-point',
       decidingSetSuperTiebreak: true,
+      superTiebreakTargetPoints: 11,
       updatedAt: '2024-01-01T00:00:00.000Z'
     });
   });
@@ -127,8 +135,10 @@ describe('setup-storage', () => {
       countdownTimerEnabled: true,
       countdownTimerDuration: 120,
       sideSwitchPrompts: false,
+      format: 'best-of-3',
       gameMode: 'golden-point',
-      decidingSetSuperTiebreak: true
+      decidingSetSuperTiebreak: true,
+      superTiebreakTargetPoints: 11
     });
 
     await expect(storage.loadSpeechPreferences()).resolves.toEqual({
@@ -179,8 +189,10 @@ describe('setup-storage', () => {
       countdownTimerEnabled: true,
       countdownTimerDuration: 120,
       sideSwitchPrompts: false,
+      format: 'best-of-3',
       gameMode: 'golden-point',
-      decidingSetSuperTiebreak: true
+      decidingSetSuperTiebreak: true,
+      superTiebreakTargetPoints: 11
     });
 
     await storage.clearSpeechPreferences();
@@ -194,8 +206,10 @@ describe('setup-storage', () => {
       countdownTimerEnabled: true,
       countdownTimerDuration: 120,
       sideSwitchPrompts: false,
+      format: 'best-of-3',
       gameMode: 'golden-point',
-      decidingSetSuperTiebreak: true
+      decidingSetSuperTiebreak: true,
+      superTiebreakTargetPoints: 11
     });
   });
 
@@ -227,8 +241,10 @@ describe('setup-storage', () => {
       countdownTimerEnabled: true,
       countdownTimerDuration: 120,
       sideSwitchPrompts: false,
+      format: 'best-of-3',
       gameMode: 'golden-point',
-      decidingSetSuperTiebreak: true
+      decidingSetSuperTiebreak: true,
+      superTiebreakTargetPoints: 11
     });
 
     const beforeClear = fakeIndexedDb.getRecord(
@@ -247,8 +263,10 @@ describe('setup-storage', () => {
       countdownTimerEnabled: true,
       countdownTimerDuration: 120,
       sideSwitchPrompts: false,
+      format: 'best-of-3',
       gameMode: 'golden-point',
       decidingSetSuperTiebreak: true,
+      superTiebreakTargetPoints: 11,
       updatedAt: expect.any(String)
     });
 
@@ -301,6 +319,64 @@ describe('setup-storage', () => {
     const storage = createSetupStorage({ databaseName: 'invalid-voice-db' });
 
     await expect(storage.loadSetupPreferences()).resolves.toBeNull();
+  });
+
+  it('normalizes legacy setup records missing format and super tiebreak target', async () => {
+    const fakeIndexedDb = createFakeIndexedDb({
+      initialObjectStoreNames: [setupPreferenceObjectStoreName],
+      initialRecords: [
+        {
+          storeName: setupPreferenceObjectStoreName,
+          key: 'setup-preference',
+          value: {
+            muted: false,
+            verbosity: 'standard',
+            voiceName: null,
+            team1Name: null,
+            team2Name: null,
+            audioAnnouncementsEnabled: true,
+            servingIndicatorEnabled: true,
+            countdownTimerEnabled: false,
+            countdownTimerDuration: 90,
+            sideSwitchPrompts: true,
+            gameMode: 'advantage',
+            decidingSetSuperTiebreak: false,
+            updatedAt: '2024-01-01T00:00:00.000Z'
+          }
+        }
+      ]
+    });
+    vi.stubGlobal('indexedDB', fakeIndexedDb.factory);
+
+    const storage = createSetupStorage({ databaseName: 'legacy-setup-normalization-db' });
+
+    await expect(storage.loadSetupPreferences()).resolves.toEqual(defaultSetupPreferences);
+  });
+
+  it('normalizes legacy setup records missing only super tiebreak target', async () => {
+    const fakeIndexedDb = createFakeIndexedDb({
+      initialObjectStoreNames: [setupPreferenceObjectStoreName],
+      initialRecords: [
+        {
+          storeName: setupPreferenceObjectStoreName,
+          key: 'setup-preference',
+          value: {
+            ...defaultSetupPreferences,
+            format: 'best-of-5',
+            superTiebreakTargetPoints: undefined,
+            updatedAt: '2024-01-01T00:00:00.000Z'
+          }
+        }
+      ]
+    });
+    vi.stubGlobal('indexedDB', fakeIndexedDb.factory);
+
+    const storage = createSetupStorage({ databaseName: 'legacy-setup-partial-normalization-db' });
+
+    await expect(storage.loadSetupPreferences()).resolves.toEqual({
+      ...defaultSetupPreferences,
+      format: 'best-of-5'
+    });
   });
 
   it('persists custom team names in the unified setup store', async () => {

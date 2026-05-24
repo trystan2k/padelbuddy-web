@@ -2,7 +2,8 @@ import type {
   CountdownTimerDuration,
   MatchFormat,
   MatchGameMode,
-  MatchTeamId
+  MatchTeamId,
+  SuperTiebreakTargetPoints
 } from '@/core/match/types';
 
 export interface SetupFormData {
@@ -12,6 +13,7 @@ export interface SetupFormData {
   gameMode: MatchGameMode;
   initialServer: MatchTeamId;
   decidingSetSuperTiebreak: boolean;
+  superTiebreakTargetPoints: SuperTiebreakTargetPoints;
   audioAnnouncementsEnabled: boolean;
   voiceName: string | null;
   servingIndicatorEnabled: boolean;

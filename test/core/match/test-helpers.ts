@@ -1,5 +1,11 @@
+import {
+  defaultSuperTiebreakTargetPoints,
+  type MatchAction,
+  type MatchSetup,
+  type MatchSetupInput,
+  type MatchTeamId
+} from '@/core/match/types';
 import { createMatchSetup } from '@/core/match/validation';
-import type { MatchAction, MatchSetup, MatchSetupInput, MatchTeamId } from '@/core/match/types';
 
 const defaultSides: MatchSetupInput['sides'] = [
   {
@@ -22,6 +28,7 @@ export function createTestSetup(overrides: Partial<MatchSetupInput> = {}): Match
     servingIndicatorEnabled: true,
     countdownTimerEnabled: false,
     countdownTimerDuration: 90,
+    superTiebreakTargetPoints: defaultSuperTiebreakTargetPoints,
     sideSwitchPrompts: false,
     sides: defaultSides,
     ...overrides

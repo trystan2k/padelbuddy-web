@@ -1,8 +1,7 @@
 import {
   bestOfOneDecidingBehaviors,
   defaultBestOfOneDecidingBehavior,
-  gameModes,
-  matchFormats,
+  defaultSuperTiebreakTargetPoints,
   type BestOfOneDecidingBehavior,
   type CountdownTimerDuration,
   type MatchFormat,
@@ -11,10 +10,18 @@ import {
   type MatchSetup,
   type MatchTeamId,
   type MatchSetupValidationIssue,
+  type SuperTiebreakTargetPoints,
   type MatchSetupValidationResult,
   type MatchSide
 } from './types';
-import { isCountdownTimerDuration, isMatchTeamId, isRecord } from './guards';
+import {
+  isCountdownTimerDuration,
+  isMatchFormat,
+  isMatchGameMode,
+  isMatchTeamId,
+  isRecord,
+  isSuperTiebreakTargetPoints
+} from './guards';
 
 function createIssue(field: string, message: string): MatchSetupValidationIssue {
   return {
@@ -56,14 +63,6 @@ function describeValue(value: unknown): string {
 
     return '[unserializable object]';
   }
-}
-
-function isMatchFormat(value: unknown): value is MatchFormat {
-  return typeof value === 'string' && matchFormats.some((candidate) => candidate === value);
-}
-
-function isMatchGameMode(value: unknown): value is MatchGameMode {
-  return typeof value === 'string' && gameModes.some((candidate) => candidate === value);
 }
 
 function isPlayerNames(value: unknown): value is string[] {
@@ -213,6 +212,7 @@ export function validateMatchSetup(input: unknown): MatchSetupValidationResult {
   const servingIndicatorEnabledValue = input.servingIndicatorEnabled;
   const countdownTimerEnabledValue = input.countdownTimerEnabled;
   const countdownTimerDurationValue = input.countdownTimerDuration;
+  const superTiebreakTargetPointsValue = input.superTiebreakTargetPoints;
   const bestOfOneDecidingBehaviorValue = input.bestOfOneDecidingBehavior;
   const sideSwitchPromptsValue = input.sideSwitchPrompts;
   const sidesValue = input.sides;
@@ -225,6 +225,7 @@ export function validateMatchSetup(input: unknown): MatchSetupValidationResult {
   let servingIndicatorEnabled: boolean | null = null;
   let countdownTimerEnabled: boolean | null = null;
   let countdownTimerDuration: CountdownTimerDuration | null = null;
+  let superTiebreakTargetPoints: SuperTiebreakTargetPoints = defaultSuperTiebreakTargetPoints;
   let sideSwitchPrompts: boolean | null = null;
   let bestOfOneDecidingBehavior: BestOfOneDecidingBehavior | undefined;
 
@@ -293,6 +294,19 @@ export function validateMatchSetup(input: unknown): MatchSetupValidationResult {
         `Unsupported countdown timer duration: ${describeValue(countdownTimerDurationValue)}`
       )
     );
+  }
+
+  if (superTiebreakTargetPointsValue !== undefined) {
+    if (isSuperTiebreakTargetPoints(superTiebreakTargetPointsValue)) {
+      superTiebreakTargetPoints = superTiebreakTargetPointsValue;
+    } else {
+      issues.push(
+        createIssue(
+          'superTiebreakTargetPoints',
+          `Unsupported super tiebreak target points: ${describeValue(superTiebreakTargetPointsValue)}`
+        )
+      );
+    }
   }
 
   if (typeof decidingSetSuperTiebreakValue === 'boolean') {
@@ -393,6 +407,7 @@ export function validateMatchSetup(input: unknown): MatchSetupValidationResult {
       servingIndicatorEnabled,
       countdownTimerEnabled,
       countdownTimerDuration,
+      superTiebreakTargetPoints,
       bestOfOneDecidingBehavior: normalizedBestOfOneDecidingBehavior,
       sideSwitchPrompts,
       sides: normalizedSides,

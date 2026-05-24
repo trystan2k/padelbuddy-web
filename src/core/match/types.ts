@@ -4,6 +4,7 @@ export const matchTeamIds = ['team-1', 'team-2'] as const;
 export const bestOfOneDecidingBehaviors = ['full-set', 'super-tiebreak'] as const;
 const setModes = ['standard', 'super-tiebreak'] as const;
 export const countdownTimerDurations = [60, 90, 120] as const;
+export const superTiebreakTargetPointsOptions = [7, 9, 11] as const;
 
 export type MatchFormat = (typeof matchFormats)[number];
 export type MatchGameMode = (typeof gameModes)[number];
@@ -11,6 +12,13 @@ export type MatchTeamId = (typeof matchTeamIds)[number];
 export type BestOfOneDecidingBehavior = (typeof bestOfOneDecidingBehaviors)[number];
 export type MatchSetMode = (typeof setModes)[number];
 export type CountdownTimerDuration = (typeof countdownTimerDurations)[number];
+export type SuperTiebreakTargetPoints = (typeof superTiebreakTargetPointsOptions)[number];
+type LegacySuperTiebreakTargetPoints = 10;
+type PersistedSuperTiebreakTargetPoints =
+  | SuperTiebreakTargetPoints
+  | LegacySuperTiebreakTargetPoints;
+type StandardTiebreakTargetPoints = 7;
+type TiebreakTargetPoints = StandardTiebreakTargetPoints | PersistedSuperTiebreakTargetPoints;
 
 export type TeamScore<T> = Record<MatchTeamId, T>;
 
@@ -28,6 +36,7 @@ export interface MatchSetupInput {
   servingIndicatorEnabled: boolean;
   countdownTimerEnabled: boolean;
   countdownTimerDuration: CountdownTimerDuration;
+  superTiebreakTargetPoints?: SuperTiebreakTargetPoints;
   bestOfOneDecidingBehavior?: BestOfOneDecidingBehavior;
   sideSwitchPrompts: boolean;
   sides: [MatchSide, MatchSide] | MatchSide[];
@@ -42,6 +51,7 @@ export interface MatchSetup {
   servingIndicatorEnabled: boolean;
   countdownTimerEnabled: boolean;
   countdownTimerDuration: CountdownTimerDuration;
+  superTiebreakTargetPoints: PersistedSuperTiebreakTargetPoints;
   bestOfOneDecidingBehavior: BestOfOneDecidingBehavior;
   sideSwitchPrompts: boolean;
   sides: [MatchSide, MatchSide];
@@ -68,7 +78,7 @@ interface ScorePointAction {
 export type MatchAction = ScorePointAction;
 
 export const standardTiebreakTargetPoints = 7 as const;
-export const superTiebreakTargetPoints = 10 as const;
+export const defaultSuperTiebreakTargetPoints: SuperTiebreakTargetPoints = 11;
 
 export interface StandardGameState {
   kind: 'standard';
@@ -79,7 +89,7 @@ export interface StandardGameState {
 export interface TiebreakGameState {
   kind: 'tiebreak';
   points: TeamScore<number>;
-  targetPoints: 7 | 10;
+  targetPoints: TiebreakTargetPoints;
 }
 
 export type MatchGameState = StandardGameState | TiebreakGameState;

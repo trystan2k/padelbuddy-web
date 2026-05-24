@@ -67,6 +67,20 @@ describe('match setup validation', () => {
     }
   });
 
+  test('accepts supported super tiebreak target points and defaults to 11 when omitted', () => {
+    for (const superTiebreakTargetPoints of [7, 9, 11] as const) {
+      const setup = createMatchSetup({
+        ...baseInput,
+        superTiebreakTargetPoints
+      });
+
+      expect(setup.superTiebreakTargetPoints).toBe(superTiebreakTargetPoints);
+    }
+
+    const setupWithDefaultTarget = createMatchSetup(baseInput);
+    expect(setupWithDefaultTarget.superTiebreakTargetPoints).toBe(11);
+  });
+
   test('accepts explicit serving indicator states', () => {
     expect(
       createMatchSetup({
@@ -289,6 +303,7 @@ describe('match setup validation', () => {
           format: 'best-of-9',
           gameMode: 'no-ad',
           initialServer: 'team-3',
+          superTiebreakTargetPoints: 10,
           bestOfOneDecidingBehavior: 'coin-flip'
         })
       )
@@ -300,6 +315,7 @@ describe('match setup validation', () => {
         expect.objectContaining({ field: 'format' }),
         expect.objectContaining({ field: 'gameMode' }),
         expect.objectContaining({ field: 'initialServer' }),
+        expect.objectContaining({ field: 'superTiebreakTargetPoints' }),
         expect.objectContaining({ field: 'bestOfOneDecidingBehavior' })
       ])
     );

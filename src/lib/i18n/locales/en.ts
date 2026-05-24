@@ -218,7 +218,16 @@ export default {
       goldenPoint: 'Golden Point',
       goldenPointHint: 'No advantage on deuce',
       superTiebreak: 'Super Tiebreak',
-      superTiebreakHint: 'Final set tiebreak to 10 points',
+      superTiebreakHint: 'Replace deciding set with a configurable super tiebreak',
+      superTiebreakTarget: {
+        label: 'Super tiebreak target',
+        sevenPoints: '7',
+        ninePoints: '9',
+        elevenPoints: '11',
+        sevenPointsAriaLabel: 'First to 7 points',
+        ninePointsAriaLabel: 'First to 9 points',
+        elevenPointsAriaLabel: 'First to 11 points'
+      },
       sideSwitch: 'Side-switch Prompts',
       sideSwitchHint: 'Prompt players for court side changes',
       servingIndicator: 'Serving Indicator',
@@ -536,7 +545,7 @@ export default {
         },
         superTiebreak: {
           title: 'Deciding-set super tiebreak',
-          body: 'Enable this option to replace the final deciding set with a super tiebreak to 10 points, win by 2. This is commonly used to reduce total match time while preserving a competitive finish. If disabled, the deciding set follows normal game-based scoring.'
+          body: 'Enable this option to replace the final deciding set with a configurable super tiebreak target, win by 2. This is commonly used to reduce total match time while preserving a competitive finish. If disabled, the deciding set follows normal game-based scoring.'
         },
         firstServer: {
           title: 'First server',
@@ -612,7 +621,7 @@ export default {
         },
         superTiebreak: {
           title: 'Deciding-set super tiebreak',
-          body: 'If super tiebreak is enabled in setup, the deciding set is replaced by a race to 10 points, win by 2. The app enters this format only in the final deciding set and records the result accordingly. This supports tournament formats where full final sets are optional.'
+          body: 'If super tiebreak is enabled in setup, the deciding set is replaced by a race to the selected target, win by 2. The app enters this format only in the final deciding set and records the result accordingly. This supports tournament formats where full final sets are optional.'
         },
         sideSwitch: {
           title: 'Side-switch prompts',

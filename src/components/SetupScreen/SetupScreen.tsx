@@ -5,8 +5,10 @@ import { useNavigate, useRouter } from '@tanstack/react-router';
 import {
   countdownTimerDurations,
   matchFormats,
+  superTiebreakTargetPointsOptions,
   type CountdownTimerDuration,
-  type MatchFormat
+  type MatchFormat,
+  type SuperTiebreakTargetPoints
 } from '@/core/match/types';
 import { createMatchSetup } from '@/core/match/validation';
 import { saveCurrentMatch } from '@/lib/current-match/indexed-db';
@@ -66,6 +68,18 @@ const countdownDurationKeys: Record<CountdownTimerDuration, string> = {
   120: 'setup.rules.countdownDuration.twoHours'
 };
 
+const superTiebreakTargetKeys: Record<SuperTiebreakTargetPoints, string> = {
+  7: 'setup.rules.superTiebreakTarget.sevenPoints',
+  9: 'setup.rules.superTiebreakTarget.ninePoints',
+  11: 'setup.rules.superTiebreakTarget.elevenPoints'
+};
+
+const superTiebreakTargetAriaLabelKeys: Record<SuperTiebreakTargetPoints, string> = {
+  7: 'setup.rules.superTiebreakTarget.sevenPointsAriaLabel',
+  9: 'setup.rules.superTiebreakTarget.ninePointsAriaLabel',
+  11: 'setup.rules.superTiebreakTarget.elevenPointsAriaLabel'
+};
+
 export function SetupScreen() {
   const featureFlags = getFeatureFlags();
 
@@ -86,6 +100,7 @@ export function SetupScreen() {
     updateTeamName,
     updateFormat,
     updateGameMode,
+    updateSuperTiebreakTargetPoints,
     updateInitialServer,
     updateDecidingSetSuperTiebreak,
     updateAudioAnnouncementsEnabled,
@@ -156,6 +171,7 @@ export function SetupScreen() {
         gameMode: formData.gameMode,
         initialServer: formData.initialServer,
         decidingSetSuperTiebreak: formData.decidingSetSuperTiebreak,
+        superTiebreakTargetPoints: formData.superTiebreakTargetPoints,
         audioAnnouncementsEnabled: formData.audioAnnouncementsEnabled,
         servingIndicatorEnabled: formData.servingIndicatorEnabled,
         countdownTimerEnabled: formData.countdownTimerEnabled,
@@ -241,6 +257,13 @@ export function SetupScreen() {
     [updateCountdownTimerDuration]
   );
 
+  const createSuperTiebreakTargetSelectHandler = useCallback(
+    (points: SuperTiebreakTargetPoints) => () => {
+      updateSuperTiebreakTargetPoints(points);
+    },
+    [updateSuperTiebreakTargetPoints]
+  );
+
   const handleOpenRemoteConfiguration = useCallback(() => {
     setIsRemoteConfigurationOpen(true);
   }, []);
@@ -291,12 +314,17 @@ export function SetupScreen() {
   );
 
   const handleCountdownDurationKeyDown = useCallback(
-    (event: KeyboardEvent<HTMLDivElement>) => {
+    (event: KeyboardEvent<HTMLButtonElement>) => {
       if (!formData.countdownTimerEnabled) {
         return;
       }
 
-      if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') {
+      if (
+        event.key !== 'ArrowRight' &&
+        event.key !== 'ArrowLeft' &&
+        event.key !== 'ArrowDown' &&
+        event.key !== 'ArrowUp'
+      ) {
         return;
       }
 
@@ -304,7 +332,7 @@ export function SetupScreen() {
 
       const currentIndex = countdownTimerDurations.indexOf(formData.countdownTimerDuration);
       const nextIndex =
-        event.key === 'ArrowRight'
+        event.key === 'ArrowRight' || event.key === 'ArrowDown'
           ? (currentIndex + 1) % countdownTimerDurations.length
           : (currentIndex - 1 + countdownTimerDurations.length) % countdownTimerDurations.length;
       const nextDuration = countdownTimerDurations[nextIndex];
@@ -314,11 +342,54 @@ export function SetupScreen() {
       }
 
       updateCountdownTimerDuration(nextDuration);
-      event.currentTarget
-        .querySelector<HTMLButtonElement>(`[data-duration="${nextDuration}"]`)
+      event.currentTarget.parentElement
+        ?.querySelector<HTMLButtonElement>(`[data-duration="${nextDuration}"]`)
         ?.focus();
     },
     [formData.countdownTimerDuration, formData.countdownTimerEnabled, updateCountdownTimerDuration]
+  );
+
+  const handleSuperTiebreakTargetKeyDown = useCallback(
+    (event: KeyboardEvent<HTMLButtonElement>) => {
+      if (!formData.decidingSetSuperTiebreak) {
+        return;
+      }
+
+      if (
+        event.key !== 'ArrowRight' &&
+        event.key !== 'ArrowLeft' &&
+        event.key !== 'ArrowDown' &&
+        event.key !== 'ArrowUp'
+      ) {
+        return;
+      }
+
+      event.preventDefault();
+
+      const currentIndex = superTiebreakTargetPointsOptions.indexOf(
+        formData.superTiebreakTargetPoints
+      );
+      const nextIndex =
+        event.key === 'ArrowRight' || event.key === 'ArrowDown'
+          ? (currentIndex + 1) % superTiebreakTargetPointsOptions.length
+          : (currentIndex - 1 + superTiebreakTargetPointsOptions.length) %
+            superTiebreakTargetPointsOptions.length;
+      const nextPoints = superTiebreakTargetPointsOptions[nextIndex];
+
+      if (typeof nextPoints === 'undefined') {
+        return;
+      }
+
+      updateSuperTiebreakTargetPoints(nextPoints);
+      event.currentTarget.parentElement
+        ?.querySelector<HTMLButtonElement>(`[data-super-tiebreak-target="${nextPoints}"]`)
+        ?.focus();
+    },
+    [
+      formData.decidingSetSuperTiebreak,
+      formData.superTiebreakTargetPoints,
+      updateSuperTiebreakTargetPoints
+    ]
   );
 
   // Handler factory for format selection (returns stable handler per format)
@@ -560,7 +631,7 @@ export function SetupScreen() {
 
             <Divider />
 
-            <div className={styles.countdownSection} aria-label={t('setup.rules.countdownTimer')}>
+            <div className={styles.countdownSection}>
               <Toggle
                 checked={formData.countdownTimerEnabled}
                 onChange={updateCountdownTimerEnabled}
@@ -575,9 +646,8 @@ export function SetupScreen() {
                 )}
                 role="radiogroup"
                 aria-label={t('setup.rules.countdownDuration.label')}
+                aria-disabled={!formData.countdownTimerEnabled || undefined}
                 data-testid="countdown-duration-row"
-                onKeyDown={handleCountdownDurationKeyDown}
-                tabIndex={0}
               >
                 {countdownTimerDurations.map((duration) => {
                   const isSelected = formData.countdownTimerDuration === duration;
@@ -590,6 +660,7 @@ export function SetupScreen() {
                       aria-checked={isSelected}
                       className={styles.countdownDurationOption}
                       onClick={createCountdownDurationSelectHandler(duration)}
+                      onKeyDown={handleCountdownDurationKeyDown}
                       disabled={!formData.countdownTimerEnabled}
                       tabIndex={isSelected ? 0 : -1}
                       data-duration={duration}
@@ -623,12 +694,65 @@ export function SetupScreen() {
             {showSuperTiebreakOption && (
               <>
                 <Divider />
-                <Toggle
-                  checked={formData.decidingSetSuperTiebreak}
-                  onChange={updateDecidingSetSuperTiebreak}
-                  label={t('setup.rules.superTiebreak')}
-                  hint={t('setup.rules.superTiebreakHint')}
-                />
+                <div className={styles.superTiebreakSection}>
+                  <Toggle
+                    checked={formData.decidingSetSuperTiebreak}
+                    onChange={updateDecidingSetSuperTiebreak}
+                    label={t('setup.rules.superTiebreak')}
+                    hint={t('setup.rules.superTiebreakHint')}
+                  />
+
+                  <div
+                    className={cn(
+                      styles.superTiebreakTargetRow,
+                      !formData.decidingSetSuperTiebreak && styles.superTiebreakTargetRowDisabled
+                    )}
+                    role="radiogroup"
+                    aria-label={t('setup.rules.superTiebreakTarget.label')}
+                    aria-disabled={!formData.decidingSetSuperTiebreak || undefined}
+                    data-testid="super-tiebreak-target-row"
+                  >
+                    {superTiebreakTargetPointsOptions.map((points) => {
+                      const isSelected = formData.superTiebreakTargetPoints === points;
+
+                      return (
+                        <button
+                          key={points}
+                          type="button"
+                          role="radio" // oxlint-disable-line jsx-a11y/prefer-tag-over-role
+                          aria-checked={isSelected}
+                          aria-label={t(superTiebreakTargetAriaLabelKeys[points])}
+                          className={styles.superTiebreakTargetOption}
+                          onClick={createSuperTiebreakTargetSelectHandler(points)}
+                          onKeyDown={handleSuperTiebreakTargetKeyDown}
+                          disabled={!formData.decidingSetSuperTiebreak}
+                          tabIndex={isSelected ? 0 : -1}
+                          data-super-tiebreak-target={points}
+                        >
+                          <span
+                            className={cn(
+                              styles.superTiebreakTargetRadio,
+                              isSelected && styles.superTiebreakTargetRadioSelected
+                            )}
+                            aria-hidden="true"
+                          >
+                            <span className={styles.superTiebreakTargetRadioDot} />
+                          </span>
+                          <span
+                            className={cn(
+                              styles.superTiebreakTargetLabel,
+                              isSelected
+                                ? styles.superTiebreakTargetLabelSelected
+                                : styles.superTiebreakTargetLabelUnselected
+                            )}
+                          >
+                            {t(superTiebreakTargetKeys[points])}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
               </>
             )}
           </Card>

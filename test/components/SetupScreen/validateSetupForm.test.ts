@@ -11,6 +11,7 @@ describe('validateSetupForm', () => {
     gameMode: 'advantage',
     initialServer: 'team-1',
     decidingSetSuperTiebreak: false,
+    superTiebreakTargetPoints: 11,
     audioAnnouncementsEnabled: true,
     voiceName: null,
     servingIndicatorEnabled: true,

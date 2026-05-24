@@ -7,12 +7,18 @@ import {
   type MatchProjection,
   type MatchSetup
 } from '@/core/match/types';
-import { isCountdownTimerDuration, isMatchTeamId, isRecord } from '@/core/match/guards';
+import {
+  isCountdownTimerDuration,
+  isMatchTeamId,
+  isRecord,
+  isSuperTiebreakTargetPoints
+} from '@/core/match/guards';
 import { createMatchSetup } from '@/core/match/validation';
 import { projectMatch } from '@/core/match/replay';
 
 export const currentMatchSchemaVersion = 4 as const;
 const defaultCurrentMatchId = 'current-match';
+const legacySuperTiebreakTargetPoints = 10 as const;
 
 export interface CurrentMatchSaveInput {
   matchId?: string;
@@ -20,6 +26,7 @@ export interface CurrentMatchSaveInput {
   actions: MatchAction[];
   startedAt?: number; // Unix timestamp in milliseconds, defaults to Date.now()
   finishedAt?: number;
+  legacyInProgressSuperTiebreakTargetPoints?: typeof legacySuperTiebreakTargetPoints;
 }
 
 export interface CurrentMatchRecord {
@@ -29,6 +36,7 @@ export interface CurrentMatchRecord {
   actions: MatchAction[];
   startedAt: number; // Unix timestamp in milliseconds
   finishedAt?: number;
+  legacyInProgressSuperTiebreakTargetPoints?: typeof legacySuperTiebreakTargetPoints;
 }
 
 export interface CurrentMatchDecodeOkResult {
@@ -54,16 +62,31 @@ type CurrentMatchDecodeResult =
 
 export function createCurrentMatchRecord(input: CurrentMatchSaveInput): CurrentMatchRecord {
   const startedAt = input.startedAt ?? Date.now();
+  const parsedLegacyInProgressSuperTiebreakTargetPoints =
+    parseLegacyInProgressSuperTiebreakTargetPoints(
+      input.legacyInProgressSuperTiebreakTargetPoints,
+      input.finishedAt
+    );
+  const legacyInProgressSuperTiebreakTargetPoints = parsedLegacyInProgressSuperTiebreakTargetPoints;
+  const setup = parseMatchSetup(input.setup, {
+    ...(typeof input.finishedAt === 'undefined' ? {} : { finishedAt: input.finishedAt }),
+    ...(legacyInProgressSuperTiebreakTargetPoints === undefined
+      ? {}
+      : { legacyInProgressSuperTiebreakTargetPoints })
+  });
 
   return {
     schemaVersion: currentMatchSchemaVersion,
     matchId: parseMatchId(input.matchId ?? defaultCurrentMatchId),
-    setup: parseMatchSetup(input.setup),
+    setup,
     actions: parseMatchActions(input.actions),
     startedAt,
     ...(typeof input.finishedAt === 'number'
       ? { finishedAt: parseFinishedAt(input.finishedAt, startedAt) }
-      : {})
+      : {}),
+    ...(legacyInProgressSuperTiebreakTargetPoints === undefined
+      ? {}
+      : { legacyInProgressSuperTiebreakTargetPoints })
   };
 }
 
@@ -113,18 +136,40 @@ export function decodeCurrentMatchRecord(input: unknown): CurrentMatchDecodeResu
 
   try {
     const startedAt = parseStartedAt(record.startedAt);
+    const finishedAt =
+      typeof record.finishedAt === 'undefined'
+        ? undefined
+        : parseFinishedAt(record.finishedAt, startedAt);
+    const parsedLegacyInProgressSuperTiebreakTargetPoints =
+      parseLegacyInProgressSuperTiebreakTargetPoints(
+        record.legacyInProgressSuperTiebreakTargetPoints,
+        finishedAt
+      );
+    const hasPersistedSuperTiebreakTargetPoints =
+      isRecord(record.setup) && typeof record.setup.superTiebreakTargetPoints !== 'undefined';
+    const legacyInProgressSuperTiebreakTargetPoints =
+      parsedLegacyInProgressSuperTiebreakTargetPoints ??
+      (finishedAt === undefined && !hasPersistedSuperTiebreakTargetPoints
+        ? legacySuperTiebreakTargetPoints
+        : undefined);
 
     return {
       status: 'ok',
       record: {
         schemaVersion: currentMatchSchemaVersion,
         matchId: parseMatchId(record.matchId),
-        setup: parseMatchSetup(record.setup),
+        setup: parseMatchSetup(record.setup, {
+          ...(finishedAt === undefined ? {} : { finishedAt }),
+          ...(legacyInProgressSuperTiebreakTargetPoints === undefined
+            ? {}
+            : { legacyInProgressSuperTiebreakTargetPoints })
+        }),
         actions: parseMatchActions(record.actions),
         startedAt,
-        ...(typeof record.finishedAt === 'undefined'
+        ...(finishedAt === undefined ? {} : { finishedAt }),
+        ...(legacyInProgressSuperTiebreakTargetPoints === undefined
           ? {}
-          : { finishedAt: parseFinishedAt(record.finishedAt, startedAt) })
+          : { legacyInProgressSuperTiebreakTargetPoints })
       }
     };
   } catch (error) {
@@ -163,8 +208,25 @@ function parseFinishedAt(input: unknown, startedAt: number): number {
   return input;
 }
 
-function parseMatchSetup(input: unknown): MatchSetup {
+function withLegacyInProgressSuperTiebreakTarget(setup: MatchSetup): MatchSetup {
+  return {
+    ...setup,
+    superTiebreakTargetPoints: legacySuperTiebreakTargetPoints
+  };
+}
+
+function parseMatchSetup(
+  input: unknown,
+  options?: {
+    finishedAt?: unknown;
+    legacyInProgressSuperTiebreakTargetPoints?: typeof legacySuperTiebreakTargetPoints;
+  }
+): MatchSetup {
   const setup = parseRecord(input);
+  const shouldUseLegacySuperTiebreakTarget =
+    typeof options?.finishedAt === 'undefined' &&
+    options?.legacyInProgressSuperTiebreakTargetPoints === legacySuperTiebreakTargetPoints;
+
   const setupInput = {
     format: setup.format,
     gameMode: setup.gameMode,
@@ -185,6 +247,9 @@ function parseMatchSetup(input: unknown): MatchSetup {
     countdownTimerDuration: isCountdownTimerDuration(setup.countdownTimerDuration)
       ? setup.countdownTimerDuration
       : defaultCountdownTimerDuration,
+    superTiebreakTargetPoints: isSuperTiebreakTargetPoints(setup.superTiebreakTargetPoints)
+      ? setup.superTiebreakTargetPoints
+      : undefined,
     sideSwitchPrompts: setup.sideSwitchPrompts,
     sides: setup.sides
   };
@@ -197,14 +262,39 @@ function parseMatchSetup(input: unknown): MatchSetup {
         })
       : createMatchSetup(setupInput);
 
+  const normalizedWithLegacyTarget = shouldUseLegacySuperTiebreakTarget
+    ? withLegacyInProgressSuperTiebreakTarget(normalizedSetup)
+    : normalizedSetup;
+
   if (setup.setCap === null) {
     return {
-      ...normalizedSetup,
+      ...normalizedWithLegacyTarget,
       setCap: null
     };
   }
 
-  return normalizedSetup;
+  return normalizedWithLegacyTarget;
+}
+
+function parseLegacyInProgressSuperTiebreakTargetPoints(
+  input: unknown,
+  finishedAt: unknown
+): typeof legacySuperTiebreakTargetPoints | undefined {
+  const isInProgress = typeof finishedAt === 'undefined';
+
+  if (!isInProgress) {
+    return undefined;
+  }
+
+  if (typeof input === 'undefined') {
+    return undefined;
+  }
+
+  if (input === legacySuperTiebreakTargetPoints) {
+    return input;
+  }
+
+  return undefined;
 }
 
 function parseMatchActions(input: unknown): MatchAction[] {

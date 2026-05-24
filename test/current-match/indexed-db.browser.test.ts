@@ -97,8 +97,10 @@ describe('current match IndexedDB persistence', () => {
       countdownTimerEnabled: false,
       countdownTimerDuration: 90,
       sideSwitchPrompts: true,
+      format: 'best-of-3',
       gameMode: 'advantage',
-      decidingSetSuperTiebreak: false
+      decidingSetSuperTiebreak: false,
+      superTiebreakTargetPoints: 11
     };
 
     await localeStorage.saveLocalePreference('es' as SupportedLocale);

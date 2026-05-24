@@ -20,8 +20,10 @@ vi.mock('@/lib/setup/setup-storage', () => ({
     countdownTimerEnabled: false,
     countdownTimerDuration: 90,
     sideSwitchPrompts: true,
+    format: 'best-of-3',
     gameMode: 'advantage',
-    decidingSetSuperTiebreak: false
+    decidingSetSuperTiebreak: false,
+    superTiebreakTargetPoints: 11
   },
   loadSetupPreferences: mockLoadSetupPreferences,
   saveSetupPreferenceSlice: mockSaveSetupPreferenceSlice
@@ -67,6 +69,7 @@ describe('useSetupForm', () => {
     expect(capturedState!.formData.gameMode).toBe('advantage');
     expect(capturedState!.formData.initialServer).toBe('team-1');
     expect(capturedState!.formData.decidingSetSuperTiebreak).toBe(false);
+    expect(capturedState!.formData.superTiebreakTargetPoints).toBe(11);
     expect(capturedState!.formData.audioAnnouncementsEnabled).toBe(true);
     expect(capturedState!.formData.servingIndicatorEnabled).toBe(true);
     expect(capturedState!.formData.countdownTimerEnabled).toBe(false);
@@ -128,8 +131,10 @@ describe('useSetupForm', () => {
       countdownTimerEnabled: true,
       countdownTimerDuration: 120,
       sideSwitchPrompts: false,
+      format: 'best-of-5',
       gameMode: 'golden-point',
-      decidingSetSuperTiebreak: true
+      decidingSetSuperTiebreak: true,
+      superTiebreakTargetPoints: 9
     });
 
     const screen = await render(
@@ -151,8 +156,10 @@ describe('useSetupForm', () => {
       expect(capturedState?.formData.countdownTimerEnabled).toBe(true);
       expect(capturedState?.formData.countdownTimerDuration).toBe(120);
       expect(capturedState?.formData.sideSwitchPrompts).toBe(false);
+      expect(capturedState?.formData.format).toBe('best-of-5');
       expect(capturedState?.formData.gameMode).toBe('golden-point');
       expect(capturedState?.formData.decidingSetSuperTiebreak).toBe(true);
+      expect(capturedState?.formData.superTiebreakTargetPoints).toBe(9);
     });
 
     expect(mockSaveSetupPreferenceSlice).not.toHaveBeenCalled();
@@ -170,8 +177,10 @@ describe('useSetupForm', () => {
       countdownTimerEnabled: false,
       countdownTimerDuration: 90,
       sideSwitchPrompts: true,
+      format: 'best-of-3',
       gameMode: 'advantage',
-      decidingSetSuperTiebreak: false
+      decidingSetSuperTiebreak: false,
+      superTiebreakTargetPoints: 11
     });
 
     const screen = await render(
@@ -265,8 +274,10 @@ describe('useSetupForm', () => {
           countdownTimerEnabled: false,
           countdownTimerDuration: 90,
           sideSwitchPrompts: false,
+          format: 'best-of-3',
           gameMode: 'advantage',
-          decidingSetSuperTiebreak: false
+          decidingSetSuperTiebreak: false,
+          superTiebreakTargetPoints: 11
         });
       });
     } finally {
@@ -307,8 +318,10 @@ describe('useSetupForm', () => {
         countdownTimerEnabled: false,
         countdownTimerDuration: 90,
         sideSwitchPrompts: false,
+        format: 'best-of-3',
         gameMode: 'advantage',
-        decidingSetSuperTiebreak: false
+        decidingSetSuperTiebreak: false,
+        superTiebreakTargetPoints: 11
       });
       expect(mockSaveSetupPreferenceSlice).toHaveBeenNthCalledWith(2, {
         audioAnnouncementsEnabled: true,
@@ -316,8 +329,10 @@ describe('useSetupForm', () => {
         countdownTimerEnabled: false,
         countdownTimerDuration: 90,
         sideSwitchPrompts: false,
+        format: 'best-of-3',
         gameMode: 'advantage',
-        decidingSetSuperTiebreak: false
+        decidingSetSuperTiebreak: false,
+        superTiebreakTargetPoints: 11
       });
     } finally {
       errorSpy.mockRestore();
@@ -415,6 +430,15 @@ function SetupFormController({
         }}
       >
         Super Tiebreak OFF
+      </button>
+      <button
+        type="button"
+        data-testid="update-super-target-9"
+        onClick={() => {
+          formState.updateSuperTiebreakTargetPoints(9);
+        }}
+      >
+        Super Target 9
       </button>
       <button
         type="button"
@@ -661,6 +685,21 @@ describe('useSetupForm interactions', () => {
     expect(formState!.formData.decidingSetSuperTiebreak).toBe(false);
   });
 
+  test('updateSuperTiebreakTargetPoints updates value', async () => {
+    const screen = await render(
+      <SetupFormController
+        onGetState={(s) => {
+          formState = s;
+        }}
+      />
+    );
+
+    await screen.getByTestId('update-super-target-9').click();
+    await screen.getByTestId('get-state').click();
+
+    expect(formState!.formData.superTiebreakTargetPoints).toBe(9);
+  });
+
   test('switching to best-of-1 preserves an enabled super tiebreak', async () => {
     const screen = await render(
       <SetupFormController
@@ -871,8 +910,35 @@ describe('useSetupForm interactions', () => {
         countdownTimerEnabled: false,
         countdownTimerDuration: 90,
         sideSwitchPrompts: false,
+        format: 'best-of-3',
         gameMode: 'golden-point',
-        decidingSetSuperTiebreak: true
+        decidingSetSuperTiebreak: true,
+        superTiebreakTargetPoints: 11
+      });
+    });
+  });
+
+  test('persists super tiebreak target even when toggle is disabled', async () => {
+    const screen = await render(<SetupFormController />);
+
+    await vi.waitFor(() => {
+      expect(mockLoadSetupPreferences).toHaveBeenCalledTimes(1);
+    });
+
+    await screen.getByTestId('update-super-target-9').click();
+    await screen.getByTestId('update-super-tiebreak-false').click();
+
+    await vi.waitFor(() => {
+      expect(mockSaveSetupPreferenceSlice).toHaveBeenLastCalledWith({
+        audioAnnouncementsEnabled: true,
+        servingIndicatorEnabled: true,
+        countdownTimerEnabled: false,
+        countdownTimerDuration: 90,
+        sideSwitchPrompts: true,
+        format: 'best-of-3',
+        gameMode: 'advantage',
+        decidingSetSuperTiebreak: false,
+        superTiebreakTargetPoints: 9
       });
     });
   });

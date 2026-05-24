@@ -6,7 +6,8 @@ import type {
   CountdownTimerDuration,
   MatchFormat,
   MatchGameMode,
-  MatchTeamId
+  MatchTeamId,
+  SuperTiebreakTargetPoints
 } from '../../src/core/match/types';
 
 interface StartMatchOptions {
@@ -16,6 +17,7 @@ interface StartMatchOptions {
   gameMode?: MatchGameMode;
   initialServer?: MatchTeamId;
   decidingSetSuperTiebreak?: boolean;
+  superTiebreakTargetPoints?: SuperTiebreakTargetPoints;
   sideSwitchPrompts?: boolean;
   servingIndicatorEnabled?: boolean;
   countdownTimerEnabled?: boolean;
@@ -34,6 +36,34 @@ const countdownDurationLabels: Record<CountdownTimerDuration, RegExp> = {
   120: /2:00 h/i
 };
 
+const setupReadyTimeoutMs = 15_000;
+const maxSetupNavigationAttempts = 3;
+
+function isTransientNavigationError(error: unknown): boolean {
+  const message = error instanceof Error ? error.message : String(error);
+
+  return (
+    message.includes('ERR_CONNECTION_REFUSED') ||
+    message.includes('ERR_CONNECTION_RESET') ||
+    message.includes('ERR_NETWORK_CHANGED') ||
+    message.includes('ECONNREFUSED') ||
+    message.includes('Navigation timeout')
+  );
+}
+
+async function waitForSetupScreenReady(page: Page): Promise<void> {
+  const startMatchButton = page.getByRole('button', { name: /start match/i });
+
+  await expect(startMatchButton).toBeVisible({ timeout: setupReadyTimeoutMs });
+  await expect(startMatchButton).toBeEnabled();
+  await expect(page.getByRole('textbox', { name: /team 1/i })).toBeVisible({
+    timeout: setupReadyTimeoutMs
+  });
+  await expect(page.getByRole('textbox', { name: /team 2/i })).toBeVisible({
+    timeout: setupReadyTimeoutMs
+  });
+}
+
 async function setToggle(page: Page, label: RegExp, checked: boolean): Promise<void> {
   const toggle = page.getByRole('switch', { name: label });
   const currentValue = await toggle.getAttribute('aria-checked');
@@ -46,16 +76,23 @@ async function setToggle(page: Page, label: RegExp, checked: boolean): Promise<v
 }
 
 export async function gotoSetupScreen(page: Page): Promise<void> {
-  const startMatchButton = page.getByRole('button', { name: /start match/i });
+  async function navigate(attempt: number): Promise<void> {
+    try {
+      await page.goto('/', { waitUntil: 'domcontentloaded' });
+      await waitForSetupScreenReady(page);
+    } catch (error) {
+      const isLastAttempt = attempt === maxSetupNavigationAttempts;
 
-  await page.goto('/');
+      if (isLastAttempt || !isTransientNavigationError(error)) {
+        throw error;
+      }
 
-  try {
-    await expect(startMatchButton).toBeVisible({ timeout: 15000 });
-  } catch {
-    await page.reload({ waitUntil: 'domcontentloaded' });
-    await expect(startMatchButton).toBeVisible({ timeout: 15000 });
+      await page.waitForTimeout(400 * attempt);
+      await navigate(attempt + 1);
+    }
   }
+
+  await navigate(1);
 }
 
 export async function startMatch(page: Page, options: StartMatchOptions = {}): Promise<void> {
@@ -66,6 +103,7 @@ export async function startMatch(page: Page, options: StartMatchOptions = {}): P
     gameMode = 'advantage',
     initialServer = 'team-1',
     decidingSetSuperTiebreak = false,
+    superTiebreakTargetPoints = 11,
     sideSwitchPrompts = false,
     servingIndicatorEnabled = false,
     countdownTimerEnabled = false,
@@ -101,8 +139,12 @@ export async function startMatch(page: Page, options: StartMatchOptions = {}): P
       .click();
   }
 
-  if (format !== 'best-of-1') {
-    await setToggle(page, /super tiebreak/i, decidingSetSuperTiebreak);
+  await setToggle(page, /super tiebreak/i, decidingSetSuperTiebreak);
+
+  if (decidingSetSuperTiebreak) {
+    await page
+      .locator(`[data-super-tiebreak-target="${String(superTiebreakTargetPoints)}"]`)
+      .click();
   }
 
   await page.getByRole('button', { name: /start match/i }).click();

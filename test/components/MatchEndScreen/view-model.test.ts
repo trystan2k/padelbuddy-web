@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'vitest';
 
 import { projectMatch } from '@/core/match/replay';
+import { defaultSuperTiebreakTargetPoints } from '@/core/match/types';
 import {
   createMatchEndScreenSummary,
   getMatchDurationParts
@@ -298,8 +299,8 @@ describe('MatchEndScreen view model', () => {
     const projection = projectMatch(setup, [
       ...winQuickSet('team-1'),
       ...winQuickSet('team-2'),
-      ...repeatAction('team-1', 9),
-      ...repeatAction('team-2', 8),
+      ...repeatAction('team-1', defaultSuperTiebreakTargetPoints - 1),
+      ...repeatAction('team-2', defaultSuperTiebreakTargetPoints - 2),
       ...scorePoints('team-1')
     ]);
 
@@ -323,7 +324,10 @@ describe('MatchEndScreen view model', () => {
       },
       {
         setNumber: 3,
-        scores: { 'team-1': 10, 'team-2': 8 },
+        scores: {
+          'team-1': defaultSuperTiebreakTargetPoints,
+          'team-2': defaultSuperTiebreakTargetPoints - 2
+        },
         isSuperTiebreak: true
       }
     ]);

@@ -2,13 +2,21 @@ import {
   defaultAudioAnnouncementsEnabled,
   defaultCountdownTimerDuration,
   defaultCountdownTimerEnabled,
+  defaultMatchFormat,
   defaultGameMode,
+  defaultSuperTiebreakTargetPoints,
   defaultServingIndicatorEnabled,
-  gameModes,
   type CountdownTimerDuration,
-  type MatchGameMode
+  type MatchFormat,
+  type MatchGameMode,
+  type SuperTiebreakTargetPoints
 } from '@/core/match/types';
-import { isCountdownTimerDuration } from '@/core/match/guards';
+import {
+  isCountdownTimerDuration,
+  isMatchFormat,
+  isMatchGameMode,
+  isSuperTiebreakTargetPoints
+} from '@/core/match/guards';
 import {
   defaultVerbosity,
   verbosityLevels,
@@ -47,8 +55,10 @@ export interface SetupPreferences {
   countdownTimerEnabled: boolean;
   countdownTimerDuration: CountdownTimerDuration;
   sideSwitchPrompts: boolean;
+  format: MatchFormat;
   gameMode: MatchGameMode;
   decidingSetSuperTiebreak: boolean;
+  superTiebreakTargetPoints: SuperTiebreakTargetPoints;
 }
 
 export type SetupPreferenceSlice = Partial<SetupPreferences>;
@@ -86,8 +96,10 @@ export const defaultSetupPreferences: SetupPreferences = {
   countdownTimerEnabled: defaultCountdownTimerEnabled,
   countdownTimerDuration: defaultCountdownTimerDuration,
   sideSwitchPrompts: true,
+  format: defaultMatchFormat,
   gameMode: defaultGameMode,
-  decidingSetSuperTiebreak: false
+  decidingSetSuperTiebreak: false,
+  superTiebreakTargetPoints: defaultSuperTiebreakTargetPoints
 };
 
 export function createSetupStorage(options: IndexedDbStorageOptions = {}): SetupStorage {
@@ -244,8 +256,10 @@ function toSetupPreferences(record: StoredSetupPreferences): SetupPreferences {
     countdownTimerEnabled: record.countdownTimerEnabled,
     countdownTimerDuration: record.countdownTimerDuration,
     sideSwitchPrompts: record.sideSwitchPrompts,
+    format: record.format,
     gameMode: record.gameMode,
-    decidingSetSuperTiebreak: record.decidingSetSuperTiebreak
+    decidingSetSuperTiebreak: record.decidingSetSuperTiebreak,
+    superTiebreakTargetPoints: record.superTiebreakTargetPoints
   };
 }
 
@@ -435,7 +449,29 @@ function parseStoredSetupPreferences(value: unknown): StoredSetupPreferences | n
     return null;
   }
 
+  const format =
+    typeof candidate.format === 'undefined'
+      ? defaultMatchFormat
+      : isMatchFormat(candidate.format)
+        ? candidate.format
+        : null;
+
+  if (format === null) {
+    return null;
+  }
+
   if (typeof candidate.decidingSetSuperTiebreak !== 'boolean') {
+    return null;
+  }
+
+  const superTiebreakTargetPoints =
+    typeof candidate.superTiebreakTargetPoints === 'undefined'
+      ? defaultSuperTiebreakTargetPoints
+      : isSuperTiebreakTargetPoints(candidate.superTiebreakTargetPoints)
+        ? candidate.superTiebreakTargetPoints
+        : null;
+
+  if (superTiebreakTargetPoints === null) {
     return null;
   }
 
@@ -450,8 +486,10 @@ function parseStoredSetupPreferences(value: unknown): StoredSetupPreferences | n
     countdownTimerEnabled: candidate.countdownTimerEnabled,
     countdownTimerDuration: candidate.countdownTimerDuration,
     sideSwitchPrompts: candidate.sideSwitchPrompts,
+    format,
     gameMode: candidate.gameMode,
     decidingSetSuperTiebreak: candidate.decidingSetSuperTiebreak,
+    superTiebreakTargetPoints,
     updatedAt: candidate.updatedAt
   };
 }
@@ -493,10 +531,6 @@ function parseStoredSpeechPreferences(value: unknown): SpeechPreferences | null 
 
 function isVerbosityLevel(value: unknown): value is VerbosityLevel {
   return typeof value === 'string' && verbosityLevels.some((level) => level === value);
-}
-
-function isMatchGameMode(value: unknown): value is MatchGameMode {
-  return typeof value === 'string' && gameModes.some((gameMode) => gameMode === value);
 }
 
 const setupStorage = createSetupStorage();

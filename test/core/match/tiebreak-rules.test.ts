@@ -83,40 +83,45 @@ describe('tiebreak and super-tiebreak rules', () => {
     expect(projection.derived.activeSetIndex).toBe(5);
   });
 
-  test('resolves a deciding-set super tiebreak first-to-10 win-by-2', () => {
-    const setup = createTestSetup({
-      decidingSetSuperTiebreak: true
-    });
-    const projection = projectMatch(setup, [
-      ...winQuickSet('team-1'),
-      ...winQuickSet('team-2'),
-      ...repeatAction('team-1', 9),
-      ...repeatAction('team-2', 8),
-      ...scorePoints('team-1')
-    ]);
+  test.each([7, 9, 11] as const)(
+    'resolves deciding-set super tiebreak target %i with win-by-2',
+    (targetPoints) => {
+      const setup = createTestSetup({
+        decidingSetSuperTiebreak: true,
+        superTiebreakTargetPoints: targetPoints
+      });
+      const projection = projectMatch(setup, [
+        ...winQuickSet('team-1'),
+        ...winQuickSet('team-2'),
+        ...repeatAction('team-1', targetPoints - 1),
+        ...repeatAction('team-2', targetPoints - 2),
+        ...scorePoints('team-1')
+      ]);
 
-    expect(projection.derived.status).toBe('completed');
-    expect(projection.derived.winner?.teamId).toBe('team-1');
-    expect(projection.state.sets[2]).toMatchObject({
-      completed: true,
-      mode: 'super-tiebreak',
-      winner: 'team-1',
-      tiebreakPoints: {
-        'team-1': 10,
-        'team-2': 8
-      }
-    });
-  });
+      expect(projection.derived.status).toBe('completed');
+      expect(projection.derived.winner?.teamId).toBe('team-1');
+      expect(projection.state.sets[2]).toMatchObject({
+        completed: true,
+        mode: 'super-tiebreak',
+        winner: 'team-1',
+        tiebreakPoints: {
+          'team-1': targetPoints,
+          'team-2': targetPoints - 2
+        }
+      });
+    }
+  );
 
   test('supports best-of-1 matches that are themselves super tiebreak deciders', () => {
     const setup = createTestSetup({
       format: 'best-of-1',
       decidingSetSuperTiebreak: true,
-      bestOfOneDecidingBehavior: 'super-tiebreak'
+      bestOfOneDecidingBehavior: 'super-tiebreak',
+      superTiebreakTargetPoints: 9
     });
     const projection = projectMatch(setup, [
-      ...repeatAction('team-2', 8),
-      ...repeatAction('team-1', 8),
+      ...repeatAction('team-2', 7),
+      ...repeatAction('team-1', 7),
       ...scorePoints('team-2', 'team-2')
     ]);
 
@@ -126,8 +131,8 @@ describe('tiebreak and super-tiebreak rules', () => {
       completed: true,
       mode: 'super-tiebreak',
       tiebreakPoints: {
-        'team-1': 8,
-        'team-2': 10
+        'team-1': 7,
+        'team-2': 9
       }
     });
   });

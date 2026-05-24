@@ -82,6 +82,12 @@
       "sourceType": "github",
       "computedHash": "7cf827d07dd21f717d457e6eb69fbd674979f97d22eca5dedfd7fb32b891ee42"
     },
+    "memory-notes": {
+      "source": "trystan2k/skills",
+      "sourceType": "github",
+      "skillPath": "memory-notes/SKILL.md",
+      "computedHash": "4a5f52168dde0004e0e1bcdfa42a1dbb6c9b7ae2b28f543db5d3013265b687d8"
+    },
     "oxfmt": {
       "source": "trystan2k/skills",
       "sourceType": "github",

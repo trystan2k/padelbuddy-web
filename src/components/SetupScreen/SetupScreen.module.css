@@ -145,16 +145,17 @@
   gap: var(--base-space-16);
 }
 
+.superTiebreakSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--base-space-16);
+}
+
 .countdownDurationRow {
   display: flex;
   align-items: center;
   justify-content: space-around;
   flex-wrap: wrap;
-}
-
-.countdownDurationRow:focus-visible {
-  outline: none;
-  border-radius: var(--base-radius-54);
 }
 
 .countdownDurationRowDisabled {
@@ -177,7 +178,8 @@
 }
 
 .countdownDurationOption:focus-visible {
-  outline: none;
+  outline: 2px solid var(--semantic-color-action-accent-primary);
+  outline-offset: 2px;
   border-radius: var(--base-radius-54);
 }
 
@@ -224,6 +226,81 @@
   color: var(--semantic-color-content-secondary);
 }
 
+.superTiebreakTargetRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  flex-wrap: wrap;
+}
+
+.superTiebreakTargetRowDisabled {
+  opacity: 0.35;
+}
+
+.superTiebreakTargetOption {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--base-space-10);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+}
+
+.superTiebreakTargetOption:not(:disabled) {
+  cursor: pointer;
+}
+
+.superTiebreakTargetOption:focus-visible {
+  outline: 2px solid var(--semantic-color-action-accent-primary);
+  outline-offset: 2px;
+  border-radius: var(--base-radius-54);
+}
+
+.superTiebreakTargetRadio {
+  width: var(--base-space-28);
+  height: var(--base-space-28);
+  border-radius: 50%;
+  border: 1.5px solid var(--semantic-color-border-subtle);
+  background-color: var(--semantic-color-background-surface-muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.superTiebreakTargetRadioSelected {
+  border-color: var(--semantic-color-action-accent-primary);
+  background-color: var(--semantic-color-background-accent-primary-subtle);
+}
+
+.superTiebreakTargetRadioDot {
+  width: var(--base-space-12);
+  height: var(--base-space-12);
+  border-radius: 50%;
+  background-color: var(--semantic-color-action-accent-primary);
+  opacity: 0;
+}
+
+.superTiebreakTargetRadioSelected .superTiebreakTargetRadioDot {
+  opacity: 1;
+}
+
+.superTiebreakTargetLabel {
+  font-family: var(--semantic-typography-family-display);
+  font-size: var(--base-font-size-20);
+  font-weight: var(--semantic-typography-weight-strong);
+}
+
+.superTiebreakTargetLabelSelected {
+  color: var(--semantic-color-content-accent-primary);
+}
+
+.superTiebreakTargetLabelUnselected {
+  color: var(--semantic-color-content-secondary);
+}
+
 .historyButton,
 .startButton {
   width: 100%;
@@ -247,17 +324,20 @@
 @media (width < 480px) {
   .serverRow,
   .formatRow,
-  .countdownDurationRow {
+  .countdownDurationRow,
+  .superTiebreakTargetRow {
     flex-wrap: wrap;
   }
 
   .serverRow > *,
   .formatRow > *,
-  .countdownDurationOption {
+  .countdownDurationOption,
+  .superTiebreakTargetOption {
     flex: 1 1 100%;
   }
 
-  .countdownDurationRow {
+  .countdownDurationRow,
+  .superTiebreakTargetRow {
     justify-content: flex-start;
     gap: var(--base-space-12);
   }
