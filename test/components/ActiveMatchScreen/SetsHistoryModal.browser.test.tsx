@@ -1,4 +1,4 @@
-import { describe, expect, test, vi } from 'vitest';
+import { afterEach, describe, expect, test, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 
 import { SetsHistoryModal } from '@/components/ActiveMatchScreen/SetsHistoryModal/SetsHistoryModal';
@@ -39,6 +39,9 @@ const sets: MatchSetState[] = [
 ];
 
 describe('SetsHistoryModal', () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
   test('renders dialog, headline and completed set history only', async () => {
     const onClose = vi.fn<() => void>();
     const screen = await render(

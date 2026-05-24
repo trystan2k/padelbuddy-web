@@ -330,7 +330,7 @@ export default {
       setLabel: 'Set {{number}}',
       currentShort: 'Actual',
       overallSetsScoreHeadline: 'Sets: {{team1}} - {{team2}}',
-      openHistoryLabel: 'Abrir historial de sets. Marcador de sets: {{team1}} - {{team2}}',
+      openHistoryLabel: 'Abrir historial de sets. Marcador del set actual: {{team1}} - {{team2}}',
       emptyHistory: 'Todavía no hay sets completados.',
       superTiebreakBadge: 'ST'
     },
