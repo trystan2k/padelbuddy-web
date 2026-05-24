@@ -9,6 +9,38 @@ import { helpSpotlightSeenStorageKey } from '../src/lib/user/help_spotlight_stor
 export { expect };
 
 const defaultDatabaseName = persistenceDatabaseName;
+const maxBaseNavigationAttempts = 3;
+
+function isTransientNavigationError(error: unknown): boolean {
+  const message = error instanceof Error ? error.message : String(error);
+
+  return (
+    message.includes('ERR_CONNECTION_REFUSED') ||
+    message.includes('ERR_CONNECTION_RESET') ||
+    message.includes('ERR_NETWORK_CHANGED') ||
+    message.includes('ECONNREFUSED') ||
+    message.includes('Navigation timeout')
+  );
+}
+
+async function gotoBaseUrlWithRetry(page: Page, baseURL: string): Promise<void> {
+  async function navigate(attempt: number): Promise<void> {
+    try {
+      await page.goto(baseURL, { waitUntil: 'domcontentloaded' });
+    } catch (error) {
+      const isLastAttempt = attempt === maxBaseNavigationAttempts;
+
+      if (isLastAttempt || !isTransientNavigationError(error)) {
+        throw error;
+      }
+
+      await page.waitForTimeout(400 * attempt);
+      await navigate(attempt + 1);
+    }
+  }
+
+  await navigate(1);
+}
 
 async function clearBrowserState(page: Page, baseURL: string) {
   type SpotlightInitContext = Awaited<ReturnType<Page['context']>> & {
@@ -32,7 +64,7 @@ async function clearBrowserState(page: Page, baseURL: string) {
   }
 
   await page.context().clearCookies();
-  await page.goto(baseURL, { waitUntil: 'domcontentloaded' });
+  await gotoBaseUrlWithRetry(page, baseURL);
 
   // Clear remaining state after navigation
   await page.evaluate(

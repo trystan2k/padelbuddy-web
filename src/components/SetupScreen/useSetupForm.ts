@@ -9,9 +9,11 @@ import {
   defaultGameMode,
   defaultInitialServer,
   defaultServingIndicatorEnabled,
+  defaultSuperTiebreakTargetPoints,
   type CountdownTimerDuration,
   type MatchFormat,
   type MatchGameMode,
+  type SuperTiebreakTargetPoints,
   type MatchTeamId
 } from '@/core/match/types';
 import {
@@ -24,15 +26,7 @@ import {
 import type { SetupFormData, FieldErrors } from './types';
 import { validateSetupForm } from './validateSetupForm';
 
-const defaultPersistedSetupSlice: SetupPreferenceSlice = {
-  audioAnnouncementsEnabled: defaultSetupPreferences.audioAnnouncementsEnabled,
-  servingIndicatorEnabled: defaultSetupPreferences.servingIndicatorEnabled,
-  countdownTimerEnabled: defaultSetupPreferences.countdownTimerEnabled,
-  countdownTimerDuration: defaultSetupPreferences.countdownTimerDuration,
-  sideSwitchPrompts: defaultSetupPreferences.sideSwitchPrompts,
-  gameMode: defaultSetupPreferences.gameMode,
-  decidingSetSuperTiebreak: defaultSetupPreferences.decidingSetSuperTiebreak
-};
+const defaultPersistedSetupSlice = toPersistedSetupPreferenceSlice(defaultSetupPreferences);
 
 export function useSetupForm() {
   const { t, i18n } = useTranslation();
@@ -53,6 +47,7 @@ export function useSetupForm() {
     gameMode: defaultGameMode,
     initialServer: defaultInitialServer,
     decidingSetSuperTiebreak: false,
+    superTiebreakTargetPoints: defaultSuperTiebreakTargetPoints,
     audioAnnouncementsEnabled: defaultAudioAnnouncementsEnabled,
     voiceName: null,
     servingIndicatorEnabled: defaultServingIndicatorEnabled,
@@ -92,15 +87,7 @@ export function useSetupForm() {
             team2Touched.current = true;
           }
 
-          lastPersistedSetupSlice.current = {
-            audioAnnouncementsEnabled: setupPreferences.audioAnnouncementsEnabled,
-            servingIndicatorEnabled: setupPreferences.servingIndicatorEnabled,
-            countdownTimerEnabled: setupPreferences.countdownTimerEnabled,
-            countdownTimerDuration: setupPreferences.countdownTimerDuration,
-            sideSwitchPrompts: setupPreferences.sideSwitchPrompts,
-            gameMode: setupPreferences.gameMode,
-            decidingSetSuperTiebreak: setupPreferences.decidingSetSuperTiebreak
-          };
+          lastPersistedSetupSlice.current = toPersistedSetupPreferenceSlice(setupPreferences);
 
           setFormData((prev) => ({
             ...prev,
@@ -114,8 +101,10 @@ export function useSetupForm() {
             countdownTimerEnabled: setupPreferences.countdownTimerEnabled,
             countdownTimerDuration: setupPreferences.countdownTimerDuration,
             sideSwitchPrompts: setupPreferences.sideSwitchPrompts,
+            format: setupPreferences.format,
             gameMode: setupPreferences.gameMode,
-            decidingSetSuperTiebreak: setupPreferences.decidingSetSuperTiebreak
+            decidingSetSuperTiebreak: setupPreferences.decidingSetSuperTiebreak,
+            superTiebreakTargetPoints: setupPreferences.superTiebreakTargetPoints
           }));
           return;
         }
@@ -138,15 +127,17 @@ export function useSetupForm() {
       return undefined;
     }
 
-    const nextPersistedSetupSlice: SetupPreferenceSlice = {
+    const nextPersistedSetupSlice = toPersistedSetupPreferenceSlice({
       audioAnnouncementsEnabled: formData.audioAnnouncementsEnabled,
       servingIndicatorEnabled: formData.servingIndicatorEnabled,
       countdownTimerEnabled: formData.countdownTimerEnabled,
       countdownTimerDuration: formData.countdownTimerDuration,
       sideSwitchPrompts: formData.sideSwitchPrompts,
+      format: formData.format,
       gameMode: formData.gameMode,
-      decidingSetSuperTiebreak: formData.decidingSetSuperTiebreak
-    };
+      decidingSetSuperTiebreak: formData.decidingSetSuperTiebreak,
+      superTiebreakTargetPoints: formData.superTiebreakTargetPoints
+    });
 
     if (areSetupPreferenceSlicesEqual(lastPersistedSetupSlice.current, nextPersistedSetupSlice)) {
       return undefined;
@@ -176,9 +167,11 @@ export function useSetupForm() {
     formData.countdownTimerDuration,
     formData.countdownTimerEnabled,
     formData.decidingSetSuperTiebreak,
+    formData.format,
     formData.gameMode,
     formData.servingIndicatorEnabled,
-    formData.sideSwitchPrompts
+    formData.sideSwitchPrompts,
+    formData.superTiebreakTargetPoints
   ]);
 
   const updateField = useCallback(
@@ -229,6 +222,13 @@ export function useSetupForm() {
   const updateGameMode = useCallback(
     (gameMode: MatchGameMode) => {
       updateField('gameMode', gameMode);
+    },
+    [updateField]
+  );
+
+  const updateSuperTiebreakTargetPoints = useCallback(
+    (points: SuperTiebreakTargetPoints) => {
+      updateField('superTiebreakTargetPoints', points);
     },
     [updateField]
   );
@@ -308,6 +308,7 @@ export function useSetupForm() {
     updateTeamName,
     updateFormat,
     updateGameMode,
+    updateSuperTiebreakTargetPoints,
     updateInitialServer,
     updateDecidingSetSuperTiebreak,
     updateAudioAnnouncementsEnabled,
@@ -321,6 +322,46 @@ export function useSetupForm() {
   };
 }
 
+function toPersistedSetupPreferenceSlice(
+  data:
+    | Pick<
+        SetupFormData,
+        | 'audioAnnouncementsEnabled'
+        | 'servingIndicatorEnabled'
+        | 'countdownTimerEnabled'
+        | 'countdownTimerDuration'
+        | 'sideSwitchPrompts'
+        | 'format'
+        | 'gameMode'
+        | 'decidingSetSuperTiebreak'
+        | 'superTiebreakTargetPoints'
+      >
+    | Pick<
+        typeof defaultSetupPreferences,
+        | 'audioAnnouncementsEnabled'
+        | 'servingIndicatorEnabled'
+        | 'countdownTimerEnabled'
+        | 'countdownTimerDuration'
+        | 'sideSwitchPrompts'
+        | 'format'
+        | 'gameMode'
+        | 'decidingSetSuperTiebreak'
+        | 'superTiebreakTargetPoints'
+      >
+): SetupPreferenceSlice {
+  return {
+    audioAnnouncementsEnabled: data.audioAnnouncementsEnabled,
+    servingIndicatorEnabled: data.servingIndicatorEnabled,
+    countdownTimerEnabled: data.countdownTimerEnabled,
+    countdownTimerDuration: data.countdownTimerDuration,
+    sideSwitchPrompts: data.sideSwitchPrompts,
+    format: data.format,
+    gameMode: data.gameMode,
+    decidingSetSuperTiebreak: data.decidingSetSuperTiebreak,
+    superTiebreakTargetPoints: data.superTiebreakTargetPoints
+  };
+}
+
 function areSetupPreferenceSlicesEqual(
   left: SetupPreferenceSlice,
   right: SetupPreferenceSlice
@@ -331,7 +372,9 @@ function areSetupPreferenceSlicesEqual(
     left.countdownTimerEnabled === right.countdownTimerEnabled &&
     left.countdownTimerDuration === right.countdownTimerDuration &&
     left.sideSwitchPrompts === right.sideSwitchPrompts &&
+    left.format === right.format &&
     left.gameMode === right.gameMode &&
-    left.decidingSetSuperTiebreak === right.decidingSetSuperTiebreak
+    left.decidingSetSuperTiebreak === right.decidingSetSuperTiebreak &&
+    left.superTiebreakTargetPoints === right.superTiebreakTargetPoints
   );
 }

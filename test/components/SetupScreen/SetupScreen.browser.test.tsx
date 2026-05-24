@@ -19,7 +19,8 @@ const {
   mockPreloadRoute,
   mockLoadRemoteControllerConfig,
   mockSaveSetupPreferenceSlice,
-  mockSaveSpeechPreferences
+  mockSaveSpeechPreferences,
+  mockSaveCurrentMatch
 } = vi.hoisted(() => ({
   featureFlagState: {
     ads: true,
@@ -33,7 +34,9 @@ const {
   mockPreloadRoute: vi.fn<() => Promise<void>>(),
   mockLoadRemoteControllerConfig: vi.fn<() => Promise<object>>(),
   mockSaveSetupPreferenceSlice: vi.fn<() => Promise<void>>(),
-  mockSaveSpeechPreferences: vi.fn<() => Promise<void>>()
+  mockSaveSpeechPreferences: vi.fn<() => Promise<void>>(),
+  mockSaveCurrentMatch:
+    vi.fn<(payload: { setup: { superTiebreakTargetPoints: number } }) => Promise<void>>()
 }));
 
 vi.mock('@/config/feature-flags', () => ({
@@ -65,6 +68,10 @@ vi.mock('@/lib/input/remote-controller-storage', async (importOriginal) => {
   };
 });
 
+vi.mock('@/lib/current-match/indexed-db', () => ({
+  saveCurrentMatch: mockSaveCurrentMatch
+}));
+
 vi.mock('@/lib/setup/setup-storage', () => ({
   defaultSetupPreferences: {
     muted: false,
@@ -77,8 +84,10 @@ vi.mock('@/lib/setup/setup-storage', () => ({
     countdownTimerEnabled: false,
     countdownTimerDuration: 90,
     sideSwitchPrompts: true,
+    format: 'best-of-3',
     gameMode: 'advantage',
-    decidingSetSuperTiebreak: false
+    decidingSetSuperTiebreak: false,
+    superTiebreakTargetPoints: 11
   },
   loadSetupPreferences: mockLoadSetupPreferences,
   saveSetupPreferenceSlice: mockSaveSetupPreferenceSlice,
@@ -117,6 +126,7 @@ describe('SetupScreen', () => {
     mockSaveSetupPreferenceSlice.mockResolvedValue(undefined);
     mockSaveSpeechPreferences.mockResolvedValue(undefined);
     mockClearSpeechPreferences.mockResolvedValue(undefined);
+    mockSaveCurrentMatch.mockResolvedValue(undefined);
   });
 
   afterEach(async () => {
@@ -196,7 +206,6 @@ describe('SetupScreen', () => {
     const screen = await render(<SetupScreen />);
 
     const countdownToggle = screen.getByRole('switch', { name: /countdown timer/i });
-    const durationRow = screen.getByTestId('countdown-duration-row');
     const oneHourOption = screen.getByRole('radio', { name: '1:00 h' });
     const ninetyMinuteOption = screen.getByRole('radio', { name: '1:30 h' });
     const twoHourOption = screen.getByRole('radio', { name: '2:00 h' });
@@ -206,19 +215,130 @@ describe('SetupScreen', () => {
     await expect.element(ninetyMinuteOption).toHaveAttribute('tabindex', '0');
     await expect.element(oneHourOption).toHaveAttribute('tabindex', '-1');
 
-    durationRow
+    ninetyMinuteOption
       .element()
       .dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
 
     await expect.element(twoHourOption).toHaveAttribute('aria-checked', 'true');
     await expect.element(twoHourOption).toHaveAttribute('tabindex', '0');
 
-    durationRow
+    twoHourOption
       .element()
       .dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true }));
 
     await expect.element(ninetyMinuteOption).toHaveAttribute('aria-checked', 'true');
     await expect.element(ninetyMinuteOption).toHaveAttribute('tabindex', '0');
+
+    ninetyMinuteOption
+      .element()
+      .dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+
+    await expect.element(twoHourOption).toHaveAttribute('aria-checked', 'true');
+
+    twoHourOption
+      .element()
+      .dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp', bubbles: true }));
+
+    await expect.element(ninetyMinuteOption).toHaveAttribute('aria-checked', 'true');
+  });
+
+  test('renders super tiebreak target controls disabled by default with 11 selected', async () => {
+    const screen = await render(<SetupScreen />);
+
+    const superTiebreakTargetRow = screen.getByTestId('super-tiebreak-target-row');
+    const sevenPointsOption = screen.getByRole('radio', { name: 'First to 7 points' });
+    const ninePointsOption = screen.getByRole('radio', { name: 'First to 9 points' });
+    const elevenPointsOption = screen.getByRole('radio', { name: 'First to 11 points' });
+
+    await expect.element(superTiebreakTargetRow).toHaveAttribute('aria-disabled', 'true');
+    await expect.element(elevenPointsOption).toHaveAttribute('aria-checked', 'true');
+    await expect.element(sevenPointsOption).toBeDisabled();
+    await expect.element(ninePointsOption).toBeDisabled();
+    await expect.element(elevenPointsOption).toBeDisabled();
+  });
+
+  test('uses group-level disabled semantics for custom radiogroups', async () => {
+    const screen = await render(<SetupScreen />);
+
+    const countdownDurationRow = screen.getByTestId('countdown-duration-row');
+    const superTiebreakTargetRow = screen.getByTestId('super-tiebreak-target-row');
+
+    await expect.element(countdownDurationRow).toHaveAttribute('aria-disabled', 'true');
+    await expect.element(superTiebreakTargetRow).toHaveAttribute('aria-disabled', 'true');
+    await expect.element(countdownDurationRow).not.toHaveAttribute('tabindex');
+    await expect.element(superTiebreakTargetRow).not.toHaveAttribute('tabindex');
+  });
+
+  test('supports ArrowUp and ArrowDown for super tiebreak target radios', async () => {
+    const screen = await render(<SetupScreen />);
+
+    const superTiebreakToggle = screen.getByRole('switch', { name: /super tiebreak/i });
+    const superTiebreakTargetRow = screen.getByTestId('super-tiebreak-target-row');
+    const sevenPointsOption = screen.getByRole('radio', { name: 'First to 7 points' });
+    const ninePointsOption = screen.getByRole('radio', { name: 'First to 9 points' });
+    const elevenPointsOption = screen.getByRole('radio', { name: 'First to 11 points' });
+
+    superTiebreakToggle.element().dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+    await expect.element(superTiebreakTargetRow).not.toHaveAttribute('aria-disabled');
+    await expect.element(elevenPointsOption).toHaveAttribute('aria-checked', 'true');
+
+    elevenPointsOption
+      .element()
+      .dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+
+    await expect.element(sevenPointsOption).toHaveAttribute('aria-checked', 'true');
+
+    sevenPointsOption
+      .element()
+      .dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp', bubbles: true }));
+
+    await expect.element(elevenPointsOption).toHaveAttribute('aria-checked', 'true');
+
+    elevenPointsOption
+      .element()
+      .dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true }));
+
+    await expect.element(ninePointsOption).toHaveAttribute('aria-checked', 'true');
+  });
+
+  test('preserves selected super tiebreak target while toggle is off', async () => {
+    const screen = await render(<SetupScreen />);
+
+    const superTiebreakToggle = screen.getByRole('switch', { name: /super tiebreak/i });
+    const ninePointsOption = screen.getByRole('radio', { name: 'First to 9 points' });
+
+    superTiebreakToggle.element().dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    await ninePointsOption.click();
+
+    await expect.element(ninePointsOption).toHaveAttribute('aria-checked', 'true');
+
+    superTiebreakToggle.element().dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    await expect.element(ninePointsOption).toBeDisabled();
+
+    superTiebreakToggle.element().dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+    await expect.element(ninePointsOption).toBeEnabled();
+    await expect.element(ninePointsOption).toHaveAttribute('aria-checked', 'true');
+  });
+
+  test('starts match with selected super tiebreak target in payload', async () => {
+    const screen = await render(<SetupScreen />);
+
+    const superTiebreakToggle = screen.getByRole('switch', { name: /super tiebreak/i });
+    const ninePointsOption = screen.getByRole('radio', { name: 'First to 9 points' });
+
+    superTiebreakToggle.element().dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    await ninePointsOption.click();
+
+    await screen.getByRole('button', { name: /^start match$/i }).click();
+
+    await vi.waitFor(() => {
+      expect(mockSaveCurrentMatch).toHaveBeenCalled();
+    });
+
+    const payload = mockSaveCurrentMatch.mock.calls[0]?.[0];
+    expect(payload?.setup.superTiebreakTargetPoints).toBe(9);
   });
 
   test('dims and disables first server controls when serving indicator is turned off', async () => {

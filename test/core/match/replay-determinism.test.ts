@@ -84,7 +84,8 @@ describe('replay and determinism', () => {
 
   test('disables super-tiebreak for new sets created after continueMatch', () => {
     const setup = createTestSetup({
-      decidingSetSuperTiebreak: true
+      decidingSetSuperTiebreak: true,
+      superTiebreakTargetPoints: 11
     });
     const decidingSetActions = [
       ...scorePoints(
@@ -96,9 +97,11 @@ describe('replay and determinism', () => {
         'team-1',
         'team-1',
         'team-1',
+        'team-1',
         'team-1'
       ),
       ...scorePoints(
+        'team-2',
         'team-2',
         'team-2',
         'team-2',
@@ -119,8 +122,8 @@ describe('replay and determinism', () => {
       mode: 'super-tiebreak',
       winner: 'team-1',
       tiebreakPoints: {
-        'team-1': 10,
-        'team-2': 8
+        'team-1': 11,
+        'team-2': 9
       }
     });
 

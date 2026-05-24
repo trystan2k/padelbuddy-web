@@ -7,7 +7,6 @@ import {
 import { cloneTeamScore, createTeamScore, getOpponentTeamId, incrementTeamScore } from './helpers';
 import {
   standardTiebreakTargetPoints,
-  superTiebreakTargetPoints,
   type ActiveMatchSet,
   type CompletedMatchSet,
   type MatchAction,
@@ -29,7 +28,9 @@ function createStandardGameState(): StandardGameState {
   };
 }
 
-function createTiebreakGameState(targetPoints: 7 | 10): TiebreakGameState {
+function createTiebreakGameState(
+  targetPoints: TiebreakGameState['targetPoints']
+): TiebreakGameState {
   return {
     kind: 'tiebreak',
     points: createTeamScore(0, 0),
@@ -37,9 +38,9 @@ function createTiebreakGameState(targetPoints: 7 | 10): TiebreakGameState {
   };
 }
 
-function createGameStateForSetMode(mode: MatchSetMode): MatchGameState {
+function createGameStateForSetMode(setup: MatchSetup, mode: MatchSetMode): MatchGameState {
   return mode === 'super-tiebreak'
-    ? createTiebreakGameState(superTiebreakTargetPoints)
+    ? createTiebreakGameState(setup.superTiebreakTargetPoints)
     : createStandardGameState();
 }
 
@@ -68,7 +69,7 @@ function createActiveSet(
     firstServer,
     games: createTeamScore(0, 0),
     completed: false,
-    game: createGameStateForSetMode(mode)
+    game: createGameStateForSetMode(setup, mode)
   };
 }
 

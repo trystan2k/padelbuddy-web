@@ -219,7 +219,16 @@ export default {
       goldenPoint: 'Punto de Oro',
       goldenPointHint: 'Sin ventaja en deuce',
       superTiebreak: 'Super Tiebreak',
-      superTiebreakHint: 'Tiebreak en el set final a 10 puntos',
+      superTiebreakHint: 'Reemplaza el set decisivo por un super tiebreak configurable',
+      superTiebreakTarget: {
+        label: 'Objetivo del super tiebreak',
+        sevenPoints: '7',
+        ninePoints: '9',
+        elevenPoints: '11',
+        sevenPointsAriaLabel: 'Primero en llegar a 7 puntos',
+        ninePointsAriaLabel: 'Primero en llegar a 9 puntos',
+        elevenPointsAriaLabel: 'Primero en llegar a 11 puntos'
+      },
       sideSwitch: 'Avisos de Cambio de Lado',
       sideSwitchHint: 'Recordar a jugadores cambiar de lado',
       servingIndicator: 'Indicador de servicio',
@@ -538,7 +547,7 @@ export default {
         },
         superTiebreak: {
           title: 'Súper tie-break en set decisivo',
-          body: 'Activa esta opción para reemplazar el set decisivo por un súper tie-break a 10 puntos, con diferencia de 2. Es un formato común cuando se busca reducir la duración total manteniendo un cierre competitivo. Si está desactivado, el set decisivo se juega con formato normal por juegos.'
+          body: 'Activa esta opción para reemplazar el set decisivo por un súper tie-break con objetivo configurable, con diferencia de 2. Es un formato común cuando se busca reducir la duración total manteniendo un cierre competitivo. Si está desactivado, el set decisivo se juega con formato normal por juegos.'
         },
         firstServer: {
           title: 'Primer sacador',
@@ -614,7 +623,7 @@ export default {
         },
         superTiebreak: {
           title: 'Súper tie-break en set decisivo',
-          body: 'Si activaste Súper tie-break en configuración, el set decisivo se reemplaza por una carrera a 10 puntos, con diferencia de 2. La app aplica este formato solo en el último set decisivo y registra ese resultado correctamente. Es útil para torneos que buscan cerrar en menos tiempo.'
+          body: 'Si activaste Súper tie-break en configuración, el set decisivo se reemplaza por una carrera hasta el objetivo seleccionado, con diferencia de 2. La app aplica este formato solo en el último set decisivo y registra ese resultado correctamente. Es útil para torneos que buscan cerrar en menos tiempo.'
         },
         sideSwitch: {
           title: 'Avisos de cambio de lado',

@@ -45,6 +45,7 @@ function createHistorySetup(overrides: Partial<MatchSetupInput> = {}) {
     servingIndicatorEnabled: true,
     countdownTimerEnabled: false,
     countdownTimerDuration: 90,
+    superTiebreakTargetPoints: 11,
     sideSwitchPrompts: false,
     sides: defaultSides,
     ...overrides

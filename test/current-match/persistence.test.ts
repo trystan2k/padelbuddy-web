@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'vitest';
 
 import { continueMatch, projectMatch } from '@/core/match/replay';
+import { defaultSuperTiebreakTargetPoints } from '@/core/match/types';
 import {
   createCurrentMatchRecord,
   currentMatchSchemaVersion,
@@ -12,6 +13,7 @@ import {
 import { createTestSetup, scorePoints, winQuickGame } from '../core/match/test-helpers';
 
 describe('current match persistence helpers', () => {
+  const legacySuperTiebreakTargetPoints = 10;
   const testMatchId = 'test-match';
   const testStartedAt = Date.now();
   const testFinishedAt = testStartedAt + 5 * 60 * 1000;
@@ -137,7 +139,7 @@ describe('current match persistence helpers', () => {
     expect(decodedRecord.setup.servingIndicatorEnabled).toBe(false);
   });
 
-  test('defaults legacy persisted setups missing countdown fields', () => {
+  test('defaults legacy in-progress persisted setups to historical super tiebreak target', () => {
     const legacyRecord = {
       schemaVersion: currentMatchSchemaVersion,
       matchId: testMatchId,
@@ -162,6 +164,108 @@ describe('current match persistence helpers', () => {
     expect(decodedRecord.setup.servingIndicatorEnabled).toBe(true);
     expect(decodedRecord.setup.countdownTimerEnabled).toBe(false);
     expect(decodedRecord.setup.countdownTimerDuration).toBe(90);
+    expect(decodedRecord.setup.superTiebreakTargetPoints).toBe(legacySuperTiebreakTargetPoints);
+    expect(decodedRecord.legacyInProgressSuperTiebreakTargetPoints).toBe(
+      legacySuperTiebreakTargetPoints
+    );
+  });
+
+  test('preserves legacy in-progress target across save/resume cycles with explicit metadata', () => {
+    const legacyRecord = {
+      schemaVersion: currentMatchSchemaVersion,
+      matchId: testMatchId,
+      setup: {
+        format: 'best-of-3',
+        gameMode: 'advantage',
+        initialServer: 'team-1',
+        decidingSetSuperTiebreak: false,
+        sideSwitchPrompts: false,
+        sides: [
+          { id: 'team-1', playerNames: ['Ana', 'Bea'] },
+          { id: 'team-2', playerNames: ['Carla', 'Dani'] }
+        ]
+      },
+      actions: [],
+      startedAt: testStartedAt
+    };
+
+    const decodedRecord = parseCurrentMatchRecord(legacyRecord);
+    const reSavedRecord = createCurrentMatchRecord({
+      matchId: decodedRecord.matchId,
+      setup: decodedRecord.setup,
+      actions: decodedRecord.actions,
+      startedAt: decodedRecord.startedAt,
+      ...(decodedRecord.legacyInProgressSuperTiebreakTargetPoints === undefined
+        ? {}
+        : {
+            legacyInProgressSuperTiebreakTargetPoints:
+              decodedRecord.legacyInProgressSuperTiebreakTargetPoints
+          })
+    });
+
+    expect(reSavedRecord.setup.superTiebreakTargetPoints).toBe(legacySuperTiebreakTargetPoints);
+    expect(reSavedRecord.legacyInProgressSuperTiebreakTargetPoints).toBe(
+      legacySuperTiebreakTargetPoints
+    );
+  });
+
+  test('ignores invalid legacy in-progress metadata while preserving legacy fallback behavior', () => {
+    const legacyRecordWithInvalidMetadata = {
+      schemaVersion: currentMatchSchemaVersion,
+      matchId: testMatchId,
+      setup: {
+        format: 'best-of-3',
+        gameMode: 'advantage',
+        initialServer: 'team-1',
+        decidingSetSuperTiebreak: false,
+        sideSwitchPrompts: false,
+        sides: [
+          { id: 'team-1', playerNames: ['Ana', 'Bea'] },
+          { id: 'team-2', playerNames: ['Carla', 'Dani'] }
+        ]
+      },
+      actions: [],
+      startedAt: testStartedAt,
+      legacyInProgressSuperTiebreakTargetPoints: 'invalid'
+    };
+
+    const decodedRecord = decodeCurrentMatchRecord(legacyRecordWithInvalidMetadata);
+
+    expect(decodedRecord.status).toBe('ok');
+    if (decodedRecord.status !== 'ok') {
+      throw new Error('Expected status ok.');
+    }
+    expect(decodedRecord.record.setup.superTiebreakTargetPoints).toBe(
+      legacySuperTiebreakTargetPoints
+    );
+    expect(decodedRecord.record.legacyInProgressSuperTiebreakTargetPoints).toBe(
+      legacySuperTiebreakTargetPoints
+    );
+  });
+
+  test('defaults legacy finished persisted setups to the new default target', () => {
+    const legacyFinishedRecord = {
+      schemaVersion: currentMatchSchemaVersion,
+      matchId: testMatchId,
+      setup: {
+        format: 'best-of-3',
+        gameMode: 'advantage',
+        initialServer: 'team-1',
+        decidingSetSuperTiebreak: false,
+        sideSwitchPrompts: false,
+        sides: [
+          { id: 'team-1', playerNames: ['Ana', 'Bea'] },
+          { id: 'team-2', playerNames: ['Carla', 'Dani'] }
+        ]
+      },
+      actions: [],
+      startedAt: testStartedAt,
+      finishedAt: testFinishedAt
+    };
+
+    const decodedRecord = parseCurrentMatchRecord(legacyFinishedRecord);
+
+    expect(decodedRecord.setup.superTiebreakTargetPoints).toBe(defaultSuperTiebreakTargetPoints);
   });
 
   test('defaults corrupted persisted serving indicator values', () => {
@@ -218,6 +322,35 @@ describe('current match persistence helpers', () => {
     const decodedRecord = parseCurrentMatchRecord(recordWithInvalidDuration);
 
     expect(decodedRecord.setup.countdownTimerDuration).toBe(90);
+  });
+
+  test('defaults corrupted persisted super tiebreak target points values', () => {
+    const recordWithInvalidTarget = {
+      schemaVersion: currentMatchSchemaVersion,
+      matchId: testMatchId,
+      setup: {
+        format: 'best-of-3',
+        gameMode: 'advantage',
+        initialServer: 'team-1',
+        decidingSetSuperTiebreak: true,
+        audioAnnouncementsEnabled: true,
+        countdownTimerEnabled: false,
+        countdownTimerDuration: 90,
+        superTiebreakTargetPoints: 10,
+        sideSwitchPrompts: false,
+        sides: [
+          { id: 'team-1', playerNames: ['Ana', 'Bea'] },
+          { id: 'team-2', playerNames: ['Carla', 'Dani'] }
+        ]
+      },
+      actions: [],
+      startedAt: testStartedAt
+    };
+
+    const decodedRecord = parseCurrentMatchRecord(recordWithInvalidTarget);
+
+    expect(decodedRecord.setup.superTiebreakTargetPoints).toBe(defaultSuperTiebreakTargetPoints);
+    expect(decodedRecord.legacyInProgressSuperTiebreakTargetPoints).toBeUndefined();
   });
 
   test('round-trips audio announcements enabled in persisted setup', () => {

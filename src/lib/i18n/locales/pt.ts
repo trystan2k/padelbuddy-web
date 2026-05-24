@@ -220,7 +220,16 @@ export default {
       goldenPoint: 'Ponto de Ouro',
       goldenPointHint: 'Sem vantagem no deuce',
       superTiebreak: 'Super Tiebreak',
-      superTiebreakHint: 'Tiebreak no set final até 10 pontos',
+      superTiebreakHint: 'Substitui o set decisivo por um super tiebreak configurável',
+      superTiebreakTarget: {
+        label: 'Meta do super tiebreak',
+        sevenPoints: '7',
+        ninePoints: '9',
+        elevenPoints: '11',
+        sevenPointsAriaLabel: 'Primeiro a chegar a 7 pontos',
+        ninePointsAriaLabel: 'Primeiro a chegar a 9 pontos',
+        elevenPointsAriaLabel: 'Primeiro a chegar a 11 pontos'
+      },
       sideSwitch: 'Avisos de Troca de Lado',
       sideSwitchHint: 'Lembrar jogadores de trocar de lado',
       servingIndicator: 'Indicador de saque',
@@ -538,7 +547,7 @@ export default {
         },
         superTiebreak: {
           title: 'Super tie-break no set decisivo',
-          body: 'Ative esta opção para substituir o set decisivo por um super tie-break até 10 pontos, vencendo por 2. Esse formato é comum quando se quer reduzir o tempo total sem perder competitividade no fechamento. Se desativado, o set decisivo segue o formato normal por games.'
+          body: 'Ative esta opção para substituir o set decisivo por um super tie-break com meta configurável, vencendo por 2. Esse formato é comum quando se quer reduzir o tempo total sem perder competitividade no fechamento. Se desativado, o set decisivo segue o formato normal por games.'
         },
         firstServer: {
           title: 'Primeiro sacador',
@@ -614,7 +623,7 @@ export default {
         },
         superTiebreak: {
           title: 'Super tie-break no set decisivo',
-          body: 'Se o Super Tie-break foi ativado na configuração, o set decisivo vira disputa até 10 pontos, vencendo por 2. O app aplica esse formato somente no último set decisivo e registra o resultado corretamente. É útil para torneios que precisam encerrar em menos tempo.'
+          body: 'Se o Super Tie-break foi ativado na configuração, o set decisivo vira disputa até a meta selecionada, vencendo por 2. O app aplica esse formato somente no último set decisivo e registra o resultado corretamente. É útil para torneios que precisam encerrar em menos tempo.'
         },
         sideSwitch: {
           title: 'Avisos de troca de lado',
