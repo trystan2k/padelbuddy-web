@@ -6,6 +6,8 @@ import { useInputHandler } from '@/lib/input/use-input-handler';
 import type { RemoteControllerBindings } from '@/lib/input/keyboard-aliases';
 import type { MatchAction, MatchTeamId } from '@/core/match/types';
 
+const EMPTY_ACTIONS: MatchAction[] = [];
+
 function removeLastTeamAction(actions: MatchAction[], teamId: MatchTeamId): MatchAction[] {
   const actionIndex = actions.findLastIndex((action) => action.teamId === teamId);
 
@@ -19,7 +21,7 @@ function removeLastTeamAction(actions: MatchAction[], teamId: MatchTeamId): Matc
 function InputHandlerHarness({
   enabled = true,
   bindings = null,
-  initialActions = [],
+  initialActions = EMPTY_ACTIONS,
   bufferedAddWindowMs = 600,
   onAdd = vi.fn<(teamId: MatchTeamId) => void>(),
   onUndo = vi.fn<() => void>(),

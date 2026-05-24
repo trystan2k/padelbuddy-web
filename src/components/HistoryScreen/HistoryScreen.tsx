@@ -390,7 +390,10 @@ export function HistoryScreen({ initialRecords }: HistoryScreenProps) {
               <tbody className={styles.rows}>
                 {historyRows.map((row) => (
                   <tr key={row.id} className={styles.dataRow}>
-                    <td className={styles.teamsCell}>
+                    <td
+                      className={styles.teamsCell}
+                      aria-label={`${row.team1Name} ${row.team2Name}`}
+                    >
                       <div className={styles.teamsCellContent}>
                         <p
                           className={`${styles.teamPrimary} ${

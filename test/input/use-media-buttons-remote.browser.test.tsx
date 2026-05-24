@@ -5,9 +5,31 @@ import { render } from 'vitest-browser-react';
 import { useMediaButtonsRemote } from '@/lib/input/use-media-buttons-remote';
 import type { MatchAction, MatchTeamId } from '@/core/match/types';
 
+const EMPTY_ACTIONS: MatchAction[] = [];
+
+function createMockMediaSession(): {
+  handlers: Record<string, ((details: MediaSessionActionDetails) => void) | null>;
+  setActionHandler: ReturnType<typeof vi.fn>;
+  metadata: null;
+  playbackState: MediaSessionPlaybackState;
+} {
+  const handlers: Record<string, ((details: MediaSessionActionDetails) => void) | null> = {};
+
+  return {
+    handlers,
+    setActionHandler: vi.fn<
+      (action: string, handler: ((details: MediaSessionActionDetails) => void) | null) => void
+    >((action, handler) => {
+      handlers[action] = handler;
+    }),
+    metadata: null,
+    playbackState: 'none' as MediaSessionPlaybackState
+  };
+}
+
 function MediaButtonsRemoteHarness({
   enabled = true,
-  initialActions = [],
+  initialActions = EMPTY_ACTIONS,
   onAdd = vi.fn<(teamId: MatchTeamId) => Promise<void> | void>(),
   onUndoForTeam = vi.fn<(teamId: MatchTeamId) => Promise<void> | void>(),
   onError = vi.fn<(error: Error) => void>(),
@@ -297,26 +319,6 @@ describe('use-media-buttons-remote browser', () => {
   });
 
   describe('MediaSession handler registration', () => {
-    function createMockMediaSession(): {
-      handlers: Record<string, ((details: MediaSessionActionDetails) => void) | null>;
-      setActionHandler: ReturnType<typeof vi.fn>;
-      metadata: null;
-      playbackState: MediaSessionPlaybackState;
-    } {
-      const handlers: Record<string, ((details: MediaSessionActionDetails) => void) | null> = {};
-
-      return {
-        handlers,
-        setActionHandler: vi.fn<
-          (action: string, handler: ((details: MediaSessionActionDetails) => void) | null) => void
-        >((action, handler) => {
-          handlers[action] = handler;
-        }),
-        metadata: null,
-        playbackState: 'none' as MediaSessionPlaybackState
-      };
-    }
-
     test('registers nexttrack and previoustrack handlers when mediaSession is available', async () => {
       const mockMediaSession = createMockMediaSession();
 
