@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.22.0](https://github.com/trystan2k/padelbuddy-web/compare/v2.21.0...v2.22.0) (2026-05-24)
+
+
+### Features
+
+* add configurable super tiebreak target ([ed5e2c3](https://github.com/trystan2k/padelbuddy-web/commit/ed5e2c3ca12087e692b581bc0c4b85f24edfae74))
+
 ## [2.21.0](https://github.com/trystan2k/padelbuddy-web/compare/v2.20.0...v2.21.0) (2026-05-22)
 
 
