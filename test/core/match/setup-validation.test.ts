@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'vitest';
 
 import { createMatchSetup, validateMatchSetup } from '@/core/match/validation';
-import type { MatchSetupInput } from '@/core/match/types';
+import { defaultSuperTiebreakTargetPoints, type MatchSetupInput } from '@/core/match/types';
 
 const baseInput: MatchSetupInput = {
   format: 'best-of-3',
@@ -78,7 +78,7 @@ describe('match setup validation', () => {
     }
 
     const setupWithDefaultTarget = createMatchSetup(baseInput);
-    expect(setupWithDefaultTarget.superTiebreakTargetPoints).toBe(11);
+    expect(setupWithDefaultTarget.superTiebreakTargetPoints).toBe(defaultSuperTiebreakTargetPoints);
   });
 
   test('accepts explicit serving indicator states', () => {
