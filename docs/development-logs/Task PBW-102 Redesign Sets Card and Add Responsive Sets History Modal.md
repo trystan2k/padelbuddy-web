@@ -9,7 +9,7 @@ permalink: docs/development-logs/task-PBW-102-redesign-sets-card-and-add-respons
 ## Metadata
 
 - Task ID: PBW-102
-- Date (UTC): 2026-05-24T14:22:48Z
+- Date (UTC): 2026-05-24T15:21:19Z
 - Project: padelbuddy-web
 - Branch: feature/PBW-102-redesign-sets-card-and-add-responsive-sets-history-modal
 - Commit: d8d383c (staged changes awaiting commit)
@@ -30,7 +30,7 @@ permalink: docs/development-logs/task-PBW-102-redesign-sets-card-and-add-respons
 
 - **Auto-open setup toggle**: New `autoOpenSetsHistoryModal` boolean added to `SetupFormData`, `MatchSetupInput`, `MatchSetup`, and `SetupPreferences`. Toggle exposed on SetupScreen UI. Value persists through `setup-storage.ts` (IndexedDB) with `true` as default for new installs. Parsing uses `typeof` guard for backward compatibility with stored records missing the field.
 
-- **Side-switch default change**: `sideSwitchPrompts` default changed from `true` to `false` in `defaultSetupPreferences`. Legacy in-progress matches without the field in their persisted setup fall back to `true` via `shouldUseLegacyInProgressSideSwitchPrompts` guard in `persistence.ts`, preserving existing match behavior.
+- **Side-switch default change**: `sideSwitchPrompts` default changed from `true` to `false` in `defaultSetupPreferences`. Legacy matches (both in-progress and completed) without the field in their persisted record fall back to `true` via `shouldUseLegacySideSwitchPrompts` guard in `persistence.ts`, preserving existing behavior. Originally scoped to in-progress only (`shouldUseLegacyInProgressSideSwitchPrompts`); Copilot follow-up broadened the guard to cover completed records too — completed matches loaded for review/share also need the legacy fallback since they predate the field.
 
 - **E2E cold-start stabilization**: Refactored `match-flow.ts` helper — replaced single `setupReadyTimeoutMs` (15s) with per-attempt timeout (8s) + total budget (26s). Added `resetPersistence` option to clear IndexedDB before navigation. Added `autoOpenSetsHistoryModal` option to match-flow start-match API. Updated all 7 E2E specs to accommodate SetsCard UI changes and new setup fields.
 
@@ -59,7 +59,7 @@ permalink: docs/development-logs/task-PBW-102-redesign-sets-card-and-add-respons
 ### Persistence & Storage
 
 - `src/lib/setup/setup-storage.ts` — Added field to `SetupPreferences`, default `true`, `typeof` guard in parser for backward compat
-- `src/lib/current-match/persistence.ts` — Parse `autoOpenSetsHistoryModal` with fallback to `true`; `shouldUseLegacyInProgressSideSwitchPrompts` for `sideSwitchPrompts` backward compat
+- `src/lib/current-match/persistence.ts` — Parse `autoOpenSetsHistoryModal` with fallback to `true`; `shouldUseLegacySideSwitchPrompts` (broadened from in-progress-only to all records) for `sideSwitchPrompts` backward compat
 
 ### Localization
 
@@ -77,7 +77,7 @@ permalink: docs/development-logs/task-PBW-102-redesign-sets-card-and-add-respons
 - `test/components/SetupScreen/useSetupForm.browser.test.tsx` — Updated form tests
 - `test/components/SetupScreen/validateSetupForm.test.ts` — Validation test for new field
 - `test/current-match/indexed-db.browser.test.ts` — Updated persistence tests
-- `test/current-match/persistence.test.ts` — Tests for `autoOpenSetsHistoryModal` and legacy side-switch fallback
+- `test/current-match/persistence.test.ts` — Tests for `autoOpenSetsHistoryModal`, legacy in-progress side-switch fallback, and regression test for completed-record side-switch fallback
 - `test/lib/setup/setup-storage.test.ts` — Tests for new field storage and parsing
 
 ### E2E
@@ -103,7 +103,7 @@ permalink: docs/development-logs/task-PBW-102-redesign-sets-card-and-add-respons
 - **Completed-set history only**: In-progress set excluded from modal body to avoid confusion between live score (card) and historical score (modal).
 - **Auto-open only on set completion**: Auto-open fires when the set-completion signature changes (`getSetsHistoryAutoOpenSignature`), not on every render. Prevents spurious opens.
 - **Auto-open setup toggle with persistence**: New field defaults `true` for new installs. Stored in IndexedDB via `setup-storage`. Parsing uses `typeof` guard for backward compat with records missing the field.
-- **Side-switch default `false` for new setups**: Changed default in `defaultSetupPreferences`. Legacy in-progress matches without the field fall back to `true` via `shouldUseLegacyInProgressSideSwitchPrompts` guard in `persistence.ts`. No silent behavior change for existing matches.
+- **Side-switch default `false` for new setups**: Changed default in `defaultSetupPreferences`. Legacy matches (in-progress and completed) without the field fall back to `true` via `shouldUseLegacySideSwitchPrompts` guard in `persistence.ts`. Guard was initially scoped to in-progress only; Copilot follow-up broadened it to completed records too since completed matches loaded for review/share also predate the field. No silent behavior change for any existing matches.
 - **30-second auto-close with full reset**: Timer-based close avoids modal hanging. State fully resets (no memory leaks, no stale timers).
 - **Finish-navigation bypass**: Auto-open suppressed when match-end transition is imminent — prevents modal flash before screen change.
 - **Super-tiebreak legacy fallback**: `getCompletedSuperTiebreakScore` tries `tiebreakPoints` first, then legacy `game.points` shape, then falls back to `set.games`. Handles matches persisted before the tiebreakPoints field was added.
@@ -111,7 +111,7 @@ permalink: docs/development-logs/task-PBW-102-redesign-sets-card-and-add-respons
 
 ## Validation Performed
 
-- `pnpm complete-check` — **PASSES** (lint, format, unit, browser, e2e all green)
+- `pnpm complete-check` — **PASSES** (lint, format, unit, browser, e2e all green) — re-verified after Copilot follow-up fix
 - Code review — **APPROVED** (final review)
 - Architecture review — **APPROVED** (final architecture review)
 
@@ -121,3 +121,4 @@ permalink: docs/development-logs/task-PBW-102-redesign-sets-card-and-add-respons
 - Super-tiebreak display uses score fallback; a point-by-point visualization could be a future enhancement.
 - E2E does not explicitly test the 30-second auto-close timer (timing-dependent tests are fragile); browser tests cover the close logic.
 - Legacy super-tiebreak shape fallback can be removed once all pre-tiebreakPoints matches have expired from user devices.
+- Legacy `sideSwitchPrompts` fallback (broadened to all records) can be removed once all pre-field matches have expired from user devices.

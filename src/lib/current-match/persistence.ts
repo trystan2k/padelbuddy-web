@@ -227,8 +227,7 @@ function parseMatchSetup(
   const shouldUseLegacySuperTiebreakTarget =
     isInProgress &&
     options?.legacyInProgressSuperTiebreakTargetPoints === legacySuperTiebreakTargetPoints;
-  const shouldUseLegacyInProgressSideSwitchPrompts =
-    isInProgress && typeof setup.sideSwitchPrompts === 'undefined';
+  const shouldUseLegacySideSwitchPrompts = typeof setup.sideSwitchPrompts === 'undefined';
 
   const setupInput = {
     format: setup.format,
@@ -255,7 +254,7 @@ function parseMatchSetup(
     superTiebreakTargetPoints: isSuperTiebreakTargetPoints(setup.superTiebreakTargetPoints)
       ? setup.superTiebreakTargetPoints
       : undefined,
-    sideSwitchPrompts: shouldUseLegacyInProgressSideSwitchPrompts ? true : setup.sideSwitchPrompts,
+    sideSwitchPrompts: shouldUseLegacySideSwitchPrompts ? true : setup.sideSwitchPrompts,
     sides: setup.sides
   };
 
