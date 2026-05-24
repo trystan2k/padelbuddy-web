@@ -4,10 +4,12 @@ import { cleanup, render } from 'vitest-browser-react';
 
 import { useInactivityTimer } from '@/hooks/useInactivityTimer';
 
+const EMPTY_SELECTORS: string[] = [];
+
 function InactivityTimerHarness({
   enabled = true,
   timeoutMs = 5000,
-  ignoredTargetSelectors = [],
+  ignoredTargetSelectors = EMPTY_SELECTORS,
   shouldIgnoreEvent
 }: {
   enabled?: boolean;

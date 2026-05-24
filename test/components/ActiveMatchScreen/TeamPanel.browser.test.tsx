@@ -5,15 +5,17 @@ import { TeamPanel } from '@/components/ActiveMatchScreen/TeamPanel/TeamPanel';
 import styles from '@/components/ActiveMatchScreen/TeamPanel/TeamPanel.module.css';
 import { resolveCssColor } from '../../utils/css';
 
-describe('TeamPanel', () => {
-  const createDefaultProps = () => ({
+function createDefaultProps() {
+  return {
     teamId: 'team-1' as const,
     teamName: 'Team Alpha',
     score: '15',
     isServing: false,
     onClick: vi.fn<() => void>()
-  });
+  };
+}
 
+describe('TeamPanel', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });

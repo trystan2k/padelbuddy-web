@@ -58,6 +58,23 @@ function ToastTrigger({
   );
 }
 
+function MultiToastTrigger() {
+  const { addToast } = useToast();
+
+  return (
+    <button
+      type="button"
+      data-testid="trigger-toast"
+      onClick={() => {
+        addToast('First toast', { timeout: 30000 });
+        addToast('Second toast', { timeout: 30000 });
+      }}
+    >
+      Trigger
+    </button>
+  );
+}
+
 describe('ToastViewport', () => {
   afterEach(() => cleanupToasts());
 
@@ -110,23 +127,6 @@ describe('ToastViewport', () => {
   });
 
   test('renders multiple toasts simultaneously', async () => {
-    function MultiToastTrigger() {
-      const { addToast } = useToast();
-
-      return (
-        <button
-          type="button"
-          data-testid="trigger-toast"
-          onClick={() => {
-            addToast('First toast', { timeout: 30000 });
-            addToast('Second toast', { timeout: 30000 });
-          }}
-        >
-          Trigger
-        </button>
-      );
-    }
-
     const screen = await render(
       <ToastProvider>
         <MultiToastTrigger />
