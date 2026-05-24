@@ -96,6 +96,7 @@ describe('current match IndexedDB persistence', () => {
       servingIndicatorEnabled: true,
       countdownTimerEnabled: false,
       countdownTimerDuration: 90,
+      autoOpenSetsHistoryModal: true,
       sideSwitchPrompts: true,
       format: 'best-of-3',
       gameMode: 'advantage',

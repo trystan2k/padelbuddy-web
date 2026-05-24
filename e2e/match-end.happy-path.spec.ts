@@ -33,7 +33,11 @@ test.describe('@happy-path @match-end Match end', () => {
     await page.getByRole('button', { name: /continue/i }).click();
 
     await expect(page).toHaveURL(new RegExp(`/match/${record.matchId}$`));
-    await expect(page.getByTestId('set-row-0')).toContainText('6-0');
+    await expect(page.getByTestId('set-row-current')).toContainText('0-0');
+    await page.getByTestId('sets-card').click();
+    await expect(page.getByTestId('sets-history-modal-list')).toContainText(/6\s*-\s*0/);
+    await page.getByTestId('sets-history-modal-close').click();
+    await expect(page.getByTestId('sets-history-modal')).not.toBeAttached();
     await expect(page.getByTestId('team-panel-team-1')).toContainText('0');
 
     await page.getByTestId('team-panel-team-1').click();

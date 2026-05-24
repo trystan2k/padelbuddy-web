@@ -9,6 +9,7 @@ import type {
   MatchTeamId,
   SuperTiebreakTargetPoints
 } from '../../src/core/match/types';
+import { persistenceDatabaseName } from '../../src/lib/persistence/indexed-db';
 
 interface StartMatchOptions {
   team1Name?: string;
@@ -18,10 +19,15 @@ interface StartMatchOptions {
   initialServer?: MatchTeamId;
   decidingSetSuperTiebreak?: boolean;
   superTiebreakTargetPoints?: SuperTiebreakTargetPoints;
+  autoOpenSetsHistoryModal?: boolean;
   sideSwitchPrompts?: boolean;
   servingIndicatorEnabled?: boolean;
   countdownTimerEnabled?: boolean;
   countdownTimerDuration?: CountdownTimerDuration;
+}
+
+interface GotoSetupScreenOptions {
+  resetPersistence?: boolean;
 }
 
 const formatButtonLabels: Record<MatchFormat, RegExp> = {
@@ -36,7 +42,8 @@ const countdownDurationLabels: Record<CountdownTimerDuration, RegExp> = {
   120: /2:00 h/i
 };
 
-const setupReadyTimeoutMs = 15_000;
+const setupReadyAttemptTimeoutMs = 8_000;
+const setupReadyBudgetMs = 26_000;
 const maxSetupNavigationAttempts = 3;
 
 function isTransientNavigationError(error: unknown): boolean {
@@ -51,17 +58,54 @@ function isTransientNavigationError(error: unknown): boolean {
   );
 }
 
-async function waitForSetupScreenReady(page: Page): Promise<void> {
-  const startMatchButton = page.getByRole('button', { name: /start match/i });
+function isRetryableSetupReadinessError(error: unknown): boolean {
+  const message = error instanceof Error ? error.message : String(error);
 
-  await expect(startMatchButton).toBeVisible({ timeout: setupReadyTimeoutMs });
-  await expect(startMatchButton).toBeEnabled();
-  await expect(page.getByRole('textbox', { name: /team 1/i })).toBeVisible({
-    timeout: setupReadyTimeoutMs
-  });
-  await expect(page.getByRole('textbox', { name: /team 2/i })).toBeVisible({
-    timeout: setupReadyTimeoutMs
-  });
+  return (
+    message.includes('expect(locator).toBeVisible() failed') ||
+    message.includes('expect(locator).toHaveCount() failed') ||
+    message.includes("getByTestId('rules-card')")
+  );
+}
+
+async function resetClientPersistenceForSetup(page: Page): Promise<void> {
+  await page.evaluate(
+    async ({ databaseName }) => {
+      localStorage.clear();
+      sessionStorage.clear();
+
+      if ('serviceWorker' in navigator) {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(registrations.map((registration) => registration.unregister()));
+      }
+
+      if ('caches' in window) {
+        const cacheKeys = await caches.keys();
+        await Promise.all(cacheKeys.map((cacheKey) => caches.delete(cacheKey)));
+      }
+
+      await new Promise<void>((resolve) => {
+        const request = indexedDB.deleteDatabase(databaseName);
+
+        request.addEventListener('success', () => resolve());
+        request.addEventListener('error', () => resolve());
+        request.addEventListener('blocked', () => resolve());
+      });
+    },
+    { databaseName: persistenceDatabaseName }
+  );
+}
+
+async function waitForSetupScreenReady(page: Page, timeoutMs: number): Promise<void> {
+  // Keep setup readiness locale-agnostic: labels can change with i18n, but
+  // structure stays stable (rules card + two team inputs).
+  const rulesCard = page.getByTestId('rules-card');
+  const teamNameInputs = page.getByRole('textbox');
+
+  await expect(rulesCard).toBeVisible({ timeout: timeoutMs });
+  await expect(teamNameInputs).toHaveCount(2, { timeout: timeoutMs });
+  await expect(teamNameInputs.nth(0)).toBeVisible({ timeout: timeoutMs });
+  await expect(teamNameInputs.nth(1)).toBeVisible({ timeout: timeoutMs });
 }
 
 async function setToggle(page: Page, label: RegExp, checked: boolean): Promise<void> {
@@ -75,19 +119,49 @@ async function setToggle(page: Page, label: RegExp, checked: boolean): Promise<v
   await expect(toggle).toHaveAttribute('aria-checked', checked ? 'true' : 'false');
 }
 
-export async function gotoSetupScreen(page: Page): Promise<void> {
+export async function gotoSetupScreen(
+  page: Page,
+  options: GotoSetupScreenOptions = {}
+): Promise<void> {
+  const { resetPersistence = false } = options;
+  const startedAt = Date.now();
+  let didInitialOriginPersistenceReset = false;
+
   async function navigate(attempt: number): Promise<void> {
+    const elapsedMs = Date.now() - startedAt;
+    const remainingBudgetMs = setupReadyBudgetMs - elapsedMs;
+
+    if (remainingBudgetMs <= 0) {
+      throw new Error(
+        `Setup screen not ready within ${String(setupReadyBudgetMs)}ms total retry budget.`
+      );
+    }
+
+    const readinessTimeoutMs = Math.min(setupReadyAttemptTimeoutMs, remainingBudgetMs);
+
     try {
+      if (resetPersistence && !didInitialOriginPersistenceReset) {
+        await page.goto('/', { waitUntil: 'domcontentloaded' });
+        await resetClientPersistenceForSetup(page);
+        didInitialOriginPersistenceReset = true;
+      }
+
       await page.goto('/', { waitUntil: 'domcontentloaded' });
-      await waitForSetupScreenReady(page);
+      await waitForSetupScreenReady(page, readinessTimeoutMs);
     } catch (error) {
       const isLastAttempt = attempt === maxSetupNavigationAttempts;
+      const nextAttemptElapsedMs = Date.now() - startedAt;
+      const hasBudgetForRetry = nextAttemptElapsedMs < setupReadyBudgetMs;
 
-      if (isLastAttempt || !isTransientNavigationError(error)) {
+      if (
+        isLastAttempt ||
+        !hasBudgetForRetry ||
+        (!isTransientNavigationError(error) && !isRetryableSetupReadinessError(error))
+      ) {
         throw error;
       }
 
-      await page.waitForTimeout(400 * attempt);
+      await page.waitForTimeout(250 * attempt);
       await navigate(attempt + 1);
     }
   }
@@ -104,13 +178,14 @@ export async function startMatch(page: Page, options: StartMatchOptions = {}): P
     initialServer = 'team-1',
     decidingSetSuperTiebreak = false,
     superTiebreakTargetPoints = 11,
+    autoOpenSetsHistoryModal = true,
     sideSwitchPrompts = false,
     servingIndicatorEnabled = false,
     countdownTimerEnabled = false,
     countdownTimerDuration = 90
   } = options;
 
-  await gotoSetupScreen(page);
+  await gotoSetupScreen(page, { resetPersistence: true });
 
   await page.getByRole('textbox', { name: /team 1/i }).fill(team1Name);
   await page.getByRole('textbox', { name: /team 2/i }).fill(team2Name);
@@ -129,6 +204,7 @@ export async function startMatch(page: Page, options: StartMatchOptions = {}): P
     );
   }
 
+  await setToggle(page, /auto-open sets history/i, autoOpenSetsHistoryModal);
   await setToggle(page, /side-switch prompts/i, sideSwitchPrompts);
   await setToggle(page, /serving indicator/i, servingIndicatorEnabled);
   await setToggle(page, /countdown timer/i, countdownTimerEnabled);

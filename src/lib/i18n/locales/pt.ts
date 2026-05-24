@@ -232,6 +232,9 @@ export default {
       },
       sideSwitch: 'Avisos de Troca de Lado',
       sideSwitchHint: 'Lembrar jogadores de trocar de lado',
+      autoOpenSetsHistoryModal: 'Autoabrir Histórico de Sets',
+      autoOpenSetsHistoryModalHint:
+        'Abre automaticamente o histórico de sets ao completar cada set',
       servingIndicator: 'Indicador de saque',
       servingIndicatorHint: 'Mostra quem está sacando no momento',
       countdownTimer: 'Cronômetro regressivo',
@@ -323,9 +326,12 @@ export default {
       sideSwitchOff: 'Trocas de lado: desativado'
     },
     sets: {
-      label: 'Sets',
+      label: 'Set Atual',
       setLabel: 'Set {{number}}',
       currentShort: 'Atual',
+      currentSetScoreHeadline: 'Sets: {{team1}} - {{team2}}',
+      openHistoryLabel: 'Abrir histórico de sets. Placar de sets: {{team1}} - {{team2}}',
+      emptyHistory: 'Ainda não há sets concluídos.',
       superTiebreakBadge: 'S-TB'
     },
     timer: {

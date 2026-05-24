@@ -19,6 +19,7 @@ export interface SetupFormData {
   servingIndicatorEnabled: boolean;
   countdownTimerEnabled: boolean;
   countdownTimerDuration: CountdownTimerDuration;
+  autoOpenSetsHistoryModal: boolean;
   sideSwitchPrompts: boolean;
 }
 

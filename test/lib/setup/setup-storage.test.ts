@@ -32,6 +32,7 @@ describe('setup-storage', () => {
       servingIndicatorEnabled: false,
       countdownTimerEnabled: true,
       countdownTimerDuration: 120,
+      autoOpenSetsHistoryModal: true,
       sideSwitchPrompts: false,
       format: 'best-of-3',
       gameMode: 'golden-point',
@@ -67,6 +68,7 @@ describe('setup-storage', () => {
       servingIndicatorEnabled: false,
       countdownTimerEnabled: true,
       countdownTimerDuration: 60,
+      autoOpenSetsHistoryModal: true,
       sideSwitchPrompts: false,
       format: 'best-of-3',
       gameMode: 'golden-point',
@@ -91,6 +93,7 @@ describe('setup-storage', () => {
       servingIndicatorEnabled: false,
       countdownTimerEnabled: true,
       countdownTimerDuration: 60,
+      autoOpenSetsHistoryModal: true,
       sideSwitchPrompts: false,
       format: 'best-of-3',
       gameMode: 'golden-point',
@@ -107,6 +110,7 @@ describe('setup-storage', () => {
       servingIndicatorEnabled: false,
       countdownTimerEnabled: true,
       countdownTimerDuration: 60,
+      autoOpenSetsHistoryModal: true,
       sideSwitchPrompts: false,
       format: 'best-of-3',
       gameMode: 'golden-point',
@@ -350,7 +354,10 @@ describe('setup-storage', () => {
 
     const storage = createSetupStorage({ databaseName: 'legacy-setup-normalization-db' });
 
-    await expect(storage.loadSetupPreferences()).resolves.toEqual(defaultSetupPreferences);
+    await expect(storage.loadSetupPreferences()).resolves.toEqual({
+      ...defaultSetupPreferences,
+      sideSwitchPrompts: true
+    });
   });
 
   it('normalizes legacy setup records missing only super tiebreak target', async () => {

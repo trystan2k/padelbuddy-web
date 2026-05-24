@@ -1,62 +1,61 @@
 import { useTranslation } from 'react-i18next';
 
 import type { MatchSetState } from '@/core/match/types';
-import { Card } from '@/components/ui/Card/Card';
+
+import { getCurrentSet, getSetDisplayScore } from '../sets-history';
 
 import styles from './SetsCard.module.css';
-import { useEffect, useRef } from 'react';
 
 interface SetsCardProps {
   sets: MatchSetState[];
   currentSetIndex: number | null;
+  onOpenHistory?: () => void;
 }
 
 /**
- * SetsCard component - Displays completed and in-progress set scores.
- * Follows Pencil design node ID: pGBiU
- * Container: 180px width, corner radius 20px
+ * SetsCard component - compact trigger showing current set score only.
  */
-export function SetsCard({ sets, currentSetIndex }: SetsCardProps) {
+export function SetsCard({ sets, currentSetIndex, onOpenHistory }: SetsCardProps) {
   const { t } = useTranslation();
 
-  const setsGridRef = useRef<HTMLDivElement>(null);
+  const currentSet = getCurrentSet(sets, currentSetIndex);
+  const currentScore = getSetDisplayScore(currentSet);
 
-  useEffect(() => {
-    const setsGrid = setsGridRef.current;
-    if (setsGrid) {
-      setsGrid.scroll({ top: -setsGrid.scrollHeight, behavior: 'smooth' });
-    }
-  }, [currentSetIndex, sets.length]);
+  const cardContent = (
+    <>
+      <span className={styles.label}>{t('match.sets.label')}</span>
+      <span className={styles.setRow} data-testid="set-row-current">
+        <span className={styles.setScore} data-testid="set-score-current">
+          <span className={styles.team1Games}>{currentScore['team-1']}</span>
+          <span className={styles.divider}>-</span>
+          <span className={styles.team2Games}>{currentScore['team-2']}</span>
+        </span>
+      </span>
+    </>
+  );
+
+  const historyTriggerLabel = t('match.sets.openHistoryLabel', {
+    team1: currentScore['team-1'],
+    team2: currentScore['team-2']
+  });
+
+  if (typeof onOpenHistory !== 'function') {
+    return (
+      <div className={styles.container} data-testid="sets-card">
+        {cardContent}
+      </div>
+    );
+  }
 
   return (
-    <Card className={styles.container} data-testid="sets-card">
-      <span className={styles.label}>{t('match.sets.label')}</span>
-      <div className={styles.setsGrid} ref={setsGridRef}>
-        {sets.map((set, index) => {
-          const isCurrent = index === currentSetIndex;
-          const setLabel = isCurrent
-            ? t('match.sets.currentShort')
-            : t('match.sets.setLabel', { number: index + 1 });
-
-          return (
-            <div
-              key={set.index}
-              className={styles.setRow}
-              aria-current={isCurrent ? 'true' : undefined}
-              data-testid={`set-row-${index}`}
-            >
-              <span className={styles.setNumber} data-testid={`set-number-${index}`}>
-                {setLabel}
-              </span>
-              <span className={styles.setScore}>
-                <span className={styles.team1Games}>{set.games['team-1']}</span>
-                <span className={styles.divider}>-</span>
-                <span className={styles.team2Games}>{set.games['team-2']}</span>
-              </span>
-            </div>
-          );
-        })}
-      </div>
-    </Card>
+    <button
+      type="button"
+      className={styles.trigger}
+      data-testid="sets-card"
+      aria-label={historyTriggerLabel}
+      onClick={onOpenHistory}
+    >
+      <span className={styles.container}>{cardContent}</span>
+    </button>
   );
 }

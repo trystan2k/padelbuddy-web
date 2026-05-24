@@ -223,9 +223,12 @@ function parseMatchSetup(
   }
 ): MatchSetup {
   const setup = parseRecord(input);
+  const isInProgress = typeof options?.finishedAt === 'undefined';
   const shouldUseLegacySuperTiebreakTarget =
-    typeof options?.finishedAt === 'undefined' &&
+    isInProgress &&
     options?.legacyInProgressSuperTiebreakTargetPoints === legacySuperTiebreakTargetPoints;
+  const shouldUseLegacyInProgressSideSwitchPrompts =
+    isInProgress && typeof setup.sideSwitchPrompts === 'undefined';
 
   const setupInput = {
     format: setup.format,
@@ -247,10 +250,12 @@ function parseMatchSetup(
     countdownTimerDuration: isCountdownTimerDuration(setup.countdownTimerDuration)
       ? setup.countdownTimerDuration
       : defaultCountdownTimerDuration,
+    autoOpenSetsHistoryModal:
+      typeof setup.autoOpenSetsHistoryModal === 'boolean' ? setup.autoOpenSetsHistoryModal : true,
     superTiebreakTargetPoints: isSuperTiebreakTargetPoints(setup.superTiebreakTargetPoints)
       ? setup.superTiebreakTargetPoints
       : undefined,
-    sideSwitchPrompts: setup.sideSwitchPrompts,
+    sideSwitchPrompts: shouldUseLegacyInProgressSideSwitchPrompts ? true : setup.sideSwitchPrompts,
     sides: setup.sides
   };
 

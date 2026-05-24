@@ -83,7 +83,8 @@ vi.mock('@/lib/setup/setup-storage', () => ({
     servingIndicatorEnabled: true,
     countdownTimerEnabled: false,
     countdownTimerDuration: 90,
-    sideSwitchPrompts: true,
+    autoOpenSetsHistoryModal: true,
+    sideSwitchPrompts: false,
     format: 'best-of-3',
     gameMode: 'advantage',
     decidingSetSuperTiebreak: false,
@@ -162,6 +163,20 @@ describe('SetupScreen', () => {
     await expect.element(audioAnnouncementsToggle).toHaveAttribute('aria-checked', 'true');
     expect(
       audioAnnouncementsToggle.element().compareDocumentPosition(goldenPointToggle.element()) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy();
+  });
+
+  test('shows auto-open sets history enabled by default before side-switch prompts', async () => {
+    const screen = await render(<SetupScreen />);
+
+    const autoOpenToggle = screen.getByRole('switch', { name: /auto-open sets history/i });
+    const sideSwitchToggle = screen.getByRole('switch', { name: /side-switch prompts/i });
+
+    await expect.element(autoOpenToggle).toHaveAttribute('aria-checked', 'true');
+    await expect.element(sideSwitchToggle).toHaveAttribute('aria-checked', 'false');
+    expect(
+      autoOpenToggle.element().compareDocumentPosition(sideSwitchToggle.element()) &
         Node.DOCUMENT_POSITION_FOLLOWING
     ).toBeTruthy();
   });
