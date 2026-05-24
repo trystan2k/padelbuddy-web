@@ -54,6 +54,7 @@ export interface SetupPreferences {
   servingIndicatorEnabled: boolean;
   countdownTimerEnabled: boolean;
   countdownTimerDuration: CountdownTimerDuration;
+  autoOpenSetsHistoryModal?: boolean;
   sideSwitchPrompts: boolean;
   format: MatchFormat;
   gameMode: MatchGameMode;
@@ -95,7 +96,8 @@ export const defaultSetupPreferences: SetupPreferences = {
   servingIndicatorEnabled: defaultServingIndicatorEnabled,
   countdownTimerEnabled: defaultCountdownTimerEnabled,
   countdownTimerDuration: defaultCountdownTimerDuration,
-  sideSwitchPrompts: true,
+  autoOpenSetsHistoryModal: true,
+  sideSwitchPrompts: false,
   format: defaultMatchFormat,
   gameMode: defaultGameMode,
   decidingSetSuperTiebreak: false,
@@ -255,6 +257,8 @@ function toSetupPreferences(record: StoredSetupPreferences): SetupPreferences {
     servingIndicatorEnabled: record.servingIndicatorEnabled,
     countdownTimerEnabled: record.countdownTimerEnabled,
     countdownTimerDuration: record.countdownTimerDuration,
+    autoOpenSetsHistoryModal:
+      typeof record.autoOpenSetsHistoryModal === 'boolean' ? record.autoOpenSetsHistoryModal : true,
     sideSwitchPrompts: record.sideSwitchPrompts,
     format: record.format,
     gameMode: record.gameMode,
@@ -445,6 +449,11 @@ function parseStoredSetupPreferences(value: unknown): StoredSetupPreferences | n
     return null;
   }
 
+  const autoOpenSetsHistoryModal =
+    typeof candidate.autoOpenSetsHistoryModal === 'boolean'
+      ? candidate.autoOpenSetsHistoryModal
+      : true;
+
   if (!isMatchGameMode(candidate.gameMode)) {
     return null;
   }
@@ -485,6 +494,7 @@ function parseStoredSetupPreferences(value: unknown): StoredSetupPreferences | n
     servingIndicatorEnabled: candidate.servingIndicatorEnabled,
     countdownTimerEnabled: candidate.countdownTimerEnabled,
     countdownTimerDuration: candidate.countdownTimerDuration,
+    autoOpenSetsHistoryModal,
     sideSwitchPrompts: candidate.sideSwitchPrompts,
     format,
     gameMode: candidate.gameMode,

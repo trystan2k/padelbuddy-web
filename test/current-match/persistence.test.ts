@@ -170,6 +170,54 @@ describe('current match persistence helpers', () => {
     );
   });
 
+  test('preserves legacy in-progress side-switch prompts when persisted field is missing', () => {
+    const legacyRecordMissingSideSwitchPrompts = {
+      schemaVersion: currentMatchSchemaVersion,
+      matchId: testMatchId,
+      setup: {
+        format: 'best-of-3',
+        gameMode: 'advantage',
+        initialServer: 'team-1',
+        decidingSetSuperTiebreak: false,
+        sides: [
+          { id: 'team-1', playerNames: ['Ana', 'Bea'] },
+          { id: 'team-2', playerNames: ['Carla', 'Dani'] }
+        ]
+      },
+      actions: [],
+      startedAt: testStartedAt
+    };
+
+    const decodedRecord = parseCurrentMatchRecord(legacyRecordMissingSideSwitchPrompts);
+
+    expect(decodedRecord.setup.sideSwitchPrompts).toBe(true);
+  });
+
+  test('preserves legacy completed side-switch prompts when persisted field is missing', () => {
+    const legacyCompletedRecordMissingSideSwitchPrompts = {
+      schemaVersion: currentMatchSchemaVersion,
+      matchId: testMatchId,
+      setup: {
+        format: 'best-of-3',
+        gameMode: 'advantage',
+        initialServer: 'team-1',
+        decidingSetSuperTiebreak: false,
+        sides: [
+          { id: 'team-1', playerNames: ['Ana', 'Bea'] },
+          { id: 'team-2', playerNames: ['Carla', 'Dani'] }
+        ]
+      },
+      actions: [],
+      startedAt: testStartedAt,
+      finishedAt: testFinishedAt
+    };
+
+    const decodedRecord = parseCurrentMatchRecord(legacyCompletedRecordMissingSideSwitchPrompts);
+
+    expect(decodedRecord.setup.sideSwitchPrompts).toBe(true);
+    expect(decodedRecord.finishedAt).toBe(testFinishedAt);
+  });
+
   test('preserves legacy in-progress target across save/resume cycles with explicit metadata', () => {
     const legacyRecord = {
       schemaVersion: currentMatchSchemaVersion,

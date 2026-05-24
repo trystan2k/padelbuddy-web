@@ -41,7 +41,8 @@ test.describe('@responsive Responsive layout', () => {
     await startMatch(page, {
       format: 'best-of-1',
       sideSwitchPrompts: false,
-      servingIndicatorEnabled: false
+      servingIndicatorEnabled: false,
+      autoOpenSetsHistoryModal: false
     });
 
     await expect(page.getByTestId('rotate-device-blocker')).toBeVisible();
@@ -56,7 +57,8 @@ test.describe('@responsive Responsive layout', () => {
       await startMatch(page, {
         format: 'best-of-1',
         sideSwitchPrompts: false,
-        servingIndicatorEnabled: false
+        servingIndicatorEnabled: false,
+        autoOpenSetsHistoryModal: false
       });
 
       await expect(page.getByTestId('rotate-device-blocker')).toHaveCount(0);
@@ -79,7 +81,8 @@ test.describe('@responsive Responsive layout', () => {
         team2Name: 'Team Beta',
         format: 'best-of-1',
         sideSwitchPrompts: false,
-        servingIndicatorEnabled: false
+        servingIndicatorEnabled: false,
+        autoOpenSetsHistoryModal: false
       });
 
       const isPortrait = isPortraitViewport(viewport);

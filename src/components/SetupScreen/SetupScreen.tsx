@@ -105,6 +105,7 @@ export function SetupScreen() {
     updateDecidingSetSuperTiebreak,
     updateAudioAnnouncementsEnabled,
     updateVoiceName,
+    updateAutoOpenSetsHistoryModal,
     updateSideSwitchPrompts,
     updateServingIndicatorEnabled,
     updateCountdownTimerEnabled,
@@ -176,6 +177,7 @@ export function SetupScreen() {
         servingIndicatorEnabled: formData.servingIndicatorEnabled,
         countdownTimerEnabled: formData.countdownTimerEnabled,
         countdownTimerDuration: formData.countdownTimerDuration,
+        autoOpenSetsHistoryModal: formData.autoOpenSetsHistoryModal,
         sideSwitchPrompts: formData.sideSwitchPrompts,
         sides: [
           { id: 'team-1' as const, playerNames: [formData.team1Name] },
@@ -617,6 +619,15 @@ export function SetupScreen() {
               onChange={updateServingIndicatorEnabled}
               label={t('setup.rules.servingIndicator')}
               hint={t('setup.rules.servingIndicatorHint')}
+            />
+
+            <Divider />
+
+            <Toggle
+              checked={formData.autoOpenSetsHistoryModal}
+              onChange={updateAutoOpenSetsHistoryModal}
+              label={t('setup.rules.autoOpenSetsHistoryModal')}
+              hint={t('setup.rules.autoOpenSetsHistoryModalHint')}
             />
 
             <Divider />

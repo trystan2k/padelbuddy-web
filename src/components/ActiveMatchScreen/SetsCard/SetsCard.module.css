@@ -1,11 +1,27 @@
+.trigger {
+  width: fit-content;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: inherit;
+  cursor: pointer;
+}
+
+.trigger:focus-visible {
+  outline: var(--base-space-2) solid var(--semantic-color-border-accent-primary);
+  outline-offset: var(--base-space-2);
+  border-radius: var(--component-card-overlay-radius);
+}
+
 /* SetsCard.module.css - Following Pencil design node ID: pGBiU */
 
 .container {
   display: flex;
   flex-direction: column;
-  gap: var(--base-space-8);
-  width: var(--app-scoreboard-sets-overlay-width);
-  max-height: calc(var(--base-space-8) * 25);
+  gap: var(--base-space-10);
   padding: var(--component-card-overlay-padding-y) var(--component-card-overlay-padding-x);
   border: 1px solid var(--component-card-overlay-border);
   border-radius: var(--component-card-overlay-radius);
@@ -21,27 +37,11 @@
   text-transform: uppercase;
 }
 
-.setsGrid {
-  display: flex;
-  flex-direction: column-reverse;
-  gap: var(--base-space-6);
-  max-height: calc(var(--base-space-8) * 24);
-  overflow-y: auto;
-}
-
 .setRow {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--base-space-12);
-}
-
-.setNumber {
-  font-family: var(--semantic-typography-family-body);
-  font-size: var(--semantic-typography-size-label-md);
-  font-weight: var(--base-font-weight-semibold);
-  color: var(--semantic-color-content-secondary);
-  line-height: var(--semantic-typography-line-height-body);
 }
 
 .setScore {
@@ -55,8 +55,9 @@
 .team2Games,
 .divider {
   font-family: var(--semantic-typography-family-display);
-  font-size: var(--semantic-typography-size-set-score);
+  font-size: calc(var(--semantic-typography-size-display-md) * 2.5);
   font-weight: var(--semantic-typography-weight-heading);
+  line-height: var(--semantic-typography-line-height-display);
 }
 
 .team1Games,
@@ -77,16 +78,11 @@
   .setRow {
     gap: var(--base-space-8);
   }
-
-  .setNumber {
-    font-size: var(--base-font-size-14);
-  }
 }
 
 @media (height <= 480px) {
   .container {
     width: calc(var(--base-space-8) * 15);
-    max-height: calc(var(--base-space-8) * 18);
     gap: var(--base-space-6);
     padding: var(--base-space-10) var(--base-space-12);
   }
@@ -95,17 +91,8 @@
     font-size: var(--base-font-size-11);
   }
 
-  .setsGrid {
-    gap: var(--base-space-4);
-    max-height: calc(var(--base-space-8) * 15);
-  }
-
   .setRow {
     gap: var(--base-space-8);
-  }
-
-  .setNumber {
-    font-size: var(--base-font-size-12);
   }
 
   .team1Games,

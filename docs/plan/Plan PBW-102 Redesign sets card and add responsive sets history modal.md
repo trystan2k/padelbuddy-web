@@ -1,0 +1,229 @@
+## Task Analysis
+
+- Main objective:
+  - Deliver PBW-102 as a 3-part implementation on current branch:
+    - `PBW-111` redesign `SetsCard` so active match screen shows only the current set score with larger, simpler presentation.
+    - `PBW-110` add a responsive sets-history modal that can be opened from the card at any time during an active match.
+    - `PBW-109` wire auto-open + 30-second auto-close + retrigger reset behavior, while preserving immediate finish-screen navigation when the match ends.
+  - Understanding summary:
+    - Current `SetsCard` renders every set in a reverse-scrolling list; target UI reduces that surface to current set score only.
+    - Modal must show live current-set headline plus all set scores, including super-tiebreak points where relevant.
+    - Auto-open must happen only when the set score changes because a game or set completed, not on ordinary points and not on intermediate tiebreak-point updates.
+    - Manual open and auto-open share the same 30-second close behavior.
+    - Reopening while already visible must refresh content and restart the timer.
+    - Final match completion must keep existing immediate route handoff to `/match/finish/$id` with no modal delay.
+    - Scope stays inside active-match UI/i18n/tests; no scoring-rule or persistence redesign expected.
+- Identified dependencies:
+  - Active match composition and state flow:
+    - `src/components/ActiveMatchScreen/ActiveMatchScreen.tsx`
+    - `src/components/ActiveMatchScreen/ActiveMatchScreen.module.css`
+    - `src/components/ActiveMatchScreen/useMatchSession.ts`
+  - Existing sets card and tests:
+    - `src/components/ActiveMatchScreen/SetsCard/SetsCard.tsx`
+    - `src/components/ActiveMatchScreen/SetsCard/SetsCard.module.css`
+    - `test/components/ActiveMatchScreen/SetsCard.browser.test.tsx`
+  - Modal/accessibility precedent:
+    - `src/components/ActiveMatchScreen/SideSwitchPrompt/SideSwitchPrompt.tsx`
+    - `src/components/ActiveMatchScreen/SideSwitchPrompt/SideSwitchPrompt.module.css`
+    - `src/components/SetupScreen/RemoteConfigurationModal.tsx`
+    - `src/styles/shared-setup-modal.module.css`
+    - `src/styles/shared-overlays.module.css`
+  - Domain data needed for correct score display:
+    - `src/core/match/types.ts`
+    - `src/core/match/derived-state.ts`
+    - `src/core/match/engine.ts`
+    - `src/components/MatchEndScreen/view-model.ts`
+    - `src/components/HistoryScreen/HistoryScreen.tsx`
+  - Locales and QA:
+    - `src/lib/i18n/locales/en.ts`
+    - `src/lib/i18n/locales/es.ts`
+    - `src/lib/i18n/locales/pt.ts`
+    - `test/components/ActiveMatchScreen/SideSwitchPrompt.browser.test.tsx`
+    - `test/components/ActiveMatchScreen/ActiveMatchScreen.browser.test.tsx`
+    - `docs/design/padelbuddyweb.pen`
+    - `design-tokens/**/*`
+- System impact:
+  - Expected impact stays screen-local: one existing overlay card becomes an interactive trigger, one new modal component is introduced, and `ActiveMatchScreen` gains small UI state/effect logic for open/close automation.
+  - No new global store, no route changes, no IndexedDB/schema changes, no match-engine rule changes should be required if implementation stays at the projection/UI layer.
+  - Assumptions made:
+    - Provided approved sub-issues already satisfy planning split; no additional Linear dependency gate remains for this delivery plan.
+    - Existing Base UI Dialog pattern is approved for reuse here.
+    - Browser tests are acceptable for modal timing assertions; Playwright is optional, not mandatory, unless browser timers prove unreliable.
+    - Current design tokens are sufficient; if Pencil review exposes a missing token, prefer existing generated variables over introducing raw values.
+  - Main risks:
+    - Auto-open false positives on tiebreak points or undo flows.
+    - Timer not restarting when user reopens modal while it is already open.
+    - Super-tiebreak score rendering drifting between card, modal, history, and match-end conventions.
+    - Finish-route navigation racing against modal open on the last scoring action.
+  - Plan file:
+    - `/Users/trystan2k/Documents/Thiago/Repos/padelbuddy-web/docs/plan/Plan PBW-102 Redesign sets card and add responsive sets history modal.md`
+
+## Chosen Approach
+
+- Proposed solution:
+  - Keep all new behavior in `ActiveMatchScreen` layer, not in session/domain layers.
+  - Implement a dedicated `SetsHistoryModal` component beside the existing `SetsCard`, using Base UI Dialog plus shared overlay/modal styling patterns already used elsewhere.
+  - Convert `SetsCard` into a lightweight trigger surface that displays only current-set score data and delegates modal opening through an `onOpenHistory` callback.
+  - Add one tiny local helper for set-score formatting/signature generation so the card, modal, and auto-open effect use one consistent interpretation of:
+    - active standard set = games
+    - active super-tiebreak set = tiebreak points
+    - completed super-tiebreak set = stored `tiebreakPoints`
+  - Detect auto-open from snapshot diffs in `ActiveMatchScreen`: compare previous vs current set-progression signature and only open when a scoring action advanced set history in a meaningful way and the match is still not completed.
+  - Use an `openToken`/nonce prop so both manual reopen and auto-retrigger refresh modal content and restart the shared 30-second timer without adding global timer state.
+- Justification for simplicity:
+  - Recommended approach:
+    - Reuses existing `useMatchSession` output and `snapshot.projection` data instead of inventing new event APIs.
+    - Contains new UI behavior to one screen and two focused components.
+    - Reuses Base UI dialog + shared overlay/modal CSS patterns already proven in repo.
+  - Rejected approach 1:
+    - Extend `useMatchSession` to emit rich scoring events like `game-won`, `set-won`, `match-won`.
+    - Rejected because only `ActiveMatchScreen` consumes the hook today; snapshot diffing is cheaper and avoids widening hook API/test surface.
+  - Rejected approach 2:
+    - Generalize `SideSwitchPrompt` into a generic active-match modal framework.
+    - Rejected because this feature only needs one new dialog shape; abstraction now would add prop complexity with little reuse.
+  - Rejected approach 3:
+    - Derive auto-open directly from visible score strings in the modal/card.
+    - Rejected because active super-tiebreak points would trigger on every point; trigger logic must key off set progression, not every visual number change.
+  - Decision log:
+    - Use screen-local state, not global/session state.
+    - Use dedicated `SetsHistoryModal`, not a generic modal abstraction.
+    - Use native trigger semantics for `SetsCard` instead of expanding shared `Card` API.
+    - Use `openToken` reset pattern for timer restarts.
+    - Use projection-diff trigger logic filtered to scoring progression and non-completed matches.
+- Components to be modified/created:
+  - `PBW-111`:
+    - Modify `src/components/ActiveMatchScreen/SetsCard/SetsCard.tsx`
+    - Modify `src/components/ActiveMatchScreen/SetsCard/SetsCard.module.css`
+    - Likely add small local helper such as `src/components/ActiveMatchScreen/sets-history.ts` for shared display/trigger logic
+    - Update `test/components/ActiveMatchScreen/SetsCard.browser.test.tsx`
+  - `PBW-110`:
+    - Create `src/components/ActiveMatchScreen/SetsHistoryModal/SetsHistoryModal.tsx`
+    - Create `src/components/ActiveMatchScreen/SetsHistoryModal/SetsHistoryModal.module.css`
+    - Modify `src/lib/i18n/locales/en.ts`
+    - Modify `src/lib/i18n/locales/es.ts`
+    - Modify `src/lib/i18n/locales/pt.ts`
+    - Add focused browser coverage, preferably `test/components/ActiveMatchScreen/SetsHistoryModal.browser.test.tsx`
+  - `PBW-109`:
+    - Modify `src/components/ActiveMatchScreen/ActiveMatchScreen.tsx`
+    - Modify `src/components/ActiveMatchScreen/ActiveMatchScreen.module.css` only if modal trigger placement/overlay interaction needs it
+    - Keep `src/components/ActiveMatchScreen/useMatchSession.ts` unchanged unless implementation proves snapshot diffing insufficient
+    - Update `test/components/ActiveMatchScreen/ActiveMatchScreen.browser.test.tsx`
+
+## Implementation Steps
+
+1. `PBW-111` — redesign `SetsCard` to current-set-only trigger.
+   - Pre-implementation check:
+     - Verify Pencil node/state for the active sets card in `docs/design/padelbuddyweb.pen` and confirm whether the label remains visible or the card is score-only.
+     - Confirm current tokenized width/typography values in `SetsCard.module.css` and matching generated CSS variables.
+   - Refactor `SetsCard` API from passive renderer to focused active-set display:
+     - Add an `onOpenHistory` callback.
+     - Derive a single current-set row/value instead of mapping every set.
+     - Preserve stable test ids while introducing trigger semantics (`button` or button-like root) so the whole card is clickable.
+   - Keep the component visually simple:
+     - one-line current set score
+     - larger typography than current multi-row list
+     - no scrolling container or reverse list behavior
+   - Use shared helper logic for score extraction so active super-tiebreak sets show points, not `0-0` games.
+   - Update `SetsCard` browser tests to assert:
+     - only current set content renders
+     - completed-set list is no longer present in card body
+     - trigger/button semantics exist
+     - current super-tiebreak display uses points when relevant
+   - Risk/mitigation:
+     - `Card` is a `div`, not an interactive primitive. Prefer a native button-styled root or a reset button wrapper around the card visuals rather than broadening shared `Card` API for one screen.
+
+2. `PBW-110` — create responsive `SetsHistoryModal`.
+   - Build a dedicated dialog component using Base UI `Dialog.Root/Portal/Backdrop/Popup` following `SideSwitchPrompt` and setup modal patterns.
+   - Keep content minimal and task-aligned:
+     - close icon button in top-right using existing `common.close` aria label pattern
+     - headline `Current set score: X - Y`
+     - full set history list below using existing `match.sets.setLabel` copy where possible
+     - super-tiebreak rows/headline show points when the set is a super-tiebreak
+   - Reuse existing shared overlay/modal CSS patterns:
+     - shared backdrop from `shared-overlays.module.css`
+     - modal shell sizing/scroll constraints from `shared-setup-modal.module.css`
+     - local CSS module only for header, close button, score list, and responsive spacing/type adjustments
+   - Add only necessary i18n keys in `en/es/pt` for modal-specific copy; reuse `match.sets.label`, `match.sets.setLabel`, `match.sets.superTiebreakBadge`, and `common.close` wherever possible.
+   - Add focused modal tests for:
+     - render/open state
+     - headline score content
+     - list of all set scores
+     - close button accessibility + close action
+     - responsive-safe structure assumptions (dialog role, aria-modal, scrollable container)
+   - Risk/mitigation:
+     - Do not fork a new generic modal style system. Compose existing shared modal rules and keep new CSS local so visual risk stays bounded.
+
+3. `PBW-109` — wire open behavior, timer lifecycle, match-end bypass, and regression tests.
+   - Add local state in `ActiveMatchScreen` for:
+     - `isSetsHistoryOpen`
+     - `setsHistoryOpenToken` or equivalent nonce to restart timer/content on repeated opens
+   - Add a previous-snapshot ref and a small trigger-signature helper.
+     - Signature should change for:
+       - completed-set additions/score finalization
+       - active standard-set game-count changes
+     - Signature should not change for:
+       - ordinary standard-game points
+       - intermediate tiebreak points in a standard tiebreak
+       - intermediate points in an in-progress super-tiebreak set
+       - undo-only flows
+   - Implement manual open path from `SetsCard`:
+     - open modal anytime while match remains in progress
+     - if modal already open, increment token so timer restarts and any new score snapshot is reflected immediately
+   - Implement shared 30-second auto-close in modal effect keyed by `isOpen + openToken`.
+   - Implement auto-open effect in `ActiveMatchScreen`:
+     - compare previous/current signatures after scoring actions
+     - skip when match has just completed or is already navigating to finish
+     - skip when change came from undo or no-op scoring
+   - Preserve existing finish behavior:
+     - existing navigate-on-complete effect remains authoritative
+     - last-point match completion must navigate immediately and never wait for modal timeout
+   - Expand `ActiveMatchScreen` browser coverage for:
+     - manual open from sets card
+     - auto-open after game completion
+     - no auto-open on regular point increments
+     - no auto-open on intermediate tiebreak points
+     - timer auto-close after 30 seconds
+     - reopen/retrigger resets timer
+     - completed-match scoring path navigates immediately without modal wait
+   - Rollback note:
+     - If auto-open diff logic becomes noisy, keep modal manual-open only first, then refine signature logic before shipping. Do not move the logic into the domain/session layer as a first rescue step.
+
+## Validation
+
+- Success criteria:
+  - `SetsCard` shows only the active set score in simplified one-line presentation with larger typography aligned to Pencil/tokens.
+  - The sets card acts as an accessible trigger and opens the sets-history modal during any in-progress match state.
+  - Modal headline shows `Current set score: X - Y` and uses super-tiebreak points when the current set is a super-tiebreak.
+  - Modal lists all set scores accurately, including completed super-tiebreak sets.
+  - Modal includes a top-right close icon/button with correct accessibility labeling.
+  - Auto-open fires only after scoring progression that changes set history meaningfully (game/set completion), not after ordinary point updates or intermediate tiebreak points.
+  - Manual open and auto-open both auto-close after 30 seconds.
+  - Reopen/retrigger while visible refreshes content and restarts the countdown.
+  - Final match completion still navigates immediately to finish screen without modal delay.
+  - Mobile, tablet, and desktop layouts remain usable, scroll-safe, and visually aligned with design tokens/Pencil intent.
+  - `pnpm complete-check` passes with no coverage-threshold changes.
+- Checkpoints:
+  - Assumptions check before code:
+    - confirm exact Pencil copy/layout expectations for whether `Sets` label remains on card and whether modal needs an additional section title beyond the required headline
+    - confirm no hidden dependency in Linear beyond provided split
+  - After `PBW-111`:
+    - `test/components/ActiveMatchScreen/SetsCard.browser.test.tsx` passes and proves current-set-only rendering + trigger semantics.
+    - Manual visual check against Pencil for score scale, spacing, and clickable affordance.
+  - After `PBW-110`:
+    - modal unit/browser coverage passes for render, close icon, list content, and super-tiebreak score formatting.
+    - Manual responsive QA at phone, tablet, desktop widths confirms popup stays within viewport and scrolls internally if needed.
+  - After `PBW-109`:
+    - `test/components/ActiveMatchScreen/ActiveMatchScreen.browser.test.tsx` proves manual open, timed close, timer reset, game/set auto-open, tiebreak non-trigger, and finish-route bypass.
+    - Regression check confirms existing side-switch prompt and finish navigation behavior stay green.
+  - Final QA strategy:
+    - Run targeted suites first:
+      - `test/components/ActiveMatchScreen/SetsCard.browser.test.tsx`
+      - `test/components/ActiveMatchScreen/SetsHistoryModal.browser.test.tsx` if created
+      - `test/components/ActiveMatchScreen/ActiveMatchScreen.browser.test.tsx`
+    - Then run `pnpm complete-check`.
+    - Manual QA pass on active match screen for desktop + tablet + mobile landscape, plus final-point finish flow.
+  - Risks and mitigations:
+    - False auto-open on wrong state transitions -> base trigger on explicit progression signature and scoring-action direction.
+    - Timer not resetting on repeated opens -> key timer effect on `openToken`, not boolean-only state.
+    - Super-tiebreak display inconsistency -> centralize active-screen set score helper and use it in both card + modal.
+    - Navigation race on match end -> short-circuit modal auto-open whenever derived status is completed or finish navigation is in progress.

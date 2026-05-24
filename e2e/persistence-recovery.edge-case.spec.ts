@@ -33,7 +33,7 @@ test.describe('@edge-case @setup @active-match @match-end Persistence recovery',
     await page.getByRole('button', { name: /resume match/i }).click();
 
     await expect(page).toHaveURL(new RegExp(`/match/${record.matchId}$`));
-    await expect(page.getByTestId('set-row-0')).toContainText('1-0');
+    await expect(page.getByTestId('set-row-current')).toContainText('1-0');
 
     await page.reload();
     await expect(page).toHaveURL(new RegExp(`/match/${record.matchId}$`));

@@ -1,105 +1,115 @@
-import { describe, expect, test } from 'vitest';
+import { describe, expect, test, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 
 import { SetsCard } from '@/components/ActiveMatchScreen/SetsCard/SetsCard';
+import type { MatchSetState } from '@/core/match/types';
 import { createTestSetup, winQuickSet } from '../../core/match/test-helpers';
 import { projectMatch } from '@/core/match/replay';
 
 describe('SetsCard', () => {
-  test('renders with label', async () => {
+  test('renders card as accessible button trigger with score context', async () => {
     const setup = createTestSetup();
     const projection = projectMatch(setup, []);
-    const sets = projection.state.sets;
+    const onOpenHistory = vi.fn<() => void>();
 
-    const screen = await render(<SetsCard sets={sets} currentSetIndex={0} />);
+    const screen = await render(
+      <SetsCard sets={projection.state.sets} currentSetIndex={0} onOpenHistory={onOpenHistory} />
+    );
 
-    await expect.element(screen.getByText('Sets')).toBeInTheDocument();
+    const button = screen.getByRole('button', {
+      name: /open sets history\. current set score: 0 - 0/i
+    });
+    await expect.element(button).toBeInTheDocument();
+    await expect.element(screen.getByText('Current Set')).toBeInTheDocument();
+    expect(button.element().querySelector('button')).toBeNull();
+    expect(button.element().querySelector('div')).toBeNull();
+
+    button.element().dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(onOpenHistory).toHaveBeenCalledTimes(1);
   });
 
-  test('renders first set correctly', async () => {
-    const setup = createTestSetup();
-    const projection = projectMatch(setup, []);
-    const sets = projection.state.sets;
-
-    const screen = await render(<SetsCard sets={sets} currentSetIndex={0} />);
-
-    // First set should show 0-0
-    await expect.element(screen.getByTestId('set-row-0')).toBeInTheDocument();
-    await expect.element(screen.getByTestId('set-row-0')).toHaveTextContent('Current');
-    await expect.element(screen.getByTestId('set-row-0')).toHaveTextContent('0-0');
-  });
-
-  test('renders fixed set labels from the Pencil design', async () => {
+  test('renders only current set row and score', async () => {
     const setup = createTestSetup();
     const actions = [...winQuickSet('team-1'), ...winQuickSet('team-2')];
     const projection = projectMatch(setup, actions);
-    const sets = projection.state.sets;
 
-    const screen = await render(<SetsCard sets={sets} currentSetIndex={2} />);
+    const screen = await render(<SetsCard sets={projection.state.sets} currentSetIndex={2} />);
 
-    await expect.element(screen.getByTestId('set-number-0')).toHaveTextContent('Set 1');
-    await expect.element(screen.getByTestId('set-number-1')).toHaveTextContent('Set 2');
-    await expect.element(screen.getByTestId('set-number-2')).toHaveTextContent('Current');
+    await expect.element(screen.getByTestId('set-row-current')).toBeInTheDocument();
+    await expect.element(screen.getByTestId('set-score-current')).toHaveTextContent('0-0');
+
+    expect(screen.container.querySelector('[data-testid="set-row-0"]')).toBeNull();
+    expect(screen.container.querySelector('[data-testid="set-number-current"]')).toBeNull();
   });
 
-  test('does not show a winner indicator for completed sets', async () => {
-    const setup = createTestSetup();
-    const actions = winQuickSet('team-1');
-    const projection = projectMatch(setup, actions);
-    const sets = projection.state.sets;
-
-    const screen = await render(<SetsCard sets={sets} currentSetIndex={1} />);
-
-    // First set should be completed with winner indicator
-    const firstSetRow = screen.getByTestId('set-row-0');
-    await expect.element(firstSetRow).toBeInTheDocument();
-
-    const winnerIndicator = screen.container.querySelector('[aria-label="Set winner"]');
-    expect(winnerIndicator).toBeNull();
-  });
-
-  test('shows games for both teams', async () => {
+  test('keeps stable sets-card test id', async () => {
     const setup = createTestSetup();
     const projection = projectMatch(setup, []);
-    const sets = projection.state.sets;
-
-    const screen = await render(<SetsCard sets={sets} currentSetIndex={0} />);
-
-    const setRow = screen.getByTestId('set-row-0');
-    await expect.element(setRow).toHaveTextContent('0-0');
-  });
-
-  test('has test id', async () => {
-    const setup = createTestSetup();
-    const projection = projectMatch(setup, []);
-    const sets = projection.state.sets;
-
-    const screen = await render(<SetsCard sets={sets} currentSetIndex={0} />);
+    const screen = await render(<SetsCard sets={projection.state.sets} currentSetIndex={0} />);
 
     await expect.element(screen.getByTestId('sets-card')).toBeInTheDocument();
   });
 
-  test('handles null currentSetIndex', async () => {
+  test('renders non-interactive fallback when onOpenHistory is absent', async () => {
     const setup = createTestSetup();
     const projection = projectMatch(setup, []);
-    const sets = projection.state.sets;
+
+    const screen = await render(<SetsCard sets={projection.state.sets} currentSetIndex={0} />);
+
+    await expect.element(screen.getByTestId('sets-card')).toBeInTheDocument();
+    await expect.element(screen.getByText('Current Set')).toBeInTheDocument();
+    expect(screen.container.querySelector('button[data-testid="sets-card"]')).toBeNull();
+    expect(screen.container.querySelector('[data-testid="sets-card"]')?.tagName).toBe('DIV');
+  });
+
+  test('falls back to latest set when currentSetIndex is null', async () => {
+    const sets: MatchSetState[] = [
+      {
+        index: 1,
+        mode: 'standard',
+        firstServer: 'team-1',
+        completed: true,
+        winner: 'team-1',
+        games: { 'team-1': 6, 'team-2': 4 },
+        tiebreakPoints: null
+      },
+      {
+        index: 2,
+        mode: 'standard',
+        firstServer: 'team-2',
+        completed: false,
+        games: { 'team-1': 3, 'team-2': 2 },
+        game: {
+          kind: 'standard',
+          points: { 'team-1': 0, 'team-2': 0 },
+          advantageTeam: null
+        }
+      }
+    ];
 
     const screen = await render(<SetsCard sets={sets} currentSetIndex={null} />);
 
-    // Should still render sets
-    await expect.element(screen.getByTestId('sets-card')).toBeInTheDocument();
+    await expect.element(screen.getByTestId('set-score-current')).toHaveTextContent('3-2');
   });
 
-  test('displays set numbers correctly', async () => {
-    const setup = createTestSetup();
-    const actions = [...winQuickSet('team-1'), ...winQuickSet('team-2')];
-    const projection = projectMatch(setup, actions);
-    const sets = projection.state.sets;
+  test('shows active super tiebreak points instead of games', async () => {
+    const sets: MatchSetState[] = [
+      {
+        index: 1,
+        mode: 'super-tiebreak',
+        firstServer: 'team-1',
+        completed: false,
+        games: { 'team-1': 0, 'team-2': 0 },
+        game: {
+          kind: 'tiebreak',
+          targetPoints: 11,
+          points: { 'team-1': 8, 'team-2': 7 }
+        }
+      }
+    ];
 
-    const screen = await render(<SetsCard sets={sets} currentSetIndex={2} />);
+    const screen = await render(<SetsCard sets={sets} currentSetIndex={0} />);
 
-    await expect.element(screen.getByTestId('set-number-0')).toHaveTextContent('Set 1');
-    await expect.element(screen.getByTestId('set-number-1')).toHaveTextContent('Set 2');
-    await expect.element(screen.getByTestId('set-number-2')).toHaveTextContent('Current');
+    await expect.element(screen.getByTestId('set-score-current')).toHaveTextContent('8-7');
   });
 });

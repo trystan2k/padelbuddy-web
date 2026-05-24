@@ -7,7 +7,8 @@ test.describe('@edge-case @active-match Undo scoring', () => {
     await startMatch(page, {
       format: 'best-of-1',
       sideSwitchPrompts: false,
-      servingIndicatorEnabled: false
+      servingIndicatorEnabled: false,
+      autoOpenSetsHistoryModal: false
     });
 
     const team1Panel = page.getByTestId('team-panel-team-1');
@@ -27,10 +28,10 @@ test.describe('@edge-case @active-match Undo scoring', () => {
     await expect(team1Panel).toContainText('0');
 
     await winQuickGame(team1Panel);
-    await expect(page.getByTestId('set-row-0')).toContainText('1-0');
+    await expect(page.getByTestId('set-row-current')).toContainText('1-0');
 
     await team1UndoButton.click();
-    await expect(page.getByTestId('set-row-0')).toContainText('0-0');
+    await expect(page.getByTestId('set-row-current')).toContainText('0-0');
     await expect(team1Panel).toContainText('40');
   });
 });

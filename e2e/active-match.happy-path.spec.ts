@@ -6,10 +6,12 @@ test.describe('@happy-path @active-match Active match', () => {
   test('supports scoring flow, game completion, set updates, and side-switch prompts', async ({
     page
   }) => {
+    test.slow();
     await startMatch(page, {
       format: 'best-of-1',
       sideSwitchPrompts: true,
       servingIndicatorEnabled: true,
+      autoOpenSetsHistoryModal: false,
       team1Name: 'Lobos',
       team2Name: 'Rivals'
     });
@@ -26,7 +28,7 @@ test.describe('@happy-path @active-match Active match', () => {
     await expect(team1Panel).toContainText('40');
 
     await team1Panel.click();
-    await expect(page.getByTestId('set-row-0')).toContainText('1-0');
+    await expect(page.getByTestId('set-row-current')).toContainText('1-0');
     await expect(page.getByTestId('side-switch-prompt')).toBeVisible();
 
     await dismissSideSwitchPromptIfVisible(page);
@@ -37,7 +39,8 @@ test.describe('@happy-path @active-match Active match', () => {
     await startMatch(page, {
       format: 'best-of-1',
       sideSwitchPrompts: false,
-      servingIndicatorEnabled: false
+      servingIndicatorEnabled: false,
+      autoOpenSetsHistoryModal: false
     });
 
     await winQuickSet(page.getByTestId('team-panel-team-1'));

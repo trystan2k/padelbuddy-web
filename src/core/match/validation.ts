@@ -212,6 +212,7 @@ export function validateMatchSetup(input: unknown): MatchSetupValidationResult {
   const servingIndicatorEnabledValue = input.servingIndicatorEnabled;
   const countdownTimerEnabledValue = input.countdownTimerEnabled;
   const countdownTimerDurationValue = input.countdownTimerDuration;
+  const autoOpenSetsHistoryModalValue = input.autoOpenSetsHistoryModal;
   const superTiebreakTargetPointsValue = input.superTiebreakTargetPoints;
   const bestOfOneDecidingBehaviorValue = input.bestOfOneDecidingBehavior;
   const sideSwitchPromptsValue = input.sideSwitchPrompts;
@@ -225,6 +226,7 @@ export function validateMatchSetup(input: unknown): MatchSetupValidationResult {
   let servingIndicatorEnabled: boolean | null = null;
   let countdownTimerEnabled: boolean | null = null;
   let countdownTimerDuration: CountdownTimerDuration | null = null;
+  let autoOpenSetsHistoryModal = true;
   let superTiebreakTargetPoints: SuperTiebreakTargetPoints = defaultSuperTiebreakTargetPoints;
   let sideSwitchPrompts: boolean | null = null;
   let bestOfOneDecidingBehavior: BestOfOneDecidingBehavior | undefined;
@@ -292,6 +294,17 @@ export function validateMatchSetup(input: unknown): MatchSetupValidationResult {
       createIssue(
         'countdownTimerDuration',
         `Unsupported countdown timer duration: ${describeValue(countdownTimerDurationValue)}`
+      )
+    );
+  }
+
+  if (typeof autoOpenSetsHistoryModalValue === 'boolean') {
+    autoOpenSetsHistoryModal = autoOpenSetsHistoryModalValue;
+  } else if (typeof autoOpenSetsHistoryModalValue !== 'undefined') {
+    issues.push(
+      createIssue(
+        'autoOpenSetsHistoryModal',
+        'Auto-open sets history modal must be a boolean value.'
       )
     );
   }
@@ -407,6 +420,7 @@ export function validateMatchSetup(input: unknown): MatchSetupValidationResult {
       servingIndicatorEnabled,
       countdownTimerEnabled,
       countdownTimerDuration,
+      autoOpenSetsHistoryModal,
       superTiebreakTargetPoints,
       bestOfOneDecidingBehavior: normalizedBestOfOneDecidingBehavior,
       sideSwitchPrompts,

@@ -4,11 +4,13 @@ import { clickNTimes, startMatch } from './helpers/match-flow';
 
 test.describe('@edge-case @active-match Golden point scoring', () => {
   test('wins the game immediately on the point after deuce', async ({ page }) => {
+    test.slow();
     await startMatch(page, {
       format: 'best-of-1',
       gameMode: 'golden-point',
       sideSwitchPrompts: false,
-      servingIndicatorEnabled: false
+      servingIndicatorEnabled: false,
+      autoOpenSetsHistoryModal: false
     });
 
     const team1Panel = page.getByTestId('team-panel-team-1');
@@ -22,7 +24,7 @@ test.describe('@edge-case @active-match Golden point scoring', () => {
 
     await team1Panel.click();
 
-    await expect(page.getByTestId('set-row-0')).toContainText('1-0');
+    await expect(page.getByTestId('set-row-current')).toContainText('1-0');
     await expect(team1Panel).toContainText('0');
     await expect(team2Panel).toContainText('0');
     await expect(team1Panel).not.toContainText('ad');

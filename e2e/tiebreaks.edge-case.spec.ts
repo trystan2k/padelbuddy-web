@@ -13,7 +13,8 @@ test.describe('@edge-case @active-match @match-end Tiebreak flows', () => {
     await startMatch(page, {
       format: 'best-of-1',
       sideSwitchPrompts: false,
-      servingIndicatorEnabled: false
+      servingIndicatorEnabled: false,
+      autoOpenSetsHistoryModal: false
     });
 
     const team1Panel = page.getByTestId('team-panel-team-1');
@@ -25,7 +26,7 @@ test.describe('@edge-case @active-match @match-end Tiebreak flows', () => {
       await winQuickGame(team2Panel);
     }, Promise.resolve());
 
-    await expect(page.getByTestId('set-row-0')).toContainText('6-6');
+    await expect(page.getByTestId('set-row-current')).toContainText('6-6');
 
     await clickNTimes(team1Panel, 2);
     await team2Panel.click();
@@ -48,7 +49,8 @@ test.describe('@edge-case @active-match @match-end Tiebreak flows', () => {
       format: 'best-of-3',
       decidingSetSuperTiebreak: true,
       sideSwitchPrompts: false,
-      servingIndicatorEnabled: false
+      servingIndicatorEnabled: false,
+      autoOpenSetsHistoryModal: false
     });
 
     const team1Panel = page.getByTestId('team-panel-team-1');
@@ -79,7 +81,8 @@ test.describe('@edge-case @active-match @match-end Tiebreak flows', () => {
       decidingSetSuperTiebreak: true,
       superTiebreakTargetPoints: 9,
       sideSwitchPrompts: false,
-      servingIndicatorEnabled: false
+      servingIndicatorEnabled: false,
+      autoOpenSetsHistoryModal: false
     });
 
     const team1Panel = page.getByTestId('team-panel-team-1');
@@ -114,6 +117,7 @@ test.describe('@edge-case @active-match @match-end Tiebreak flows', () => {
       format: 'best-of-1',
       sideSwitchPrompts: false,
       servingIndicatorEnabled: false,
+      autoOpenSetsHistoryModal: false,
       countdownTimerEnabled: false
     });
 

@@ -36,6 +36,7 @@ export interface MatchSetupInput {
   servingIndicatorEnabled: boolean;
   countdownTimerEnabled: boolean;
   countdownTimerDuration: CountdownTimerDuration;
+  autoOpenSetsHistoryModal?: boolean;
   superTiebreakTargetPoints?: SuperTiebreakTargetPoints;
   bestOfOneDecidingBehavior?: BestOfOneDecidingBehavior;
   sideSwitchPrompts: boolean;
@@ -51,6 +52,7 @@ export interface MatchSetup {
   servingIndicatorEnabled: boolean;
   countdownTimerEnabled: boolean;
   countdownTimerDuration: CountdownTimerDuration;
+  autoOpenSetsHistoryModal: boolean;
   superTiebreakTargetPoints: PersistedSuperTiebreakTargetPoints;
   bestOfOneDecidingBehavior: BestOfOneDecidingBehavior;
   sideSwitchPrompts: boolean;

@@ -53,7 +53,8 @@ export function useSetupForm() {
     servingIndicatorEnabled: defaultServingIndicatorEnabled,
     countdownTimerEnabled: defaultCountdownTimerEnabled,
     countdownTimerDuration: defaultCountdownTimerDuration,
-    sideSwitchPrompts: true
+    autoOpenSetsHistoryModal: true,
+    sideSwitchPrompts: false
   });
 
   const [errors, setErrors] = useState<FieldErrors>({});
@@ -100,6 +101,10 @@ export function useSetupForm() {
             servingIndicatorEnabled: setupPreferences.servingIndicatorEnabled,
             countdownTimerEnabled: setupPreferences.countdownTimerEnabled,
             countdownTimerDuration: setupPreferences.countdownTimerDuration,
+            autoOpenSetsHistoryModal:
+              typeof setupPreferences.autoOpenSetsHistoryModal === 'boolean'
+                ? setupPreferences.autoOpenSetsHistoryModal
+                : true,
             sideSwitchPrompts: setupPreferences.sideSwitchPrompts,
             format: setupPreferences.format,
             gameMode: setupPreferences.gameMode,
@@ -132,6 +137,7 @@ export function useSetupForm() {
       servingIndicatorEnabled: formData.servingIndicatorEnabled,
       countdownTimerEnabled: formData.countdownTimerEnabled,
       countdownTimerDuration: formData.countdownTimerDuration,
+      autoOpenSetsHistoryModal: formData.autoOpenSetsHistoryModal,
       sideSwitchPrompts: formData.sideSwitchPrompts,
       format: formData.format,
       gameMode: formData.gameMode,
@@ -166,6 +172,7 @@ export function useSetupForm() {
     formData.audioAnnouncementsEnabled,
     formData.countdownTimerDuration,
     formData.countdownTimerEnabled,
+    formData.autoOpenSetsHistoryModal,
     formData.decidingSetSuperTiebreak,
     formData.format,
     formData.gameMode,
@@ -254,6 +261,13 @@ export function useSetupForm() {
     [updateField]
   );
 
+  const updateAutoOpenSetsHistoryModal = useCallback(
+    (enabled: boolean) => {
+      updateField('autoOpenSetsHistoryModal', enabled);
+    },
+    [updateField]
+  );
+
   const updateAudioAnnouncementsEnabled = useCallback(
     (enabled: boolean) => {
       updateField('audioAnnouncementsEnabled', enabled);
@@ -314,6 +328,7 @@ export function useSetupForm() {
     updateAudioAnnouncementsEnabled,
     updateVoiceName,
     updateSideSwitchPrompts,
+    updateAutoOpenSetsHistoryModal,
     updateServingIndicatorEnabled,
     updateCountdownTimerEnabled,
     updateCountdownTimerDuration,
@@ -330,6 +345,7 @@ function toPersistedSetupPreferenceSlice(
         | 'servingIndicatorEnabled'
         | 'countdownTimerEnabled'
         | 'countdownTimerDuration'
+        | 'autoOpenSetsHistoryModal'
         | 'sideSwitchPrompts'
         | 'format'
         | 'gameMode'
@@ -342,6 +358,7 @@ function toPersistedSetupPreferenceSlice(
         | 'servingIndicatorEnabled'
         | 'countdownTimerEnabled'
         | 'countdownTimerDuration'
+        | 'autoOpenSetsHistoryModal'
         | 'sideSwitchPrompts'
         | 'format'
         | 'gameMode'
@@ -354,6 +371,8 @@ function toPersistedSetupPreferenceSlice(
     servingIndicatorEnabled: data.servingIndicatorEnabled,
     countdownTimerEnabled: data.countdownTimerEnabled,
     countdownTimerDuration: data.countdownTimerDuration,
+    autoOpenSetsHistoryModal:
+      typeof data.autoOpenSetsHistoryModal === 'boolean' ? data.autoOpenSetsHistoryModal : true,
     sideSwitchPrompts: data.sideSwitchPrompts,
     format: data.format,
     gameMode: data.gameMode,
@@ -371,6 +390,7 @@ function areSetupPreferenceSlicesEqual(
     left.servingIndicatorEnabled === right.servingIndicatorEnabled &&
     left.countdownTimerEnabled === right.countdownTimerEnabled &&
     left.countdownTimerDuration === right.countdownTimerDuration &&
+    left.autoOpenSetsHistoryModal === right.autoOpenSetsHistoryModal &&
     left.sideSwitchPrompts === right.sideSwitchPrompts &&
     left.format === right.format &&
     left.gameMode === right.gameMode &&

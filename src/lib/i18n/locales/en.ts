@@ -230,6 +230,8 @@ export default {
       },
       sideSwitch: 'Side-switch Prompts',
       sideSwitchHint: 'Prompt players for court side changes',
+      autoOpenSetsHistoryModal: 'Auto-open Sets History',
+      autoOpenSetsHistoryModalHint: 'Automatically open sets history after each completed set',
       servingIndicator: 'Serving Indicator',
       servingIndicatorHint: 'Show who is currently serving',
       countdownTimer: 'Countdown Timer',
@@ -321,9 +323,12 @@ export default {
       sideSwitchOff: 'Side-switch prompts: off'
     },
     sets: {
-      label: 'Sets',
+      label: 'Current Set',
       setLabel: 'Set {{number}}',
       currentShort: 'Current',
+      overallSetsScoreHeadline: 'Sets: {{team1}} - {{team2}}',
+      openHistoryLabel: 'Open sets history. Current set score: {{team1}} - {{team2}}',
+      emptyHistory: 'No completed sets yet.',
       superTiebreakBadge: 'ST'
     },
     timer: {

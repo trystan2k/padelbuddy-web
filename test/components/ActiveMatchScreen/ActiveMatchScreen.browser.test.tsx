@@ -14,6 +14,7 @@ import {
 
 import {
   createTestSetup,
+  reachSixAll,
   scorePoints,
   winQuickGame,
   winQuickSet
@@ -230,6 +231,248 @@ describe('ActiveMatchScreen', () => {
 
     await expect.element(screen.getByTestId('sets-card')).toBeInTheDocument();
     expect(screen.container.querySelector('[data-testid="info-card"]')).toBeNull();
+  });
+
+  test('opens sets history modal manually from sets card', async () => {
+    const screen = await render(
+      <ActiveMatchScreen
+        matchId="test-match"
+        initialSetup={createTestSetup()}
+        initialActions={[]}
+        startedAt={defaultStartedAt}
+      />
+    );
+
+    await screen.getByTestId('sets-card').click();
+
+    await expect.element(screen.getByTestId('sets-history-modal')).toBeInTheDocument();
+    await expect.element(screen.getByRole('heading', { name: /0\s*-\s*0/ })).toBeInTheDocument();
+  });
+
+  test('auto-opens sets history modal when a set completes', async () => {
+    const screen = await render(
+      <ActiveMatchScreen
+        matchId="test-match"
+        initialSetup={createTestSetup()}
+        initialActions={[
+          ...Array.from({ length: 5 }, () => winQuickGame('team-1')).flat(),
+          ...scorePoints('team-1', 'team-1', 'team-1')
+        ]}
+        startedAt={defaultStartedAt}
+      />
+    );
+
+    expect(screen.container.querySelector('[data-testid="sets-history-modal"]')).toBeNull();
+
+    await screen.getByTestId('team-panel-team-1').click();
+
+    await vi.waitFor(() => {
+      expect(screen.container.querySelector('[data-testid="sets-history-modal"]')).not.toBeNull();
+    });
+
+    await expect.element(screen.getByRole('heading', { name: /1\s*-\s*0/ })).toBeInTheDocument();
+  });
+
+  test('does not auto-open sets history modal when setup disables auto-open', async () => {
+    const screen = await render(
+      <ActiveMatchScreen
+        matchId="test-match"
+        initialSetup={createTestSetup({ autoOpenSetsHistoryModal: false })}
+        initialActions={[
+          ...Array.from({ length: 5 }, () => winQuickGame('team-1')).flat(),
+          ...scorePoints('team-1', 'team-1', 'team-1')
+        ]}
+        startedAt={defaultStartedAt}
+      />
+    );
+
+    await screen.getByTestId('team-panel-team-1').click();
+
+    await vi.waitFor(() => {
+      expect(readDisplayedScore(screen, 'team-1')).toBe('0');
+    });
+    expect(screen.container.querySelector('[data-testid="sets-history-modal"]')).toBeNull();
+  });
+
+  test('does not auto-open sets history modal on regular point updates', async () => {
+    const screen = await render(
+      <ActiveMatchScreen
+        matchId="test-match"
+        initialSetup={createTestSetup()}
+        initialActions={[]}
+        startedAt={defaultStartedAt}
+      />
+    );
+
+    await screen.getByTestId('team-panel-team-1').click();
+
+    await vi.waitFor(() => {
+      expect(readDisplayedScore(screen, 'team-1')).toBe('15');
+    });
+    expect(screen.container.querySelector('[data-testid="sets-history-modal"]')).toBeNull();
+  });
+
+  test('does not auto-open sets history modal when only a game completes', async () => {
+    const screen = await render(
+      <ActiveMatchScreen
+        matchId="test-match"
+        initialSetup={createTestSetup()}
+        initialActions={scorePoints('team-1', 'team-1', 'team-1')}
+        startedAt={defaultStartedAt}
+      />
+    );
+
+    await screen.getByTestId('team-panel-team-1').click();
+
+    await vi.waitFor(() => {
+      expect(readDisplayedScore(screen, 'team-1')).toBe('0');
+    });
+    expect(screen.container.querySelector('[data-testid="sets-history-modal"]')).toBeNull();
+  });
+
+  test('does not auto-open sets history modal on intermediate tiebreak points', async () => {
+    const screen = await render(
+      <ActiveMatchScreen
+        matchId="test-match"
+        initialSetup={createTestSetup()}
+        initialActions={reachSixAll()}
+        startedAt={defaultStartedAt}
+      />
+    );
+
+    await screen.getByTestId('team-panel-team-1').click();
+
+    await vi.waitFor(() => {
+      expect(readDisplayedScore(screen, 'team-1')).toBe('1');
+    });
+    expect(screen.container.querySelector('[data-testid="sets-history-modal"]')).toBeNull();
+  });
+
+  test('auto-opens sets history modal again after undo/correction returns to set boundary', async () => {
+    const screen = await render(
+      <ActiveMatchScreen
+        matchId="test-match"
+        initialSetup={createTestSetup()}
+        initialActions={[
+          ...Array.from({ length: 5 }, () => winQuickGame('team-1')).flat(),
+          ...scorePoints('team-1', 'team-1', 'team-1')
+        ]}
+        startedAt={defaultStartedAt}
+      />
+    );
+
+    await screen.getByTestId('team-panel-team-1').click();
+    await vi.waitFor(() => {
+      expect(screen.container.querySelector('[data-testid="sets-history-modal"]')).not.toBeNull();
+    });
+
+    await screen.getByTestId('sets-history-modal-close').click();
+    await vi.waitFor(() => {
+      expect(screen.container.querySelector('[data-testid="sets-history-modal"]')).toBeNull();
+    });
+
+    await screen.getByTestId('revert-button-team-1').click();
+    await vi.waitFor(() => {
+      expect(readDisplayedScore(screen, 'team-1')).toBe('40');
+    });
+
+    await screen.getByTestId('team-panel-team-1').click();
+
+    await vi.waitFor(() => {
+      expect(screen.container.querySelector('[data-testid="sets-history-modal"]')).not.toBeNull();
+    });
+  });
+
+  test('auto-closes sets history modal after 30 seconds', async () => {
+    vi.useFakeTimers();
+
+    const screen = await render(
+      <ActiveMatchScreen
+        matchId="test-match"
+        initialSetup={createTestSetup()}
+        initialActions={[]}
+        startedAt={defaultStartedAt}
+      />
+    );
+
+    await screen.getByTestId('sets-card').click();
+    await expect.element(screen.getByTestId('sets-history-modal')).toBeInTheDocument();
+
+    await vi.advanceTimersByTimeAsync(29999);
+    await expect.element(screen.getByTestId('sets-history-modal')).toBeInTheDocument();
+
+    await vi.advanceTimersByTimeAsync(1);
+    await vi.waitFor(() => {
+      expect(screen.container.querySelector('[data-testid="sets-history-modal"]')).toBeNull();
+    });
+  });
+
+  test('close and reopen resets sets history auto-close countdown', async () => {
+    vi.useFakeTimers();
+
+    const screen = await render(
+      <ActiveMatchScreen
+        matchId="test-match"
+        initialSetup={createTestSetup()}
+        initialActions={[
+          ...Array.from({ length: 5 }, () => winQuickGame('team-1')).flat(),
+          ...scorePoints('team-1', 'team-1', 'team-1')
+        ]}
+        startedAt={defaultStartedAt}
+      />
+    );
+
+    await screen.getByTestId('team-panel-team-1').click();
+    await vi.waitFor(() => {
+      expect(screen.container.querySelector('[data-testid="sets-history-modal"]')).not.toBeNull();
+    });
+
+    await expect.element(screen.getByTestId('sets-history-modal')).toBeInTheDocument();
+
+    await vi.advanceTimersByTimeAsync(29000);
+    await screen.getByTestId('sets-history-modal-close').click();
+    await vi.waitFor(() => {
+      expect(screen.container.querySelector('[data-testid="sets-history-modal"]')).toBeNull();
+    });
+    await screen.getByTestId('sets-card').click();
+
+    await vi.advanceTimersByTimeAsync(1500);
+    await expect.element(screen.getByTestId('sets-history-modal')).toBeInTheDocument();
+
+    await vi.advanceTimersByTimeAsync(28500);
+    await vi.waitFor(() => {
+      expect(screen.container.querySelector('[data-testid="sets-history-modal"]')).toBeNull();
+    });
+  });
+
+  test('keeps immediate finish navigation without waiting for sets history modal timeout', async () => {
+    const screen = await render(
+      <ActiveMatchScreen
+        matchId="test-match"
+        initialSetup={createTestSetup()}
+        initialActions={[
+          ...winQuickSet('team-1'),
+          ...Array.from({ length: 5 }, () => winQuickGame('team-1')).flat(),
+          ...scorePoints('team-1', 'team-1', 'team-1')
+        ]}
+        startedAt={defaultStartedAt}
+      />
+    );
+
+    expect(screen.container.querySelector('[data-testid="sets-history-modal"]')).toBeNull();
+
+    await screen.getByTestId('team-panel-team-1').click();
+
+    await vi.waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          to: '/match/finish/$id',
+          params: { id: 'test-match' },
+          replace: true
+        })
+      );
+    });
+    expect(screen.container.querySelector('[data-testid="sets-history-modal"]')).toBeNull();
   });
 
   test('renders time chip', async () => {

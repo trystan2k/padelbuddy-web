@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useRouter } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 
@@ -28,8 +28,10 @@ import { getMatchTeamName } from '@/core/match/team-name';
 import type { MatchAction, MatchSetup, MatchTeamId } from '@/core/match/types';
 
 import { SetsCard } from './SetsCard/SetsCard';
+import { SetsHistoryModal } from './SetsHistoryModal/SetsHistoryModal';
 import { SideSwitchPrompt } from './SideSwitchPrompt/SideSwitchPrompt';
 import { TeamPanel } from './TeamPanel/TeamPanel';
+import { getSetsHistoryAutoOpenSignature } from './sets-history';
 import { useMatchAnnouncements } from './useMatchAnnouncements';
 import { useMatchSession } from './useMatchSession';
 import { useMatchTimer } from './useMatchTimer';
@@ -63,6 +65,10 @@ export function ActiveMatchScreen({
   const [isNavigatingToFinish, setIsNavigatingToFinish] = useState(false);
   const [remoteConfig, setRemoteConfig] = useState<RemoteControllerConfig | null>(null);
   const [isCompactHeight, setIsCompactHeight] = useState(false);
+  const [isSetsHistoryOpen, setIsSetsHistoryOpen] = useState(false);
+  const [setsHistoryOpenToken, setSetsHistoryOpenToken] = useState(0);
+  const previousSetsHistorySignatureRef = useRef<string | null>(null);
+  const previousActionCountRef = useRef(initialActions.length);
 
   const retryHistorySave = useCallback(async () => {
     const currentMatch = await loadCurrentMatch();
@@ -371,6 +377,48 @@ export function ActiveMatchScreen({
     setSideSwitchDismissed(true);
   }, []);
 
+  const handleOpenSetsHistory = useCallback(() => {
+    setIsSetsHistoryOpen(true);
+    setSetsHistoryOpenToken((currentToken) => currentToken + 1);
+  }, []);
+
+  const handleCloseSetsHistory = useCallback(() => {
+    setIsSetsHistoryOpen(false);
+  }, []);
+
+  useEffect(() => {
+    if (isMatchCompleted) {
+      setIsSetsHistoryOpen(false);
+    }
+  }, [isMatchCompleted]);
+
+  useEffect(() => {
+    const nextSignature = getSetsHistoryAutoOpenSignature(state.sets);
+    const previousSignature = previousSetsHistorySignatureRef.current;
+    const hasNewScoringAction = snapshot.actions.length > previousActionCountRef.current;
+
+    if (
+      previousSignature !== null &&
+      hasNewScoringAction &&
+      previousSignature !== nextSignature &&
+      setup.autoOpenSetsHistoryModal &&
+      !isMatchCompleted &&
+      !isNavigatingToFinish
+    ) {
+      setIsSetsHistoryOpen(true);
+      setSetsHistoryOpenToken((currentToken) => currentToken + 1);
+    }
+
+    previousSetsHistorySignatureRef.current = nextSignature;
+    previousActionCountRef.current = snapshot.actions.length;
+  }, [
+    isMatchCompleted,
+    isNavigatingToFinish,
+    setup.autoOpenSetsHistoryModal,
+    snapshot.actions.length,
+    state.sets
+  ]);
+
   const shouldShowSideSwitch =
     sideSwitch.shouldPrompt && setup.sideSwitchPrompts && !sideSwitchDismissed;
   const timerLabelKey = countdownEnabled ? 'match.timer.countdownLabel' : 'match.timer.label';
@@ -492,9 +540,20 @@ export function ActiveMatchScreen({
           </div>
 
           <div className={styles.setsOverlay}>
-            <SetsCard sets={state.sets} currentSetIndex={activeSetIndex} />
+            <SetsCard
+              sets={state.sets}
+              currentSetIndex={activeSetIndex}
+              onOpenHistory={handleOpenSetsHistory}
+            />
           </div>
         </div>
+
+        <SetsHistoryModal
+          isOpen={isSetsHistoryOpen}
+          openToken={setsHistoryOpenToken}
+          sets={state.sets}
+          onClose={handleCloseSetsHistory}
+        />
 
         <SideSwitchPrompt
           isOpen={shouldShowSideSwitch}

@@ -19,7 +19,8 @@ vi.mock('@/lib/setup/setup-storage', () => ({
     servingIndicatorEnabled: true,
     countdownTimerEnabled: false,
     countdownTimerDuration: 90,
-    sideSwitchPrompts: true,
+    autoOpenSetsHistoryModal: true,
+    sideSwitchPrompts: false,
     format: 'best-of-3',
     gameMode: 'advantage',
     decidingSetSuperTiebreak: false,
@@ -74,7 +75,8 @@ describe('useSetupForm', () => {
     expect(capturedState!.formData.servingIndicatorEnabled).toBe(true);
     expect(capturedState!.formData.countdownTimerEnabled).toBe(false);
     expect(capturedState!.formData.countdownTimerDuration).toBe(90);
-    expect(capturedState!.formData.sideSwitchPrompts).toBe(true);
+    expect(capturedState!.formData.autoOpenSetsHistoryModal).toBe(true);
+    expect(capturedState!.formData.sideSwitchPrompts).toBe(false);
   });
 
   test('initializes with empty errors', async () => {
@@ -130,6 +132,7 @@ describe('useSetupForm', () => {
       servingIndicatorEnabled: false,
       countdownTimerEnabled: true,
       countdownTimerDuration: 120,
+      autoOpenSetsHistoryModal: true,
       sideSwitchPrompts: false,
       format: 'best-of-5',
       gameMode: 'golden-point',
@@ -176,6 +179,7 @@ describe('useSetupForm', () => {
       servingIndicatorEnabled: true,
       countdownTimerEnabled: false,
       countdownTimerDuration: 90,
+      autoOpenSetsHistoryModal: true,
       sideSwitchPrompts: true,
       format: 'best-of-3',
       gameMode: 'advantage',
@@ -265,6 +269,7 @@ describe('useSetupForm', () => {
       expect(screen.getByTestId('state').element().textContent).toContain('"voiceName":null');
       expect(mockSaveSetupPreferenceSlice).not.toHaveBeenCalled();
 
+      await screen.getByTestId('update-side-switch-true').click();
       await screen.getByTestId('update-side-switch-false').click();
 
       await vi.waitFor(() => {
@@ -273,6 +278,7 @@ describe('useSetupForm', () => {
           servingIndicatorEnabled: true,
           countdownTimerEnabled: false,
           countdownTimerDuration: 90,
+          autoOpenSetsHistoryModal: true,
           sideSwitchPrompts: false,
           format: 'best-of-3',
           gameMode: 'advantage',
@@ -296,6 +302,7 @@ describe('useSetupForm', () => {
 
       await expect.element(screen.getByTestId('update-side-switch-false')).toBeInTheDocument();
 
+      await screen.getByTestId('update-side-switch-true').click();
       await screen.getByTestId('update-side-switch-false').click();
 
       await vi.waitFor(() => {
@@ -310,24 +317,14 @@ describe('useSetupForm', () => {
       await screen.getByTestId('update-side-switch-false').click();
 
       await vi.waitFor(() => {
-        expect(mockSaveSetupPreferenceSlice).toHaveBeenCalledTimes(2);
+        expect(mockSaveSetupPreferenceSlice).toHaveBeenCalledTimes(3);
       });
-      expect(mockSaveSetupPreferenceSlice).toHaveBeenNthCalledWith(1, {
+      expect(mockSaveSetupPreferenceSlice).toHaveBeenLastCalledWith({
         audioAnnouncementsEnabled: true,
         servingIndicatorEnabled: true,
         countdownTimerEnabled: false,
         countdownTimerDuration: 90,
-        sideSwitchPrompts: false,
-        format: 'best-of-3',
-        gameMode: 'advantage',
-        decidingSetSuperTiebreak: false,
-        superTiebreakTargetPoints: 11
-      });
-      expect(mockSaveSetupPreferenceSlice).toHaveBeenNthCalledWith(2, {
-        audioAnnouncementsEnabled: true,
-        servingIndicatorEnabled: true,
-        countdownTimerEnabled: false,
-        countdownTimerDuration: 90,
+        autoOpenSetsHistoryModal: true,
         sideSwitchPrompts: false,
         format: 'best-of-3',
         gameMode: 'advantage',
@@ -909,6 +906,7 @@ describe('useSetupForm interactions', () => {
         servingIndicatorEnabled: true,
         countdownTimerEnabled: false,
         countdownTimerDuration: 90,
+        autoOpenSetsHistoryModal: true,
         sideSwitchPrompts: false,
         format: 'best-of-3',
         gameMode: 'golden-point',
@@ -934,7 +932,8 @@ describe('useSetupForm interactions', () => {
         servingIndicatorEnabled: true,
         countdownTimerEnabled: false,
         countdownTimerDuration: 90,
-        sideSwitchPrompts: true,
+        autoOpenSetsHistoryModal: true,
+        sideSwitchPrompts: false,
         format: 'best-of-3',
         gameMode: 'advantage',
         decidingSetSuperTiebreak: false,

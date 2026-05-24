@@ -17,6 +17,7 @@ describe('validateSetupForm', () => {
     servingIndicatorEnabled: true,
     countdownTimerEnabled: false,
     countdownTimerDuration: 90,
+    autoOpenSetsHistoryModal: true,
     sideSwitchPrompts: true
   };
 
