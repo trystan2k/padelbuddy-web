@@ -8,6 +8,7 @@ import {
 } from '@/components/MatchEndScreen/view-model';
 import {
   createTestSetup,
+  reachSixAll,
   repeatAction,
   scorePoints,
   winQuickGame,
@@ -46,24 +47,24 @@ describe('MatchEndScreen view model', () => {
         {
           setNumber: 1,
           scores: {
-            'team-1': 6,
-            'team-2': 0
+            'team-1': { games: '6' },
+            'team-2': { games: '0' }
           },
           isSuperTiebreak: false
         },
         {
           setNumber: 2,
           scores: {
-            'team-1': 0,
-            'team-2': 6
+            'team-1': { games: '0' },
+            'team-2': { games: '6' }
           },
           isSuperTiebreak: false
         },
         {
           setNumber: 3,
           scores: {
-            'team-1': 6,
-            'team-2': 0
+            'team-1': { games: '6' },
+            'team-2': { games: '0' }
           },
           isSuperTiebreak: false
         }
@@ -94,8 +95,8 @@ describe('MatchEndScreen view model', () => {
         {
           setNumber: 1,
           scores: {
-            'team-1': 0,
-            'team-2': 0
+            'team-1': { games: '0' },
+            'team-2': { games: '0' }
           },
           isSuperTiebreak: false
         }
@@ -137,16 +138,16 @@ describe('MatchEndScreen view model', () => {
         {
           setNumber: 1,
           scores: {
-            'team-1': 6,
-            'team-2': 0
+            'team-1': { games: '6' },
+            'team-2': { games: '0' }
           },
           isSuperTiebreak: false
         },
         {
           setNumber: 2,
           scores: {
-            'team-1': 1,
-            'team-2': 1
+            'team-1': { games: '1' },
+            'team-2': { games: '1' }
           },
           isSuperTiebreak: false
         }
@@ -314,22 +315,46 @@ describe('MatchEndScreen view model', () => {
     expect(summary.setRows).toEqual([
       {
         setNumber: 1,
-        scores: { 'team-1': 6, 'team-2': 0 },
+        scores: { 'team-1': { games: '6' }, 'team-2': { games: '0' } },
         isSuperTiebreak: false
       },
       {
         setNumber: 2,
-        scores: { 'team-1': 0, 'team-2': 6 },
+        scores: { 'team-1': { games: '0' }, 'team-2': { games: '6' } },
         isSuperTiebreak: false
       },
       {
         setNumber: 3,
         scores: {
-          'team-1': defaultSuperTiebreakTargetPoints,
-          'team-2': defaultSuperTiebreakTargetPoints - 2
+          'team-1': { games: `${defaultSuperTiebreakTargetPoints}` },
+          'team-2': { games: `${defaultSuperTiebreakTargetPoints - 2}` }
         },
         isSuperTiebreak: true
       }
     ]);
+  });
+
+  test('formats completed standard tiebreak winner points in set rows', () => {
+    const projection = projectMatch(createTestSetup(), [
+      ...reachSixAll(),
+      ...repeatAction('team-1', 7),
+      ...repeatAction('team-2', 6),
+      ...scorePoints('team-1')
+    ]);
+
+    const summary = createMatchEndScreenSummary({
+      projection,
+      startedAt: 1_000,
+      finishedAt: 10_000
+    });
+
+    expect(summary.setRows[0]).toEqual({
+      setNumber: 1,
+      scores: {
+        'team-1': { games: '7', tiebreakPoints: '7' },
+        'team-2': { games: '6', tiebreakPoints: '0' }
+      },
+      isSuperTiebreak: false
+    });
   });
 });

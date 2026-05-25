@@ -1,10 +1,11 @@
 import { getMatchTeamName } from '@/core/match/team-name';
+import { getSetSummaryScoreParts, type SetSummaryScorePart } from '@/core/match/set-summary';
 import type { MatchFormat, MatchProjection, MatchTeamId, TeamScore } from '@/core/match/types';
 import { determineWinnerFromCompletedSets, getMatchDurationParts } from '@/lib/share/match-share';
 
 export interface MatchEndScreenSetRow {
   setNumber: number;
-  scores: TeamScore<number>;
+  scores: TeamScore<SetSummaryScorePart>;
   isSuperTiebreak: boolean;
 }
 
@@ -50,17 +51,10 @@ export function createMatchEndScreenSummary(
     format: projection.setup.format,
     setRows: projection.state.sets.map((set) => {
       const isSuperTiebreak = set.completed && set.mode === 'super-tiebreak';
-      const tiebreakPoints = isSuperTiebreak ? set.tiebreakPoints : null;
 
       return {
         setNumber: set.index,
-        scores:
-          tiebreakPoints !== null
-            ? tiebreakPoints
-            : {
-                'team-1': set.games['team-1'],
-                'team-2': set.games['team-2']
-              },
+        scores: getSetSummaryScoreParts(set),
         isSuperTiebreak
       };
     }),

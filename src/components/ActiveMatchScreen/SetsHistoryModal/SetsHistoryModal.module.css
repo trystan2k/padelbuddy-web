@@ -84,6 +84,14 @@
   color: var(--semantic-color-content-primary);
 }
 
+.tiebreakPoints {
+  margin-left: var(--base-space-2);
+  margin-right: var(--base-space-2);
+  font-family: var(--semantic-typography-family-body);
+  font-size: var(--base-font-size-13);
+  font-weight: var(--semantic-typography-weight-strong);
+}
+
 .emptyState {
   margin: 0;
   padding: var(--base-space-10) var(--base-space-12);

@@ -1,6 +1,8 @@
 import { useTranslation } from 'react-i18next';
 
+import type { SetSummaryScorePart } from '@/core/match/set-summary';
 import type { MatchTeamId } from '@/core/match/types';
+import { SetScoreValue } from '@/components/SetScoreValue/SetScoreValue';
 import { TrophyIcon } from '@/components/ui/Icon/TrophyIcon';
 import { TopBar } from '@/components/ui/TopBar/TopBar';
 
@@ -16,8 +18,8 @@ export interface ShareScreenProps {
   formatLabel: string;
   setRows: Array<{
     setNumber: number;
-    team1Games: number;
-    team2Games: number;
+    team1Games: SetSummaryScorePart;
+    team2Games: SetSummaryScorePart;
   }>;
   durationValue: string;
   dateValue: string;
@@ -92,9 +94,13 @@ export function ShareScreen({
                 <span className={styles.setLabel}>
                   {t('share.score.set', { number: row.setNumber })}
                 </span>
-                <span className={styles.winnerScore}>{row.team1Games}</span>
+                <span className={styles.winnerScore}>
+                  <SetScoreValue score={row.team1Games} tiebreakClassName={styles.tiebreakPoints} />
+                </span>
                 <span className={styles.setDash}>-</span>
-                <span className={styles.loserScore}>{row.team2Games}</span>
+                <span className={styles.loserScore}>
+                  <SetScoreValue score={row.team2Games} tiebreakClassName={styles.tiebreakPoints} />
+                </span>
               </div>
             ))}
           </div>

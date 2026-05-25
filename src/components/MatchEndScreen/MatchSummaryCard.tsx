@@ -1,6 +1,8 @@
 import { useTranslation } from 'react-i18next';
 
 import { Card } from '@/components/ui/Card/Card';
+import { SetScoreValue } from '@/components/SetScoreValue/SetScoreValue';
+import { formatSetSummaryScorePart } from '@/core/match/set-summary';
 import type { TeamScore } from '@/core/match/types';
 import { cn } from '@/lib/utils/cn';
 
@@ -42,9 +44,9 @@ export function MatchSummaryCard({ formatLabel, teamNames, setRows }: MatchSumma
                 {t('match.end.summary.setScoreRow', {
                   setNumber: setRow.setNumber,
                   teamOneName: teamNames['team-1'],
-                  teamOneScore: setRow.scores['team-1'],
+                  teamOneScore: formatSetSummaryScorePart(setRow.scores['team-1']),
                   teamTwoName: teamNames['team-2'],
-                  teamTwoScore: setRow.scores['team-2']
+                  teamTwoScore: formatSetSummaryScorePart(setRow.scores['team-2'])
                 })}
               </span>
               <span
@@ -62,13 +64,19 @@ export function MatchSummaryCard({ formatLabel, teamNames, setRows }: MatchSumma
                 )}
               </span>
               <span aria-hidden="true" className={cn(styles.setScore, styles.teamPrimary)}>
-                {setRow.scores['team-1']}
+                <SetScoreValue
+                  score={setRow.scores['team-1']}
+                  tiebreakClassName={styles.tiebreakPoints}
+                />
               </span>
               <span aria-hidden="true" className={styles.setSeparator}>
                 -
               </span>
               <span aria-hidden="true" className={cn(styles.setScore, styles.teamSecondary)}>
-                {setRow.scores['team-2']}
+                <SetScoreValue
+                  score={setRow.scores['team-2']}
+                  tiebreakClassName={styles.tiebreakPoints}
+                />
               </span>
             </li>
           ))}

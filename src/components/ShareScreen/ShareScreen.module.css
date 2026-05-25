@@ -181,6 +181,13 @@
   font-weight: var(--semantic-typography-weight-heading);
 }
 
+.tiebreakPoints {
+  margin-left: var(--base-space-4);
+  font-family: var(--semantic-typography-family-body);
+  font-size: var(--base-font-size-18);
+  font-weight: var(--semantic-typography-weight-strong);
+}
+
 .setDash {
   color: var(--semantic-color-content-secondary);
   font-family: var(--semantic-typography-family-display);

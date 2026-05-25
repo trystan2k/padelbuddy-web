@@ -9,9 +9,11 @@ import {
 import { Dialog } from '@base-ui/react/dialog';
 import { useTranslation } from 'react-i18next';
 
+import { SetScoreValue } from '@/components/SetScoreValue/SetScoreValue';
+import { getSetSummaryScoreParts } from '@/core/match/set-summary';
 import type { MatchSetState } from '@/core/match/types';
 
-import { getSetDisplayScore, getSetsWonScore } from '../sets-history';
+import { getSetsWonScore } from '../sets-history';
 
 import styles from './SetsHistoryModal.module.css';
 
@@ -68,7 +70,7 @@ export function SetsHistoryModal({
       sets
         .filter((set) => set.completed)
         .map((set) => {
-          const setScore = getSetDisplayScore(set);
+          const setScore = getSetSummaryScoreParts(set);
 
           return {
             setNumber: set.index,
@@ -107,7 +109,11 @@ export function SetsHistoryModal({
                 <span className={styles.setLabel}>
                   {t('match.sets.setLabel', { number: row.setNumber })}
                 </span>
-                <span className={styles.score}>{`${row.team1} - ${row.team2}`}</span>
+                <span className={styles.score}>
+                  <SetScoreValue score={row.team1} tiebreakClassName={styles.tiebreakPoints} />
+                  <span> - </span>
+                  <SetScoreValue score={row.team2} tiebreakClassName={styles.tiebreakPoints} />
+                </span>
               </li>
             ))}
           </ul>

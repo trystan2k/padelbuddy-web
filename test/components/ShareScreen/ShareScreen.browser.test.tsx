@@ -9,8 +9,8 @@ describe('ShareScreen', () => {
     team2Name: 'Pablo y Thiago',
     formatLabel: 'Best of 3',
     setRows: [
-      { setNumber: 1, team1Games: 6, team2Games: 4 },
-      { setNumber: 2, team1Games: 7, team2Games: 5 }
+      { setNumber: 1, team1Games: { games: '6' }, team2Games: { games: '4' } },
+      { setNumber: 2, team1Games: { games: '7' }, team2Games: { games: '5' } }
     ],
     durationValue: '1h 22m',
     dateValue: '22/03/26'
@@ -35,6 +35,24 @@ describe('ShareScreen', () => {
     const screen = await render(<ShareScreen {...defaultProps} />);
     await expect.element(screen.getByText('6', { exact: true }).first()).toBeInTheDocument();
     await expect.element(screen.getByText('4', { exact: true }).first()).toBeInTheDocument();
+  });
+
+  it('renders formatted completed tiebreak winner score', async () => {
+    const screen = await render(
+      <ShareScreen
+        {...defaultProps}
+        setRows={[
+          {
+            setNumber: 1,
+            team1Games: { games: '7', tiebreakPoints: '8' },
+            team2Games: { games: '6', tiebreakPoints: '6' }
+          }
+        ]}
+      />
+    );
+
+    await expect.element(screen.getByText('(8)', { exact: true })).toBeInTheDocument();
+    await expect.element(screen.getByText('(6)', { exact: true })).toBeInTheDocument();
   });
 
   it('renders duration and date', async () => {

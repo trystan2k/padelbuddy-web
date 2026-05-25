@@ -3,8 +3,10 @@ import { useNavigate } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 
 import { ShareScreen, type ShareScreenProps } from '@/components/ShareScreen/ShareScreen';
+import { SetScoreValue } from '@/components/SetScoreValue/SetScoreValue';
 import { getMatchTeamName } from '@/core/match/team-name';
 import { projectMatch } from '@/core/match/replay';
+import { formatSetSummaryScorePart, getSetSummaryScoreParts } from '@/core/match/set-summary';
 import type { MatchFormat, MatchSetState, MatchTeamId } from '@/core/match/types';
 import { deleteMatchHistory } from '@/lib/match-history/indexed-db';
 import { saveSetupPreferenceSlice } from '@/lib/setup/setup-storage';
@@ -30,6 +32,7 @@ interface HistoryRow {
   setsScore: string;
   setsScoreUnfinished: boolean;
   gamesScore: string;
+  setScoreRows: ShareScreenProps['setRows'];
   dateLabel: string;
   winnerTeamId: MatchTeamId | null;
   finishedAt: number;
@@ -69,6 +72,15 @@ export function HistoryScreen({ initialRecords }: HistoryScreenProps) {
         const requiredSetsToWin = requiredSetsToWinByFormat[record.setup.format];
         const winner = determineWinnerFromCompletedSets(projection.state.sets);
         const isFinishedEarly = completedSetsCount < requiredSetsToWin || !winner;
+        const setScoreRows: ShareScreenProps['setRows'] = projection.state.sets.map((set) => {
+          const scoreParts = getSetSummaryScoreParts(set);
+
+          return {
+            setNumber: set.index,
+            team1Games: scoreParts['team-1'],
+            team2Games: scoreParts['team-2']
+          };
+        });
 
         return {
           id: record.matchId,
@@ -76,7 +88,8 @@ export function HistoryScreen({ initialRecords }: HistoryScreenProps) {
           team2Name: getMatchTeamName(record.setup, 'team-2'),
           setsScore: toSetsScore(projection.state.sets),
           setsScoreUnfinished: isFinishedEarly,
-          gamesScore: toGamesScore(projection.state.sets),
+          gamesScore: toGamesScore(setScoreRows),
+          setScoreRows,
           dateLabel: formatHistoryDate(record.finishedAt, i18n.language),
           winnerTeamId: winner?.teamId ?? null,
           finishedAt: record.finishedAt,
@@ -99,14 +112,13 @@ export function HistoryScreen({ initialRecords }: HistoryScreenProps) {
     }
 
     const { record } = sharingRecord;
-    const projection = projectMatch(record.setup, record.actions);
-    const winner = determineWinnerFromCompletedSets(projection.state.sets);
     const isFinishedEarly = sharingRecord.setsScoreUnfinished;
+    const winnerTeamId = sharingRecord.winnerTeamId;
 
     const winnerNameValue = isFinishedEarly
       ? t('match.end.winner.finishedEarlyName')
-      : winner
-        ? winner.teamId === 'team-1'
+      : winnerTeamId
+        ? winnerTeamId === 'team-1'
           ? sharingRecord.team1Name
           : sharingRecord.team2Name
         : '';
@@ -131,23 +143,13 @@ export function HistoryScreen({ initialRecords }: HistoryScreenProps) {
       year: '2-digit'
     }).format(new Date(record.finishedAt));
 
-    const setRows = projection.state.sets.map((set) => {
-      const setScore = getSetScoreForHistory(set);
-
-      return {
-        setNumber: set.index,
-        team1Games: setScore['team-1'],
-        team2Games: setScore['team-2']
-      };
-    });
-
     return {
       winnerName: winnerNameValue,
       ...(sharingRecord.winnerTeamId ? { winnerTeamId: sharingRecord.winnerTeamId } : {}),
       team1Name: sharingRecord.team1Name,
       team2Name: sharingRecord.team2Name,
       formatLabel,
-      setRows,
+      setRows: sharingRecord.setScoreRows,
       durationValue,
       dateValue
     };
@@ -421,7 +423,24 @@ export function HistoryScreen({ initialRecords }: HistoryScreenProps) {
                         row.setsScore
                       )}
                     </td>
-                    <td className={styles.gamesCell}>{row.gamesScore}</td>
+                    <td className={styles.gamesCell} data-testid={`history-games-${row.id}`}>
+                      {row.setScoreRows.map((setRow, index) => (
+                        <span key={setRow.setNumber} className={styles.gamesSetScore}>
+                          <SetScoreValue
+                            score={setRow.team1Games}
+                            tiebreakClassName={styles.tiebreakPoints}
+                          />
+                          <span className={styles.setScoreSeparator}> - </span>
+                          <SetScoreValue
+                            score={setRow.team2Games}
+                            tiebreakClassName={styles.tiebreakPoints}
+                          />
+                          {index < row.setScoreRows.length - 1 && (
+                            <span className={styles.setScoreListSeparator}>, </span>
+                          )}
+                        </span>
+                      ))}
+                    </td>
                     <td className={styles.actionsCell}>
                       <div className={styles.iconActionsRow}>
                         <button
@@ -529,25 +548,12 @@ function toSetsScore(sets: MatchSetState[]): string {
   return `${teamOneSetsWon}-${teamTwoSetsWon}`;
 }
 
-function getSetScoreForHistory(set: MatchSetState): {
-  'team-1': number;
-  'team-2': number;
-} {
-  const superTiebreakPoints =
-    set.completed && set.mode === 'super-tiebreak' ? set.tiebreakPoints : null;
-
-  return {
-    'team-1': superTiebreakPoints?.['team-1'] ?? set.games['team-1'],
-    'team-2': superTiebreakPoints?.['team-2'] ?? set.games['team-2']
-  };
-}
-
-function toGamesScore(sets: MatchSetState[]): string {
-  return sets
-    .map((set) => {
-      const setScore = getSetScoreForHistory(set);
-      return `${setScore['team-1']}-${setScore['team-2']}`;
-    })
+function toGamesScore(setScoreRows: ShareScreenProps['setRows']): string {
+  return setScoreRows
+    .map(
+      (row) =>
+        `${formatSetSummaryScorePart(row.team1Games)}-${formatSetSummaryScorePart(row.team2Games)}`
+    )
     .join(', ');
 }
 
