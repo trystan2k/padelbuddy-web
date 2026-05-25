@@ -9,8 +9,8 @@ describe('ShareScreen', () => {
     team2Name: 'Pablo y Thiago',
     formatLabel: 'Best of 3',
     setRows: [
-      { setNumber: 1, team1Games: { score: '6' }, team2Games: { score: '4' } },
-      { setNumber: 2, team1Games: { score: '7' }, team2Games: { score: '5' } }
+      { setNumber: 1, team1Score: { score: '6' }, team2Score: { score: '4' } },
+      { setNumber: 2, team1Score: { score: '7' }, team2Score: { score: '5' } }
     ],
     durationValue: '1h 22m',
     dateValue: '22/03/26'
@@ -44,8 +44,8 @@ describe('ShareScreen', () => {
         setRows={[
           {
             setNumber: 1,
-            team1Games: { score: '7', tiebreakPoints: '8' },
-            team2Games: { score: '6', tiebreakPoints: '6' }
+            team1Score: { score: '7', tiebreakPoints: '8' },
+            team2Score: { score: '6', tiebreakPoints: '6' }
           }
         ]}
       />

@@ -81,8 +81,8 @@ export function HistoryScreen({ initialRecords }: HistoryScreenProps) {
 
           return {
             setNumber: set.index,
-            team1Games: scoreParts['team-1'],
-            team2Games: scoreParts['team-2']
+            team1Score: scoreParts['team-1'],
+            team2Score: scoreParts['team-2']
           };
         });
 
@@ -201,8 +201,8 @@ export function HistoryScreen({ initialRecords }: HistoryScreenProps) {
             ? shareScreenProps.setRows.map((row) => ({
                 setNumber: row.setNumber,
                 scores: {
-                  'team-1': row.team1Games,
-                  'team-2': row.team2Games
+                  'team-1': row.team1Score,
+                  'team-2': row.team2Score
                 },
                 isSuperTiebreak: false
               }))
@@ -431,12 +431,12 @@ export function HistoryScreen({ initialRecords }: HistoryScreenProps) {
                       {row.setScoreRows.map((setRow, index) => (
                         <span key={setRow.setNumber} className={styles.gamesSetScore}>
                           <SetScoreValue
-                            score={setRow.team1Games}
+                            score={setRow.team1Score}
                             tiebreakClassName={styles.tiebreakPoints}
                           />
                           <span className={styles.setScoreSeparator}> - </span>
                           <SetScoreValue
-                            score={setRow.team2Games}
+                            score={setRow.team2Score}
                             tiebreakClassName={styles.tiebreakPoints}
                           />
                           {index < row.setScoreRows.length - 1 && (
@@ -556,7 +556,7 @@ function toGamesScore(setScoreRows: SetSummaryRow[]): string {
   return setScoreRows
     .map(
       (row) =>
-        `${formatSetSummaryScorePart(row.team1Games)}-${formatSetSummaryScorePart(row.team2Games)}`
+        `${formatSetSummaryScorePart(row.team1Score)}-${formatSetSummaryScorePart(row.team2Score)}`
     )
     .join(', ');
 }

@@ -91,11 +91,11 @@ export function ShareScreen({
                   {t('share.score.set', { number: row.setNumber })}
                 </span>
                 <span className={styles.winnerScore}>
-                  <SetScoreValue score={row.team1Games} tiebreakClassName={styles.tiebreakPoints} />
+                  <SetScoreValue score={row.team1Score} tiebreakClassName={styles.tiebreakPoints} />
                 </span>
                 <span className={styles.setDash}>-</span>
                 <span className={styles.loserScore}>
-                  <SetScoreValue score={row.team2Games} tiebreakClassName={styles.tiebreakPoints} />
+                  <SetScoreValue score={row.team2Score} tiebreakClassName={styles.tiebreakPoints} />
                 </span>
               </div>
             ))}

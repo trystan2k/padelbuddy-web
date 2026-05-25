@@ -7,8 +7,8 @@ export interface SetSummaryScorePart {
 
 export interface SetSummaryRow {
   setNumber: number;
-  team1Games: SetSummaryScorePart;
-  team2Games: SetSummaryScorePart;
+  team1Score: SetSummaryScorePart;
+  team2Score: SetSummaryScorePart;
 }
 
 export function formatSetSummaryScorePart(value: SetSummaryScorePart): string {

@@ -115,8 +115,8 @@ export function MatchEndScreen({
       formatLabel,
       setRows: summary.setRows.map((row) => ({
         setNumber: row.setNumber,
-        team1Games: row.scores['team-1'],
-        team2Games: row.scores['team-2']
+        team1Score: row.scores['team-1'],
+        team2Score: row.scores['team-2']
       })),
       durationValue,
       dateValue
