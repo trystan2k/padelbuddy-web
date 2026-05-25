@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.24.0](https://github.com/trystan2k/padelbuddy-web/compare/v2.23.0...v2.24.0) (2026-05-25)
+
+
+### Features
+
+* **accessibility:** add screen reader support to HistoryScreen ([9960ebe](https://github.com/trystan2k/padelbuddy-web/commit/9960ebe875611117b23f12477ced208c1fbf06b7))
+* add serving player indicator to active match display ([d702099](https://github.com/trystan2k/padelbuddy-web/commit/d702099e70c231cbe09f8e0471aa4cf285867ffe))
+
 ## [2.23.0](https://github.com/trystan2k/padelbuddy-web/compare/v2.22.0...v2.23.0) (2026-05-24)
 
 
