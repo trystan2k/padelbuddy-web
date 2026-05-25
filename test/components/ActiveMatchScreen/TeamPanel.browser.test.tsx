@@ -85,7 +85,12 @@ describe('TeamPanel', () => {
 
   test('applies serving styles when the serving indicator is enabled', async () => {
     const screen = await render(
-      <TeamPanel {...createDefaultProps()} isServing={true} showServingIndicator={true} />
+      <TeamPanel
+        {...createDefaultProps()}
+        isServing={true}
+        servingPlayerNumber={1}
+        showServingIndicator={true}
+      />
     );
 
     const panel = screen.getByRole('button');
@@ -98,6 +103,19 @@ describe('TeamPanel', () => {
     expect(getComputedStyle(score.element()).color).toBe(
       resolveCssColor('color', 'var(--semantic-color-items-primary-content)')
     );
+  });
+
+  test('appends the serving player label to the serving team name', async () => {
+    const screen = await render(
+      <TeamPanel
+        {...createDefaultProps()}
+        isServing={true}
+        servingPlayerNumber={2}
+        showServingIndicator={true}
+      />
+    );
+
+    await expect.element(screen.getByText('Team Alpha · Serving: Player 2')).toBeInTheDocument();
   });
 
   test('does not render games, serving, or golden point affordances', async () => {

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import { cn } from '@/lib/utils/cn';
 
-import type { MatchTeamId } from '@/core/match/types';
+import type { MatchServingPlayerNumber, MatchTeamId } from '@/core/match/types';
 
 import styles from './TeamPanel.module.css';
 
@@ -12,6 +12,7 @@ interface TeamPanelProps extends Omit<ComponentPropsWithoutRef<'button'>, 'onCli
   teamName: string;
   score: string;
   isServing: boolean;
+  servingPlayerNumber?: MatchServingPlayerNumber | null;
   showServingIndicator?: boolean;
   onClick: () => void;
 }
@@ -21,6 +22,7 @@ export function TeamPanel({
   teamName,
   score,
   isServing,
+  servingPlayerNumber = null,
   showServingIndicator = true,
   onClick,
   disabled = false,
@@ -30,6 +32,12 @@ export function TeamPanel({
   const { t } = useTranslation();
   const servingStatusId = useId();
   const shouldShowServing = isServing && showServingIndicator;
+  const servingLabel =
+    shouldShowServing && servingPlayerNumber !== null
+      ? t('match.servingPlayer', { number: servingPlayerNumber })
+      : t('match.serving');
+  const displayTeamName =
+    shouldShowServing && servingPlayerNumber !== null ? `${teamName} · ${servingLabel}` : teamName;
 
   const panelClass = teamId === 'team-1' ? styles.team1Panel : styles.team2Panel;
   const servingClass = shouldShowServing ? styles.serving : undefined;
@@ -46,13 +54,13 @@ export function TeamPanel({
       data-testid={`team-panel-${teamId}`}
       data-inactivity-ignore=""
     >
-      <span className={styles.teamName}>{teamName}</span>
+      <span className={styles.teamName}>{displayTeamName}</span>
       <span className={styles.score} aria-live="polite">
         {score}
       </span>
       {shouldShowServing && (
         <span id={servingStatusId} className={styles.srOnly}>
-          {t('match.serving')}
+          {servingLabel}
         </span>
       )}
     </button>

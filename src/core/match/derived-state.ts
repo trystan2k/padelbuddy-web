@@ -3,6 +3,7 @@ import {
   type CompletedMatchSet,
   type MatchDerivedState,
   type MatchScoreDisplay,
+  type MatchServingPlayerNumber,
   type MatchSetup,
   type MatchSideSwitchState,
   type MatchState,
@@ -75,6 +76,90 @@ function getTiebreakServingTeam(openingServer: MatchTeamId, pointsPlayed: number
   return block % 2 === 0 ? getOpponentTeamId(openingServer) : openingServer;
 }
 
+function recordServiceTurn(counts: TeamScore<number>, teamId: MatchTeamId): void {
+  counts[teamId] += 1;
+}
+
+function recordStandardServiceTurns(
+  counts: TeamScore<number>,
+  firstServer: MatchTeamId,
+  completedGames: number
+): void {
+  for (let gameIndex = 0; gameIndex < completedGames; gameIndex += 1) {
+    recordServiceTurn(counts, toggleServer(firstServer, gameIndex));
+  }
+}
+
+function recordTiebreakServiceTurns(
+  counts: TeamScore<number>,
+  openingServer: MatchTeamId,
+  pointsPlayed: number,
+  includePartialLastTurn: boolean
+): void {
+  if (pointsPlayed <= 0) {
+    return;
+  }
+
+  let server = openingServer;
+  let remainingPoints = pointsPlayed;
+  let turnLength = 1;
+
+  while (remainingPoints > 0) {
+    if (!includePartialLastTurn && remainingPoints < turnLength) {
+      return;
+    }
+
+    recordServiceTurn(counts, server);
+    remainingPoints -= turnLength;
+    server = getOpponentTeamId(server);
+    turnLength = 2;
+  }
+}
+
+function getCompletedStandardGameCount(set: CompletedMatchSet): number {
+  if (set.tiebreakPoints === null) {
+    return getTotalScore(set.games);
+  }
+
+  return set.mode === 'super-tiebreak' ? 0 : 12;
+}
+
+function getServiceTurnCountsBeforeActiveTurn(state: MatchState): TeamScore<number> {
+  const counts = createTeamScore(0, 0);
+
+  for (const set of getCompletedSets(state)) {
+    recordStandardServiceTurns(counts, set.firstServer, getCompletedStandardGameCount(set));
+
+    if (set.tiebreakPoints !== null) {
+      recordTiebreakServiceTurns(
+        counts,
+        toggleServer(set.firstServer, getCompletedStandardGameCount(set)),
+        getTotalScore(set.tiebreakPoints),
+        true
+      );
+    }
+  }
+
+  const activeSet = getActiveSet(state);
+
+  if (!activeSet) {
+    return counts;
+  }
+
+  recordStandardServiceTurns(counts, activeSet.firstServer, getTotalScore(activeSet.games));
+
+  if (activeSet.game.kind === 'tiebreak') {
+    recordTiebreakServiceTurns(
+      counts,
+      getTiebreakOpeningServer(activeSet),
+      getTotalScore(activeSet.game.points),
+      false
+    );
+  }
+
+  return counts;
+}
+
 export function getServingTeam(state: MatchState): MatchTeamId | null {
   const activeSet = getActiveSet(state);
 
@@ -90,6 +175,23 @@ export function getServingTeam(state: MatchState): MatchTeamId | null {
     getTiebreakOpeningServer(activeSet),
     getTotalScore(activeSet.game.points)
   );
+}
+
+export function getServingPlayerNumber(state: MatchState): MatchServingPlayerNumber | null {
+  const servingTeam = getServingTeam(state);
+
+  return getServingPlayerNumberForTeam(state, servingTeam);
+}
+
+function getServingPlayerNumberForTeam(
+  state: MatchState,
+  servingTeam: MatchTeamId | null
+): MatchServingPlayerNumber | null {
+  if (servingTeam === null) {
+    return null;
+  }
+
+  return getServiceTurnCountsBeforeActiveTurn(state)[servingTeam] % 2 === 0 ? 1 : 2;
 }
 
 export function getNextSetFirstServer(set: CompletedMatchSet): MatchTeamId {
@@ -217,11 +319,13 @@ function getScoreDisplay(state: MatchState): MatchScoreDisplay {
 
 export function deriveMatchState(setup: MatchSetup, state: MatchState): MatchDerivedState {
   const winner = getMatchWinner(setup, state);
+  const servingTeam = getServingTeam(state);
 
   return {
     status: winner ? 'completed' : 'in-progress',
     activeSetIndex: getActiveSet(state)?.index ?? null,
-    servingTeam: getServingTeam(state),
+    servingTeam,
+    servingPlayerNumber: getServingPlayerNumberForTeam(state, servingTeam),
     winner,
     canContinuePlaying: winner !== null && setup.setCap !== null,
     setsWon: getSetsWon(state),

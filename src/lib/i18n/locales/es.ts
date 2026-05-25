@@ -315,6 +315,7 @@ export default {
     },
     scorePointFor: 'Anotar punto para {{teamName}}',
     serving: 'Sacando',
+    servingPlayer: 'Sacando: Jugador {{number}}',
     info: {
       title: 'Detalles de cancha',
       goldenPoint: 'PO',

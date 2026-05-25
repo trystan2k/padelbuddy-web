@@ -9,6 +9,7 @@ export const superTiebreakTargetPointsOptions = [7, 9, 11] as const;
 export type MatchFormat = (typeof matchFormats)[number];
 export type MatchGameMode = (typeof gameModes)[number];
 export type MatchTeamId = (typeof matchTeamIds)[number];
+export type MatchServingPlayerNumber = 1 | 2;
 export type BestOfOneDecidingBehavior = (typeof bestOfOneDecidingBehaviors)[number];
 export type MatchSetMode = (typeof setModes)[number];
 export type CountdownTimerDuration = (typeof countdownTimerDurations)[number];
@@ -156,6 +157,7 @@ export interface MatchDerivedState {
   status: 'in-progress' | 'completed';
   activeSetIndex: number | null;
   servingTeam: MatchTeamId | null;
+  servingPlayerNumber: MatchServingPlayerNumber | null;
   winner: MatchWinner | null;
   canContinuePlaying: boolean;
   setsWon: TeamScore<number>;

@@ -153,7 +153,7 @@ export function ActiveMatchScreen({
   const team2Name =
     resolvedTeam2Name === 'team-2' ? t('setup.firstServer.team2') : resolvedTeam2Name;
 
-  const { scoreDisplay, activeSetIndex, sideSwitch, servingTeam } = derived;
+  const { scoreDisplay, activeSetIndex, sideSwitch, servingTeam, servingPlayerNumber } = derived;
   const showServingIndicator = setup.servingIndicatorEnabled;
 
   useMatchAnnouncements({
@@ -501,6 +501,7 @@ export function ActiveMatchScreen({
               teamName={team1Name}
               score={getTeamScore('team-1')}
               isServing={servingTeam === 'team-1'}
+              servingPlayerNumber={servingTeam === 'team-1' ? servingPlayerNumber : null}
               showServingIndicator={showServingIndicator}
               onClick={handleScoreTeam1}
               disabled={isLoading || isMatchCompleted}
@@ -523,6 +524,7 @@ export function ActiveMatchScreen({
               teamName={team2Name}
               score={getTeamScore('team-2')}
               isServing={servingTeam === 'team-2'}
+              servingPlayerNumber={servingTeam === 'team-2' ? servingPlayerNumber : null}
               showServingIndicator={showServingIndicator}
               onClick={handleScoreTeam2}
               disabled={isLoading || isMatchCompleted}
