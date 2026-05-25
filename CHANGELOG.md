@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.25.0](https://github.com/trystan2k/padelbuddy-web/compare/v2.24.0...v2.25.0) (2026-05-25)
+
+
+### Features
+
+* show full tiebreak points in set summaries ([04e897e](https://github.com/trystan2k/padelbuddy-web/commit/04e897e1adbfb5d1b16cc1e8bc9f304a3f99ee9e))
+
 ## [2.24.0](https://github.com/trystan2k/padelbuddy-web/compare/v2.23.0...v2.24.0) (2026-05-25)
 
 
