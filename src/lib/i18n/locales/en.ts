@@ -312,6 +312,7 @@ export default {
     },
     scorePointFor: 'Score point for {{teamName}}',
     serving: 'Serving',
+    servingPlayer: 'Serving: Player {{number}}',
     info: {
       title: 'Court details',
       goldenPoint: 'GP',

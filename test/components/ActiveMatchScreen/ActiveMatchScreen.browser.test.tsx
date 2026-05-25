@@ -540,6 +540,7 @@ describe('ActiveMatchScreen', () => {
     expect(getComputedStyle(team1Score as Element).color).toBe(
       resolveCssColor('color', 'var(--semantic-color-items-primary-content)')
     );
+    await expect.element(screen.getByText('Ana & Bea · Serving: Player 1')).toBeInTheDocument();
     await expect
       .element(screen.getByTestId('team-panel-team-2'))
       .not.toHaveClass(teamPanelStyles.serving!);
@@ -563,6 +564,7 @@ describe('ActiveMatchScreen', () => {
     await expect
       .element(screen.getByTestId('team-panel-team-2'))
       .not.toHaveClass(teamPanelStyles.serving!);
+    expect(screen.container.textContent).not.toContain('Serving: Player 1');
   });
 
   test('uses the countdown timer aria-label when countdown mode is enabled', async () => {

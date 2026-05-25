@@ -1,7 +1,12 @@
 import { describe, expect, test } from 'vitest';
 
 import { continueMatch, projectMatch } from '@/core/match/replay';
-import { getActiveSet, getNextSetFirstServer, getServingTeam } from '@/core/match/derived-state';
+import {
+  getActiveSet,
+  getNextSetFirstServer,
+  getServingPlayerNumber,
+  getServingTeam
+} from '@/core/match/derived-state';
 
 import {
   createTestSetup,
@@ -18,7 +23,22 @@ describe('serve rotation and derived state', () => {
     const projection = projectMatch(setup, winQuickGame('team-1'));
 
     expect(projection.derived.servingTeam).toBe('team-2');
+    expect(projection.derived.servingPlayerNumber).toBe(1);
     expect(getActiveSet(projection.state)?.firstServer).toBe('team-1');
+  });
+
+  test('alternates each team serving player across standard service turns', () => {
+    const setup = createTestSetup();
+    const atStart = projectMatch(setup, []);
+    const afterOneGame = projectMatch(setup, winQuickGame('team-1'));
+    const afterTwoGames = projectMatch(setup, [
+      ...winQuickGame('team-1'),
+      ...winQuickGame('team-2')
+    ]);
+
+    expect(atStart.derived.servingPlayerNumber).toBe(1);
+    expect(afterOneGame.derived.servingPlayerNumber).toBe(1);
+    expect(afterTwoGames.derived.servingPlayerNumber).toBe(2);
   });
 
   test('follows deterministic tiebreak serving math', () => {
@@ -35,8 +55,11 @@ describe('serve rotation and derived state', () => {
     ]);
 
     expect(atTiebreakStart.derived.servingTeam).toBe('team-1');
+    expect(atTiebreakStart.derived.servingPlayerNumber).toBe(1);
     expect(afterOnePoint.derived.servingTeam).toBe('team-2');
+    expect(afterOnePoint.derived.servingPlayerNumber).toBe(1);
     expect(afterThreePoints.derived.servingTeam).toBe('team-1');
+    expect(afterThreePoints.derived.servingPlayerNumber).toBe(2);
   });
 
   test('carries next-set first server continuity through a tiebreak set', () => {
@@ -52,9 +75,28 @@ describe('serve rotation and derived state', () => {
     expect(projection.derived.activeSetIndex).toBe(2);
     expect(getActiveSet(projection.state)?.firstServer).toBe('team-2');
     expect(projection.derived.servingTeam).toBe('team-2');
+    expect(projection.derived.servingPlayerNumber).toBe(2);
     expect(
       completedSet && completedSet.completed ? getNextSetFirstServer(completedSet) : null
     ).toBe('team-2');
+  });
+
+  test('keeps serving-player rotation through a super tiebreak', () => {
+    const setup = createTestSetup({
+      format: 'best-of-1',
+      decidingSetSuperTiebreak: true,
+      bestOfOneDecidingBehavior: 'super-tiebreak'
+    });
+    const atStart = projectMatch(setup, []);
+    const afterOnePoint = projectMatch(setup, scorePoints('team-1'));
+    const afterThreePoints = projectMatch(setup, scorePoints('team-1', 'team-2', 'team-2'));
+
+    expect(atStart.derived.servingTeam).toBe('team-1');
+    expect(atStart.derived.servingPlayerNumber).toBe(1);
+    expect(afterOnePoint.derived.servingTeam).toBe('team-2');
+    expect(afterOnePoint.derived.servingPlayerNumber).toBe(1);
+    expect(afterThreePoints.derived.servingTeam).toBe('team-1');
+    expect(afterThreePoints.derived.servingPlayerNumber).toBe(2);
   });
 
   test('derives side-switch prompts from odd games within a set and every six tiebreak points', () => {
@@ -108,7 +150,9 @@ describe('serve rotation and derived state', () => {
     const projection = projectMatch(setup, winQuickSet('team-1'));
 
     expect(getServingTeam(projection.state)).toBeNull();
+    expect(getServingPlayerNumber(projection.state)).toBeNull();
     expect(projection.derived.servingTeam).toBeNull();
+    expect(projection.derived.servingPlayerNumber).toBeNull();
     expect(projection.derived.sideSwitch).toEqual({
       shouldPrompt: false,
       reason: null
