@@ -138,4 +138,30 @@ describe('SetsHistoryModal', () => {
       .toHaveTextContent(en.match.sets.emptyHistory);
     await expect.element(screen.getByTestId('sets-history-modal-list')).not.toBeInTheDocument();
   });
+
+  test('renders completed standard tiebreak winner points in history rows', async () => {
+    const onClose = vi.fn<() => void>();
+    const screen = await render(
+      <SetsHistoryModal
+        isOpen
+        openToken={1}
+        sets={[
+          {
+            index: 1,
+            mode: 'standard',
+            firstServer: 'team-1',
+            completed: true,
+            winner: 'team-1',
+            games: { 'team-1': 7, 'team-2': 6 },
+            tiebreakPoints: { 'team-1': 8, 'team-2': 6 }
+          }
+        ]}
+        onClose={onClose}
+      />
+    );
+
+    await expect
+      .element(screen.getByTestId('sets-history-modal-list'))
+      .toHaveTextContent('7(8) - 6(6)');
+  });
 });

@@ -5,7 +5,13 @@ import { HistoryScreen } from '@/components/HistoryScreen/HistoryScreen';
 import { ToastProvider, globalToastManager } from '@/components/ui/Toast/useToast';
 import { createMatchHistoryRecord } from '@/lib/match-history/persistence';
 
-import { createTestSetup, winQuickSet } from '../../core/match/test-helpers';
+import {
+  createTestSetup,
+  reachSixAll,
+  repeatAction,
+  scorePoints,
+  winQuickSet
+} from '../../core/match/test-helpers';
 
 const {
   mockNavigate,
@@ -167,6 +173,30 @@ describe('HistoryScreen', () => {
     await screen.getByRole('button', { name: /^back$/i }).click();
 
     expect(mockNavigate).toHaveBeenCalledWith({ to: '/' });
+  });
+
+  test('renders completed standard tiebreak winner points in games column', async () => {
+    const finishedAt = Date.now();
+    const record = createMatchHistoryRecord({
+      matchId: 'history-tiebreak',
+      setup: createTestSetup(),
+      actions: [
+        ...reachSixAll(),
+        ...repeatAction('team-1', 7),
+        ...repeatAction('team-2', 6),
+        ...scorePoints('team-1')
+      ],
+      startedAt: finishedAt - 120_000,
+      finishedAt
+    });
+
+    const screen = await render(<HistoryScreen initialRecords={[record]} />);
+
+    const gamesCell = screen.getByTestId('history-games-history-tiebreak');
+
+    await expect.element(gamesCell).toHaveTextContent(/7\s*\(7\)\s*-\s*6\s*\(0\)/);
+    await expect.element(gamesCell).toHaveTextContent('(7)');
+    await expect.element(gamesCell).toHaveTextContent('(0)');
   });
 });
 

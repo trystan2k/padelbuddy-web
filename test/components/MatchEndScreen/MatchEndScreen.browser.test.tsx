@@ -3,7 +3,13 @@ import { render } from 'vitest-browser-react';
 
 import { MatchEndScreen } from '@/components/MatchEndScreen/MatchEndScreen';
 import { projectMatch } from '@/core/match/replay';
-import { createTestSetup, winQuickSet } from '../../core/match/test-helpers';
+import {
+  createTestSetup,
+  reachSixAll,
+  repeatAction,
+  scorePoints,
+  winQuickSet
+} from '../../core/match/test-helpers';
 
 const currentTime = new Date('2026-03-19T13:24:00.000Z');
 const startedAt = currentTime.getTime() - 20 * 60 * 1000;
@@ -218,6 +224,30 @@ describe('MatchEndScreen', () => {
     await expect.element(screen.getByTestId('new-match-button')).toBeInTheDocument();
     await expect.element(screen.getByTestId('continue-match-button')).toBeInTheDocument();
     expect(screen.container.querySelector('[aria-haspopup="true"]')).toBeNull();
+  });
+
+  test('renders completed standard tiebreak winner points in set summary', async () => {
+    const setup = createCompletedSetup();
+    const actions = [
+      ...reachSixAll(),
+      ...repeatAction('team-1', 7),
+      ...repeatAction('team-2', 6),
+      ...scorePoints('team-1')
+    ];
+    const projection = projectMatch(setup, actions);
+
+    const screen = await render(
+      <MatchEndScreen
+        matchId="test-match-tiebreak"
+        setup={setup}
+        actions={actions}
+        projection={projection}
+        startedAt={startedAt}
+        finishedAt={finishedAt}
+      />
+    );
+
+    await expect.element(screen.getByTestId('match-end-set-row-1')).toHaveTextContent('7(7)-6(0)');
   });
 
   test('renders an enabled share action in the header', async () => {

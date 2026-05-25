@@ -41,7 +41,10 @@ test.describe('@edge-case @active-match @match-end Tiebreak flows', () => {
     await team1Panel.click();
 
     await expect(page).toHaveURL(/\/match\/finish\/[^/]+$/);
-    await expect(page.getByTestId('match-end-set-row-1')).toContainText('7-6');
+    const firstSetRow = page.getByTestId('match-end-set-row-1');
+
+    await expect(firstSetRow).toContainText(/Set 1:\s*Team A 7\s*\(7\),\s*Team B 6\s*\(5\)/i);
+    await expect(firstSetRow).toContainText(/7\s*\(7\)\s*-\s*6\s*\(5\)/);
   });
 
   test('uses default deciding-set super tiebreak target (11) in best-of-3', async ({ page }) => {

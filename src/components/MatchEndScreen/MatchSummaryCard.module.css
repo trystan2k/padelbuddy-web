@@ -126,6 +126,13 @@
   line-height: 1;
 }
 
+.tiebreakPoints {
+  margin-left: var(--base-space-4);
+  font-family: var(--semantic-typography-family-body);
+  font-size: var(--base-font-size-18);
+  font-weight: var(--semantic-typography-weight-strong);
+}
+
 .setSeparator {
   min-width: 1.5rem;
   text-align: center;

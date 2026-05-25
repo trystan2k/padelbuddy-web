@@ -1,4 +1,5 @@
 import type { MatchSetState, MatchTeamId } from '@/core/match/types';
+import type { SetSummaryScorePart } from '@/core/match/set-summary';
 
 // ============================================================================
 // Shared types
@@ -22,7 +23,7 @@ interface ShareSummary {
   teamNames: { 'team-1': string; 'team-2': string };
   setRows: Array<{
     setNumber: number;
-    scores: { 'team-1': number; 'team-2': number };
+    scores: { 'team-1': SetSummaryScorePart; 'team-2': SetSummaryScorePart };
     isSuperTiebreak: boolean;
   }>;
   totalGames: number;

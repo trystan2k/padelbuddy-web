@@ -154,6 +154,23 @@
   color: var(--semantic-color-content-primary);
 }
 
+.gamesSetScore {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--base-space-2);
+}
+
+.tiebreakPoints {
+  font-family: var(--semantic-typography-family-body);
+  font-size: var(--base-font-size-11);
+  font-weight: var(--semantic-typography-weight-strong);
+}
+
+.setScoreSeparator,
+.setScoreListSeparator {
+  white-space: pre;
+}
+
 .actionsCell {
   display: flex;
   flex-direction: column;

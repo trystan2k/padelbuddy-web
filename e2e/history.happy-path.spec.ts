@@ -18,7 +18,9 @@ test.describe('@happy-path @history History screen', () => {
     await expect(page.getByText('Beta')).toBeVisible();
     await expect(page.getByRole('table')).toBeVisible();
     await expect(page.getByText('1-0')).toBeVisible();
-    await expect(page.getByText('6-0')).toBeVisible();
+
+    const gamesCell = page.getByTestId('history-games-history-render-test');
+    await expect(gamesCell).toContainText(/6\s*-\s*0/);
   });
 
   test('share button is visible and clickable', async ({ page }) => {
