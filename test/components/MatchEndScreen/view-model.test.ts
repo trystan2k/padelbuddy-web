@@ -47,24 +47,24 @@ describe('MatchEndScreen view model', () => {
         {
           setNumber: 1,
           scores: {
-            'team-1': { games: '6' },
-            'team-2': { games: '0' }
+            'team-1': { score: '6' },
+            'team-2': { score: '0' }
           },
           isSuperTiebreak: false
         },
         {
           setNumber: 2,
           scores: {
-            'team-1': { games: '0' },
-            'team-2': { games: '6' }
+            'team-1': { score: '0' },
+            'team-2': { score: '6' }
           },
           isSuperTiebreak: false
         },
         {
           setNumber: 3,
           scores: {
-            'team-1': { games: '6' },
-            'team-2': { games: '0' }
+            'team-1': { score: '6' },
+            'team-2': { score: '0' }
           },
           isSuperTiebreak: false
         }
@@ -95,8 +95,8 @@ describe('MatchEndScreen view model', () => {
         {
           setNumber: 1,
           scores: {
-            'team-1': { games: '0' },
-            'team-2': { games: '0' }
+            'team-1': { score: '0' },
+            'team-2': { score: '0' }
           },
           isSuperTiebreak: false
         }
@@ -138,16 +138,16 @@ describe('MatchEndScreen view model', () => {
         {
           setNumber: 1,
           scores: {
-            'team-1': { games: '6' },
-            'team-2': { games: '0' }
+            'team-1': { score: '6' },
+            'team-2': { score: '0' }
           },
           isSuperTiebreak: false
         },
         {
           setNumber: 2,
           scores: {
-            'team-1': { games: '1' },
-            'team-2': { games: '1' }
+            'team-1': { score: '1' },
+            'team-2': { score: '1' }
           },
           isSuperTiebreak: false
         }
@@ -315,19 +315,19 @@ describe('MatchEndScreen view model', () => {
     expect(summary.setRows).toEqual([
       {
         setNumber: 1,
-        scores: { 'team-1': { games: '6' }, 'team-2': { games: '0' } },
+        scores: { 'team-1': { score: '6' }, 'team-2': { score: '0' } },
         isSuperTiebreak: false
       },
       {
         setNumber: 2,
-        scores: { 'team-1': { games: '0' }, 'team-2': { games: '6' } },
+        scores: { 'team-1': { score: '0' }, 'team-2': { score: '6' } },
         isSuperTiebreak: false
       },
       {
         setNumber: 3,
         scores: {
-          'team-1': { games: `${defaultSuperTiebreakTargetPoints}` },
-          'team-2': { games: `${defaultSuperTiebreakTargetPoints - 2}` }
+          'team-1': { score: `${defaultSuperTiebreakTargetPoints}` },
+          'team-2': { score: `${defaultSuperTiebreakTargetPoints - 2}` }
         },
         isSuperTiebreak: true
       }
@@ -351,8 +351,8 @@ describe('MatchEndScreen view model', () => {
     expect(summary.setRows[0]).toEqual({
       setNumber: 1,
       scores: {
-        'team-1': { games: '7', tiebreakPoints: '7' },
-        'team-2': { games: '6', tiebreakPoints: '0' }
+        'team-1': { score: '7', tiebreakPoints: '7' },
+        'team-2': { score: '6', tiebreakPoints: '0' }
       },
       isSuperTiebreak: false
     });

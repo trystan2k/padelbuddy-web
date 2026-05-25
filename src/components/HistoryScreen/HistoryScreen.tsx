@@ -6,7 +6,11 @@ import { ShareScreen, type ShareScreenProps } from '@/components/ShareScreen/Sha
 import { SetScoreValue } from '@/components/SetScoreValue/SetScoreValue';
 import { getMatchTeamName } from '@/core/match/team-name';
 import { projectMatch } from '@/core/match/replay';
-import { formatSetSummaryScorePart, getSetSummaryScoreParts } from '@/core/match/set-summary';
+import {
+  formatSetSummaryScorePart,
+  getSetSummaryScoreParts,
+  type SetSummaryRow
+} from '@/core/match/set-summary';
 import type { MatchFormat, MatchSetState, MatchTeamId } from '@/core/match/types';
 import { deleteMatchHistory } from '@/lib/match-history/indexed-db';
 import { saveSetupPreferenceSlice } from '@/lib/setup/setup-storage';
@@ -32,7 +36,7 @@ interface HistoryRow {
   setsScore: string;
   setsScoreUnfinished: boolean;
   gamesScore: string;
-  setScoreRows: ShareScreenProps['setRows'];
+  setScoreRows: SetSummaryRow[];
   dateLabel: string;
   winnerTeamId: MatchTeamId | null;
   finishedAt: number;
@@ -72,7 +76,7 @@ export function HistoryScreen({ initialRecords }: HistoryScreenProps) {
         const requiredSetsToWin = requiredSetsToWinByFormat[record.setup.format];
         const winner = determineWinnerFromCompletedSets(projection.state.sets);
         const isFinishedEarly = completedSetsCount < requiredSetsToWin || !winner;
-        const setScoreRows: ShareScreenProps['setRows'] = projection.state.sets.map((set) => {
+        const setScoreRows: SetSummaryRow[] = projection.state.sets.map((set) => {
           const scoreParts = getSetSummaryScoreParts(set);
 
           return {
@@ -548,7 +552,7 @@ function toSetsScore(sets: MatchSetState[]): string {
   return `${teamOneSetsWon}-${teamTwoSetsWon}`;
 }
 
-function toGamesScore(setScoreRows: ShareScreenProps['setRows']): string {
+function toGamesScore(setScoreRows: SetSummaryRow[]): string {
   return setScoreRows
     .map(
       (row) =>

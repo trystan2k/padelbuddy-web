@@ -8,7 +8,7 @@ interface SetScoreValueProps {
 export function SetScoreValue({ score, tiebreakClassName }: SetScoreValueProps) {
   return (
     <>
-      <span>{score.games}</span>
+      <span>{score.score}</span>
       {score.tiebreakPoints !== undefined && (
         <span className={tiebreakClassName}>({score.tiebreakPoints})</span>
       )}

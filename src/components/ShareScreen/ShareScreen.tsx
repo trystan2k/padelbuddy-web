@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 
-import type { SetSummaryScorePart } from '@/core/match/set-summary';
+import type { SetSummaryRow } from '@/core/match/set-summary';
 import type { MatchTeamId } from '@/core/match/types';
 import { SetScoreValue } from '@/components/SetScoreValue/SetScoreValue';
 import { TrophyIcon } from '@/components/ui/Icon/TrophyIcon';
@@ -16,11 +16,7 @@ export interface ShareScreenProps {
   team1Name: string;
   team2Name: string;
   formatLabel: string;
-  setRows: Array<{
-    setNumber: number;
-    team1Games: SetSummaryScorePart;
-    team2Games: SetSummaryScorePart;
-  }>;
+  setRows: SetSummaryRow[];
   durationValue: string;
   dateValue: string;
 }

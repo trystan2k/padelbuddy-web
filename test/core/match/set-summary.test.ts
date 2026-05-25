@@ -22,8 +22,8 @@ describe('set summary formatter', () => {
     expect(getSetSummaryScores(set)).toEqual({ 'team-1': '7 (8)', 'team-2': '6 (6)' });
     expect(formatSetSummaryScore(set)).toBe('7 (8) - 6 (6)');
     expect(getSetSummaryScoreParts(set)).toEqual({
-      'team-1': { games: '7', tiebreakPoints: '8' },
-      'team-2': { games: '6', tiebreakPoints: '6' }
+      'team-1': { score: '7', tiebreakPoints: '8' },
+      'team-2': { score: '6', tiebreakPoints: '6' }
     });
   });
 

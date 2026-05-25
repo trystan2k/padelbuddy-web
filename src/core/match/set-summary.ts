@@ -1,16 +1,22 @@
 import type { CompletedMatchSet, MatchSetState, TeamScore } from './types';
 
 export interface SetSummaryScorePart {
-  games: string;
+  score: string;
   tiebreakPoints?: string;
+}
+
+export interface SetSummaryRow {
+  setNumber: number;
+  team1Games: SetSummaryScorePart;
+  team2Games: SetSummaryScorePart;
 }
 
 export function formatSetSummaryScorePart(value: SetSummaryScorePart): string {
   if (value.tiebreakPoints !== undefined) {
-    return `${value.games} (${value.tiebreakPoints})`;
+    return `${value.score} (${value.tiebreakPoints})`;
   }
 
-  return value.games;
+  return value.score;
 }
 
 function toStringScore(scores: TeamScore<number>): TeamScore<string> {
@@ -59,18 +65,18 @@ export function getSetSummaryScoreParts(set: MatchSetState): TeamScore<SetSummar
 
   if (!isCompletedStandardTiebreakSetWithPoints(set)) {
     return {
-      'team-1': { games: baseScores['team-1'] },
-      'team-2': { games: baseScores['team-2'] }
+      'team-1': { score: baseScores['team-1'] },
+      'team-2': { score: baseScores['team-2'] }
     };
   }
 
   return {
     'team-1': {
-      games: `${set.games['team-1']}`,
+      score: `${set.games['team-1']}`,
       tiebreakPoints: `${set.tiebreakPoints['team-1']}`
     },
     'team-2': {
-      games: `${set.games['team-2']}`,
+      score: `${set.games['team-2']}`,
       tiebreakPoints: `${set.tiebreakPoints['team-2']}`
     }
   };
