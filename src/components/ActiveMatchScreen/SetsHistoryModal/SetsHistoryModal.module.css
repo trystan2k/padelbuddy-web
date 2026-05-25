@@ -5,7 +5,7 @@
 .container {
   pointer-events: auto;
   composes: modalcontainer from '../../../styles/shared-setup-modal.module.css';
-  width: min(calc(100vw - (var(--base-space-16) * 2)), calc(var(--base-space-40) * 13));
+  width: min(calc(100vw - (var(--base-space-16) * 2)), calc(var(--base-space-40) * 14));
   max-height: calc(100dvh - (var(--base-space-16) * 2));
   gap: var(--base-space-16);
 }
