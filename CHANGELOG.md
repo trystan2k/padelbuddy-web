@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.26.0](https://github.com/trystan2k/padelbuddy-web/compare/v2.25.0...v2.26.0) (2026-05-29)
+
+
+### Features
+
+* **hyperframes:** add full hyperframes skill set and assets ([f063b64](https://github.com/trystan2k/padelbuddy-web/commit/f063b64571017a78488fe2b407e5b6621fc11b4d))
+* **videos/product-intro:** add padel buddy intro ([d48d778](https://github.com/trystan2k/padelbuddy-web/commit/d48d77839d8dd079e6dc9071ea04ea69d9caa9fa))
+
 ## [2.25.0](https://github.com/trystan2k/padelbuddy-web/compare/v2.24.0...v2.25.0) (2026-05-25)
 
 
