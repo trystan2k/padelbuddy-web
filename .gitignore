@@ -22,3 +22,10 @@ playwright/.cache/
 
 # Android Studio local state
 mobile/android/.idea/deploymentTargetSelector.xml
+
+# HyperFrames video outputs and caches
+videos/**/renders/
+videos/**/snapshots/
+videos/**/.thumbnails/
+videos/**/.waveform-cache/
+videos/**/.DS_Store

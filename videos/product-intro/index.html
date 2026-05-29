@@ -1,0 +1,979 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Padel Buddy Intro Instagram ES</title>
+    <style>
+      @font-face {
+        font-family: 'Inter';
+        src: url('assets/inter-500.woff2') format('woff2');
+        font-weight: 500;
+      }
+
+      @font-face {
+        font-family: 'Inter';
+        src: url('assets/inter-700.woff2') format('woff2');
+        font-weight: 700;
+      }
+
+      @font-face {
+        font-family: 'Outfit';
+        src: url('assets/outfit-800.woff2') format('woff2');
+        font-weight: 800;
+      }
+
+      @font-face {
+        font-family: 'Outfit';
+        src: url('assets/outfit-900.woff2') format('woff2');
+        font-weight: 900;
+      }
+
+      :root {
+        --canvas: #f4f0e7;
+        --canvas-end: #e9f3df;
+        --surface: #fcfaf6;
+        --surface-muted: #efe7d8;
+        --ink: #13233b;
+        --ink-soft: #445267;
+        --blue: #2f7cf6;
+        --green: #1fa24a;
+        --amber: #e28a1a;
+        --highlight: #d8ea42;
+        --border: #d7cfbf;
+        --white: #ffffff;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: var(--canvas);
+        color: var(--ink);
+      }
+
+      body {
+        font-family: 'Inter', sans-serif;
+      }
+
+      #root {
+        position: relative;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background:
+          linear-gradient(180deg, rgba(244, 240, 231, 0.78), rgba(233, 243, 223, 0.64)),
+          var(--canvas);
+      }
+
+      .clip {
+        position: absolute;
+      }
+
+      .bg-video,
+      .wash,
+      .grid {
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      .bg-video {
+        object-fit: cover;
+        filter: saturate(1.04) contrast(1.02);
+      }
+
+      .wash {
+        pointer-events: none;
+        background:
+          radial-gradient(circle at 18% 16%, rgba(47, 124, 246, 0.24), rgba(47, 124, 246, 0) 28%),
+          radial-gradient(circle at 82% 68%, rgba(31, 162, 74, 0.22), rgba(31, 162, 74, 0) 28%),
+          linear-gradient(180deg, rgba(252, 250, 246, 0.22), rgba(252, 250, 246, 0.08));
+        z-index: 2;
+      }
+
+      .grid {
+        pointer-events: none;
+        z-index: 3;
+        border: 2px solid rgba(215, 207, 191, 0.48);
+        border-radius: 54px;
+        inset: 42px;
+        width: auto;
+        height: auto;
+      }
+
+      .grid::before,
+      .grid::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+      }
+
+      .grid::before {
+        background-image:
+          linear-gradient(rgba(47, 124, 246, 0.08) 2px, rgba(47, 124, 246, 0) 2px),
+          linear-gradient(90deg, rgba(47, 124, 246, 0.08) 2px, rgba(47, 124, 246, 0) 2px);
+        background-size: 180px 180px;
+      }
+
+      .grid::after {
+        inset: 18px;
+        border: 1px solid rgba(215, 207, 191, 0.55);
+        border-radius: 38px;
+      }
+
+      .glow {
+        border-radius: 999px;
+        filter: blur(34px);
+        pointer-events: none;
+        z-index: 4;
+      }
+
+      .scene {
+        inset: 0;
+        opacity: 0;
+        z-index: 5;
+      }
+
+      #layer-1 {
+        opacity: 1;
+      }
+
+      .scene-content {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        padding: 82px 74px 90px;
+        display: flex;
+        flex-direction: column;
+        gap: 28px;
+      }
+
+      .topbar,
+      .footer-row,
+      .chip-row,
+      .store-row {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+      }
+
+      .topbar {
+        justify-content: space-between;
+      }
+
+      .brand,
+      .meta,
+      .chip,
+      .url {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        min-height: 50px;
+        padding: 0 20px;
+        border: 2px solid rgba(215, 207, 191, 0.9);
+        border-radius: 999px;
+        background: rgba(252, 250, 246, 0.9);
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--ink);
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        backdrop-filter: blur(12px);
+      }
+
+      .meta,
+      .chip,
+      .url {
+        font-size: 16px;
+      }
+
+      .brand-lock {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .brand-lock img {
+        width: 58px;
+        height: 58px;
+        border-radius: 18px;
+        box-shadow: 0 18px 36px rgba(19, 35, 59, 0.12);
+      }
+
+      .eyebrow {
+        font-size: 22px;
+        font-weight: 800;
+        letter-spacing: 1.6px;
+        text-transform: uppercase;
+        color: var(--green);
+      }
+
+      .title {
+        margin: 0;
+        font-family: 'Outfit', sans-serif;
+        font-size: 108px;
+        font-weight: 900;
+        line-height: 0.92;
+        letter-spacing: -1px;
+        color: var(--ink);
+      }
+
+      .body-copy {
+        margin: 0;
+        max-width: 860px;
+        font-size: 31px;
+        line-height: 1.28;
+        color: var(--ink-soft);
+      }
+
+      .shot-wrap {
+        position: relative;
+        border-radius: 42px;
+        border: 2px solid rgba(215, 207, 191, 0.95);
+        background: linear-gradient(180deg, rgba(252, 250, 246, 0.96), rgba(239, 231, 216, 0.9));
+        box-shadow: 0 34px 90px rgba(19, 35, 59, 0.12);
+        overflow: hidden;
+      }
+
+      .shot-wrap::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(circle at top right, rgba(47, 124, 246, 0.18), rgba(47, 124, 246, 0) 28%),
+          radial-gradient(circle at bottom left, rgba(31, 162, 74, 0.18), rgba(31, 162, 74, 0) 26%);
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      .shot-head {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 18px 24px;
+      }
+
+      .shot-title {
+        font-size: 18px;
+        font-weight: 800;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+
+      .dots {
+        display: flex;
+        gap: 8px;
+      }
+
+      .dots span {
+        width: 12px;
+        height: 12px;
+        border-radius: 999px;
+      }
+
+      .dots span:nth-child(1) {
+        background: var(--green);
+      }
+      .dots span:nth-child(2) {
+        background: var(--blue);
+      }
+      .dots span:nth-child(3) {
+        background: var(--amber);
+      }
+
+      .shot-frame {
+        position: relative;
+        z-index: 2;
+        padding: 0 18px 18px;
+      }
+
+      .shot-frame img {
+        display: block;
+        width: 100%;
+        border-radius: 28px;
+      }
+
+      .hero-shot {
+        width: 100%;
+        margin-top: 10px;
+        transform: rotate(-4deg);
+      }
+
+      .hero-shot .shot-frame {
+        height: 620px;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+      }
+
+      .hero-shot .shot-frame img {
+        width: auto;
+        max-width: 100%;
+        max-height: 100%;
+      }
+
+      .score-shot {
+        width: 100%;
+        margin-top: 16px;
+        transform: rotate(3deg);
+      }
+
+      .install-shot {
+        width: 100%;
+        margin-top: 10px;
+        transform: rotate(-3deg);
+      }
+
+      .install-shot .shot-frame {
+        height: 560px;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+      }
+
+      .install-shot .shot-frame img {
+        width: auto;
+        max-width: 100%;
+        max-height: 100%;
+      }
+
+      .story-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-top: 8px;
+      }
+
+      .mini-shot {
+        transform: rotate(-2deg);
+      }
+
+      .mini-shot.alt {
+        transform: rotate(3deg);
+      }
+
+      .footer-row {
+        margin-top: auto;
+        justify-content: space-between;
+        align-items: flex-end;
+      }
+
+      .instruction-card {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        padding: 18px 20px;
+        border: 2px solid rgba(215, 207, 191, 0.9);
+        border-radius: 28px;
+        background: rgba(252, 250, 246, 0.9);
+        color: var(--ink);
+      }
+
+      .instruction-title {
+        font-size: 18px;
+        font-weight: 800;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+
+      .instruction-body {
+        font-size: 22px;
+        line-height: 1.28;
+        color: var(--ink-soft);
+      }
+
+      .steps {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .step {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        font-size: 22px;
+        line-height: 1.28;
+        color: var(--ink-soft);
+      }
+
+      .step-index {
+        width: 34px;
+        color: var(--ink);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        font-weight: 800;
+        flex: 0 0 auto;
+      }
+
+      .url {
+        min-height: 54px;
+        text-transform: none;
+        letter-spacing: 0;
+        color: var(--blue);
+      }
+
+      #end-wash {
+        inset: 0;
+        opacity: 0;
+        z-index: 9;
+        background: linear-gradient(180deg, rgba(252, 250, 246, 0), rgba(244, 240, 231, 0.96));
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="padel-buddy-instagram-intro"
+      data-start="0"
+      data-duration="38"
+      data-width="1080"
+      data-height="1920"
+    >
+      <video
+        id="bg-video"
+        class="clip bg-video"
+        data-start="0"
+        data-duration="38"
+        data-track-index="0"
+        src="assets/padelbuddy-background.mp4"
+        muted
+        playsinline
+      ></video>
+      <audio
+        id="bg-audio"
+        data-start="0"
+        data-duration="38"
+        data-track-index="1"
+        src="assets/padelbuddy-ambient-bed.wav"
+        data-volume="0.16"
+      ></audio>
+      <div id="wash" class="clip wash" data-start="0" data-duration="38" data-track-index="2"></div>
+      <div id="grid" class="clip grid" data-start="0" data-duration="38" data-track-index="3"></div>
+
+      <div
+        id="glow-1"
+        class="clip glow"
+        data-start="0"
+        data-duration="38"
+        data-track-index="4"
+        style="
+          top: 120px;
+          left: 40px;
+          width: 280px;
+          height: 280px;
+          background: rgba(47, 124, 246, 0.26);
+        "
+      ></div>
+      <div
+        id="glow-2"
+        class="clip glow"
+        data-start="0"
+        data-duration="38"
+        data-track-index="9"
+        style="
+          right: 28px;
+          bottom: 260px;
+          width: 340px;
+          height: 340px;
+          background: rgba(31, 162, 74, 0.22);
+        "
+      ></div>
+
+      <section
+        id="layer-1"
+        class="clip scene"
+        data-start="0"
+        data-duration="9.6"
+        data-track-index="5"
+      >
+        <div class="scene-content">
+          <div class="topbar">
+            <div id="brand-lock" class="brand-lock">
+              <img src="assets/padelbuddy-icon.png" alt="Padel Buddy icon" />
+              <div id="scene1-brand" class="brand">Padel Buddy</div>
+            </div>
+            <div id="scene1-meta" class="meta">Intro para Instagram</div>
+          </div>
+
+          <div id="scene1-eyebrow" class="eyebrow">App real. Flujo real en pista.</div>
+          <h1 id="scene1-title" class="title">Anota cada punto sin perder el ritmo del partido.</h1>
+          <p id="scene1-body" class="body-copy">
+            Diseñada para partidos de pádel en vivo con puntuación táctil, soporte para mando
+            Bluetooth y recuperación si el juego se interrumpe.
+          </p>
+
+          <div id="scene1-shot" class="shot-wrap hero-shot">
+            <div class="shot-head">
+              <div class="shot-title">Pantalla de configuración</div>
+              <div class="dots"><span></span><span></span><span></span></div>
+            </div>
+            <div class="shot-frame">
+              <img
+                id="scene1-shot-image"
+                src="assets/screen-home-v2.png"
+                alt="Padel Buddy home screen"
+              />
+            </div>
+          </div>
+
+          <div class="chip-row">
+            <div id="scene1-chip-1" class="chip">Solo en tu dispositivo</div>
+            <div id="scene1-chip-2" class="chip">Lista para usar sin conexión</div>
+            <div id="scene1-chip-3" class="chip">Inglés • Español • Portugués</div>
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="layer-2"
+        class="clip scene"
+        data-start="9.1"
+        data-duration="10.9"
+        data-track-index="6"
+      >
+        <div class="scene-content">
+          <div class="topbar">
+            <div id="scene2-brand" class="brand">Partido en vivo</div>
+            <div id="scene2-meta" class="meta">Marcador en acción</div>
+          </div>
+
+          <div id="scene2-eyebrow" class="eyebrow">Claridad total en pista</div>
+          <h2 id="scene2-title" class="title">Sigue puntos, juegos y sets en tiempo real.</h2>
+          <p id="scene2-body" class="body-copy">
+            La vista en vivo mantiene cada actualización rápida y legible, tanto con toque directo
+            como con mando físico en la pista.
+          </p>
+
+          <div id="scene2-shot" class="shot-wrap score-shot">
+            <div class="shot-head">
+              <div class="shot-title">Pantalla de puntuación en vivo</div>
+              <div class="dots"><span></span><span></span><span></span></div>
+            </div>
+            <div class="shot-frame">
+              <img
+                id="scene2-shot-image"
+                src="assets/screen-live-match-v2.png"
+                alt="Padel Buddy live match screen"
+              />
+            </div>
+          </div>
+
+          <div class="chip-row">
+            <div id="scene2-chip-1" class="chip">Mando Bluetooth</div>
+            <div id="scene2-chip-2" class="chip">Puntuación táctil</div>
+            <div id="scene2-chip-3" class="chip">Resultados listos para compartir</div>
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="layer-3"
+        class="clip scene"
+        data-start="19.3"
+        data-duration="10.6"
+        data-track-index="7"
+      >
+        <div class="scene-content">
+          <div class="topbar">
+            <div id="scene3-brand" class="brand">Lista antes del primer saque</div>
+            <div id="scene3-meta" class="meta">Abrir • jugar • retomar</div>
+          </div>
+
+          <div id="scene3-eyebrow" class="eyebrow">Soporte durante todo el partido</div>
+          <h2 id="scene3-title" class="title">Ayuda, historial y acceso directo siempre a mano.</h2>
+          <p id="scene3-body" class="body-copy">
+            Desde la primera apertura hasta el historial del partido, la app sigue siendo ligera,
+            privada y lista para continuar donde se quedó el juego.
+          </p>
+
+          <div class="story-grid">
+            <div id="scene3-help" class="shot-wrap mini-shot">
+              <div class="shot-head">
+                <div class="shot-title">Guía de ayuda</div>
+                <div class="dots"><span></span><span></span><span></span></div>
+              </div>
+              <div class="shot-frame">
+                <img
+                  id="scene3-help-image"
+                  src="assets/screen-help.png"
+                  alt="Padel Buddy help guide"
+                />
+              </div>
+            </div>
+            <div id="scene3-history" class="shot-wrap mini-shot alt">
+              <div class="shot-head">
+                <div class="shot-title">Historial de partidos</div>
+                <div class="dots"><span></span><span></span><span></span></div>
+              </div>
+              <div class="shot-frame">
+                <img
+                  id="scene3-history-image"
+                  src="assets/screen-history-v2.png"
+                  alt="Padel Buddy history screen"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="chip-row">
+            <div id="scene3-chip-1" class="chip">Ayuda dentro de la app</div>
+            <div id="scene3-chip-2" class="chip">Historial guardado localmente</div>
+            <div id="scene3-chip-3" class="chip">Lista para retomar el partido</div>
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="layer-4"
+        class="clip scene"
+        data-start="28.8"
+        data-duration="9.2"
+        data-track-index="8"
+      >
+        <div class="scene-content">
+          <div class="topbar">
+            <div id="scene4-brand" class="brand">Acceso e instalación</div>
+            <div id="scene4-meta" class="meta">Web + PWA</div>
+          </div>
+
+          <div id="scene4-eyebrow" class="eyebrow">
+            Entra rápido. Instala si quieres acceso directo.
+          </div>
+          <h2 id="scene4-title" class="title">
+            Abre la URL y agrega Padel Buddy a tu pantalla de inicio.
+          </h2>
+          <p id="scene4-body" class="body-copy">
+            La app web funciona al instante y la PWA instalada te deja entrar más rápido y jugar con
+            mejor soporte sin conexión.
+          </p>
+
+          <div id="scene4-shot" class="shot-wrap install-shot">
+            <div class="shot-head">
+              <div class="shot-title">Banner real de instalación</div>
+              <div class="dots"><span></span><span></span><span></span></div>
+            </div>
+            <div class="shot-frame">
+              <img
+                id="scene4-shot-image"
+                src="assets/screen-install-banner.png"
+                alt="Banner de instalación de Padel Buddy"
+              />
+            </div>
+          </div>
+
+          <div id="scene4-instruction" class="instruction-card">
+            <div class="instruction-title">Cómo entrar e instalar</div>
+            <div class="steps">
+              <div class="step">
+                <span class="step-index">1</span
+                ><span>Abre `https://padelbuddyweb.app/` en tu navegador.</span>
+              </div>
+              <div class="step">
+                <span class="step-index">2</span
+                ><span>En iPhone o iPad, usa Compartir y toca Agregar a pantalla de inicio.</span>
+              </div>
+              <div class="step">
+                <span class="step-index">3</span
+                ><span
+                  >En Chrome o navegadores compatibles, usa Instalar app o Añadir a pantalla de
+                  inicio.</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <div class="footer-row">
+            <div id="scene4-url" class="url">https://padelbuddyweb.app/</div>
+          </div>
+        </div>
+      </section>
+
+      <div id="end-wash" class="clip" data-start="0" data-duration="38" data-track-index="10"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      tl.fromTo(
+        '#brand-lock',
+        { opacity: 0, x: -30 },
+        { opacity: 1, x: 0, duration: 0.52, ease: 'power3.out' },
+        0.18
+      );
+      tl.fromTo(
+        '#scene1-meta',
+        { opacity: 0, x: 24 },
+        { opacity: 1, x: 0, duration: 0.44, ease: 'sine.out' },
+        0.24
+      );
+      tl.fromTo(
+        '#scene1-eyebrow',
+        { opacity: 0, y: 18, letterSpacing: 5 },
+        { opacity: 1, y: 0, letterSpacing: 1.6, duration: 0.5, ease: 'expo.out' },
+        0.42
+      );
+      tl.fromTo(
+        '#scene1-title',
+        { opacity: 0, y: 38 },
+        { opacity: 1, y: 0, duration: 0.84, ease: 'power4.out' },
+        0.56
+      );
+      tl.fromTo(
+        '#scene1-body',
+        { opacity: 0, y: 26 },
+        { opacity: 1, y: 0, duration: 0.62, ease: 'power2.out' },
+        0.9
+      );
+      tl.fromTo(
+        '#scene1-shot',
+        { opacity: 0, y: 54, rotation: -8 },
+        { opacity: 1, y: 0, rotation: -4, duration: 0.82, ease: 'back.out(1.2)' },
+        1.06
+      );
+      tl.fromTo(
+        '#scene1-chip-1, #scene1-chip-2, #scene1-chip-3',
+        { opacity: 0, y: 18 },
+        { opacity: 1, y: 0, duration: 0.38, ease: 'circ.out', stagger: 0.08 },
+        1.32
+      );
+      tl.to('#scene1-shot-image', { scale: 1.035, duration: 8.9, ease: 'none' }, 1.06);
+
+      tl.fromTo(
+        '#layer-2',
+        { opacity: 0, filter: 'blur(16px)' },
+        { opacity: 1, filter: 'blur(0px)', duration: 0.56, ease: 'power2.inOut' },
+        9.1
+      );
+      tl.to(
+        '#layer-1',
+        { opacity: 0, filter: 'blur(14px)', duration: 0.56, ease: 'power2.inOut' },
+        9.1
+      );
+      tl.set('#layer-1', { visibility: 'hidden' }, 9.67);
+      tl.fromTo(
+        '#scene2-brand',
+        { opacity: 0, x: -26 },
+        { opacity: 1, x: 0, duration: 0.42, ease: 'power3.out' },
+        9.34
+      );
+      tl.fromTo(
+        '#scene2-meta',
+        { opacity: 0, x: 26 },
+        { opacity: 1, x: 0, duration: 0.42, ease: 'sine.out' },
+        9.38
+      );
+      tl.fromTo(
+        '#scene2-eyebrow',
+        { opacity: 0, y: 16, letterSpacing: 5 },
+        { opacity: 1, y: 0, letterSpacing: 1.6, duration: 0.48, ease: 'expo.out' },
+        9.52
+      );
+      tl.fromTo(
+        '#scene2-title',
+        { opacity: 0, y: 34 },
+        { opacity: 1, y: 0, duration: 0.76, ease: 'power4.out' },
+        9.66
+      );
+      tl.fromTo(
+        '#scene2-body',
+        { opacity: 0, y: 22 },
+        { opacity: 1, y: 0, duration: 0.58, ease: 'power2.out' },
+        9.98
+      );
+      tl.fromTo(
+        '#scene2-shot',
+        { opacity: 0, y: 52, rotation: 8 },
+        { opacity: 1, y: 0, rotation: 3, duration: 0.82, ease: 'back.out(1.22)' },
+        10.16
+      );
+      tl.fromTo(
+        '#scene2-chip-1, #scene2-chip-2, #scene2-chip-3',
+        { opacity: 0, y: 18 },
+        { opacity: 1, y: 0, duration: 0.38, ease: 'circ.out', stagger: 0.08 },
+        10.46
+      );
+      tl.to('#scene2-shot-image', { scale: 1.04, duration: 9.3, ease: 'none' }, 10.16);
+
+      tl.fromTo(
+        '#layer-3',
+        { opacity: 0, filter: 'blur(16px)' },
+        { opacity: 1, filter: 'blur(0px)', duration: 0.6, ease: 'power2.inOut', overwrite: 'auto' },
+        19.3
+      );
+      tl.to(
+        '#layer-2',
+        {
+          opacity: 0,
+          filter: 'blur(14px)',
+          duration: 0.6,
+          ease: 'power2.inOut',
+          overwrite: 'auto'
+        },
+        19.3
+      );
+      tl.set('#layer-2', { visibility: 'hidden' }, 19.91);
+      tl.fromTo(
+        '#scene3-brand',
+        { opacity: 0, x: -24 },
+        { opacity: 1, x: 0, duration: 0.42, ease: 'power3.out' },
+        19.54
+      );
+      tl.fromTo(
+        '#scene3-meta',
+        { opacity: 0, x: 24 },
+        { opacity: 1, x: 0, duration: 0.42, ease: 'sine.out' },
+        19.58
+      );
+      tl.fromTo(
+        '#scene3-eyebrow',
+        { opacity: 0, y: 16, letterSpacing: 5 },
+        { opacity: 1, y: 0, letterSpacing: 1.6, duration: 0.48, ease: 'expo.out' },
+        19.72
+      );
+      tl.fromTo(
+        '#scene3-title',
+        { opacity: 0, y: 34 },
+        { opacity: 1, y: 0, duration: 0.74, ease: 'power4.out' },
+        19.86
+      );
+      tl.fromTo(
+        '#scene3-body',
+        { opacity: 0, y: 22 },
+        { opacity: 1, y: 0, duration: 0.56, ease: 'power2.out' },
+        20.14
+      );
+      tl.fromTo(
+        '#scene3-help',
+        { opacity: 0, y: 40, rotation: -5 },
+        { opacity: 1, y: 0, rotation: -2, duration: 0.72, ease: 'back.out(1.15)' },
+        20.28
+      );
+      tl.fromTo(
+        '#scene3-history',
+        { opacity: 0, y: 40, rotation: 6 },
+        { opacity: 1, y: 0, rotation: 3, duration: 0.76, ease: 'expo.out' },
+        20.42
+      );
+      tl.fromTo(
+        '#scene3-chip-1, #scene3-chip-2, #scene3-chip-3',
+        { opacity: 0, y: 18 },
+        { opacity: 1, y: 0, duration: 0.38, ease: 'circ.out', stagger: 0.08 },
+        20.72
+      );
+      tl.to('#scene3-help-image', { scale: 1.03, duration: 8.6, ease: 'none' }, 20.28);
+      tl.to('#scene3-history-image', { scale: 1.03, duration: 8.6, ease: 'none' }, 20.42);
+
+      tl.fromTo(
+        '#layer-4',
+        { opacity: 0, filter: 'blur(16px)' },
+        {
+          opacity: 1,
+          filter: 'blur(0px)',
+          duration: 0.58,
+          ease: 'power2.inOut',
+          overwrite: 'auto'
+        },
+        28.8
+      );
+      tl.to(
+        '#layer-3',
+        {
+          opacity: 0,
+          filter: 'blur(14px)',
+          duration: 0.58,
+          ease: 'power2.inOut',
+          overwrite: 'auto'
+        },
+        28.8
+      );
+      tl.set('#layer-3', { visibility: 'hidden' }, 29.39);
+      tl.fromTo(
+        '#scene4-brand',
+        { opacity: 0, x: -24 },
+        { opacity: 1, x: 0, duration: 0.42, ease: 'power3.out' },
+        29.04
+      );
+      tl.fromTo(
+        '#scene4-meta',
+        { opacity: 0, x: 24 },
+        { opacity: 1, x: 0, duration: 0.42, ease: 'sine.out' },
+        29.08
+      );
+      tl.fromTo(
+        '#scene4-eyebrow',
+        { opacity: 0, y: 16, letterSpacing: 5 },
+        { opacity: 1, y: 0, letterSpacing: 1.6, duration: 0.48, ease: 'expo.out' },
+        29.22
+      );
+      tl.fromTo(
+        '#scene4-title',
+        { opacity: 0, y: 34 },
+        { opacity: 1, y: 0, duration: 0.74, ease: 'power4.out' },
+        29.38
+      );
+      tl.fromTo(
+        '#scene4-body',
+        { opacity: 0, y: 22 },
+        { opacity: 1, y: 0, duration: 0.56, ease: 'power2.out' },
+        29.66
+      );
+      tl.fromTo(
+        '#scene4-shot',
+        { opacity: 0, y: 42, rotation: -6 },
+        { opacity: 1, y: 0, rotation: -3, duration: 0.76, ease: 'back.out(1.15)' },
+        29.84
+      );
+      tl.fromTo(
+        '#scene4-instruction',
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 0.48, ease: 'circ.out' },
+        30.12
+      );
+      tl.fromTo(
+        '#scene4-url',
+        { opacity: 0, x: 18 },
+        { opacity: 1, x: 0, duration: 0.44, ease: 'sine.out' },
+        30.32
+      );
+      tl.to('#scene4-shot-image', { scale: 1.03, duration: 8.0, ease: 'none' }, 29.84);
+
+      tl.to('#glow-1', { x: 44, y: 48, duration: 38, ease: 'none' }, 0);
+      tl.to('#glow-2', { x: -54, y: -38, duration: 38, ease: 'none' }, 0);
+
+      tl.to(
+        '#end-wash',
+        { opacity: 1, duration: 1.1, ease: 'power2.inOut', overwrite: 'auto' },
+        36.9
+      );
+      tl.to(
+        '#layer-4',
+        {
+          opacity: 0,
+          filter: 'blur(10px)',
+          duration: 1.1,
+          ease: 'power2.inOut',
+          overwrite: 'auto'
+        },
+        36.9
+      );
+      tl.set('#layer-4', { visibility: 'hidden' }, 38);
+
+      window.__timelines['padel-buddy-instagram-intro'] = tl;
+    </script>
+  </body>
+</html>
