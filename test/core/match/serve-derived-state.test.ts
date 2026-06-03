@@ -2,11 +2,13 @@ import { describe, expect, test } from 'vitest';
 
 import { continueMatch, projectMatch } from '@/core/match/replay';
 import {
+  deriveMatchState,
   getActiveSet,
   getNextSetFirstServer,
   getServingPlayerNumber,
   getServingTeam
 } from '@/core/match/derived-state';
+import type { MatchState } from '@/core/match/types';
 
 import {
   createTestSetup,
@@ -16,6 +18,10 @@ import {
   winQuickGame,
   winQuickSet
 } from './test-helpers';
+
+function createCompletedStandardTiebreakSetActions(winner: 'team-1' | 'team-2') {
+  return [...reachSixAll(), ...repeatAction(winner, 7)];
+}
 
 describe('serve rotation and derived state', () => {
   test('alternates the serving team by completed game', () => {
@@ -119,6 +125,115 @@ describe('serve rotation and derived state', () => {
       shouldPrompt: true,
       reason: 'tiebreak-interval'
     });
+    expect(afterOneGame.derived.isScoreboardMirrored).toBe(true);
+    expect(duringTiebreak.derived.isScoreboardMirrored).toBe(true);
+  });
+
+  test('derives mirrored scoreboard parity cumulatively across set boundaries and undo states', () => {
+    const setup = createTestSetup({
+      sideSwitchPrompts: true,
+      format: 'best-of-3'
+    });
+
+    const afterSixLoveSet = projectMatch(setup, winQuickSet('team-1'));
+    const afterSixLovePlusOneGame = projectMatch(setup, [
+      ...winQuickSet('team-1'),
+      ...winQuickGame('team-2')
+    ]);
+    const afterSevenFiveSet = projectMatch(setup, [
+      ...Array.from({ length: 5 }, () => winQuickGame('team-1')).flat(),
+      ...Array.from({ length: 5 }, () => winQuickGame('team-2')).flat(),
+      ...winQuickGame('team-1'),
+      ...winQuickGame('team-1')
+    ]);
+
+    expect(afterSixLoveSet.derived.isScoreboardMirrored).toBe(true);
+    expect(afterSixLovePlusOneGame.derived.isScoreboardMirrored).toBe(false);
+    expect(afterSevenFiveSet.derived.isScoreboardMirrored).toBe(false);
+  });
+
+  test.each([
+    ['team-1', '7-6'],
+    ['team-2', '6-7']
+  ] as const)(
+    'prompts next set start after a completed %s standard tiebreak set (%s) and keeps parity unmirrored',
+    (winner, _completedScore) => {
+      const setup = createTestSetup({
+        sideSwitchPrompts: true,
+        format: 'best-of-3'
+      });
+      const projection = projectMatch(setup, createCompletedStandardTiebreakSetActions(winner));
+
+      expect(projection.derived.activeSetIndex).toBe(2);
+      expect(projection.derived.sideSwitch).toEqual({
+        shouldPrompt: true,
+        reason: 'odd-games'
+      });
+      expect(projection.derived.isScoreboardMirrored).toBe(false);
+      expect(projection.state.sets[0]).toMatchObject({
+        completed: true,
+        games: winner === 'team-1' ? { 'team-1': 7, 'team-2': 6 } : { 'team-1': 6, 'team-2': 7 }
+      });
+    }
+  );
+
+  test('disables mirrored scoreboard parity when side-switch prompts are off', () => {
+    const setup = createTestSetup({
+      sideSwitchPrompts: false,
+      format: 'best-of-1'
+    });
+    const projection = projectMatch(setup, [
+      ...reachSixAll(),
+      ...scorePoints('team-1', 'team-2', 'team-1', 'team-2', 'team-1', 'team-2')
+    ]);
+
+    expect(projection.derived.sideSwitch).toEqual({
+      shouldPrompt: false,
+      reason: null
+    });
+    expect(projection.derived.isScoreboardMirrored).toBe(false);
+  });
+
+  test('recovers legacy completed super-tiebreak points for mirror parity', () => {
+    const setup = createTestSetup({
+      format: 'best-of-3',
+      sideSwitchPrompts: true
+    });
+    const state = {
+      actionCount: 6,
+      sets: [
+        {
+          index: 1,
+          mode: 'super-tiebreak',
+          firstServer: 'team-1',
+          completed: true,
+          winner: 'team-1',
+          games: { 'team-1': 0, 'team-2': 0 },
+          tiebreakPoints: null,
+          game: {
+            kind: 'tiebreak',
+            targetPoints: 11,
+            points: { 'team-1': 6, 'team-2': 0 }
+          }
+        },
+        {
+          index: 2,
+          mode: 'standard',
+          firstServer: 'team-2',
+          completed: false,
+          games: { 'team-1': 0, 'team-2': 0 },
+          game: {
+            kind: 'standard',
+            points: { 'team-1': 0, 'team-2': 0 },
+            advantageTeam: null
+          }
+        }
+      ]
+    } as MatchState;
+
+    const derived = deriveMatchState(setup, state);
+
+    expect(derived.isScoreboardMirrored).toBe(true);
   });
 
   test('prompts for the next set when the previous completed set had an odd total game count', () => {

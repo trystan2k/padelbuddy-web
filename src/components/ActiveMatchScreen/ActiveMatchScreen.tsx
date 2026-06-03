@@ -153,8 +153,18 @@ export function ActiveMatchScreen({
   const team2Name =
     resolvedTeam2Name === 'team-2' ? t('setup.firstServer.team2') : resolvedTeam2Name;
 
-  const { scoreDisplay, activeSetIndex, sideSwitch, servingTeam, servingPlayerNumber } = derived;
+  const {
+    scoreDisplay,
+    activeSetIndex,
+    sideSwitch,
+    servingTeam,
+    servingPlayerNumber,
+    isScoreboardMirrored
+  } = derived;
   const showServingIndicator = setup.servingIndicatorEnabled;
+  const visualTeamOrder = isScoreboardMirrored
+    ? (['team-2', 'team-1'] as const)
+    : (['team-1', 'team-2'] as const);
 
   useMatchAnnouncements({
     projection: snapshot.projection,
@@ -438,6 +448,21 @@ export function ActiveMatchScreen({
   );
   const isUndoTeam1Disabled = isLoading || !canUndoTeam1;
   const isUndoTeam2Disabled = isLoading || !canUndoTeam2;
+  const teamColumns = visualTeamOrder.map((teamId) => {
+    const isTeam1 = teamId === 'team-1';
+
+    return {
+      teamId,
+      teamName: isTeam1 ? team1Name : team2Name,
+      score: getTeamScore(teamId),
+      isServing: servingTeam === teamId,
+      servingPlayerNumber: servingTeam === teamId ? servingPlayerNumber : null,
+      onClick: isTeam1 ? handleScoreTeam1 : handleScoreTeam2,
+      onRevert: isTeam1 ? handleRevertTeam1 : handleRevertTeam2,
+      isUndoDisabled: isTeam1 ? isUndoTeam1Disabled : isUndoTeam2Disabled,
+      revertButtonClass: isTeam1 ? styles.revertButtonTeam1 : styles.revertButtonTeam2
+    };
+  });
 
   const headerContent = useMemo(
     () => (
@@ -495,57 +520,37 @@ export function ActiveMatchScreen({
         data-controls-hidden={shouldHideControls ? 'true' : undefined}
       >
         <div className={styles.scorePanel}>
-          <div className={styles.teamColumn}>
-            <TeamPanel
-              teamId="team-1"
-              teamName={team1Name}
-              score={getTeamScore('team-1')}
-              isServing={servingTeam === 'team-1'}
-              servingPlayerNumber={servingTeam === 'team-1' ? servingPlayerNumber : null}
-              showServingIndicator={showServingIndicator}
-              onClick={handleScoreTeam1}
-              disabled={isLoading || isMatchCompleted}
-            />
-            <button
-              type="button"
-              className={cn(styles.revertButton, styles.revertButtonTeam1)}
-              onClick={handleRevertTeam1}
-              disabled={isUndoTeam1Disabled}
-              data-testid="revert-button-team-1"
-              data-inactivity-ignore=""
-            >
-              {t('match.actions.revertPoint')}
-            </button>
-          </div>
-
-          <div className={styles.teamColumn}>
-            <TeamPanel
-              teamId="team-2"
-              teamName={team2Name}
-              score={getTeamScore('team-2')}
-              isServing={servingTeam === 'team-2'}
-              servingPlayerNumber={servingTeam === 'team-2' ? servingPlayerNumber : null}
-              showServingIndicator={showServingIndicator}
-              onClick={handleScoreTeam2}
-              disabled={isLoading || isMatchCompleted}
-            />
-            <button
-              type="button"
-              className={cn(styles.revertButton, styles.revertButtonTeam2)}
-              onClick={handleRevertTeam2}
-              disabled={isUndoTeam2Disabled}
-              data-testid="revert-button-team-2"
-              data-inactivity-ignore=""
-            >
-              {t('match.actions.revertPoint')}
-            </button>
-          </div>
+          {teamColumns.map((teamColumn) => (
+            <div key={teamColumn.teamId} className={styles.teamColumn}>
+              <TeamPanel
+                teamId={teamColumn.teamId}
+                teamName={teamColumn.teamName}
+                score={teamColumn.score}
+                isServing={teamColumn.isServing}
+                servingPlayerNumber={teamColumn.servingPlayerNumber}
+                showServingIndicator={showServingIndicator}
+                onClick={teamColumn.onClick}
+                disabled={isLoading || isMatchCompleted}
+              />
+              <button
+                type="button"
+                className={cn(styles.revertButton, teamColumn.revertButtonClass)}
+                onClick={teamColumn.onRevert}
+                disabled={teamColumn.isUndoDisabled}
+                data-testid={`revert-button-${teamColumn.teamId}`}
+                data-inactivity-ignore=""
+              >
+                {t('match.actions.revertPoint')}
+              </button>
+            </div>
+          ))}
 
           <div className={styles.setsOverlay}>
             <SetsCard
               sets={state.sets}
               currentSetIndex={activeSetIndex}
               onOpenHistory={handleOpenSetsHistory}
+              visualTeamOrder={visualTeamOrder}
             />
           </div>
         </div>
@@ -555,6 +560,7 @@ export function ActiveMatchScreen({
           openToken={setsHistoryOpenToken}
           sets={state.sets}
           onClose={handleCloseSetsHistory}
+          visualTeamOrder={visualTeamOrder}
         />
 
         <SideSwitchPrompt

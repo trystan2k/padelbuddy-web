@@ -1,3 +1,4 @@
+import { getCompletedSetTiebreakPoints } from './helpers';
 import type { CompletedMatchSet, MatchSetState, TeamScore } from './types';
 
 export interface SetSummaryScorePart {
@@ -27,8 +28,8 @@ function toStringScore(scores: TeamScore<number>): TeamScore<string> {
 }
 
 function getBaseSetSummaryScores(set: MatchSetState): TeamScore<number> {
-  if (set.completed && set.mode === 'super-tiebreak' && set.tiebreakPoints !== null) {
-    return set.tiebreakPoints;
+  if (set.completed && set.mode === 'super-tiebreak') {
+    return getCompletedSetTiebreakPoints(set) ?? set.games;
   }
 
   return set.games;

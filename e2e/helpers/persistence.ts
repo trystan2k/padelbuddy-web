@@ -30,6 +30,8 @@ interface SeedMatchOptions {
   team2Name?: string;
   startedAt?: number;
   finishedAt?: number;
+  setupOverrides?: Partial<MatchSetupInput>;
+  actions?: MatchAction[];
 }
 
 const defaultSides: MatchSetupInput['sides'] = [
@@ -123,6 +125,8 @@ async function putRecord(page: Page, record: unknown): Promise<void> {
       value: record
     }
   );
+
+  await page.goto('about:blank');
 }
 
 function buildCompletedMatchRecord(options: SeedMatchOptions = {}): CurrentMatchRecord {
@@ -153,7 +157,9 @@ function buildInProgressMatchRecord(options: SeedMatchOptions = {}): CurrentMatc
     matchId = 'in-progress-match',
     team1Name = 'Team A',
     team2Name = 'Team B',
-    startedAt = defaultStartedAt
+    startedAt = defaultStartedAt,
+    setupOverrides,
+    actions = [...createScoreActions('team-1', 4), ...createScoreActions('team-2', 2)]
   } = options;
 
   return createCurrentMatchRecord({
@@ -161,12 +167,13 @@ function buildInProgressMatchRecord(options: SeedMatchOptions = {}): CurrentMatc
     startedAt,
     setup: createSetup({
       format: 'best-of-3',
+      ...setupOverrides,
       sides: [
         { id: 'team-1', playerNames: [team1Name] },
         { id: 'team-2', playerNames: [team2Name] }
       ]
     }),
-    actions: [...createScoreActions('team-1', 4), ...createScoreActions('team-2', 2)]
+    actions
   });
 }
 

@@ -28,11 +28,25 @@ test.describe('@happy-path @active-match Active match', () => {
     await expect(team1Panel).toContainText('40');
 
     await team1Panel.click();
-    await expect(page.getByTestId('set-row-current')).toContainText('1-0');
+    await expect(page.getByTestId('set-row-current')).toContainText('0-1');
     await expect(page.getByTestId('side-switch-prompt')).toBeVisible();
+    await expect
+      .poll(async () => {
+        return page.locator('[data-testid^="team-panel-"]').evaluateAll((elements) => {
+          return elements.map((element) => element.getAttribute('data-testid'));
+        });
+      })
+      .toEqual(['team-panel-team-2', 'team-panel-team-1']);
 
     await dismissSideSwitchPromptIfVisible(page);
     await expect(page.getByTestId('side-switch-prompt')).toBeHidden();
+    await expect
+      .poll(async () => {
+        return page.locator('[data-testid^="team-panel-"]').evaluateAll((elements) => {
+          return elements.map((element) => element.getAttribute('data-testid'));
+        });
+      })
+      .toEqual(['team-panel-team-2', 'team-panel-team-1']);
   });
 
   test('completes a full match and reaches the finish route', async ({ page }) => {

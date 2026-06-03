@@ -161,6 +161,7 @@ export interface MatchDerivedState {
   winner: MatchWinner | null;
   canContinuePlaying: boolean;
   setsWon: TeamScore<number>;
+  isScoreboardMirrored: boolean;
   sideSwitch: MatchSideSwitchState;
   scoreDisplay: MatchScoreDisplay;
 }

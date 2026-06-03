@@ -13,7 +13,12 @@ import { SetScoreValue } from '@/components/SetScoreValue/SetScoreValue';
 import { getSetSummaryScoreParts } from '@/core/match/set-summary';
 import type { MatchSetState } from '@/core/match/types';
 
-import { getSetsWonScore } from '../sets-history';
+import {
+  DEFAULT_VISUAL_TEAM_ORDER,
+  getSetsWonScore,
+  reorderVisualTeamScore,
+  type VisualTeamOrder
+} from '../sets-history';
 
 import styles from './SetsHistoryModal.module.css';
 
@@ -23,6 +28,7 @@ interface SetsHistoryModalProps {
   sets: MatchSetState[];
   onClose: () => void;
   autoCloseDelay?: number;
+  visualTeamOrder?: VisualTeamOrder;
 }
 
 type DialogBackdropRenderProps = Parameters<
@@ -37,11 +43,12 @@ export function SetsHistoryModal({
   openToken,
   sets,
   onClose,
-  autoCloseDelay = 30000
+  autoCloseDelay = 30000,
+  visualTeamOrder = DEFAULT_VISUAL_TEAM_ORDER
 }: SetsHistoryModalProps) {
   const { t } = useTranslation();
   const portalContainerRef = useRef<HTMLDivElement | null>(null);
-  const setsWonScore = getSetsWonScore(sets);
+  const setsWonScore = getSetsWonScore(sets, visualTeamOrder);
   const title = t('match.sets.overallSetsScoreHeadline', {
     team1: setsWonScore['team-1'],
     team2: setsWonScore['team-2']
@@ -70,7 +77,7 @@ export function SetsHistoryModal({
       sets
         .filter((set) => set.completed)
         .map((set) => {
-          const setScore = getSetSummaryScoreParts(set);
+          const setScore = reorderVisualTeamScore(getSetSummaryScoreParts(set), visualTeamOrder);
 
           return {
             setNumber: set.index,
@@ -78,7 +85,7 @@ export function SetsHistoryModal({
             team2: setScore['team-2']
           };
         }),
-    [sets]
+    [sets, visualTeamOrder]
   );
 
   const handleBackdropRender = useCallback(

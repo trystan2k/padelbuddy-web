@@ -548,6 +548,63 @@ describe('ActiveMatchScreen', () => {
     expect(screen.container.querySelector('[data-testid^="serve-status-"]')).toBeNull();
   });
 
+  test('mirrors visual order and keeps it after dismissing the side-switch prompt', async () => {
+    const screen = await render(
+      <ActiveMatchScreen
+        matchId="test-match"
+        initialSetup={createTestSetup({ sideSwitchPrompts: true })}
+        initialActions={winQuickGame('team-1')}
+        startedAt={defaultStartedAt}
+      />
+    );
+
+    expect(readVisualTeamOrder(screen)).toEqual(['team-panel-team-2', 'team-panel-team-1']);
+    await expect.element(screen.getByTestId('set-score-current')).toHaveTextContent('0-1');
+    await expect.element(screen.getByTestId('side-switch-prompt')).toBeInTheDocument();
+
+    await screen.getByRole('button', { name: 'Switched' }).click();
+
+    await vi.waitFor(() => {
+      expect(screen.container.querySelector('[data-testid="side-switch-prompt"]')).toBeNull();
+    });
+
+    expect(readVisualTeamOrder(screen)).toEqual(['team-panel-team-2', 'team-panel-team-1']);
+    await expect.element(screen.getByTestId('set-score-current')).toHaveTextContent('0-1');
+  });
+
+  test('uses mirrored visible columns for scoring while speech payload stays on real team ids', async () => {
+    const screen = await render(
+      <ActiveMatchScreen
+        matchId="test-match"
+        initialSetup={createTestSetup({
+          servingIndicatorEnabled: true,
+          sideSwitchPrompts: true
+        })}
+        initialActions={winQuickGame('team-1')}
+        startedAt={defaultStartedAt}
+      />
+    );
+
+    await expect.element(getVisibleTeamPanel(screen, 0)).toHaveClass(teamPanelStyles.serving!);
+    await expect.element(getVisibleTeamPanel(screen, 1)).not.toHaveClass(teamPanelStyles.serving!);
+
+    await getVisibleTeamPanel(screen, 0).click();
+
+    await vi.waitFor(() => {
+      expect(readDisplayedScore(screen, 'team-1')).toBe('0');
+      expect(readDisplayedScore(screen, 'team-2')).toBe('15');
+    });
+
+    expect(mockSpeechAnnounce).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        eventType: 'point-scored',
+        team1Score: '0',
+        team2Score: '15',
+        servingTeam: 'team-2'
+      })
+    );
+  });
+
   test('does not highlight team panels when the serving indicator is disabled', async () => {
     const screen = await render(
       <ActiveMatchScreen
@@ -890,6 +947,34 @@ describe('ActiveMatchScreen', () => {
       expect(readDisplayedScore(screen, 'team-1')).toBe('0');
       expect(readDisplayedScore(screen, 'team-2')).toBe('15');
     });
+  });
+
+  test('uses mirrored visible revert button and recomputes tiebreak mirror parity after undo', async () => {
+    const screen = await render(
+      <ActiveMatchScreen
+        matchId="test-match"
+        initialSetup={createTestSetup({
+          format: 'best-of-1',
+          sideSwitchPrompts: true
+        })}
+        initialActions={[
+          ...reachSixAll(),
+          ...scorePoints('team-1', 'team-2', 'team-1', 'team-2', 'team-1', 'team-2')
+        ]}
+        startedAt={defaultStartedAt}
+      />
+    );
+
+    expect(readVisualTeamOrder(screen)).toEqual(['team-panel-team-2', 'team-panel-team-1']);
+
+    await getVisibleRevertButton(screen, 0).click();
+
+    await vi.waitFor(() => {
+      expect(readDisplayedScore(screen, 'team-1')).toBe('3');
+      expect(readDisplayedScore(screen, 'team-2')).toBe('2');
+    });
+
+    expect(readVisualTeamOrder(screen)).toEqual(['team-panel-team-1', 'team-panel-team-2']);
   });
 
   test('loads saved remote bindings on mount', async () => {
@@ -1401,4 +1486,41 @@ function readDisplayedScore(
     screen.getByTestId(`team-panel-${teamId}`).element().querySelector('[aria-live="polite"]')
       ?.textContent ?? ''
   );
+}
+
+function readVisualTeamOrder(screen: Awaited<ReturnType<typeof render>>): string[] {
+  return Array.from(screen.container.querySelectorAll('[data-testid^="team-panel-"]')).map(
+    (element) => element.getAttribute('data-testid') ?? ''
+  );
+}
+
+function getVisibleTeamId(
+  screen: Awaited<ReturnType<typeof render>>,
+  columnIndex: number
+): 'team-1' | 'team-2' {
+  const testId = readVisualTeamOrder(screen)[columnIndex];
+
+  if (testId === 'team-panel-team-1') {
+    return 'team-1';
+  }
+
+  if (testId === 'team-panel-team-2') {
+    return 'team-2';
+  }
+
+  throw new Error(`Missing visible team panel at column ${String(columnIndex)}.`);
+}
+
+function getVisibleTeamPanel(
+  screen: Awaited<ReturnType<typeof render>>,
+  columnIndex: number
+): ReturnType<Awaited<ReturnType<typeof render>>['getByTestId']> {
+  return screen.getByTestId(`team-panel-${getVisibleTeamId(screen, columnIndex)}`);
+}
+
+function getVisibleRevertButton(
+  screen: Awaited<ReturnType<typeof render>>,
+  columnIndex: number
+): ReturnType<Awaited<ReturnType<typeof render>>['getByTestId']> {
+  return screen.getByTestId(`revert-button-${getVisibleTeamId(screen, columnIndex)}`);
 }
