@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.27.0](https://github.com/trystan2k/padelbuddy-web/compare/v2.26.0...v2.27.0) (2026-06-03)
+
+
+### Features
+
+* **deps:** bump the prod-dependencies group with 3 updates ([928e6bb](https://github.com/trystan2k/padelbuddy-web/commit/928e6bbe3737272d2e8444e4ac6cbe3ca1ea28cf))
+* mirror scoreboard team columns when side switch is due ([ef9cbd3](https://github.com/trystan2k/padelbuddy-web/commit/ef9cbd308f6714cc8517e3a31c146a211b929b9e))
+
 ## [2.26.0](https://github.com/trystan2k/padelbuddy-web/compare/v2.25.0...v2.26.0) (2026-05-29)
 
 
