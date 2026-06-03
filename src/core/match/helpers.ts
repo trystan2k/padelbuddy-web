@@ -1,4 +1,14 @@
-import type { ActiveMatchSet, CompletedMatchSet, MatchTeamId, TeamScore } from './types';
+import type {
+  ActiveMatchSet,
+  CompletedMatchSet,
+  MatchGameState,
+  MatchTeamId,
+  TeamScore
+} from './types';
+
+type LegacyCompletedSuperTiebreakSetShape = {
+  game?: MatchGameState;
+};
 
 export function createTeamScore<T>(teamOne: T, teamTwo: T): TeamScore<T> {
   return {
@@ -57,4 +67,22 @@ export function getCompletedSetCount(sets: CompletedMatchSet[]): TeamScore<numbe
     },
     createTeamScore(0, 0)
   );
+}
+
+export function getCompletedSetTiebreakPoints(set: CompletedMatchSet): TeamScore<number> | null {
+  if (set.tiebreakPoints !== null) {
+    return set.tiebreakPoints;
+  }
+
+  if (set.mode !== 'super-tiebreak') {
+    return null;
+  }
+
+  const legacyShape = set as CompletedMatchSet & LegacyCompletedSuperTiebreakSetShape;
+
+  if (legacyShape.game?.kind === 'tiebreak') {
+    return legacyShape.game.points;
+  }
+
+  return null;
 }

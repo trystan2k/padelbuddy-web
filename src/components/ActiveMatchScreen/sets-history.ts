@@ -1,23 +1,23 @@
-import type { CompletedMatchSet, MatchSetState, TeamScore } from '@/core/match/types';
+import { getCompletedSetTiebreakPoints } from '@/core/match/helpers';
+import type { CompletedMatchSet, MatchSetState, MatchTeamId, TeamScore } from '@/core/match/types';
 
-type LegacyCompletedSuperTiebreakSetShape = {
-  game?: {
-    kind?: unknown;
-    points?: TeamScore<number>;
-  };
-};
+export type VisualTeamOrder = readonly [MatchTeamId, MatchTeamId];
+export const DEFAULT_VISUAL_TEAM_ORDER = ['team-1', 'team-2'] as const satisfies VisualTeamOrder;
 
 function getCompletedSuperTiebreakScore(set: CompletedMatchSet): TeamScore<number> {
-  if (set.tiebreakPoints !== null) {
-    return set.tiebreakPoints;
-  }
+  return getCompletedSetTiebreakPoints(set) ?? set.games;
+}
 
-  const legacyShape = set as MatchSetState & LegacyCompletedSuperTiebreakSetShape;
-  if (legacyShape.game?.kind === 'tiebreak' && legacyShape.game.points !== undefined) {
-    return legacyShape.game.points;
-  }
+export function reorderVisualTeamScore<Value>(
+  score: TeamScore<Value>,
+  visualTeamOrder: VisualTeamOrder
+): TeamScore<Value> {
+  const [leftTeamId, rightTeamId] = visualTeamOrder;
 
-  return set.games;
+  return {
+    'team-1': score[leftTeamId],
+    'team-2': score[rightTeamId]
+  };
 }
 
 export function getCurrentSet(
@@ -31,38 +31,46 @@ export function getCurrentSet(
   return sets[sets.length - 1] ?? null;
 }
 
-export function getSetDisplayScore(set: MatchSetState | null): TeamScore<number> {
+export function getSetDisplayScore(
+  set: MatchSetState | null,
+  visualTeamOrder: VisualTeamOrder = DEFAULT_VISUAL_TEAM_ORDER
+): TeamScore<number> {
   if (set === null) {
     return { 'team-1': 0, 'team-2': 0 };
   }
 
   if (set.completed) {
     if (set.mode === 'super-tiebreak') {
-      return getCompletedSuperTiebreakScore(set);
+      return reorderVisualTeamScore(getCompletedSuperTiebreakScore(set), visualTeamOrder);
     }
 
-    return set.games;
+    return reorderVisualTeamScore(set.games, visualTeamOrder);
   }
 
   if (set.mode === 'super-tiebreak' && set.game.kind === 'tiebreak') {
-    return set.game.points;
+    return reorderVisualTeamScore(set.game.points, visualTeamOrder);
   }
 
-  return set.games;
+  return reorderVisualTeamScore(set.games, visualTeamOrder);
 }
 
-export function getSetsWonScore(sets: MatchSetState[]): TeamScore<number> {
-  return sets.reduce<TeamScore<number>>(
-    (score, set) => {
+export function getSetsWonScore(
+  sets: MatchSetState[],
+  visualTeamOrder: VisualTeamOrder = DEFAULT_VISUAL_TEAM_ORDER
+): TeamScore<number> {
+  const aggregateScore = sets.reduce<TeamScore<number>>(
+    (accumulator, set) => {
       if (!set.completed || typeof set.winner !== 'string') {
-        return score;
+        return accumulator;
       }
 
-      score[set.winner] += 1;
-      return score;
+      accumulator[set.winner] += 1;
+      return accumulator;
     },
     { 'team-1': 0, 'team-2': 0 }
   );
+
+  return reorderVisualTeamScore(aggregateScore, visualTeamOrder);
 }
 
 export function getSetsHistoryAutoOpenSignature(sets: MatchSetState[]): string {

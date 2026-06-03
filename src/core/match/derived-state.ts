@@ -14,6 +14,7 @@ import {
 import {
   createTeamScore,
   getCompletedSetCount,
+  getCompletedSetTiebreakPoints,
   getOpponentTeamId,
   getTotalScore,
   isInitialStandardGame,
@@ -116,25 +117,95 @@ function recordTiebreakServiceTurns(
   }
 }
 
-function getCompletedStandardGameCount(set: CompletedMatchSet): number {
+function getCompletedSetServiceGameCount(set: CompletedMatchSet): number {
+  if (set.mode === 'super-tiebreak') {
+    return 0;
+  }
+
   if (set.tiebreakPoints === null) {
     return getTotalScore(set.games);
   }
 
-  return set.mode === 'super-tiebreak' ? 0 : 12;
+  return 12;
+}
+
+function getCompletedSetSideSwitchGameCount(set: CompletedMatchSet): number {
+  if (set.mode === 'super-tiebreak') {
+    return 0;
+  }
+
+  return getTotalScore(set.games);
+}
+
+function getStandardSideSwitchCount(completedGames: number): number {
+  if (completedGames <= 0) {
+    return 0;
+  }
+
+  return Math.floor((completedGames + 1) / 2);
+}
+
+function getTiebreakSideSwitchCount(pointsPlayed: number): number {
+  if (pointsPlayed <= 0) {
+    return 0;
+  }
+
+  return Math.floor(pointsPlayed / 6);
+}
+
+function getCompletedSetSideSwitchCount(set: CompletedMatchSet): number {
+  const completedGames = getCompletedSetSideSwitchGameCount(set);
+  const tiebreakPointsPlayed = getTotalScore(
+    getCompletedSetTiebreakPoints(set) ?? createTeamScore(0, 0)
+  );
+
+  return (
+    getStandardSideSwitchCount(completedGames) + getTiebreakSideSwitchCount(tiebreakPointsPlayed)
+  );
+}
+
+function getActiveSetSideSwitchCount(set: ActiveMatchSet): number {
+  const completedGames = getTotalScore(set.games);
+  const tiebreakPointsPlayed = set.game.kind === 'tiebreak' ? getTotalScore(set.game.points) : 0;
+
+  return (
+    getStandardSideSwitchCount(completedGames) + getTiebreakSideSwitchCount(tiebreakPointsPlayed)
+  );
+}
+
+function getMatchSideSwitchCount(state: MatchState): number {
+  const completedSetSwitchCount = getCompletedSets(state).reduce(
+    (count, set) => count + getCompletedSetSideSwitchCount(set),
+    0
+  );
+  const activeSet = getActiveSet(state);
+
+  return completedSetSwitchCount + (activeSet ? getActiveSetSideSwitchCount(activeSet) : 0);
+}
+
+function isScoreboardMirrored(setup: MatchSetup, state: MatchState): boolean {
+  if (!setup.sideSwitchPrompts) {
+    return false;
+  }
+
+  return getMatchSideSwitchCount(state) % 2 === 1;
 }
 
 function getServiceTurnCountsBeforeActiveTurn(state: MatchState): TeamScore<number> {
   const counts = createTeamScore(0, 0);
 
   for (const set of getCompletedSets(state)) {
-    recordStandardServiceTurns(counts, set.firstServer, getCompletedStandardGameCount(set));
+    const completedServiceGames = getCompletedSetServiceGameCount(set);
 
-    if (set.tiebreakPoints !== null) {
+    recordStandardServiceTurns(counts, set.firstServer, completedServiceGames);
+
+    const completedSetTiebreakPoints = getCompletedSetTiebreakPoints(set);
+
+    if (completedSetTiebreakPoints !== null) {
       recordTiebreakServiceTurns(
         counts,
-        toggleServer(set.firstServer, getCompletedStandardGameCount(set)),
-        getTotalScore(set.tiebreakPoints),
+        toggleServer(set.firstServer, completedServiceGames),
+        getTotalScore(completedSetTiebreakPoints),
         true
       );
     }
@@ -195,7 +266,7 @@ function getServingPlayerNumberForTeam(
 }
 
 export function getNextSetFirstServer(set: CompletedMatchSet): MatchTeamId {
-  if (set.tiebreakPoints !== null) {
+  if (getCompletedSetTiebreakPoints(set) !== null) {
     const gamesBeforeTiebreak = set.mode === 'super-tiebreak' ? 0 : 12;
     const openingServer = toggleServer(set.firstServer, gamesBeforeTiebreak);
 
@@ -250,16 +321,21 @@ function getSideSwitchState(setup: MatchSetup, state: MatchState): MatchSideSwit
 
   if (activeSet.game.kind === 'tiebreak') {
     const pointsPlayed = getTotalScore(activeSet.game.points);
+    const shouldPrompt = getTiebreakSideSwitchCount(pointsPlayed) > 0 && pointsPlayed % 6 === 0;
 
     return {
-      shouldPrompt: pointsPlayed > 0 && pointsPlayed % 6 === 0,
-      reason: pointsPlayed > 0 && pointsPlayed % 6 === 0 ? 'tiebreak-interval' : null
+      shouldPrompt,
+      reason: shouldPrompt ? 'tiebreak-interval' : null
     };
   }
 
   const totalGames = getTotalScore(activeSet.games);
 
-  if (totalGames > 0 && totalGames % 2 === 1 && isInitialStandardGame(activeSet)) {
+  if (
+    isInitialStandardGame(activeSet) &&
+    getStandardSideSwitchCount(totalGames) > 0 &&
+    totalGames % 2 === 1
+  ) {
     return {
       shouldPrompt: true,
       reason: 'odd-games'
@@ -329,6 +405,7 @@ export function deriveMatchState(setup: MatchSetup, state: MatchState): MatchDer
     winner,
     canContinuePlaying: winner !== null && setup.setCap !== null,
     setsWon: getSetsWon(state),
+    isScoreboardMirrored: isScoreboardMirrored(setup, state),
     sideSwitch: getSideSwitchState(setup, state),
     scoreDisplay: getScoreDisplay(state)
   };

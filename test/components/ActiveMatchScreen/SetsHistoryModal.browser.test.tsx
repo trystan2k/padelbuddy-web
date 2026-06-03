@@ -164,4 +164,42 @@ describe('SetsHistoryModal', () => {
       .element(screen.getByTestId('sets-history-modal-list'))
       .toHaveTextContent('7(8) - 6(6)');
   });
+
+  test('mirrors headline and completed set rows when visual order is swapped', async () => {
+    const onClose = vi.fn<() => void>();
+    const screen = await render(
+      <SetsHistoryModal
+        isOpen
+        openToken={1}
+        sets={[
+          {
+            index: 1,
+            mode: 'standard',
+            firstServer: 'team-1',
+            completed: true,
+            winner: 'team-1',
+            games: { 'team-1': 6, 'team-2': 4 },
+            tiebreakPoints: null
+          },
+          {
+            index: 2,
+            mode: 'standard',
+            firstServer: 'team-2',
+            completed: true,
+            winner: 'team-1',
+            games: { 'team-1': 7, 'team-2': 6 },
+            tiebreakPoints: { 'team-1': 8, 'team-2': 6 }
+          }
+        ]}
+        onClose={onClose}
+        visualTeamOrder={['team-2', 'team-1']}
+      />
+    );
+
+    await expect.element(screen.getByRole('heading', { name: /0 - 2/ })).toBeInTheDocument();
+    await expect.element(screen.getByTestId('sets-history-modal-list')).toHaveTextContent('4 - 6');
+    await expect
+      .element(screen.getByTestId('sets-history-modal-list'))
+      .toHaveTextContent('6(6) - 7(8)');
+  });
 });

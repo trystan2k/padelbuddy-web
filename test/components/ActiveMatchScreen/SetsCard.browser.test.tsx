@@ -112,4 +112,37 @@ describe('SetsCard', () => {
 
     await expect.element(screen.getByTestId('set-score-current')).toHaveTextContent('8-7');
   });
+
+  test('mirrors current set score and accessible label when visual order is swapped', async () => {
+    const sets: MatchSetState[] = [
+      {
+        index: 1,
+        mode: 'standard',
+        firstServer: 'team-1',
+        completed: false,
+        games: { 'team-1': 4, 'team-2': 5 },
+        game: {
+          kind: 'standard',
+          points: { 'team-1': 0, 'team-2': 0 },
+          advantageTeam: null
+        }
+      }
+    ];
+
+    const screen = await render(
+      <SetsCard
+        sets={sets}
+        currentSetIndex={0}
+        visualTeamOrder={['team-2', 'team-1']}
+        onOpenHistory={() => undefined}
+      />
+    );
+
+    await expect.element(screen.getByTestId('set-score-current')).toHaveTextContent('5-4');
+    await expect
+      .element(
+        screen.getByRole('button', { name: /open sets history\. current set score: 5 - 4/i })
+      )
+      .toBeInTheDocument();
+  });
 });

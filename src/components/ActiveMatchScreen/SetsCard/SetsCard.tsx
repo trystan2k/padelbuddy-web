@@ -2,7 +2,12 @@ import { useTranslation } from 'react-i18next';
 
 import type { MatchSetState } from '@/core/match/types';
 
-import { getCurrentSet, getSetDisplayScore } from '../sets-history';
+import {
+  DEFAULT_VISUAL_TEAM_ORDER,
+  getCurrentSet,
+  getSetDisplayScore,
+  type VisualTeamOrder
+} from '../sets-history';
 
 import styles from './SetsCard.module.css';
 
@@ -10,16 +15,22 @@ interface SetsCardProps {
   sets: MatchSetState[];
   currentSetIndex: number | null;
   onOpenHistory?: () => void;
+  visualTeamOrder?: VisualTeamOrder;
 }
 
 /**
  * SetsCard component - compact trigger showing current set score only.
  */
-export function SetsCard({ sets, currentSetIndex, onOpenHistory }: SetsCardProps) {
+export function SetsCard({
+  sets,
+  currentSetIndex,
+  onOpenHistory,
+  visualTeamOrder = DEFAULT_VISUAL_TEAM_ORDER
+}: SetsCardProps) {
   const { t } = useTranslation();
 
   const currentSet = getCurrentSet(sets, currentSetIndex);
-  const currentScore = getSetDisplayScore(currentSet);
+  const currentScore = getSetDisplayScore(currentSet, visualTeamOrder);
 
   const cardContent = (
     <>

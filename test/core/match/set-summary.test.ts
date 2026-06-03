@@ -69,6 +69,25 @@ describe('set summary formatter', () => {
     expect(formatSetSummaryScore(set)).toBe('11 - 9');
   });
 
+  test('recovers legacy completed super tiebreak points from the stored game snapshot', () => {
+    const set = {
+      index: 3,
+      mode: 'super-tiebreak',
+      firstServer: 'team-1',
+      completed: true,
+      winner: 'team-1',
+      games: { 'team-1': 0, 'team-2': 0 },
+      tiebreakPoints: null,
+      game: {
+        kind: 'tiebreak',
+        points: { 'team-1': 11, 'team-2': 9 },
+        targetPoints: 11
+      }
+    } as MatchSetState;
+
+    expect(formatSetSummaryScore(set)).toBe('11 - 9');
+  });
+
   test('does not show completed tiebreak winner notation early for in-progress sets', () => {
     const set: MatchSetState = {
       index: 1,
