@@ -28,7 +28,7 @@ jobs:
       preview_url: ${{ steps.preview_url.outputs.preview_url }}
     steps:
       - name: Check out release PR head
-        uses: actions/checkout@v6
+        uses: actions/checkout@v6.0.2
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
 
