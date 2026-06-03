@@ -55,7 +55,7 @@ async function gotoHomeAndWaitForVisible(page: Page, locator: Locator): Promise<
     const readinessTimeoutMs = Math.min(startupReadyAttemptTimeoutMs, remainingBudgetMs);
 
     try {
-      await page.goto('/', { waitUntil: 'domcontentloaded' });
+      await page.goto('/', { waitUntil: 'domcontentloaded', timeout: readinessTimeoutMs });
       await expect(locator).toBeVisible({ timeout: readinessTimeoutMs });
     } catch (error) {
       const isLastAttempt = attempt === maxStartupNavigationAttempts;
