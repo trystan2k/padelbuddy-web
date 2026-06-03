@@ -64,7 +64,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out released tag
-        uses: actions/checkout@v6
+        uses: actions/checkout@v6.0.2
         with:
           ref: refs/tags/${{ needs.release_please.outputs.tag_name }}
 
