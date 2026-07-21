@@ -28,7 +28,7 @@ jobs:
       preview_url: ${{ steps.preview_url.outputs.preview_url }}
     steps:
       - name: Check out release PR head
-        uses: actions/checkout@v7.0.0
+        uses: actions/checkout@v7.0.1
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
 
@@ -38,7 +38,7 @@ jobs:
           version: ${{ env.PNPM_VERSION }}
 
       - name: Set up Node.js
-        uses: actions/setup-node@v6.4.0
+        uses: actions/setup-node@v7.0.0
         with:
           cache: pnpm
           node-version: ${{ env.NODE_VERSION }}
