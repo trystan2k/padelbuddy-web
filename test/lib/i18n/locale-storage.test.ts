@@ -1,7 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { createLocaleStorage } from '@/lib/i18n/locale-storage';
-import type { SupportedLocale } from '@/lib/i18n/types';
 import { sharedIndexedDbObjectStoreNames } from '@/lib/persistence/indexed-db';
 
 describe('locale-storage', () => {
@@ -14,7 +13,7 @@ describe('locale-storage', () => {
     vi.stubGlobal('indexedDB', fakeIndexedDb.factory);
 
     const storage = createLocaleStorage({ databaseName: 'test-locale-db' });
-    await storage.saveLocalePreference('pt' as SupportedLocale);
+    await storage.saveLocalePreference('pt');
     const loaded = await storage.loadLocalePreference();
     expect(loaded).toBe('pt');
   });
@@ -33,7 +32,7 @@ describe('locale-storage', () => {
     vi.stubGlobal('indexedDB', fakeIndexedDb.factory);
 
     const storage = createLocaleStorage({ databaseName: 'test-locale-clear-db' });
-    await storage.saveLocalePreference('es' as SupportedLocale);
+    await storage.saveLocalePreference('es');
     await storage.clearLocalePreference();
     const loaded = await storage.loadLocalePreference();
     expect(loaded).toBeNull();
@@ -97,7 +96,7 @@ describe('locale-storage', () => {
     );
 
     const storage = createLocaleStorage({ databaseName: 'write-error-db' });
-    await expect(storage.saveLocalePreference('pt' as SupportedLocale)).rejects.toThrowError(
+    await expect(storage.saveLocalePreference('pt')).rejects.toThrowError(
       'IndexedDB transaction failed.'
     );
   });

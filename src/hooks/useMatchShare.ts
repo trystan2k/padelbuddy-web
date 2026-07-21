@@ -72,7 +72,7 @@ export function useMatchShare({
           return;
         }
 
-        if (await shareMatchImage(navigator as ShareNavigator, shareText, shareFile)) {
+        if (await shareMatchImage(navigator, shareText, shareFile)) {
           return;
         }
 

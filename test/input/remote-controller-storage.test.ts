@@ -263,7 +263,7 @@ class FakeTransaction extends EventTarget {
         const request = new FakeRequest();
 
         queueMicrotask(() => {
-          request.result = this.storage.get(String(key)) as RemoteControllerConfig | undefined;
+          request.result = this.storage.get(String(key));
           request.dispatchEvent(new Event('success'));
           queueMicrotask(() => {
             this.dispatchEvent(new Event('complete'));

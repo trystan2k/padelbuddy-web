@@ -40,11 +40,11 @@ export async function getAvailableVoices(signal?: AbortSignal): Promise<UnifiedV
 export function getAllVoicesGroupedByLocale(
   voices: UnifiedVoice[]
 ): Record<string, UnifiedVoice[]> {
-  return groupBrowserVoicesByLocale(voices as SpeechSynthesisVoice[]);
+  return groupBrowserVoicesByLocale(voices);
 }
 
 export function getVoiceId(voice: UnifiedVoice): string {
-  return getBrowserVoiceId(voice as SpeechSynthesisVoice);
+  return getBrowserVoiceId(voice);
 }
 
 export function findVoiceByName(name: string, voices: UnifiedVoice[]): UnifiedVoice | undefined {
@@ -64,7 +64,7 @@ export function getDefaultVoiceForLocale(
   );
 
   if (localeVoices.length === 0) {
-    return selectBrowserVoice(locale, voices as SpeechSynthesisVoice[]) as UnifiedVoice | null;
+    return selectBrowserVoice(locale, voices);
   }
 
   const localVoice = localeVoices.find((voice) => voice.localService);

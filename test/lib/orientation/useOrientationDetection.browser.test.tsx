@@ -42,14 +42,14 @@ function installMatchMedia(initialIsPortrait: boolean): MockMediaQueryListContro
       (type: string, listener: EventListenerOrEventListenerObject | null) => void
     >((type, listener) => {
       if (type === 'change' && typeof listener === 'function') {
-        listeners.add(listener as OrientationChangeListener);
+        listeners.add(listener);
       }
     }),
     removeEventListener: vi.fn<
       (type: string, listener: EventListenerOrEventListenerObject | null) => void
     >((type, listener) => {
       if (type === 'change' && typeof listener === 'function') {
-        listeners.delete(listener as OrientationChangeListener);
+        listeners.delete(listener);
       }
     }),
     dispatchEvent: vi.fn<(event: Event) => boolean>((event) => {
@@ -66,7 +66,7 @@ function installMatchMedia(initialIsPortrait: boolean): MockMediaQueryListContro
     writable: true,
     value: vi.fn<(queryString: string) => MediaQueryList>((queryString) => {
       expect(queryString).toBe('(orientation: portrait)');
-      return query as unknown as MediaQueryList;
+      return query;
     })
   });
 

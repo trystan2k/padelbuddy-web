@@ -27,18 +27,18 @@ type BrowserVoice = SpeechSynthesisVoice;
 type BrowserVoiceArray = BrowserVoice[];
 
 const findVoiceByName = (name: string, voices: BrowserVoiceArray): BrowserVoice | undefined => {
-  const result = findVoiceByNameUnified(name, voices as UnifiedVoice[]);
-  return result as BrowserVoice | undefined;
+  const result = findVoiceByNameUnified(name, voices);
+  return result;
 };
 
 const selectVoice = (locale: SupportedLocale, voices: BrowserVoiceArray): BrowserVoice | null => {
-  const result = selectVoiceUnified(locale, voices as UnifiedVoice[]);
-  return result as BrowserVoice | null;
+  const result = selectVoiceUnified(locale, voices);
+  return result;
 };
 
 const getAvailableVoices = async (signal?: AbortSignal): Promise<BrowserVoiceArray> => {
   const voices = await getAvailableVoicesUnified(signal);
-  return voices as BrowserVoiceArray;
+  return voices;
 };
 
 const maxPendingAnnouncements = 10;
@@ -368,11 +368,8 @@ export function useSpeechService(config: SpeechServiceConfig = {}): SpeechServic
       }
 
       const utterance = new SpeechSynthesisUtterance(text);
-      utterance.voice = currentVoice as SpeechSynthesisVoice;
-      utterance.lang =
-        options?.lang ||
-        (currentVoice as SpeechSynthesisVoice)?.lang ||
-        getSafeLocale(i18n.language);
+      utterance.voice = currentVoice;
+      utterance.lang = options?.lang || currentVoice?.lang || getSafeLocale(i18n.language);
       utterance.rate = 1.0;
       utterance.pitch = 1.0;
 

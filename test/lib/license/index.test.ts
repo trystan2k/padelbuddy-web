@@ -5,7 +5,7 @@ import { LicenseStatusValues, checkLicenseStatus, isAppAllowed } from '@/lib/lic
 const { mockCapacitor } = vi.hoisted(() => ({
   mockCapacitor: {
     isNativePlatform: vi.fn<() => boolean>(),
-    Plugins: {} as Record<string, unknown>
+    Plugins: {}
   }
 }));
 
