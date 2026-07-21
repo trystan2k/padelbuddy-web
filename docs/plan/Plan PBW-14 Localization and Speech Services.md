@@ -609,11 +609,7 @@ export interface SpeechOptions {
 }
 
 export type SpeechEventType =
-  | 'point-scored'
-  | 'game-won'
-  | 'set-won'
-  | 'match-won'
-  | 'server-change';
+  'point-scored' | 'game-won' | 'set-won' | 'match-won' | 'server-change';
 
 export interface SpeechEventData {
   eventType: SpeechEventType;

@@ -613,7 +613,7 @@ describe('message-generator', () => {
       expect(
         generateSpeechMessage({
           eventType: 'point-scored',
-          team1Score: 'unknown' as '15',
+          team1Score: 'unknown',
           team2Score: '0',
           verbosity: 'standard'
         })

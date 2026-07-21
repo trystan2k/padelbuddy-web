@@ -1244,7 +1244,7 @@ describe('ActiveMatchScreen', () => {
       dispatchEvent: vi.fn<() => boolean>(),
       media: '',
       onchange: null
-    } as unknown as MediaQueryList);
+    });
 
     const screen = await render(
       <ActiveMatchScreen
@@ -1272,7 +1272,7 @@ describe('ActiveMatchScreen', () => {
       dispatchEvent: vi.fn<() => boolean>(),
       media: '',
       onchange: null
-    } as unknown as MediaQueryList);
+    });
 
     const screen = await render(
       <ActiveMatchScreen
@@ -1311,7 +1311,7 @@ describe('ActiveMatchScreen', () => {
       dispatchEvent: vi.fn<() => boolean>(),
       media: '',
       onchange: null
-    } as unknown as MediaQueryList);
+    });
 
     const screen = await render(
       <ActiveMatchScreen
@@ -1362,7 +1362,7 @@ describe('ActiveMatchScreen', () => {
       dispatchEvent: vi.fn<() => boolean>(),
       media: '',
       onchange: null
-    } as unknown as MediaQueryList);
+    });
 
     const screen = await render(
       <ActiveMatchScreen
@@ -1407,7 +1407,7 @@ describe('ActiveMatchScreen', () => {
       dispatchEvent: vi.fn<() => boolean>(),
       media: '',
       onchange: null
-    } as unknown as MediaQueryList);
+    });
 
     const screen = await render(
       <ActiveMatchScreen
@@ -1444,7 +1444,7 @@ describe('ActiveMatchScreen', () => {
       dispatchEvent: vi.fn<() => boolean>(),
       media: '',
       onchange: null
-    } as unknown as MediaQueryList);
+    });
 
     const screen = await render(
       <ActiveMatchScreen

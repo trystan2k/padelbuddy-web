@@ -1,21 +1,32 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 
 const { i18nMock, registerSWMock, getOrCreateUserIdMock, mixpanelMock, effectCleanups } =
-  vi.hoisted(() => ({
-    i18nMock: {
-      resolvedLanguage: 'en' as string | undefined,
-      language: 'en' as string | undefined,
-      on: vi.fn<(event: string, fn: (lng: string) => void) => void>(),
-      off: vi.fn<(event: string, fn: (lng: string) => void) => void>()
-    },
-    registerSWMock: vi.fn<() => Promise<void>>(() => Promise.resolve()),
-    getOrCreateUserIdMock: vi.fn<() => string>(() => 'test-user-id'),
-    mixpanelMock: {
-      init: vi.fn<() => void>(),
-      identify: vi.fn<() => void>()
-    },
-    effectCleanups: [] as Array<() => void>
-  }));
+  vi.hoisted(() => {
+    const on = vi.fn<(event: string, fn: (lng: string) => void) => void>();
+    const off = vi.fn<(event: string, fn: (lng: string) => void) => void>();
+    const hoistedI18nMock: {
+      resolvedLanguage: string | undefined;
+      language: string | undefined;
+      on: typeof on;
+      off: typeof off;
+    } = {
+      resolvedLanguage: 'en',
+      language: 'en',
+      on,
+      off
+    };
+
+    return {
+      i18nMock: hoistedI18nMock,
+      registerSWMock: vi.fn<() => Promise<void>>(() => Promise.resolve()),
+      getOrCreateUserIdMock: vi.fn<() => string>(() => 'test-user-id'),
+      mixpanelMock: {
+        init: vi.fn<() => void>(),
+        identify: vi.fn<() => void>()
+      },
+      effectCleanups: [] as Array<() => void>
+    };
+  });
 
 vi.mock('react', async (importOriginal) => {
   const actual = await importOriginal<typeof import('react')>();

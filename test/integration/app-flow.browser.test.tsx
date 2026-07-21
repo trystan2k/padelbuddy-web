@@ -26,7 +26,7 @@ const { mockInvalidate, mockNavigate, mockPreloadRoute, mockRouteSearch } = vi.h
   mockNavigate: vi.fn<() => void>(),
   mockPreloadRoute: vi.fn<() => Promise<void>>(),
   mockRouteSearch: {
-    current: {} as { error?: string }
+    current: {}
   }
 }));
 

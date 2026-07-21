@@ -10,7 +10,6 @@ import {
   replayCurrentMatchRecord
 } from '@/lib/current-match/persistence';
 import { createLocaleStorage } from '@/lib/i18n/locale-storage';
-import type { SupportedLocale } from '@/lib/i18n/types';
 import { createRemoteControllerBindings } from '@/lib/input/keyboard-aliases';
 import type { RemoteControllerConfig } from '@/lib/input/remote-controller-config';
 import { createRemoteControllerStorage } from '@/lib/input/remote-controller-storage';
@@ -104,7 +103,7 @@ describe('current match IndexedDB persistence', () => {
       superTiebreakTargetPoints: 11
     };
 
-    await localeStorage.saveLocalePreference('es' as SupportedLocale);
+    await localeStorage.saveLocalePreference('es');
     await expect(persistence.loadCurrentMatch()).resolves.toEqual({
       status: 'empty'
     });

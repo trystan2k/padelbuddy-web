@@ -180,14 +180,14 @@ describe('DebugPwa', () => {
     // which would kill the test runner in a real browser.
     let capturedTimerCallback: (() => void) | null = null;
     const originalSetTimeout = globalThis.setTimeout;
-    vi.stubGlobal('setTimeout', ((fn: () => void, ms: number) => {
+    vi.stubGlobal('setTimeout', (fn: () => void, ms: number) => {
       if (ms === 500) {
         // Capture but don't schedule — prevents the reload
         capturedTimerCallback = fn;
         return 0 as unknown as ReturnType<typeof setTimeout>;
       }
       return originalSetTimeout(fn, ms);
-    }) as typeof setTimeout);
+    });
 
     const screen = await render(<DebugPwa />);
 

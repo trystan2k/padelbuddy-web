@@ -191,7 +191,7 @@ export function useSetupForm() {
         }
         // Create a new object without the deleted key
         const { [field]: _, ...rest } = prev;
-        return rest as FieldErrors;
+        return rest;
       });
     },
     []

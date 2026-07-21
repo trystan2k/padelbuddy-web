@@ -159,7 +159,7 @@ export function useInactivityTimer(
     window.addEventListener('scroll', handleScroll, {
       capture: true,
       passive: true
-    } as AddEventListenerOptions);
+    });
 
     return () => {
       clearTimer();

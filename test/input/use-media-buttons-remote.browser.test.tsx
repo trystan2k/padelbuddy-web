@@ -23,7 +23,7 @@ function createMockMediaSession(): {
       handlers[action] = handler;
     }),
     metadata: null,
-    playbackState: 'none' as MediaSessionPlaybackState
+    playbackState: 'none'
   };
 }
 
@@ -356,7 +356,7 @@ describe('use-media-buttons-remote browser', () => {
       const nexttrackHandler = mockMediaSession.handlers['nexttrack'];
       expect(nexttrackHandler).toBeDefined();
 
-      nexttrackHandler!({ action: 'nexttrack' } as MediaSessionActionDetails);
+      nexttrackHandler!({ action: 'nexttrack' });
       await vi.advanceTimersByTimeAsync(650);
 
       expect(onAdd).toHaveBeenCalledWith('team-2');
@@ -378,7 +378,7 @@ describe('use-media-buttons-remote browser', () => {
       const previoustrackHandler = mockMediaSession.handlers['previoustrack'];
       expect(previoustrackHandler).toBeDefined();
 
-      previoustrackHandler!({ action: 'previoustrack' } as MediaSessionActionDetails);
+      previoustrackHandler!({ action: 'previoustrack' });
       await vi.advanceTimersByTimeAsync(650);
 
       expect(onAdd).toHaveBeenCalledWith('team-1');
@@ -419,7 +419,7 @@ describe('use-media-buttons-remote browser', () => {
 
       // Enable by remounting — the hook will start with enabled=false
       const nexttrackHandler = mockMediaSession.handlers['nexttrack'];
-      nexttrackHandler?.({ action: 'nexttrack' } as MediaSessionActionDetails);
+      nexttrackHandler?.({ action: 'nexttrack' });
 
       // The handlers check enabledRef.current, which is false
       expect(onAdd).not.toHaveBeenCalled();

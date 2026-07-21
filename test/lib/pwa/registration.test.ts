@@ -50,7 +50,7 @@ function getPort2FromCall(postMessageSpy: Mock): MessagePort {
 
 /** Helper: send a response through the MessageChannel port2 → port1 */
 function respondViaPort(port2: MessagePort, data: unknown) {
-  port2.postMessage(data as void);
+  port2.postMessage(data);
 }
 
 // Dynamic import helper to get fresh module state
