@@ -1,5 +1,22 @@
 # Changelog
 
+## [2.28.0](https://github.com/trystan2k/padelbuddy-web/compare/v2.27.0...v2.28.0) (2026-07-21)
+
+
+### Features
+
+* **deps:** bump i18next in the prod-dependencies group ([c1ce700](https://github.com/trystan2k/padelbuddy-web/commit/c1ce7007fedcba75fa688f5949b29ecff17d2b7d))
+* **deps:** bump the prod-dependencies group with 3 updates ([46565e1](https://github.com/trystan2k/padelbuddy-web/commit/46565e1f52c2cdb7632007bb08dfbb378158a5e0))
+* **deps:** bump the prod-dependencies group with 3 updates ([9c29201](https://github.com/trystan2k/padelbuddy-web/commit/9c292017b1af7d12004813f57d213bc135eed693))
+* **deps:** bump the prod-dependencies group with 3 updates ([dec0d9a](https://github.com/trystan2k/padelbuddy-web/commit/dec0d9a739a01d8b41f1db50589318343958aa14))
+* **deps:** bump the prod-dependencies group with 5 updates ([641ffab](https://github.com/trystan2k/padelbuddy-web/commit/641ffab4161b6731fd87d402936c369b9219a955))
+* **deps:** bump the prod-dependencies group with 6 updates ([eab3ee8](https://github.com/trystan2k/padelbuddy-web/commit/eab3ee8c6fb1dd9c855497fed6ece35967697fe4))
+
+
+### Bug Fixes
+
+* **types:** remove unnecessary type assertions across codebase ([43703a3](https://github.com/trystan2k/padelbuddy-web/commit/43703a390afb50dae6e3972ded4e2b19941d9bd3))
+
 ## [2.27.0](https://github.com/trystan2k/padelbuddy-web/compare/v2.26.0...v2.27.0) (2026-06-03)
 
 
