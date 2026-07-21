@@ -168,3 +168,10 @@ Release Please manages versioning and changelog. Merging a release PR triggers t
 ## Design
 
 Visual design uses design tokens defined in `design-tokens/` and compiled to `src/styles.css` via Style Dictionary. See `docs/design/padelbuddyweb.pen` for the Pencil source file.
+
+## Bookmarks
+
+- [ADS Terra](https://beta.publishers.adsterra.com/)
+- [Mixpanel](https://www.mixpanel.com/)
+- [Cloudflare Pages](https://pages.cloudflare.com/)
+- [Don Dominio](https://www.dondominio.com/)
